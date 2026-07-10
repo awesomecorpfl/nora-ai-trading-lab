@@ -1,0 +1,7 @@
+param([Parameter(Mandatory=$true)][string]$IncomingRoot)
+$ErrorActionPreference='Stop';$data=(Get-ChildItem "$env:APPDATA\MetaQuotes\Terminal" -Directory|?{Test-Path "$($_.FullName)\origin.txt"}|select -First 1).FullName;if(!$data){throw 'data root absent'}
+$scriptDir=Join-Path $data 'MQL5\Scripts\NoraPhase0AH';New-Item -ItemType Directory -Force $scriptDir|Out-Null;Copy-Item "$IncomingRoot\ImportFixture.mq5" "$scriptDir\ImportFixture.mq5" -Force
+$common="$env:PROGRAMDATA\MetaQuotes\Terminal\Common\Files\NoraPhase0AH";New-Item -ItemType Directory -Force $common|Out-Null;Copy-Item "$IncomingRoot\fixture.csv" "$common\fixture.csv" -Force
+$editor='C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe';$log="$env:USERPROFILE\NoraPhase0AH\compile.log";Start-Process $editor -ArgumentList ('/compile:"'+$scriptDir+'\ImportFixture.mq5" /log:"'+$log+'"') -Wait;if(!(Test-Path "$scriptDir\ImportFixture.ex5")){throw "compile failed; see $log"}
+$run="$env:USERPROFILE\NoraPhase0AH";New-Item -ItemType Directory -Force $run|Out-Null;$ini="$run\import.ini";Copy-Item "$IncomingRoot\import.template.ini" $ini -Force;$terminal='C:\Program Files\Darwinex MetaTrader 5\terminal64.exe';$p=Start-Process $terminal -ArgumentList ('/config:"'+$ini+'"') -PassThru;if(!$p.WaitForExit(120000)){Stop-Process $p -Force;throw 'import timeout'}
+$o="$common\import.json";if(!(Test-Path $o)){throw 'import evidence absent'};Copy-Item $o "$run\import.json" -Force;Get-Content $o
