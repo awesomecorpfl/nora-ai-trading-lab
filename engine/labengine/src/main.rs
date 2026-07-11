@@ -1,8 +1,18 @@
-//! Phase 1 reservation of the locked file/subprocess boundary; no research logic.
-use std::{env, fs};
-fn main() {
-    let path = env::args().nth(1).expect("usage: labengine <task.json>");
-    let spec = fs::read_to_string(path).expect("read task spec");
-    assert!(spec.trim_start().starts_with('{'), "task spec must be JSON object");
-    println!("{{\"phase\":1,\"accepted_task_spec\":true}}");
-}
+//! Phase 2A deterministic correctness kernels; no AST, search, or MT5 work.
+use std::{env,fs,collections::hash_map::DefaultHasher,hash::{Hash,Hasher}};
+#[derive(Clone,Copy,Debug)] pub struct Bar{pub minute:i64,pub o:f64,pub h:f64,pub l:f64,pub c:f64,pub v:f64,pub spread:f64}
+pub fn contract_ok(s:&str)->bool{s.contains("timezone_identity")&&s.contains("dst_regime")&&s.contains("session_clock")&&s.contains("strategy_clock")&&!s.contains("\"target\":\"UTC\",\"target\":\"UTC\"")}
+pub fn aggregate(b:&[Bar],minutes:i64)->Vec<Bar>{let mut out=Vec::new();for x in b{let k=x.minute-x.minute.rem_euclid(minutes);if out.last().map(|z:&Bar|z.minute)!=Some(k){out.push(Bar{minute:k,o:x.o,h:x.h,l:x.l,c:x.c,v:x.v,spread:x.spread})}else{let z=out.last_mut().unwrap();z.h=z.h.max(x.h);z.l=z.l.min(x.l);z.c=x.c;z.v+=x.v;z.spread=x.spread}}out}
+fn sma(x:&[f64],n:usize)->Vec<Option<f64>>{(0..x.len()).map(|i|if i+1<n{None}else{Some(x[i+1-n..=i].iter().sum::<f64>()/n as f64)}).collect()}
+fn ema(x:&[f64],n:usize)->Vec<Option<f64>>{let mut o=vec![None;x.len()];if x.len()<n{return o}let a=2./(n as f64+1.);let mut e=x[..n].iter().sum::<f64>()/n as f64;o[n-1]=Some(e);for i in n..x.len(){e+=a*(x[i]-e);o[i]=Some(e)}o}
+pub fn atr(b:&[Bar],n:usize)->Vec<Option<f64>>{let tr:Vec<_>=b.iter().enumerate().map(|(i,x)|if i==0{x.h-x.l}else{(x.h-x.l).max((x.h-b[i-1].c).abs()).max((x.l-b[i-1].c).abs())}).collect();ema(&tr,n)}
+pub fn rsi(x:&[f64],n:usize)->Vec<Option<f64>>{let mut o=vec![None;x.len()];if x.len()<=n{return o}let(mut g,mut l)=(0.,0.);for i in 1..=n{let d=x[i]-x[i-1];g+=d.max(0.);l+=(-d).max(0.)}g/=n as f64;l/=n as f64;o[n]=Some(if l==0.{100.}else{100.-100./(1.+g/l)});for i in n+1..x.len(){let d=x[i]-x[i-1];g=(g*(n-1)as f64+d.max(0.))/n as f64;l=(l*(n-1)as f64+(-d).max(0.))/n as f64;o[i]=Some(if l==0.{100.}else{100.-100./(1.+g/l)})}o}
+pub fn cross(a:&[f64],b:&[f64],i:usize)->bool{i>0&&a[i-1]<=b[i-1]&&a[i]>b[i]}
+pub fn slope(a:&[f64],i:usize,n:usize)->Option<f64>{if i<n{None}else{Some((a[i]-a[i-n])/n as f64)}}
+pub fn percentile(a:&[f64],x:f64)->f64{let mut v=a.to_vec();v.sort_by(|a,b|a.total_cmp(b));v.iter().filter(|q|**q<=x).count()as f64/v.len()as f64}
+pub fn seed(parts:&[&str])->u64{let mut h=DefaultHasher::new();parts.hash(&mut h);h.finish()}
+#[derive(Clone,Copy)]pub enum Side{Long,Short} #[derive(Clone,Copy)]pub struct Trade{pub side:Side,pub entry:f64,pub exit:f64,pub costs:f64,pub bars:usize}
+pub fn pnl(t:Trade)->f64{match t.side{Side::Long=>t.exit-t.entry-t.costs,Side::Short=>t.entry-t.exit-t.costs}}
+pub fn pessimistic(side:Side,b:Bar,sl:f64,tp:f64)->Option<f64>{match side{Side::Long=>if b.l<=sl{Some(sl)}else if b.h>=tp{Some(tp)}else{None},Side::Short=>if b.h>=sl{Some(sl)}else if b.l<=tp{Some(tp)}else{None}}}
+fn main(){let p=env::args().nth(1).expect("usage: labengine <task.json>");let s=fs::read_to_string(p).expect("read task spec");assert!(s.trim_start().starts_with('{'));println!("{{\"phase\":\"2A\",\"accepted_task_spec\":true}}")}
+#[cfg(test)]mod tests{use super::*;fn bars()->Vec<Bar>{(0..6).map(|i|Bar{minute:i,o:i as f64+1.,h:i as f64+2.,l:i as f64,c:i as f64+1.5,v:1.,spread:0.1}).collect()}#[test]fn aggregate_local(){let x=aggregate(&bars(),5);assert_eq!(x.len(),2);assert_eq!(x[0].v,5.)}#[test]fn indicators(){let x=[1.,2.,3.,4.,5.,6.];assert_eq!(sma(&x,3)[2],Some(2.));assert_eq!(ema(&x,3)[2],Some(2.));assert_eq!(rsi(&x,2)[2],Some(100.))}#[test]fn rules(){let b=Bar{minute:0,o:90.,h:110.,l:80.,c:90.,v:1.,spread:0.};assert_eq!(pessimistic(Side::Long,b,85.,105.),Some(85.));assert!(cross(&[1.,1.,3.],&[2.,2.,2.],2));assert_eq!(seed(&["e","a"]),seed(&["e","a"]));}#[test]fn costs(){assert_eq!(pnl(Trade{side:Side::Long,entry:1.,exit:2.,costs:0.2,bars:1}),0.8)}}
