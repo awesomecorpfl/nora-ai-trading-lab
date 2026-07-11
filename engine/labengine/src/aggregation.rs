@@ -29,6 +29,7 @@ pub fn aggregate_m1(dataset: &CanonicalM1Dataset, target: &str, policy: &str) ->
     if policy != POLICY { return Err(format!("unsupported completeness_policy {policy:?}")); }
     let minutes = timeframe_minutes(target)?;
     let model = ClockModel::from_contract(&dataset.contract)?;
+    if model.higher_timeframe_anchoring.is_none() && !dataset.contract.legacy_unversioned { return Err("current versioned contract must explicitly declare higher_timeframe_anchoring".into()); }
     let anchor_clock = match model.higher_timeframe_anchoring {
         Some(HigherTimeframeAnchoring::StrategyClock) => model.strategy_clock.clone(),
         Some(HigherTimeframeAnchoring::SessionClock) | None => model.session_clock.clone(),

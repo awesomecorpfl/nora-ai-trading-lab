@@ -118,12 +118,12 @@ def run_engine_task(state, root, tid, engine, engine_spec):
     out=Path(root)/"artifacts"/task["experiment_id"]/engine_spec["stage"]/tid
     partial=out.with_name(out.name+".partial"); partial.mkdir(parents=True,exist_ok=True)
     spec={k:v for k,v in engine_spec.items() if k!="stage"}
-    if spec.get("task_type")=="aggregate_m1": spec["output_path"]=str(partial/"derived.parquet")
+    if spec.get("task_type") in {"aggregate_m1","compute_indicators"}: spec["output_path"]=str(partial/("derived.parquet" if spec["task_type"]=="aggregate_m1" else "indicators.parquet"))
     specfile=partial/"task.json"; specfile.write_text(canon(spec))
     proc=subprocess.run([str(engine),str(specfile)],capture_output=True,text=True)
     try: summary=json.loads(proc.stdout) if proc.stdout else None
     except json.JSONDecodeError: summary=None
-    expected=partial/"derived.parquet" if spec.get("task_type")=="aggregate_m1" else None
+    expected=partial/("derived.parquet" if spec.get("task_type")=="aggregate_m1" else "indicators.parquet") if spec.get("task_type") in {"aggregate_m1","compute_indicators"} else None
     if proc.returncode or not isinstance(summary,dict) or not summary.get("ok") or (expected and not expected.is_file()):
         state.transition(tid,"failed",{"exit_code":proc.returncode,"engine_error":proc.stderr.strip(),"summary":summary})
         return None

@@ -42,6 +42,8 @@ class Phase1(unittest.TestCase):
    aggregate={"stage":"engine","task_version":1,"task_type":"aggregate_m1","input_path":str(source),"target_timeframe":"M5","completeness_policy":"omit_edge_partials_v1"}
    aggregate_task=s.task(e,stage,aggregate); self.assertEqual(run_engine_task(s,d,aggregate_task,binary,aggregate),aggregate_task)
    artifact=Path(s.conn.execute("SELECT artifact_path FROM tasks WHERE id=?",(aggregate_task,)).fetchone()[0]); self.assertTrue((artifact/"derived.parquet").is_file()); self.assertEqual(run_engine_task(s,d,aggregate_task,binary,aggregate),aggregate_task)
+   indicators={"stage":"engine","task_version":1,"task_type":"compute_indicators","input_path":str(source),"indicators":[{"name":"SMA","output":"sma2","period":2}]}
+   indicator_task=s.task(e,stage,indicators); self.assertEqual(run_engine_task(s,d,indicator_task,binary,indicators),indicator_task); indicator_artifact=Path(s.conn.execute("SELECT artifact_path FROM tasks WHERE id=?",(indicator_task,)).fetchone()[0]); self.assertTrue((indicator_artifact/"indicators.parquet").is_file())
    rejected={"stage":"engine","task_version":1,"task_type":"aggregate_m1","input_path":str(source),"target_timeframe":"bad","completeness_policy":"omit_edge_partials_v1"}
    bad=s.task(e,stage,rejected); self.assertIsNone(run_engine_task(s,d,bad,binary,rejected)); self.assertEqual(s.conn.execute("SELECT status FROM tasks WHERE id=?",(bad,)).fetchone()[0],"failed"); self.assertIsNone(s.conn.execute("SELECT artifact_path FROM tasks WHERE id=?",(bad,)).fetchone()[0])
 if __name__=="__main__": unittest.main()

@@ -16,6 +16,7 @@ use sha2::{Digest, Sha256};
 pub mod time;
 pub mod aggregation;
 pub mod task;
+pub mod indicators;
 
 /// Stable public boundary for the Phase-1 canonical reader.
 pub mod data {
@@ -59,6 +60,8 @@ pub struct TimeContract {
     pub higher_timeframe_anchoring: Option<String>,
     pub conversion_history: Vec<Value>,
     pub double_conversion_protection: Option<bool>,
+    /// Only the original unversioned Phase-1 wire shape may use 1C's compatibility anchor.
+    pub legacy_unversioned: bool,
     canonical_json: String,
 }
 
@@ -119,6 +122,7 @@ fn is_sha256(value: &str) -> bool { value.len() == 64 && value.bytes().all(|b| b
 fn parse_contract(raw: &str) -> Result<TimeContract> {
     let value: Value = serde_json::from_str(raw).map_err(|e| format!("malformed nora.contract JSON: {e}"))?;
     let object = value.as_object().ok_or("nora.contract must be a JSON object")?;
+    let legacy_unversioned = !object.contains_key("contract_version") && !object.contains_key("schema_version");
     let version = contract_version(object)?;
     if version != LEGACY_PHASE1_CONTRACT_VERSION { return Err(format!("unsupported nora.contract version {version}")); }
     let get = |key| required_contract_string(object, key);
@@ -138,7 +142,7 @@ fn parse_contract(raw: &str) -> Result<TimeContract> {
         source_timestamp_semantics:get("source_timestamp_semantics")?, bar_timestamp_semantics:get("bar_timestamp_semantics")?, timezone_identity:get("timezone_identity")?, dst_regime:get("dst_regime")?,
         session_clock:get("session_clock")?, strategy_clock:get("strategy_clock")?,
         trading_day_boundary: optional_contract_string(object, "trading_day_boundary")?, higher_timeframe_anchoring: optional_contract_string(object, "higher_timeframe_anchoring")?,
-        conversion_history, double_conversion_protection, canonical_json: serde_json::to_string(&value).expect("JSON values serialize"),
+        conversion_history, double_conversion_protection, legacy_unversioned, canonical_json: serde_json::to_string(&value).expect("JSON values serialize"),
     };
     if contract.bar_timestamp_semantics != "start" { return Err("only Phase-1 M1 start-of-bar timestamps are supported".into()); }
     if is_ambiguous_clock(&contract.session_clock) || is_ambiguous_clock(&contract.strategy_clock) { return Err("session_clock and strategy_clock must be explicit declared clocks, not local/system/default".into()); }
