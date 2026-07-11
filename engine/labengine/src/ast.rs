@@ -78,6 +78,118 @@ fn evaluation_identity(ast_identity:&str,input:&Runtime,output:&str,values:&[Opt
 pub fn evaluate_task(o:&Map<String,Value>)->Result<Value>{only(o,&["task_version","task_type","input_path","output_path","output","ast"],"AST evaluation task")?;let input_path=string(o,"input_path","AST evaluation task")?;let output_path=output(&string(o,"output_path","AST evaluation task")?)?;let output_name=string(o,"output","AST evaluation task")?;if output_name=="timestamp"{return Err("AST evaluation output must not be timestamp".into())}let document=parse(required(o,"ast","AST evaluation task")?)?;let input=read_runtime(Path::new(&input_path))?;if input.numeric.contains_key(&output_name)||input.boolean.contains_key(&output_name){return Err("AST evaluation output conflicts with input column".into())}let values=boolean(&document.root,&input)?;let ast_identity=identity(&document);let artifact_identity=evaluation_identity(&ast_identity,&input,&output_name,&values);let true_count=values.iter().filter(|v|**v==Some(true)).count();let false_count=values.iter().filter(|v|**v==Some(false)).count();let null_count=values.iter().filter(|v|v.is_none()).count();let temp=output_path.with_file_name(format!(".{}.{}.partial",output_path.file_name().and_then(|x|x.to_str()).ok_or("malformed output_path")?,std::process::id()));let columns=vec![(output_name.clone(),crate::series::Series::Boolean(values))];let mut metadata=HashMap::new();metadata.insert("nora.semantic_sha256".into(),artifact_identity.clone());metadata.insert("nora.ast_semantic_sha256".into(),ast_identity.clone());metadata.insert("nora.ast_input_commitment".into(),input.commitment.clone());let write=(||{crate::indicator_artifact::write_with_metadata(&temp,&input.timestamps,&columns,metadata.clone())?;crate::indicator_artifact::validate_with_metadata(&temp,&input.timestamps,&columns,&metadata)?;Ok(())})();if let Err(error)=write{let _=fs::remove_file(&temp);return Err(error)}fs::rename(&temp,&output_path).map_err(|e|format!("atomic publish AST evaluation artifact: {e}"))?;Ok(json!({"ok":true,"task_type":"evaluate_ast","rows_written":input.timestamps.len(),"output_column":output_name,"output_type":"boolean","true_count":true_count,"false_count":false_count,"null_count":null_count,"ast_schema_version":document.schema_version,"ast_semantic_identity":ast_identity,"evaluated_artifact_semantic_identity":artifact_identity,"output_artifact_path":output_path}))}
 pub fn entry_intents_task(o:&Map<String,Value>)->Result<Value>{only(o,&["task_version","task_type","input_path","output_path","output","condition"],"entry intent task")?;let input_path=string(o,"input_path","entry intent task")?;let dst=output(&string(o,"output_path","entry intent task")?)?;let name=string(o,"output","entry intent task")?;if name=="timestamp"{return Err("entry intent output must not be timestamp".into())}let condition=parse_condition(required(o,"condition","entry intent task")?)?;let input=read_runtime(Path::new(&input_path))?;if input.numeric.contains_key(&name)||input.boolean.contains_key(&name){return Err("entry intent output conflicts with input column".into())}let source=input.boolean.get(&condition.signal).cloned().ok_or("unknown or non-boolean entry signal")?;let mut intents=vec![None;source.len()];for i in 1..source.len(){intents[i]=source[i-1]}let cid=condition_identity(&condition);let iid=evaluation_identity(&cid,&input,&name,&intents);let count=|v:&Vec<Option<bool>>,x|v.iter().filter(|z|**z==x).count();let temp=dst.with_file_name(format!(".{}.{}.partial",dst.file_name().unwrap().to_string_lossy(),std::process::id()));let cols=vec![(name.clone(),crate::series::Series::Boolean(intents.clone()))];let mut meta=HashMap::new();meta.insert("nora.semantic_sha256".into(),iid.clone());meta.insert("nora.entry_condition_sha256".into(),cid.clone());let write=(||{crate::indicator_artifact::write_with_metadata(&temp,&input.timestamps,&cols,meta.clone())?;crate::indicator_artifact::validate_with_metadata(&temp,&input.timestamps,&cols,&meta)?;Ok(())})();if let Err(e)=write{let _=fs::remove_file(&temp);return Err(e)}fs::rename(&temp,&dst).map_err(|e|format!("atomic publish entry intents: {e}"))?;Ok(json!({"ok":true,"task_type":"build_entry_intents","rows_written":source.len(),"side":match condition.side{Side::Long=>"long",Side::Short=>"short"},"timing":"next_open","signal_column":condition.signal,"output_column":name,"output_type":"boolean","source_true":count(&source,Some(true)),"source_false":count(&source,Some(false)),"source_null":count(&source,None),"intent_true":count(&intents,Some(true)),"intent_false":count(&intents,Some(false)),"intent_null":count(&intents,None),"terminal_source_signal":source.last(),"condition_schema_version":1,"condition_semantic_identity":cid,"entry_intent_semantic_identity":iid,"output_artifact_path":dst}))}
 
+fn shift_exit_intents(source:&[Option<bool>])->Vec<Option<bool>> {
+    let mut intents = vec![None; source.len()];
+    for index in 1..source.len() { intents[index] = source[index - 1]; }
+    intents
+}
+
+fn exit_intent_identity(condition_identity:&str, input:&Runtime, output:&str, intents:&[Option<bool>])->String {
+    let mut hash=Sha256::new();
+    hash.update(b"nora-exit-intent-semantic-v1");
+    hash.update(condition_identity.as_bytes());
+    hash.update(input.commitment.as_bytes());
+    hash.update(output.as_bytes());
+    hash.update(b"timestamp:boolean");
+    for(stamp,value)in input.timestamps.iter().zip(intents){
+        hash.update((stamp.len()as u64).to_be_bytes());
+        hash.update(stamp.as_bytes());
+        hash.update([match value{Some(true)=>1,Some(false)=>0,None=>2}]);
+    }
+    format!("{:x}",hash.finalize())
+}
+
+fn boolean_counts(values:&[Option<bool>])->(usize,usize,usize) {
+    (values.iter().filter(|value|**value==Some(true)).count(), values.iter().filter(|value|**value==Some(false)).count(), values.iter().filter(|value|value.is_none()).count())
+}
+
+fn exit_signal(input:&Runtime, signal_name:&str)->Result<Vec<Option<bool>>> {
+    input.boolean.get(signal_name).cloned().ok_or("unknown or non-boolean exit signal".into())
+}
+
+pub fn exit_intents_task(o:&Map<String,Value>)->Result<Value>{
+    only(o,&["task_version","task_type","input_path","output_path","output","condition"],"exit intent task")?;
+    let input_path=string(o,"input_path","exit intent task")?;
+    let dst=output(&string(o,"output_path","exit intent task")?)?;
+    let name=string(o,"output","exit intent task")?;
+    if name=="timestamp"{return Err("exit intent output must not be timestamp".into())}
+    let condition=crate::exit_condition::parse(required(o,"condition","exit intent task")?)?;
+    let input=read_runtime(Path::new(&input_path))?;
+    if input.numeric.contains_key(&name)||input.boolean.contains_key(&name){return Err("exit intent output conflicts with input column".into())}
+    let signal_name=&condition.exit.signal.series;
+    let source=exit_signal(&input,signal_name)?;
+    let intents=shift_exit_intents(&source);
+    let condition_identity=crate::exit_condition::semantic_identity(&condition);
+    let intent_identity=exit_intent_identity(&condition_identity,&input,&name,&intents);
+    let (source_true,source_false,source_null)=boolean_counts(&source);
+    let (intent_true,intent_false,intent_null)=boolean_counts(&intents);
+    let temp=dst.with_file_name(format!(".{}.{}.partial",dst.file_name().unwrap().to_string_lossy(),std::process::id()));
+    let columns=vec![(name.clone(),crate::series::Series::Boolean(intents.clone()))];
+    let mut metadata=HashMap::new();
+    metadata.insert("nora.semantic_sha256".into(),intent_identity.clone());
+    metadata.insert("nora.exit_condition_sha256".into(),condition_identity.clone());
+    let write=(||{crate::indicator_artifact::write_with_metadata(&temp,&input.timestamps,&columns,metadata.clone())?;crate::indicator_artifact::validate_with_metadata(&temp,&input.timestamps,&columns,&metadata)?;Ok(())})();
+    if let Err(error)=write{let _=fs::remove_file(&temp);return Err(error)}
+    fs::rename(&temp,&dst).map_err(|error|format!("atomic publish exit intents: {error}"))?;
+    Ok(json!({"ok":true,"task_type":"build_exit_intents","rows_written":source.len(),"side":match condition.side{crate::exit_condition::Side::Long=>"long",crate::exit_condition::Side::Short=>"short"},"timing":"next_open","signal_column":signal_name,"output_column":name,"output_type":"boolean","source_true":source_true,"source_false":source_false,"source_null":source_null,"intent_true":intent_true,"intent_false":intent_false,"intent_null":intent_null,"terminal_source_signal":source.last(),"condition_schema_version":condition.schema_version,"exit_condition_semantic_identity":condition_identity,"exit_intent_semantic_identity":intent_identity,"output_artifact_path":dst}))
+}
+
+#[cfg(test)]
+mod exit_intent_tests {
+    use super::*;
+    use arrow_array::{ArrayRef, RecordBatch};
+    use arrow_schema::{Field, Schema};
+    use parquet::arrow::ArrowWriter;
+    use std::sync::Arc;
+
+    #[test]
+    fn shift_preserves_hard_coded_nullable_boolean_semantics() {
+        let cases: &[(&[Option<bool>], &[Option<bool>])] = &[
+            (&[None, Some(false), Some(true), Some(true), None, Some(false)], &[None, None, Some(false), Some(true), Some(true), None]),
+            (&[Some(true)], &[None]), (&[Some(false)], &[None]), (&[None], &[None]),
+            (&[Some(true), Some(true), Some(true)], &[None, Some(true), Some(true)]),
+            (&[Some(false), Some(false)], &[None, Some(false)]), (&[None, None], &[None, None]),
+        ];
+        for (source, expected) in cases { assert_eq!(shift_exit_intents(source), *expected); }
+    }
+
+    #[test]
+    fn terminal_source_counts_timestamps_and_identity_are_stable() {
+        let source=vec![None,Some(false),Some(true),Some(true),None,Some(false)];
+        let intents=shift_exit_intents(&source);
+        let input=Runtime{timestamps:vec!["a".into(),"b".into(),"c".into(),"d".into(),"e".into(),"f".into()],numeric:HashMap::new(),boolean:HashMap::new(),commitment:"input-content".into()};
+        let condition=crate::exit_condition::parse_json(r#"{"schema_version":1,"side":"long","exit":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}}"#).unwrap();
+        let condition_identity=crate::exit_condition::semantic_identity(&condition);
+        assert_eq!(intents.len(),input.timestamps.len());
+        assert_eq!(boolean_counts(&source),(2,2,2));
+        assert_eq!(boolean_counts(&intents),(2,1,3));
+        assert_eq!(source.last(),Some(&Some(false)));
+        assert_eq!(exit_intent_identity(&condition_identity,&input,"exit_intent",&intents),exit_intent_identity(&condition_identity,&input,"exit_intent",&intents));
+    }
+
+    #[test]
+    fn runtime_failures_reject_unknown_numeric_missing_timestamp_and_conflicting_output() {
+        let root=std::env::temp_dir().join(format!("labengine-exit-intent-{}",std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let timestamps=vec!["2025.01.01 00:00".into()];
+        let numeric=root.join("numeric.parquet");
+        crate::indicator_artifact::write_with_metadata(&numeric,&timestamps,&[("numeric_signal".into(),crate::series::Series::Numeric(vec![Some(1.0)]))],HashMap::new()).unwrap();
+        let boolean=root.join("boolean.parquet");
+        crate::indicator_artifact::write_with_metadata(&boolean,&timestamps,&[("entry_signal".into(),crate::series::Series::Boolean(vec![Some(true)]))],HashMap::new()).unwrap();
+        let missing_timestamp=root.join("missing-timestamp.parquet");
+        let schema=Arc::new(Schema::new(vec![Field::new("entry_signal",arrow_schema::DataType::Boolean,true)]));
+        let batch=RecordBatch::try_new(schema.clone(),vec![Arc::new(BooleanArray::from(vec![Some(true)])) as ArrayRef]).unwrap();
+        let mut writer=ArrowWriter::try_new(std::fs::File::create(&missing_timestamp).unwrap(),schema,None).unwrap(); writer.write(&batch).unwrap(); writer.close().unwrap();
+        let condition=json!({"schema_version":1,"side":"long","exit":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}});
+        let task=|input_path:&Path,output:&str,condition:Value|json!({"task_version":1,"task_type":"build_exit_intents","input_path":input_path,"output_path":root.join(format!("{output}.parquet")),"output":output,"condition":condition});
+        assert!(exit_intents_task(task(&boolean,"unknown",json!({"schema_version":1,"side":"long","exit":{"signal":{"series":"missing","type":"boolean"},"timing":"next_open"}})).as_object().unwrap()).unwrap_err().contains("unknown or non-boolean"));
+        assert!(exit_intents_task(task(&numeric,"numeric-out",condition.clone()).as_object().unwrap()).unwrap_err().contains("unknown or non-boolean"));
+        assert!(exit_intents_task(task(&missing_timestamp,"missing-time",condition.clone()).as_object().unwrap()).unwrap_err().contains("timestamp"));
+        assert!(exit_intents_task(task(&boolean,"entry_signal",condition).as_object().unwrap()).unwrap_err().contains("conflicts"));
+        let _=std::fs::remove_dir_all(root);
+    }
+}
+
 #[cfg(test)] mod evaluation_tests {use super::*;use serde_json::json;
  fn input()->Runtime{let mut numeric=HashMap::new();numeric.insert("n".into(),vec![None,Some(2.),Some(3.),Some(4.)]);let mut boolean=HashMap::new();boolean.insert("a".into(),vec![Some(true),Some(false),None,Some(true)]);boolean.insert("b".into(),vec![Some(false),None,Some(true),Some(true)]);Runtime{timestamps:vec!["0".into(),"1".into(),"2".into(),"3".into()],numeric,boolean,commitment:"input".into()}}
  #[test] fn comparison_truth_tables_and_nested_vector(){let i=input();for(op,expected)in [(Compare::Gt,vec![None,Some(false),Some(true),Some(true)]),(Compare::Gte,vec![None,Some(true),Some(true),Some(true)]),(Compare::Lt,vec![None,Some(false),Some(false),Some(false)]),(Compare::Lte,vec![None,Some(true),Some(false),Some(false)])]{let node=Node::Compare{op,left:Box::new(Node::NumericSeries(Reference{series:"n".into(),ty:Type::Numeric})),right:Box::new(Node::Number(2.))};assert_eq!(boolean(&node,&i).unwrap(),expected)}let nested=parse(&json!({"schema_version":1,"root":{"kind":"and","args":[{"kind":"compare","op":"gt","left":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}},"right":{"kind":"number","value":2}},{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"a","type":"boolean"}},{"kind":"not","arg":{"kind":"boolean_series","ref":{"series":"b","type":"boolean"}}}]}]}})).unwrap();assert_eq!(boolean(&nested.root,&i).unwrap(),vec![None,Some(false),None,Some(true)]);}

@@ -1,0 +1,1 @@
+{"task_version":1,"task_type":"build_exit_intents","input_path":"/tmp/phase2_ast_evaluated.parquet","output_path":"/tmp/phase2_exit_intents.parquet","output":"exit_intent","condition":{"schema_version":1,"side":"long","exit":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}}}
