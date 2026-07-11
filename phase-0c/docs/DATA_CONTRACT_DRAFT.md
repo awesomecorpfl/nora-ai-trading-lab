@@ -15,9 +15,9 @@ Every raw artifact must record provider, tool/version, local and source symbols,
 
 ## Time model
 
-Canonical research storage should retain an unambiguous UTC instant and source timestamp semantics. This Phase 0C sample is UTC, with no export-time DST conversion. It does **not** establish UTC as the only production strategy clock.
+Canonical research storage must retain unambiguous timestamp semantics and source timestamp semantics. It may store and evaluate directly in the declared broker/trading timezone; a UTC instant is optional reference/interoperability metadata, not the mandatory strategy clock. This Phase 0C sample is UTC, with no export-time DST conversion. It does **not** establish UTC as the only production strategy clock.
 
-Phase 1 planning must support an explicit strategy/evaluation clock: UTC or a named target-broker timezone/DST convention. A broker-time projection must be deterministic from the UTC instant, carry its IANA timezone/rule version (or broker session rule) in provenance, and be used for session filters, daily boundaries, swap/rollover and MT5 parity checks. No fixed-hour shift is acceptable.
+Phase 1 planning must support explicit timezone identity, DST regime/rule version, source timestamp semantics, bar timestamp semantics, session clock, strategy/evaluation clock, optional UTC reference instant, and provenance for every conversion. A conversion, when used, must be deterministic, reproducible and guarded against accidental double conversion; no fixed-hour shift is acceptable. Strategy rules use the declared strategy clock for session filters, daily boundaries, swap/rollover and MT5 parity checks. The current production preference for Darwinex, Fusion and the intended IC Markets account is the common New York +7 broker-time convention (UTC+02/UTC+03 with the relevant New York DST schedule), while future named timezone contracts remain supported.
 
 ## M1 contract
 
