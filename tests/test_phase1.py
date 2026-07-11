@@ -4,6 +4,20 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_slope_identity_sensitivity_through_cli(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; base=json.loads((root/"engine/labengine/tests/fixtures/phase2_slope_task.json").read_text())
+  with tempfile.TemporaryDirectory() as d:
+   def run(task,name,raw=None):
+    task["input_path"]=str(root/task["input_path"]); task["output_path"]=str(Path(d)/(name+".parquet")); p=Path(d)/(name+".json"); p.write_text(raw if raw else json.dumps(task)); result=json.loads(subprocess.run([str(binary),str(p)],check=True,capture_output=True,text=True).stdout); return result,task
+   baseline,_=run(json.loads(json.dumps(base)),"baseline")
+   equivalent=json.loads(json.dumps(base)); raw='{"indicators":'+json.dumps(equivalent["indicators"],separators=(",",":"))+',"task_type":"compute_indicators","task_version":1,"output_path":"'+str(Path(d)/"equivalent.parquet")+'","input_path":"'+str(root/equivalent["input_path"])+'"}'
+   same,_=run(equivalent,"equivalent",raw); self.assertEqual(same["output_semantic_content_identity"],baseline["output_semantic_content_identity"])
+   cases=[]
+   lookback=json.loads(json.dumps(base)); lookback["indicators"][1]["lookback"]=2; cases.append(("lookback",lookback))
+   reference=json.loads(json.dumps(base)); reference["indicators"][2]["input"]["series"]="sma3"; cases.append(("reference",reference))
+   renamed=json.loads(json.dumps(base)); renamed["indicators"][2]["output"]="renamed.delta"; cases.append(("output",renamed))
+   for name,variant in cases:
+    result,task=run(variant,name); self.assertNotEqual(result["output_semantic_content_identity"],baseline["output_semantic_content_identity"]); import pyarrow.parquet as pq; self.assertIn(task["indicators"][-1]["output"],pq.read_table(task["output_path"]).column_names)
  def test_slope_dispatch_failures_and_macd_component(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
   with tempfile.TemporaryDirectory() as d:
