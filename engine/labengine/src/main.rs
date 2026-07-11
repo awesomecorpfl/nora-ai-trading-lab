@@ -20,6 +20,7 @@ pub mod indicators;
 pub mod series;
 pub mod indicator_artifact;
 pub mod ast;
+pub mod exit_condition;
 
 /// Stable public boundary for the Phase-1 canonical reader.
 pub mod data {
