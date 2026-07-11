@@ -19,6 +19,21 @@ def file_hash(path):
         for block in iter(lambda:f.read(1024*1024),b""): h.update(block)
     return h.hexdigest()
 
+def validate_indicator_artifact(path, expected_columns, expected_timestamps):
+    """Fail closed on a typed derived Parquet artifact before acceptance."""
+    import pyarrow as pa, pyarrow.parquet as pq
+    path=Path(path)
+    if not path.is_file(): raise ValueError("missing indicator artifact")
+    try: table=pq.read_table(path)
+    except Exception as e: raise ValueError("malformed indicator artifact") from e
+    names=["timestamp"]+[name for name,_ in expected_columns]
+    if table.column_names!=names or table.num_rows!=len(expected_timestamps): raise ValueError("indicator artifact schema or row count mismatch")
+    if table.schema.field("timestamp").type!=pa.string() or table.column("timestamp").to_pylist()!=list(expected_timestamps): raise ValueError("indicator artifact timestamp alignment mismatch")
+    for name,typ in expected_columns:
+        expected=pa.bool_() if typ=="boolean" else pa.float64()
+        if table.schema.field(name).type!=expected: raise ValueError(f"indicator artifact type mismatch for {name}")
+    return table
+
 class State:
     def __init__(self, root):
         self.root=Path(root)/"state"; self.root.mkdir(parents=True,exist_ok=True); self.db=self.root/"state.sqlite3"; self.conn=sqlite3.connect(self.db); self.conn.row_factory=sqlite3.Row

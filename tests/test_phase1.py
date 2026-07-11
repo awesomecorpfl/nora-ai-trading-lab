@@ -1,9 +1,23 @@
 import json, shutil, subprocess, tempfile, unittest
 from pathlib import Path
-from lab.core import State, ingest_csv, run_task, run_engine_task, validate_contract, workflow
+from lab.core import State, ingest_csv, run_task, run_engine_task, validate_contract, validate_indicator_artifact, workflow
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_nullable_boolean_indicator_artifact_validation(self):
+  import pyarrow as pa, pyarrow.parquet as pq
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d)/"flags.parquet"; stamps=["a","b","c"]
+   pq.write_table(pa.table({"timestamp":pa.array(stamps,type=pa.string()),"flag":pa.array([True,False,None],type=pa.bool_())}),p)
+   self.assertEqual(validate_indicator_artifact(p,[("flag","boolean")],stamps).column("flag").to_pylist(),[True,False,None])
+   for value in [pa.array([1,0,None],type=pa.float64()),pa.array(["true","false",None],type=pa.string())]:
+    bad=Path(d)/"bad.parquet"; pq.write_table(pa.table({"timestamp":stamps,"flag":value}),bad)
+    with self.assertRaises(ValueError): validate_indicator_artifact(bad,[("flag","boolean")],stamps)
+   short=Path(d)/"short.parquet"; pq.write_table(pa.table({"timestamp":["a"],"flag":pa.array([True],type=pa.bool_())}),short)
+   with self.assertRaises(ValueError): validate_indicator_artifact(short,[("flag","boolean")],stamps)
+   with self.assertRaises(ValueError): validate_indicator_artifact(Path(d)/"missing.parquet",[("flag","boolean")],stamps)
+   broken=Path(d)/"broken.parquet"; broken.write_bytes(b"PAR1")
+   with self.assertRaises(ValueError): validate_indicator_artifact(broken,[("flag","boolean")],stamps)
  def test_contract_and_double_conversion(self):
   self.assertEqual(validate_contract(CONTRACT)["strategy_clock"],"broker")
   bad={**CONTRACT,"conversion_history":[{"target":"UTC"},{"target":"UTC"}]}
