@@ -1,0 +1,1 @@
+{"task_version":1,"task_type":"compute_indicators","input_path":"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet","output_path":"/tmp/phase2_indicator_output.parquet","indicators":[{"name":"MACD","output":"macd","period":4},{"name":"Stochastic","output":"stoch","period":3},{"name":"Bollinger","output":"bb","period":3},{"name":"Keltner","output":"kc","period":3}]}

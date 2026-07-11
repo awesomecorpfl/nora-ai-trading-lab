@@ -4,6 +4,16 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_committed_typed_indicator_regression_fixture(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"
+  if not binary.exists(): subprocess.run(["cargo","build","--manifest-path",str(root/"engine"/"Cargo.toml")],check=True,cwd=root)
+  task=json.loads((root/"engine"/"labengine"/"tests"/"fixtures"/"phase2_indicator_task.json").read_text()); expected=json.loads((root/"engine"/"labengine"/"tests"/"fixtures"/"phase2_indicator_expected.json").read_text())
+  with tempfile.TemporaryDirectory() as d:
+   task["input_path"]=str(root/task["input_path"]); task["output_path"]=str(Path(d)/"out.parquet")
+   first=json.loads(subprocess.run([str(binary),str(Path(d)/"task.json")],input=json.dumps(task),capture_output=True,text=True).stdout or "{}") if False else None
+   Path(d,"task.json").write_text(json.dumps(task)); first=json.loads(subprocess.run([str(binary),str(Path(d)/"task.json")],check=True,capture_output=True,text=True).stdout); task["output_path"]=str(Path(d)/"out-second.parquet"); Path(d,"task-second.json").write_text(json.dumps(task)); second=json.loads(subprocess.run([str(binary),str(Path(d)/"task-second.json")],check=True,capture_output=True,text=True).stdout); self.assertEqual(first["output_semantic_content_identity"],expected["semantic_identity"]); self.assertEqual(second["output_semantic_content_identity"],first["output_semantic_content_identity"])
+   import pyarrow.parquet as pq
+   table=pq.read_table(task["output_path"]); self.assertEqual(table.num_rows,expected["rows"]); self.assertEqual([[f.name,str(f.type)] for f in table.schema],expected["columns"])
  def test_nullable_boolean_indicator_artifact_validation(self):
   import pyarrow as pa, pyarrow.parquet as pq
   with tempfile.TemporaryDirectory() as d:
