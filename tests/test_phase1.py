@@ -4,6 +4,12 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_committed_distance_atr_fixture(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; task=json.loads((root/"engine/labengine/tests/fixtures/phase2_distance_atr_task.json").read_text())
+  with tempfile.TemporaryDirectory() as d:
+   task["input_path"]=str(root/task["input_path"]); task["output_path"]=str(Path(d)/"one.parquet"); Path(d,"one.json").write_text(json.dumps(task)); one=json.loads(subprocess.run([str(binary),str(Path(d)/"one.json")],check=True,capture_output=True,text=True).stdout); task["output_path"]=str(Path(d)/"two.parquet"); Path(d,"two.json").write_text(json.dumps(task)); two=json.loads(subprocess.run([str(binary),str(Path(d)/"two.json")],check=True,capture_output=True,text=True).stdout); self.assertEqual(one["output_semantic_content_identity"],"c1acf9dac99daf0006e138426f51b77721fbf4512fba07d10a6c019a0fafd5ad"); self.assertEqual(two["output_semantic_content_identity"],one["output_semantic_content_identity"])
+   import pyarrow.parquet as pq
+   table=pq.read_table(task["output_path"]); self.assertEqual(table.num_rows,12); self.assertEqual(table.column_names,["timestamp","sma3","atr3","close_sma3.distance_atr","close_sma3.distance_atr.slope"]); self.assertEqual(str(table.schema.field("close_sma3.distance_atr").type),"double"); self.assertEqual(table["close_sma3.distance_atr"].to_pylist()[:4],[None,None,0.0,0.2999999999998062])
  def test_slope_identity_sensitivity_through_cli(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; base=json.loads((root/"engine/labengine/tests/fixtures/phase2_slope_task.json").read_text())
   with tempfile.TemporaryDirectory() as d:
