@@ -4,6 +4,17 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_slope_dispatch_failures_and_macd_component(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
+  with tempfile.TemporaryDirectory() as d:
+   base={"task_version":1,"task_type":"compute_indicators","input_path":source,"indicators":[{"name":"SMA","output":"sma3","period":3}]}
+   bads=[{"name":"Slope","output":"x","lookback":1},{"name":"Slope","input":{"series":"close","type":"numeric"},"output":"x"},{"name":"Slope","input":{"series":"close","type":"numeric"},"lookback":1,"output":"x","bad":1},{"name":"Slope","input":{"series":"close"},"lookback":1,"output":"x"},{"name":"Slope","input":{"series":"nope","type":"numeric"},"lookback":1,"output":"x"},{"name":"Slope","input":{"series":"later","type":"numeric"},"lookback":1,"output":"x"},{"name":"Slope","input":{"series":"close","type":"boolean"},"lookback":1,"output":"x"},{"name":"Slope","input":{"series":"close","type":"numeric"},"lookback":0,"output":"x"},{"name":"Slope","input":{"series":"close","type":"numeric"},"lookback":1.5,"output":"x"}]
+   for i,spec in enumerate(bads):
+    task={**base,"output_path":str(Path(d)/f"bad{i}.parquet"),"indicators":[spec]}; p=Path(d)/f"bad{i}.json"; p.write_text(json.dumps(task)); result=subprocess.run([str(binary),str(p)],capture_output=True,text=True); self.assertNotEqual(result.returncode,0); self.assertFalse(Path(task["output_path"]).exists())
+   duplicate={**base,"output_path":str(Path(d)/"duplicate.parquet"),"indicators":base["indicators"]+[{"name":"Slope","input":{"series":"close","type":"numeric"},"lookback":1,"output":"sma3"}]}; Path(d,"duplicate.json").write_text(json.dumps(duplicate)); self.assertNotEqual(subprocess.run([str(binary),str(Path(d,"duplicate.json"))],capture_output=True,text=True).returncode,0); self.assertFalse(Path(duplicate["output_path"]).exists())
+   task=json.loads((root/"engine/labengine/tests/fixtures/phase2_macd_slope_task.json").read_text()); task["input_path"]=source; task["output_path"]=str(Path(d)/"macd.parquet"); p=Path(d)/"macd.json"; p.write_text(json.dumps(task)); one=json.loads(subprocess.run([str(binary),str(p)],check=True,capture_output=True,text=True).stdout); self.assertEqual(one["output_semantic_content_identity"],"c1d1d4a1003a3c0bc8f6b8b3d3ec736349db90082647a349cebf89b6dd07cb1e")
+   import pyarrow.parquet as pq
+   table=pq.read_table(task["output_path"]); self.assertEqual(table.column_names[-2:],["macd_histogram_slope","macd_histogram_slope_delta"]); self.assertEqual(table["macd_histogram_slope"].to_pylist()[6],-8.176790123456032e-05)
  def test_committed_slope_regression_fixture(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; task=json.loads((root/"engine"/"labengine"/"tests"/"fixtures"/"phase2_slope_task.json").read_text()); expected=json.loads((root/"engine"/"labengine"/"tests"/"fixtures"/"phase2_slope_expected.json").read_text())
   with tempfile.TemporaryDirectory() as d:
