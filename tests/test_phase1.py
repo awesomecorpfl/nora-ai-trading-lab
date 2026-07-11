@@ -4,6 +4,20 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_distance_atr_cli_failures_and_identity_sensitivity(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet"); fixture=json.loads((root/"engine/labengine/tests/fixtures/phase2_distance_atr_task.json").read_text())
+  with tempfile.TemporaryDirectory() as d:
+   def invoke(task,name,raw=None):
+    task["input_path"]=source; task["output_path"]=str(Path(d)/(name+".parquet")); p=Path(d)/(name+".json"); p.write_text(raw or json.dumps(task)); return subprocess.run([str(binary),str(p)],capture_output=True,text=True),task
+   def distance(**changes): return {"name":"DistanceAtr","input":{"series":"close","type":"numeric"},"reference":{"series":"sma3","type":"numeric"},"atr":{"series":"atr3","type":"numeric"},"output":"x",**changes}
+   bad=[{}, {"input":None}, {"reference":None}, {"atr":None}, {"output":None}, {"bad":1}, {"input":{"series":"close"}}, {"reference":{"type":"numeric"}}, {"atr":{"series":1,"type":"numeric"}}, {"input":{"series":"close","type":"numeric","extra":1}}, {"input":{"series":"close","type":"boolean"}}, {"input":{"series":"missing","type":"numeric"}}, {"reference":{"series":"missing","type":"numeric"}}, {"atr":{"series":"missing","type":"numeric"}}, {"input":{"series":"later","type":"numeric"}}]
+   for i,change in enumerate(bad):
+    spec=distance(**change); spec={k:v for k,v in spec.items() if v is not None}; task={"task_version":1,"task_type":"compute_indicators","input_path":source,"output_path":str(Path(d)/(f"bad{i}.parquet")),"indicators":[spec]}; p=Path(d)/(f"bad{i}.json"); p.write_text(json.dumps(task)); result=subprocess.run([str(binary),str(p)],capture_output=True,text=True); self.assertNotEqual(result.returncode,0); self.assertFalse(Path(task["output_path"]).exists()); self.assertFalse(result.stdout.strip())
+   base=json.loads(json.dumps(fixture)); result,base=invoke(base,"baseline"); baseline=json.loads(result.stdout)["output_semantic_content_identity"]; self.assertEqual(baseline,"c1acf9dac99daf0006e138426f51b77721fbf4512fba07d10a6c019a0fafd5ad")
+   equivalent=json.loads(json.dumps(fixture)); raw='{"indicators":'+json.dumps(equivalent["indicators"],separators=(",",":"))+',"task_version":1,"task_type":"compute_indicators","input_path":"'+source+'","output_path":"'+str(Path(d)/"equivalent.parquet")+'"}'; result,_=invoke(equivalent,"equivalent",raw); self.assertEqual(json.loads(result.stdout)["output_semantic_content_identity"],baseline)
+   for name,field,series in [("input","input","sma3"),("reference","reference","atr3"),("atr","atr","sma3")]:
+    variant=json.loads(json.dumps(fixture)); variant["indicators"][2][field]["series"]=series; result,variant=invoke(variant,name); identity=json.loads(result.stdout)["output_semantic_content_identity"]; self.assertNotEqual(identity,baseline)
+   renamed=json.loads(json.dumps(fixture)); renamed["indicators"][2]["output"]="renamed.distance"; renamed["indicators"][3]["input"]["series"]="renamed.distance"; result,renamed=invoke(renamed,"renamed"); self.assertNotEqual(json.loads(result.stdout)["output_semantic_content_identity"],baseline)
  def test_committed_distance_atr_fixture(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; task=json.loads((root/"engine/labengine/tests/fixtures/phase2_distance_atr_task.json").read_text())
   with tempfile.TemporaryDirectory() as d:
