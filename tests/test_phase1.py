@@ -4,6 +4,17 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_cross_cli_closure_and_identity(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet"); fixture=json.loads((root/"engine/labengine/tests/fixtures/phase2_cross_task.json").read_text())
+  with tempfile.TemporaryDirectory() as d:
+   def spec(**c): return {"name":"Cross","left":{"series":"close","type":"numeric"},"right":{"series":"close","type":"numeric"},"direction":"above","output":"x",**c}
+   bad=[{"left":None},{"right":None},{"direction":None},{"output":None},{"bad":1},{"left":{"series":"close"}},{"right":{"type":"numeric"}},{"left":{"series":1,"type":"numeric"}},{"left":{"series":"close","type":"numeric","x":1}},{"left":{"series":"close","type":"boolean"}},{"direction":"sideways"},{"direction":1},{"left":{"series":"unknown","type":"numeric"}},{"right":{"series":"unknown","type":"numeric"}},{"left":{"series":"later","type":"numeric"}}]
+   for i,c in enumerate(bad):
+    item={k:v for k,v in spec(**c).items() if v is not None}; task={"task_version":1,"task_type":"compute_indicators","input_path":source,"output_path":str(Path(d)/(f"bad{i}.parquet")),"indicators":[item]}; p=Path(d)/(f"bad{i}.json"); p.write_text(json.dumps(task)); result=subprocess.run([str(binary),str(p)],capture_output=True,text=True); self.assertNotEqual(result.returncode,0); self.assertFalse(Path(task["output_path"]).exists()); self.assertFalse(result.stdout.strip())
+   def run(task,name): task["input_path"]=source; task["output_path"]=str(Path(d)/(name+".parquet")); p=Path(d)/(name+".json"); p.write_text(json.dumps(task)); return json.loads(subprocess.run([str(binary),str(p)],check=True,capture_output=True,text=True).stdout)
+   baseline=run(json.loads(json.dumps(fixture)),"base"); self.assertEqual(baseline["output_semantic_content_identity"],"274e22b09159252cc2a964cf08623de8dd9743c3152fea672a0c9ead749ff814")
+   for name,field,value in [("direction","direction","below"),("left","left",{"series":"sma3","type":"numeric"}),("right","right",{"series":"close","type":"numeric"}),("output","output","renamed.cross")]:
+    variant=json.loads(json.dumps(fixture)); variant["indicators"][1][field]=value; self.assertNotEqual(run(variant,name)["output_semantic_content_identity"],baseline["output_semantic_content_identity"])
  def test_cross_boolean_rejected_by_numeric_transforms_cli(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
   with tempfile.TemporaryDirectory() as d:
