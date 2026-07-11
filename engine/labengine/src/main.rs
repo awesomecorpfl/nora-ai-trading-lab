@@ -4,8 +4,8 @@ use std::{
     env, fs,
     hash::{Hash, Hasher},
     path::Path,
-    sync::Arc,
 };
+#[cfg(test)] use std::sync::Arc;
 
 use arrow_array::{Array, Float64Array, RecordBatch, StringArray};
 use chrono::NaiveDateTime;
@@ -14,6 +14,8 @@ use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 
 pub mod time;
+pub mod aggregation;
+pub mod task;
 
 /// Stable public boundary for the Phase-1 canonical reader.
 pub mod data {
@@ -58,6 +60,11 @@ pub struct TimeContract {
     pub conversion_history: Vec<Value>,
     pub double_conversion_protection: Option<bool>,
     canonical_json: String,
+}
+
+impl TimeContract {
+    /// Normalized source contract JSON used as provenance, never a timestamp conversion record.
+    pub fn canonical_json(&self) -> &str { &self.canonical_json }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -193,7 +200,15 @@ fn semantic_content_identity(contract: &TimeContract, bars: &[CanonicalM1Bar]) -
     format!("{:x}", hash.finalize())
 }
 
-fn main(){let p=env::args().nth(1).expect("usage: labengine <task.json>");let s=fs::read_to_string(p).expect("read task spec");assert!(s.trim_start().starts_with('{'));println!("{{\"phase\":\"2A\",\"accepted_task_spec\":true}}")}
+fn main() {
+    match task::run_cli(env::args().skip(1).collect()) {
+        Ok(summary) => println!("{}", serde_json::to_string(&summary).expect("summary JSON")),
+        Err(error) => {
+            eprintln!("{}", serde_json::json!({"ok":false,"error":error}));
+            std::process::exit(2);
+        }
+    }
+}
 
 #[cfg(test)] mod tests {
     use super::*;
@@ -207,6 +222,9 @@ fn main(){let p=env::args().nth(1).expect("usage: labengine <task.json>");let s=
     #[test] fn contract_rejects_missing_malformed_unsupported_and_ambiguous() { for raw in ["{}", "{", r#"{\"provider\":\"p\",\"acquisition_tool\":\"a\",\"source_symbol\":\"s\",\"project_symbol\":\"s\",\"source_timestamp_semantics\":\"UTC\",\"bar_timestamp_semantics\":\"start\",\"timezone_identity\":\"UTC\",\"dst_regime\":\"none\",\"session_clock\":\"local\",\"strategy_clock\":\"UTC\",\"conversion_history\":[]}"#] { assert!(parse_contract(raw).is_err(), "{raw}"); } let unsupported=fixture_contract().replacen('{', "{\"contract_version\":2,", 1); assert!(parse_contract(&unsupported).unwrap_err().contains("unsupported")); }
     #[test] fn schema_and_ordering_fail_closed() { let good=fixture_contract(); let missing=write_fixture("missing", &good, false, false, false, true, false); assert!(read_canonical_m1_parquet(&missing).unwrap_err().contains("missing required canonical column volume")); let wrong=write_fixture("wrong", &good, true, false, false, false, false); assert!(read_canonical_m1_parquet(&wrong).unwrap_err().contains("type")); let unordered=write_fixture("unordered", &good, false, true, false, false, false); assert!(read_canonical_m1_parquet(&unordered).unwrap_err().contains("strictly increasing")); let duplicate=write_fixture("duplicate", &good, false, false, true, false, false); assert!(read_canonical_m1_parquet(&duplicate).unwrap_err().contains("strictly increasing")); }
     #[test] fn metadata_fails_closed() { let malformed=write_fixture("metadata-malformed", "{", false, false, false, false, false); assert!(read_canonical_m1_parquet(&malformed).unwrap_err().contains("malformed nora.contract")); let missing=write_fixture("metadata-missing", &fixture_contract(), false, false, false, false, true); assert!(read_canonical_m1_parquet(&missing).unwrap_err().contains("missing required Phase-1 metadata nora.contract")); }
+    fn aggregate_dataset(start:&str, count:usize, contract:&str, missing:Option<usize>, nullable:bool)->CanonicalM1Dataset { let base=NaiveDateTime::parse_from_str(start,"%Y.%m.%d %H:%M").unwrap(); let bars=(0..count).filter(|i|Some(*i)!=missing).map(|i|{let t=base+chrono::Duration::minutes(i as i64);CanonicalM1Bar{timestamp:t.format("%Y.%m.%d %H:%M").to_string(),local_timestamp:t,open:i as f64+1.,high:i as f64+2.,low:i as f64,close:i as f64+1.5,volume:if nullable&&i==2{None}else{Some(1.)},spread:if nullable&&i==3{None}else{Some(0.1)}}}).collect();CanonicalM1Dataset{contract:parse_contract(contract).unwrap(),source_sha256:"0".repeat(64),bars,content_identity:"source-identity".into()} }
+    #[test] fn contract_aware_m5_h1_partials_and_nullable_values() { let data=aggregate_dataset("2025.06.03 08:00",60,&fixture_contract(),None,true);let m5=crate::aggregation::aggregate_m1(&data,"M5",crate::aggregation::POLICY).unwrap();assert_eq!(m5.bars.len(),12);assert_eq!(m5.bars[0].timestamp,"2025.06.03 08:00");assert_eq!((m5.bars[0].open,m5.bars[0].high,m5.bars[0].low,m5.bars[0].close),(1.,6.,0.,5.5));assert_eq!(m5.bars[0].volume,None);assert_eq!(m5.bars[0].spread,None);let h1=crate::aggregation::aggregate_m1(&data,"H1",crate::aggregation::POLICY).unwrap();assert_eq!(h1.bars.len(),1);assert_eq!(h1.bars[0].timestamp,"2025.06.03 08:00");assert_eq!(m5.content_identity,crate::aggregation::aggregate_m1(&data,"M5",crate::aggregation::POLICY).unwrap().content_identity);let leading=aggregate_dataset("2025.06.03 08:02",8,&fixture_contract(),None,false);let lead=crate::aggregation::aggregate_m1(&leading,"M5",crate::aggregation::POLICY).unwrap();assert_eq!((lead.omitted_leading_windows,lead.bars[0].timestamp.as_str()),(1,"2025.06.03 08:05"));let trailing=aggregate_dataset("2025.06.03 08:00",8,&fixture_contract(),None,false);let tail=crate::aggregation::aggregate_m1(&trailing,"M5",crate::aggregation::POLICY).unwrap();assert_eq!((tail.omitted_trailing_windows,tail.bars.len()),(1,1));let gap=aggregate_dataset("2025.06.03 08:00",15,&fixture_contract(),Some(6),false);assert!(crate::aggregation::aggregate_m1(&gap,"M5",crate::aggregation::POLICY).unwrap_err().contains("internal incomplete")); }
+    #[test] fn aggregation_honors_trading_boundary_and_broker_dst_clock() { let boundary=r#"{"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"UTC","bar_timestamp_semantics":"start","timezone_identity":"UTC","dst_regime":"no_dst","session_clock":"UTC","strategy_clock":"UTC","trading_day_boundary":"00:02","higher_timeframe_anchoring":"session_clock","conversion_history":[]}"#;let d=aggregate_dataset("2025.06.03 00:00",12,boundary,None,false);let a=crate::aggregation::aggregate_m1(&d,"M5",crate::aggregation::POLICY).unwrap();assert_eq!(a.bars[0].timestamp,"2025.06.03 00:02");assert_eq!(a.omitted_leading_windows,1);let midnight=aggregate_dataset("2025.06.03 23:55",10,&fixture_contract(),None,false);let across=crate::aggregation::aggregate_m1(&midnight,"M5",crate::aggregation::POLICY).unwrap();assert_eq!(across.bars.iter().map(|b|b.timestamp.as_str()).collect::<Vec<_>>(),vec!["2025.06.03 23:55","2025.06.04 00:00"]);let broker=r#"{"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","higher_timeframe_anchoring":"strategy_clock","conversion_history":[]}"#;for start in ["2025.01.15 14:00","2025.06.03 15:00","2025.03.09 08:55","2025.03.09 10:00","2025.11.02 07:55","2025.11.02 09:00"] { let d=aggregate_dataset(start,5,broker,None,false);let a=crate::aggregation::aggregate_m1(&d,"M5",crate::aggregation::POLICY).unwrap();assert_eq!(a.bars[0].timestamp,start); }let bad=aggregate_dataset("2025.11.02 08:30",5,broker,None,false);assert!(crate::aggregation::aggregate_m1(&bad,"M5",crate::aggregation::POLICY).unwrap_err().contains("ambiguous")); }
     fn fixture_contract() -> String { r#"{"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"UTC","bar_timestamp_semantics":"start","timezone_identity":"UTC","dst_regime":"no_dst","session_clock":"UTC","strategy_clock":"UTC","conversion_history":[]}"#.into() }
     fn write_fixture(name:&str, contract:&str, wrong_open:bool, unordered:bool, duplicate:bool, omit_volume:bool, omit_contract:bool)->std::path::PathBuf { let path=env::temp_dir().join(format!("labengine-{name}-{}.parquet",std::process::id())); let mut fields=vec![Field::new("timestamp",DataType::Utf8,false),Field::new("open",if wrong_open {DataType::Utf8}else{DataType::Float64},false),Field::new("high",DataType::Float64,false),Field::new("low",DataType::Float64,false),Field::new("close",DataType::Float64,false)]; if !omit_volume { fields.push(Field::new("volume",DataType::Float64,true)); } fields.push(Field::new("spread",DataType::Float64,true)); let mut metadata=std::collections::HashMap::new();if !omit_contract { metadata.insert(PHASE1_METADATA_CONTRACT.into(),contract.into()); }metadata.insert(PHASE1_METADATA_SOURCE_SHA256.into(),"0".repeat(64));metadata.insert(PHASE1_METADATA_TIMEFRAME.into(),"M1".into());let schema=Arc::new(Schema::new_with_metadata(fields,metadata)); let timestamps=if unordered {vec!["2025.06.03 08:01","2025.06.03 08:00"]}else if duplicate {vec!["2025.06.03 08:00","2025.06.03 08:00"]}else{vec!["2025.06.03 08:00","2025.06.03 08:01"]}; let mut arrays:Vec<Arc<dyn Array>>=vec![Arc::new(StringArray::from(timestamps))]; if wrong_open { arrays.push(Arc::new(StringArray::from(vec!["1","2"]))); }else{arrays.push(Arc::new(Float64Array::from(vec![1.,2.])));} arrays.extend([Arc::new(Float64Array::from(vec![2.,3.])) as Arc<dyn Array>,Arc::new(Float64Array::from(vec![0.5,1.])) as Arc<dyn Array>,Arc::new(Float64Array::from(vec![1.5,2.5])) as Arc<dyn Array>]);if !omit_volume{arrays.push(Arc::new(Float64Array::from(vec![Some(7.),Some(8.)])));}arrays.push(Arc::new(Float64Array::from(vec![Some(0.1),None])));let batch=RecordBatch::try_new(schema.clone(),arrays).unwrap();let file=fs::File::create(&path).unwrap();let mut writer=ArrowWriter::try_new(file,schema,None).unwrap();writer.write(&batch).unwrap();writer.close().unwrap();path }
 }

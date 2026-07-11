@@ -109,6 +109,31 @@ def run_task(state, root, tid, interrupt=False):
     if code: state.transition(tid,"failed",{"exit_code":code}); return None
     os.replace(partial,out); aid=state.publish(tid,out,{"parents":spec.get("parents",[]),"spec_hash":task["spec_hash"]}); state.transition(tid,"succeeded",{"artifact":aid}); state.checkpoint(task["experiment_id"],task["stage_id"],tid,{"artifact":aid,"status":"succeeded"}); return task["id"]
 
+def run_engine_task(state, root, tid, engine, engine_spec):
+    """Run a versioned labengine task and publish only its complete artifact directory."""
+    task=state.conn.execute("SELECT * FROM tasks WHERE id=?",(tid,)).fetchone()
+    if task["status"]=="succeeded": return task["id"]
+    if task["status"] in {"interrupted","failed"}: state.transition(tid,"pending",{"reason":"resume"})
+    state.transition(tid,"running")
+    out=Path(root)/"artifacts"/task["experiment_id"]/engine_spec["stage"]/tid
+    partial=out.with_name(out.name+".partial"); partial.mkdir(parents=True,exist_ok=True)
+    spec={k:v for k,v in engine_spec.items() if k!="stage"}
+    if spec.get("task_type")=="aggregate_m1": spec["output_path"]=str(partial/"derived.parquet")
+    specfile=partial/"task.json"; specfile.write_text(canon(spec))
+    proc=subprocess.run([str(engine),str(specfile)],capture_output=True,text=True)
+    try: summary=json.loads(proc.stdout) if proc.stdout else None
+    except json.JSONDecodeError: summary=None
+    expected=partial/"derived.parquet" if spec.get("task_type")=="aggregate_m1" else None
+    if proc.returncode or not isinstance(summary,dict) or not summary.get("ok") or (expected and not expected.is_file()):
+        state.transition(tid,"failed",{"exit_code":proc.returncode,"engine_error":proc.stderr.strip(),"summary":summary})
+        return None
+    (partial/"result.json").write_text(canon(summary)+"\n")
+    os.replace(partial,out)
+    aid=state.publish(tid,out,{"parents":engine_spec.get("parents",[]),"spec_hash":task["spec_hash"],"engine_task":spec})
+    state.transition(tid,"succeeded",{"artifact":aid,"engine_task_type":spec["task_type"]})
+    state.checkpoint(task["experiment_id"],task["stage_id"],tid,{"artifact":aid,"status":"succeeded"})
+    return task["id"]
+
 def workflow(state, root, eid, interrupt_task=None):
     stages=[("shards",0),("transform",1),("aggregate",2)]; sids={n:state.stage(eid,n,o) for n,o in stages}; created=[]
     for i in range(3): created.append(state.task(eid,sids["shards"],{"stage":"shards","kind":"shard","index":i,"value":i+1}))
