@@ -13,6 +13,13 @@ use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 
+pub mod time;
+
+/// Stable public boundary for the Phase-1 canonical reader.
+pub mod data {
+    pub use super::{CanonicalM1Bar, CanonicalM1Dataset, TimeContract, read_canonical_m1_parquet};
+}
+
 const PHASE1_METADATA_CONTRACT: &str = "nora.contract";
 const PHASE1_METADATA_SOURCE_SHA256: &str = "nora.source_sha256";
 const PHASE1_METADATA_TIMEFRAME: &str = "nora.timeframe";
@@ -196,7 +203,7 @@ fn main(){let p=env::args().nth(1).expect("usage: labengine <task.json>");let s=
     #[test] fn indicators(){let x=[1.,2.,3.,4.,5.,6.];assert_eq!(sma(&x,3)[2],Some(2.));assert_eq!(ema(&x,3)[2],Some(2.));assert_eq!(rsi(&x,2)[2],Some(100.))}
     #[test] fn rules(){let b=Bar{minute:0,o:90.,h:110.,l:80.,c:90.,v:1.,spread:0.};assert_eq!(pessimistic(Side::Long,b,85.,105.),Some(85.));assert!(cross(&[1.,1.,3.],&[2.,2.,2.],2));assert_eq!(seed(&["e","a"]),seed(&["e","a"]));}
     #[test] fn costs(){assert_eq!(pnl(Trade{side:Side::Long,entry:1.,exit:2.,costs:0.2,bars:1}),0.8)}
-    #[test] fn phase1_utc_fixture_loads_without_conversion_and_is_stable() { let path=Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/phase1_utc_m1.parquet"); let first=read_canonical_m1_parquet(&path).unwrap(); let second=read_canonical_m1_parquet(&path).unwrap(); assert_eq!(first.contract.timezone_identity,"UTC"); assert_eq!(first.bars[0].timestamp,"2025.06.03 08:00"); assert_eq!(first.bars[0].local_timestamp,NaiveDateTime::parse_from_str("2025.06.03 08:00","%Y.%m.%d %H:%M").unwrap()); assert_eq!(first.content_identity,second.content_identity); }
+    #[test] fn phase1_utc_fixture_loads_without_conversion_and_is_stable() { let path=Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/phase1_utc_m1.parquet"); let first=read_canonical_m1_parquet(&path).unwrap(); let second=read_canonical_m1_parquet(&path).unwrap(); assert_eq!(first.contract.timezone_identity,"UTC"); assert_eq!(first.bars[0].timestamp,"2025.06.03 08:00"); assert_eq!(first.bars[0].local_timestamp,NaiveDateTime::parse_from_str("2025.06.03 08:00","%Y.%m.%d %H:%M").unwrap()); let model=crate::time::ClockModel::from_contract(&first.contract).unwrap(); assert_eq!(model.interpret_dataset_label(first.bars[0].local_timestamp).unwrap().local,first.bars[0].local_timestamp); assert_eq!(first.content_identity,second.content_identity); }
     #[test] fn contract_rejects_missing_malformed_unsupported_and_ambiguous() { for raw in ["{}", "{", r#"{\"provider\":\"p\",\"acquisition_tool\":\"a\",\"source_symbol\":\"s\",\"project_symbol\":\"s\",\"source_timestamp_semantics\":\"UTC\",\"bar_timestamp_semantics\":\"start\",\"timezone_identity\":\"UTC\",\"dst_regime\":\"none\",\"session_clock\":\"local\",\"strategy_clock\":\"UTC\",\"conversion_history\":[]}"#] { assert!(parse_contract(raw).is_err(), "{raw}"); } let unsupported=fixture_contract().replacen('{', "{\"contract_version\":2,", 1); assert!(parse_contract(&unsupported).unwrap_err().contains("unsupported")); }
     #[test] fn schema_and_ordering_fail_closed() { let good=fixture_contract(); let missing=write_fixture("missing", &good, false, false, false, true, false); assert!(read_canonical_m1_parquet(&missing).unwrap_err().contains("missing required canonical column volume")); let wrong=write_fixture("wrong", &good, true, false, false, false, false); assert!(read_canonical_m1_parquet(&wrong).unwrap_err().contains("type")); let unordered=write_fixture("unordered", &good, false, true, false, false, false); assert!(read_canonical_m1_parquet(&unordered).unwrap_err().contains("strictly increasing")); let duplicate=write_fixture("duplicate", &good, false, false, true, false, false); assert!(read_canonical_m1_parquet(&duplicate).unwrap_err().contains("strictly increasing")); }
     #[test] fn metadata_fails_closed() { let malformed=write_fixture("metadata-malformed", "{", false, false, false, false, false); assert!(read_canonical_m1_parquet(&malformed).unwrap_err().contains("malformed nora.contract")); let missing=write_fixture("metadata-missing", &fixture_contract(), false, false, false, false, true); assert!(read_canonical_m1_parquet(&missing).unwrap_err().contains("missing required Phase-1 metadata nora.contract")); }
