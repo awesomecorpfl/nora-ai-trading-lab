@@ -17,6 +17,7 @@ pub mod time;
 pub mod aggregation;
 pub mod task;
 pub mod indicators;
+pub mod series;
 
 /// Stable public boundary for the Phase-1 canonical reader.
 pub mod data {

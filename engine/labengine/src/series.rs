@@ -1,0 +1,10 @@
+//! Ordered typed series registry for bounded indicator task evaluation.
+use std::collections::HashMap;
+pub type Result<T>=std::result::Result<T,String>;
+#[derive(Clone,Debug,PartialEq)] pub enum Series { Numeric(Vec<Option<f64>>), Boolean(Vec<Option<bool>>) }
+impl Series { pub fn len(&self)->usize{match self{Self::Numeric(x)=>x.len(),Self::Boolean(x)=>x.len()}} }
+#[derive(Clone,Copy,Debug,PartialEq,Eq)] pub enum Origin { Canonical, Derived }
+#[derive(Clone,Debug)] pub struct Entry { pub name:String,pub value:Series,pub origin:Origin }
+#[derive(Debug)] pub struct Registry { rows:usize, entries:Vec<Entry>, index:HashMap<String,usize> }
+impl Registry { pub fn new(rows:usize)->Self{Self{rows,entries:vec![],index:HashMap::new()}} pub fn get(&self,name:&str)->Result<&Entry>{self.index.get(name).and_then(|i|self.entries.get(*i)).ok_or_else(||format!("unknown or forward series reference {name:?}"))} pub fn register(&mut self,name:String,value:Series,origin:Origin)->Result<()> {self.register_all(vec![(name,value)],origin)} pub fn register_all(&mut self,values:Vec<(String,Series)>,origin:Origin)->Result<()> {let mut seen=HashMap::new();for(n,v)in &values{if n.is_empty()||self.index.contains_key(n)||seen.insert(n,()).is_some(){return Err(format!("duplicate series name {n:?}"))}if v.len()!=self.rows{return Err(format!("series {n:?} has wrong row count"))}}for(n,v)in values{self.index.insert(n.clone(),self.entries.len());self.entries.push(Entry{name:n,value:v,origin})}Ok(())} pub fn entries(&self)->&[Entry]{&self.entries} }
+#[cfg(test)] mod tests {use super::*;#[test]fn ordered_and_atomic(){let mut r=Registry::new(2);r.register("close".into(),Series::Numeric(vec![Some(1.),Some(2.)]),Origin::Canonical).unwrap();assert_eq!(r.get("close").unwrap().origin,Origin::Canonical);assert!(r.get("later").is_err());assert!(r.register_all(vec![("a".into(),Series::Numeric(vec![None;2])),("a".into(),Series::Numeric(vec![None;2]))],Origin::Derived).is_err());assert!(r.entries().len()==1);assert!(r.register("bad".into(),Series::Boolean(vec![None]),Origin::Derived).is_err());}}
