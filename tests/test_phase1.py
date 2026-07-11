@@ -4,6 +4,14 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_cross_boolean_rejected_by_numeric_transforms_cli(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
+  with tempfile.TemporaryDirectory() as d:
+   prefix=[{"name":"SMA","output":"sma3","period":3},{"name":"Cross","left":{"series":"close","type":"numeric"},"right":{"series":"sma3","type":"numeric"},"direction":"above","output":"flag"}]
+   numeric={"series":"flag","type":"numeric"}
+   tails=[{"name":"Slope","input":numeric,"lookback":1,"output":"bad"},{"name":"Percentile","input":numeric,"lookback":2,"output":"bad"},{"name":"DistanceAtr","input":numeric,"reference":{"series":"sma3","type":"numeric"},"atr":{"series":"sma3","type":"numeric"},"output":"bad"},{"name":"Cross","left":numeric,"right":{"series":"sma3","type":"numeric"},"direction":"above","output":"bad"}]
+   for i,tail in enumerate(tails):
+    task={"task_version":1,"task_type":"compute_indicators","input_path":source,"output_path":str(Path(d)/(f"bad{i}.parquet")),"indicators":prefix+[tail]}; p=Path(d)/(f"bad{i}.json"); p.write_text(json.dumps(task)); result=subprocess.run([str(binary),str(p)],capture_output=True,text=True); self.assertNotEqual(result.returncode,0); self.assertIn("type mismatch",result.stderr); self.assertFalse(Path(task["output_path"]).exists()); self.assertFalse(result.stdout.strip())
  def test_committed_cross_fixture(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; task=json.loads((root/"engine/labengine/tests/fixtures/phase2_cross_task.json").read_text())
   with tempfile.TemporaryDirectory() as d:
