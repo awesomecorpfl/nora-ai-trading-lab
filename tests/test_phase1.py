@@ -4,6 +4,12 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_committed_percentile_fixture(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; task=json.loads((root/"engine/labengine/tests/fixtures/phase2_percentile_task.json").read_text())
+  with tempfile.TemporaryDirectory() as d:
+   task["input_path"]=str(root/task["input_path"]); task["output_path"]=str(Path(d)/"one.parquet"); Path(d,"one.json").write_text(json.dumps(task)); one=json.loads(subprocess.run([str(binary),str(Path(d)/"one.json")],check=True,capture_output=True,text=True).stdout); task["output_path"]=str(Path(d)/"two.parquet"); Path(d,"two.json").write_text(json.dumps(task)); two=json.loads(subprocess.run([str(binary),str(Path(d)/"two.json")],check=True,capture_output=True,text=True).stdout); self.assertEqual(one["output_semantic_content_identity"],"943765d83d115309867fa8da768fc2a69500e7292f6048ed87541f4e26e63775"); self.assertEqual(two["output_semantic_content_identity"],one["output_semantic_content_identity"])
+   import pyarrow.parquet as pq
+   table=pq.read_table(task["output_path"]); self.assertEqual(table.column_names,["timestamp","sma3","sma3.percentile4","sma3.percentile4.slope"]); self.assertEqual(table.num_rows,12); self.assertEqual(str(table.schema.field("sma3.percentile4").type),"double"); self.assertEqual(table["sma3.percentile4"].to_pylist()[:6],[None,None,None,None,None,1.0]); self.assertEqual(table["sma3.percentile4.slope"].to_pylist()[6],0.0)
  def test_distance_atr_duplicate_output_rejected_by_cli(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
   with tempfile.TemporaryDirectory() as d:
