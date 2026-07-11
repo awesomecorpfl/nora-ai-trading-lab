@@ -4,6 +4,10 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_distance_atr_duplicate_output_rejected_by_cli(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
+  with tempfile.TemporaryDirectory() as d:
+   task={"task_version":1,"task_type":"compute_indicators","input_path":source,"output_path":str(Path(d)/"duplicate.parquet"),"indicators":[{"name":"SMA","output":"sma3","period":3},{"name":"ATR","output":"atr3","period":3},{"name":"DistanceAtr","input":{"series":"close","type":"numeric"},"reference":{"series":"sma3","type":"numeric"},"atr":{"series":"atr3","type":"numeric"},"output":"sma3"}]}; path=Path(d)/"task.json"; path.write_text(json.dumps(task)); result=subprocess.run([str(binary),str(path)],capture_output=True,text=True); self.assertNotEqual(result.returncode,0); self.assertIn("duplicate output name",result.stderr); self.assertFalse(Path(task["output_path"]).exists()); self.assertFalse(result.stdout.strip())
  def test_distance_atr_cli_failures_and_identity_sensitivity(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet"); fixture=json.loads((root/"engine/labengine/tests/fixtures/phase2_distance_atr_task.json").read_text())
   with tempfile.TemporaryDirectory() as d:
