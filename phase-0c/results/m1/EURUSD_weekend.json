@@ -1,0 +1,51 @@
+{
+  "columns": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "duplicate_timestamps": 0,
+  "file": "long_EURUSD-M1-No Session.csv",
+  "first_timestamp": "2025.06.06 20:00",
+  "gap_buckets": {
+    "over_1h": 1,
+    "over_1m": 1
+  },
+  "gap_seconds": {
+    "count": 2,
+    "max": 172860.0,
+    "median": 120.0,
+    "min": 120.0,
+    "p95": 120.0
+  },
+  "interval": {
+    "end": "2025-06-09 04:00",
+    "start": "2025-06-06 20:00"
+  },
+  "kind": "m1",
+  "last_timestamp": "2025.06.09 04:00",
+  "malformed_ohlc": 0,
+  "missing_minutes_between_adjacent_rows": 2881,
+  "non_numeric_ohlc": 0,
+  "non_numeric_volume_rows": 0,
+  "out_of_order": 0,
+  "parseable_timestamps": 480,
+  "rows": 480,
+  "sha256": "c43f44d91e32c6d62254ac97afbdc43ebcbb2640f67020bb5d8a88cd4c902ef1",
+  "suspicious_discontinuities": [],
+  "timestamp_not_minute_aligned": 0,
+  "unparseable_timestamps": 0,
+  "weekend_rows": 179,
+  "weekend_session_gaps": [
+    {
+      "from": "2025-06-06 20:59:00",
+      "seconds": 172860.0,
+      "to": "2025-06-08 21:00:00"
+    }
+  ],
+  "zero_volume_rows": 0
+}

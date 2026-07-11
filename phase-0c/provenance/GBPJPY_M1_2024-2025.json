@@ -1,0 +1,18 @@
+{
+  "provider": "Dukascopy",
+  "acquisition_tool": "Quant Data Manager",
+  "acquisition_tool_version": "125.2692",
+  "symbol": "GBPJPY",
+  "source_symbol": "GBPJPY",
+  "kind": "M1",
+  "date_range": "2024-01-01 through 2025-12-31 UTC export window",
+  "source_timezone_semantics": "UTC; provider storage reported '(UTC) Coordinated Universal Time, DST: No'",
+  "output_timezone": "Etc/UCT",
+  "dst_transformation": "none",
+  "bar_timestamp_convention": "start-of-bar",
+  "export_format": "QDM CSV, Date,Time,Open,High,Low,Close,Volume; no header",
+  "file_sha256": "790ba828bac8c7fba81cf95ef4da61cd08e9782526c4ec9262e2b63888ecf746",
+  "row_count": 744902,
+  "first_timestamp": "2024.01.01 22:04",
+  "last_timestamp": "2025.12.31 21:58"
+}

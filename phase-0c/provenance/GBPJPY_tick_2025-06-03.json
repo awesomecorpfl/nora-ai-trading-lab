@@ -1,0 +1,20 @@
+{
+  "provider": "Dukascopy",
+  "acquisition_tool": "Quant Data Manager",
+  "acquisition_tool_version": "125.2692",
+  "symbol": "GBPJPY",
+  "qdm_symbol": "GBPJPY(2)",
+  "source_symbol": "GBPJPY",
+  "kind": "tick",
+  "acquisition_granularity": "date-level; QDM provider UI cannot select hours",
+  "acquisition_date_range": "2025-06-03 UTC",
+  "analysis_slice": "2025-06-03 08:00:00.000 through 12:00:00.999 UTC inclusive",
+  "source_timezone_semantics": "UTC; QDM reports '(UTC) Coordinated Universal Time, DST: No'",
+  "output_timezone": "Etc/UCT",
+  "dst_transformation": "none",
+  "export_format": "QDM Custom CSV with header: [Date:yyyy.MM.dd],[Time:HH:mm:ss.SSS],[Bid],[Ask]",
+  "full_day_file_sha256": "e9e75924a22a34d3dae0fb917889aafc0eec55374850f5f0c58905f2a57f30fe",
+  "full_day_row_count": 118558,
+  "analysis_slice_sha256": "981930725136c3ef07463a4c86132355d43f9fb4cc9136ed7ae202eac4891946",
+  "analysis_slice_row_count": 21864
+}

@@ -1,0 +1,20 @@
+{
+  "provider": "Dukascopy",
+  "acquisition_tool": "Quant Data Manager",
+  "acquisition_tool_version": "125.2692",
+  "symbol": "EURUSD",
+  "qdm_symbol": "EURUSD(2)",
+  "source_symbol": "EURUSD",
+  "kind": "tick",
+  "acquisition_granularity": "date-level; QDM provider UI cannot select hours",
+  "acquisition_date_range": "2025-06-03 UTC",
+  "analysis_slice": "2025-06-03 08:00:00.000 through 12:00:00.999 UTC inclusive",
+  "source_timezone_semantics": "UTC; QDM reports '(UTC) Coordinated Universal Time, DST: No'",
+  "output_timezone": "Etc/UCT",
+  "dst_transformation": "none",
+  "export_format": "QDM Custom CSV with header: [Date:yyyy.MM.dd],[Time:HH:mm:ss.SSS],[Bid],[Ask]",
+  "full_day_file_sha256": "10db16f642c0e3461bf0f4eb82735f06959a5580e468ffbd7acd1c250829f6c7",
+  "full_day_row_count": 93516,
+  "analysis_slice_sha256": "6dccdb6441b0a5987d3d56ad7e373da0eff75fe2a6e1790c0b33c6169a31bc6b",
+  "analysis_slice_row_count": 19817
+}

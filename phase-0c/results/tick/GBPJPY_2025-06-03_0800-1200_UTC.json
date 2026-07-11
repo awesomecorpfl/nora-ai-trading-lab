@@ -1,0 +1,48 @@
+{
+  "ask_missing": 0,
+  "bid_missing": 0,
+  "columns": [
+    "Date",
+    "Time",
+    "Bid",
+    "Ask"
+  ],
+  "crossed_quotes": 0,
+  "duplicate_timestamps": 0,
+  "file": "GBPJPY_2025-06-03_0800-1200_UTC.csv",
+  "first_timestamp": "2025.06.03 08:00:00.177",
+  "interval": {
+    "end": "2025-06-03 12:00:00.999",
+    "start": "2025-06-03 08:00:00"
+  },
+  "kind": "tick",
+  "last_timestamp": "2025.06.03 12:00:00.905",
+  "non_numeric_bid_or_ask": 0,
+  "out_of_order": 0,
+  "parseable_timestamps": 21864,
+  "quote_gap_seconds": {
+    "count": 4495,
+    "max": 15.807,
+    "median": 1.726,
+    "min": 1.006,
+    "p95": 4.995
+  },
+  "rows": 21864,
+  "sha256": "981930725136c3ef07463a4c86132355d43f9fb4cc9136ed7ae202eac4891946",
+  "spread": {
+    "count": 21864,
+    "max": 0.033999999999991815,
+    "median": 0.018000000000000682,
+    "min": 0.003999999999990678,
+    "p95": 0.02600000000001046
+  },
+  "timestamp_resolution_seconds": {
+    "count": 21863,
+    "max": 15.807,
+    "median": 0.205,
+    "min": 0.051,
+    "p95": 2.678
+  },
+  "unparseable_timestamps": 0,
+  "weekend_rows": 0
+}

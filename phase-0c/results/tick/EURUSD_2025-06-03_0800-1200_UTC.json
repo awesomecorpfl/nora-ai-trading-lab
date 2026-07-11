@@ -1,0 +1,48 @@
+{
+  "ask_missing": 0,
+  "bid_missing": 0,
+  "columns": [
+    "Date",
+    "Time",
+    "Bid",
+    "Ask"
+  ],
+  "crossed_quotes": 0,
+  "duplicate_timestamps": 0,
+  "file": "EURUSD_2025-06-03_0800-1200_UTC.csv",
+  "first_timestamp": "2025.06.03 08:00:00.635",
+  "interval": {
+    "end": "2025-06-03 12:00:00.999",
+    "start": "2025-06-03 08:00:00"
+  },
+  "kind": "tick",
+  "last_timestamp": "2025.06.03 12:00:00.975",
+  "non_numeric_bid_or_ask": 0,
+  "out_of_order": 0,
+  "parseable_timestamps": 19817,
+  "quote_gap_seconds": {
+    "count": 4621,
+    "max": 15.101,
+    "median": 1.666,
+    "min": 1.001,
+    "p95": 5.156
+  },
+  "rows": 19817,
+  "sha256": "6dccdb6441b0a5987d3d56ad7e373da0eff75fe2a6e1790c0b33c6169a31bc6b",
+  "spread": {
+    "count": 19817,
+    "max": 0.00012000000000012001,
+    "median": 4.0000000000040004e-05,
+    "min": 9.999999999843467e-06,
+    "p95": 6.000000000017103e-05
+  },
+  "timestamp_resolution_seconds": {
+    "count": 19816,
+    "max": 15.101,
+    "median": 0.256,
+    "min": 0.052,
+    "p95": 2.888
+  },
+  "unparseable_timestamps": 0,
+  "weekend_rows": 0
+}
