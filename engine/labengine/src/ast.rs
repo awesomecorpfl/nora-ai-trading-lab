@@ -1,0 +1,68 @@
+//! Phase 2B's typed, structural-only strategy AST.
+use std::{fs, path::PathBuf};
+use serde_json::{json, Map, Value};
+use sha2::{Digest, Sha256};
+
+pub type Result<T> = std::result::Result<T, String>;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Type { Numeric, Boolean }
+impl Type { pub fn name(self)->&'static str { match self { Self::Numeric=>"numeric", Self::Boolean=>"boolean" } } }
+#[derive(Clone, Debug, PartialEq)]
+pub struct Reference { series:String, ty:Type }
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Compare { Gt, Gte, Lt, Lte }
+#[derive(Clone, Debug, PartialEq)]
+pub enum Node { NumericSeries(Reference), Number(f64), BooleanSeries(Reference), Compare{op:Compare,left:Box<Node>,right:Box<Node>}, And(Vec<Node>), Or(Vec<Node>), Not(Box<Node>) }
+#[derive(Clone, Debug, PartialEq)]
+pub struct Document { pub schema_version:u32, pub root:Node }
+
+fn only(object:&Map<String,Value>, allowed:&[&str], where_:&str)->Result<()> { for key in object.keys(){if !allowed.contains(&key.as_str()){return Err(format!("unknown {where_} field {key:?}"))}} Ok(()) }
+fn object<'a>(value:&'a Value, where_:&str)->Result<&'a Map<String,Value>> { value.as_object().ok_or_else(||format!("{where_} must be an object")) }
+fn required<'a>(object:&'a Map<String,Value>, key:&str, where_:&str)->Result<&'a Value>{object.get(key).ok_or_else(||format!("missing {where_} field {key}"))}
+fn string(object:&Map<String,Value>, key:&str, where_:&str)->Result<String>{required(object,key,where_)?.as_str().filter(|v|!v.is_empty()).map(str::to_owned).ok_or_else(||format!("{where_}.{key} must be a non-empty string"))}
+
+pub fn parse(value:&Value)->Result<Document>{
+ let o=object(value,"AST document")?; only(o,&["schema_version","root"],"AST document")?;
+ let schema_version=required(o,"schema_version","AST document")?.as_u64().and_then(|v|u32::try_from(v).ok()).ok_or("schema_version must be integer 1")?;
+ if schema_version!=1{return Err(format!("unsupported AST schema_version {schema_version}"))}
+ let root=parse_node(required(o,"root","AST document")?)?;
+ if root.ty()!=Type::Boolean{return Err("AST root must resolve to boolean".into())}
+ Ok(Document{schema_version,root})
+}
+
+#[cfg(test)] mod more_tests {use super::*;use serde_json::json;
+ #[test] fn every_node_and_representative_strict_forms(){
+  let boolean=json!({"kind":"boolean_series","ref":{"series":"b","type":"boolean"}});
+  let valid=[json!({"schema_version":1,"root":{"kind":"compare","op":"gte","left":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}},"right":{"kind":"number","value":-0.0}}}),json!({"schema_version":1,"root":{"kind":"compare","op":"lt","left":{"kind":"number","value":1},"right":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}}}}),json!({"schema_version":1,"root":{"kind":"compare","op":"lte","left":{"kind":"number","value":1},"right":{"kind":"number","value":2}}}),json!({"schema_version":1,"root":{"kind":"and","args":[boolean.clone(),boolean.clone()]}}),json!({"schema_version":1,"root":{"kind":"or","args":[boolean.clone(),boolean.clone()]}}),json!({"schema_version":1,"root":{"kind":"not","arg":boolean.clone()}})];for value in valid{assert!(parse(&value).is_ok(),"{value}")}
+  let invalid=[json!({"schema_version":1,"root":{}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{}}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"type":"numeric"}}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"series":"n"}}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"series":1,"type":"numeric"}}}),json!({"schema_version":1,"root":{"kind":"and","args":"x"}}),json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"number","value":1},"right":{"kind":"number","value":"NaN"}}})];for value in invalid{assert!(parse(&value).is_err(),"{value}")}
+ }
+ #[test] fn negative_zero_canonicalizes_to_zero(){let d=parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"number","value":-0.0},"right":{"kind":"number","value":0}}})).unwrap();assert!(canonical_json(&d).contains("\"value\":0.0"));}
+}
+fn reference(value:&Value, expected:Type)->Result<Reference>{let o=object(value,"series reference")?;only(o,&["series","type"],"series reference")?;let series=string(o,"series","series reference")?;let ty=match string(o,"type","series reference")?.as_str(){"numeric"=>Type::Numeric,"boolean"=>Type::Boolean,_=>return Err("series reference.type must be numeric or boolean".into())};if ty!=expected{return Err(format!("series reference type disagrees with node kind; expected {}",expected.name()))}Ok(Reference{series,ty})}
+fn parse_node(value:&Value)->Result<Node>{let o=object(value,"AST node")?;let kind=string(o,"kind","AST node")?;match kind.as_str(){
+ "numeric_series"=>{only(o,&["kind","ref"],"numeric_series node")?;Ok(Node::NumericSeries(reference(required(o,"ref","numeric_series node")?,Type::Numeric)?))}
+ "number"=>{only(o,&["kind","value"],"number node")?;let n=required(o,"value","number node")?.as_f64().filter(|n|n.is_finite()).ok_or("number.value must be a finite numeric value")?;Ok(Node::Number(if n==0. {0.}else{n}))}
+ "boolean_series"=>{only(o,&["kind","ref"],"boolean_series node")?;Ok(Node::BooleanSeries(reference(required(o,"ref","boolean_series node")?,Type::Boolean)?))}
+ "compare"=>{only(o,&["kind","op","left","right"],"compare node")?;let op=match string(o,"op","compare node")?.as_str(){"gt"=>Compare::Gt,"gte"=>Compare::Gte,"lt"=>Compare::Lt,"lte"=>Compare::Lte,_=>return Err("unknown comparison operator".into())};let left=parse_node(required(o,"left","compare node")?)?;let right=parse_node(required(o,"right","compare node")?)?;if left.ty()!=Type::Numeric||right.ty()!=Type::Numeric{return Err("compare operands must be numeric".into())}Ok(Node::Compare{op,left:Box::new(left),right:Box::new(right)})}
+ "and"=>{only(o,&["kind","args"],"and node")?;Ok(Node::And(boolean_args(required(o,"args","and node")?,"and")?))}
+ "or"=>{only(o,&["kind","args"],"or node")?;Ok(Node::Or(boolean_args(required(o,"args","or node")?,"or")?))}
+ "not"=>{only(o,&["kind","arg"],"not node")?;let arg=parse_node(required(o,"arg","not node")?)?;if arg.ty()!=Type::Boolean{return Err("not argument must be boolean".into())}Ok(Node::Not(Box::new(arg)))}
+ _=>Err(format!("unknown AST node kind {kind:?}")),}}
+fn boolean_args(value:&Value, kind:&str)->Result<Vec<Node>>{let values=value.as_array().ok_or_else(||format!("{kind}.args must be an array"))?;if values.len()<2{return Err(format!("{kind}.args must contain at least two boolean arguments"))}let args=values.iter().map(parse_node).collect::<Result<Vec<_>>>()?;if args.iter().any(|arg|arg.ty()!=Type::Boolean){return Err(format!("{kind}.args must contain only boolean arguments"))}Ok(args)}
+impl Node { pub fn ty(&self)->Type{match self{Self::NumericSeries(_) | Self::Number(_)=>Type::Numeric,Self::BooleanSeries(_) | Self::Compare{..} | Self::And(_) | Self::Or(_) | Self::Not(_)=>Type::Boolean}} }
+fn reference_json(reference:&Reference)->Value{json!({"series":reference.series,"type":reference.ty.name()})}
+fn node_json(node:&Node)->Value{match node{Node::NumericSeries(r)=>json!({"kind":"numeric_series","ref":reference_json(r)}),Node::Number(n)=>json!({"kind":"number","value":n}),Node::BooleanSeries(r)=>json!({"kind":"boolean_series","ref":reference_json(r)}),Node::Compare{op,left,right}=>json!({"kind":"compare","op":match op{Compare::Gt=>"gt",Compare::Gte=>"gte",Compare::Lt=>"lt",Compare::Lte=>"lte"},"left":node_json(left),"right":node_json(right)}),Node::And(args)=>json!({"kind":"and","args":args.iter().map(node_json).collect::<Vec<_>>() }),Node::Or(args)=>json!({"kind":"or","args":args.iter().map(node_json).collect::<Vec<_>>() }),Node::Not(arg)=>json!({"kind":"not","arg":node_json(arg)})}}
+pub fn canonical_json(document:&Document)->String{serde_json::to_string(&json!({"schema_version":document.schema_version,"root":node_json(&document.root)})).expect("canonical AST JSON")}
+pub fn identity(document:&Document)->String{let mut hash=Sha256::new();hash.update(b"nora-ast-semantic-v1");hash.update(canonical_json(document).as_bytes());format!("{:x}",hash.finalize())}
+
+pub fn task(o:&Map<String,Value>)->Result<Value>{only(o,&["task_version","task_type","output_path","ast"],"AST task")?;let path=output(&string(o,"output_path","AST task")?)?;let document=parse(required(o,"ast","AST task")?)?;let canonical=canonical_json(&document);let identity=identity(&document);let temp=path.with_file_name(format!(".{}.{}.partial",path.file_name().and_then(|x|x.to_str()).ok_or("malformed output_path")?,std::process::id()));fs::write(&temp,&canonical).map_err(|e|format!("write AST temporary artifact: {e}"))?;if let Err(e)=fs::rename(&temp,&path){let _=fs::remove_file(&temp);return Err(format!("atomic publish AST artifact: {e}"))}Ok(json!({"ok":true,"task_type":"canonicalize_ast","schema_version":document.schema_version,"root_type":document.root.ty().name(),"ast_semantic_identity":identity,"canonical_artifact_path":path}))}
+fn output(raw:&str)->Result<PathBuf>{let path=PathBuf::from(raw);if raw.trim().is_empty()||path.exists()||path.parent().map_or(true,|parent|!parent.is_dir()){Err("output_path must not exist and its parent must exist".into())}else{Ok(path)}}
+
+#[cfg(test)] mod tests {use super::*;use serde_json::json;
+ fn valid()->Value{json!({"schema_version":1,"root":{"kind":"and","args":[{"kind":"compare","op":"gt","left":{"kind":"numeric_series","ref":{"series":"rsi14","type":"numeric"}},"right":{"kind":"number","value":50.0}},{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"close.cross_above.sma3","type":"boolean"}},{"kind":"not","arg":{"kind":"boolean_series","ref":{"series":"rollover_blocked","type":"boolean"}}}]}]}})}
+ #[test] fn allowed_nodes_and_nested_boolean_parse(){let d=parse(&valid()).unwrap();assert_eq!(d.root.ty(),Type::Boolean);for node in [json!({"kind":"numeric_series","ref":{"series":"x","type":"numeric"}}),json!({"kind":"number","value":1}),json!({"kind":"boolean_series","ref":{"series":"x","type":"boolean"}})]{assert!(parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":node,"right":{"kind":"number","value":0}}})).is_ok()||parse(&json!({"schema_version":1,"root":{"kind":"and","args":[node,{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}]}})).is_ok())}}
+ #[test] fn strict_and_type_failures(){let cases=[json!({"schema_version":1,"root":{"kind":"number","value":1}}),json!({"schema_version":1,"root":{"kind":"compare","op":"eq","left":{"kind":"number","value":1},"right":{"kind":"number","value":2}}}),json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}},"right":{"kind":"number","value":2}}}),json!({"schema_version":1,"root":{"kind":"and","args":[]}}),json!({"schema_version":1,"root":{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}]}}),json!({"schema_version":1,"root":{"kind":"not","arg":{"kind":"number","value":1}}}),json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"x","type":"numeric"}}}),json!({"schema_version":1,"root":{"kind":"wat"}}),json!({"schema_version":1,"root":{"kind":"number","value":1,"extra":true}}),json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"x","type":"boolean","extra":true}}}),json!({"schema_version":1,"root":{"kind":"number"}}),json!({"schema_version":2,"root":{"kind":"number","value":1}}),json!({"root":{"kind":"number","value":1}}),json!({"schema_version":1,"extra":true,"root":{"kind":"number","value":1}})];for case in cases{assert!(parse(&case).is_err(),"{case}")}}
+ #[test] fn canonical_is_independent_and_round_trips(){let d=parse(&valid()).unwrap();let expected=r#"{"root":{"args":[{"kind":"compare","left":{"kind":"numeric_series","ref":{"series":"rsi14","type":"numeric"}},"op":"gt","right":{"kind":"number","value":50.0}},{"args":[{"kind":"boolean_series","ref":{"series":"close.cross_above.sma3","type":"boolean"}},{"arg":{"kind":"boolean_series","ref":{"series":"rollover_blocked","type":"boolean"}},"kind":"not"}],"kind":"or"}],"kind":"and"},"schema_version":1}"#;assert_eq!(canonical_json(&d),expected);let reordered:Value=serde_json::from_str(r#"{"root":{"args":[{"right":{"value":50,"kind":"number"},"left":{"ref":{"type":"numeric","series":"rsi14"},"kind":"numeric_series"},"op":"gt","kind":"compare"},{"args":[{"ref":{"type":"boolean","series":"close.cross_above.sma3"},"kind":"boolean_series"},{"arg":{"ref":{"type":"boolean","series":"rollover_blocked"},"kind":"boolean_series"},"kind":"not"}],"kind":"or"}],"kind":"and"},"schema_version":1}"#).unwrap();let other=parse(&reordered).unwrap();assert_eq!(canonical_json(&other),expected);assert_eq!(identity(&d),identity(&other));let round=parse(&serde_json::from_str(&canonical_json(&d)).unwrap()).unwrap();assert_eq!(canonical_json(&round),expected);assert_eq!(identity(&round),identity(&d));}
+ #[test] fn identity_is_sensitive_and_deterministic(){let d=parse(&valid()).unwrap();let base=identity(&d);assert_eq!(base,"7f6898acef2fb8a2cfa2d07f951931dd68834e6729e2d1c57952dd3f5f5f0afd");assert_eq!(base,identity(&d));for pointer_value in [("op","lte"),("threshold","51"),("series","rsi13"),("kind","or")] {let mut value=valid();match pointer_value.0{"op"=>value["root"]["args"][0]["op"]=json!(pointer_value.1),"threshold"=>value["root"]["args"][0]["right"]["value"]=json!(51),"series"=>value["root"]["args"][0]["left"]["ref"]["series"]=json!(pointer_value.1),"kind"=>value["root"]["kind"]=json!(pointer_value.1),_=>unreachable!()};assert_ne!(base,identity(&parse(&value).unwrap()));}}
+}
