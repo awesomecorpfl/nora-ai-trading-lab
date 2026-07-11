@@ -2,3 +2,15 @@ phase-0b/results/*
 !phase-0b/results/.gitkeep
 phase-0b/target/
 phase-0c/staged/
+.venv/
+__pycache__/
+*.py[cod]
+artifacts/*
+!artifacts/.gitkeep
+data/*
+!data/.gitkeep
+state/*
+!state/.gitkeep
+state.sqlite3
+
+engine/target/

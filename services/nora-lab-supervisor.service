@@ -1,0 +1,13 @@
+[Unit]
+Description=Nora AI Trading Lab control-plane supervisor
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/gasper/nora-ai-trading-lab
+ExecStart=/home/gasper/nora-ai-trading-lab/.venv/bin/lab --root /home/gasper/nora-ai-trading-lab supervisor
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

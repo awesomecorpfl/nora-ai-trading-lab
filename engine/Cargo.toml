@@ -1,0 +1,3 @@
+[workspace]
+members = ["labengine"]
+resolver = "3"

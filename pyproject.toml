@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nora-ai-trading-lab"
+version = "0.1.0"
+description = "Phase 1 Linux-side research lab foundation"
+requires-python = ">=3.14"
+dependencies = ["pyarrow>=20,<24"]
+
+[project.scripts]
+lab = "lab.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lab"]
