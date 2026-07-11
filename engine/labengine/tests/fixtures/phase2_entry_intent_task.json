@@ -1,0 +1,1 @@
+{"task_version":1,"task_type":"build_entry_intents","input_path":"/tmp/phase2_ast_evaluated.parquet","output_path":"/tmp/phase2_entry_intents.parquet","output":"entry_intent","condition":{"schema_version":1,"side":"long","entry":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}}}

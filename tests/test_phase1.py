@@ -4,6 +4,15 @@ from lab.core import State, ingest_csv, run_task, run_engine_task, validate_cont
 
 CONTRACT={"provider":"manual","acquisition_tool":"manual","source_symbol":"EURUSD","project_symbol":"EURUSD","source_timestamp_semantics":"broker_local","bar_timestamp_semantics":"start","timezone_identity":"america_new_york_plus_7_v1","dst_regime":"new_york_dst_v1","session_clock":"broker","strategy_clock":"broker","conversion_history":[]}
 class Phase1(unittest.TestCase):
+ def test_entry_intent_committed_cli_chain(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; tasks=[json.loads((root/f).read_text()) for f in ["engine/labengine/tests/fixtures/phase2_cross_task.json","engine/labengine/tests/fixtures/phase2_ast_evaluate_task.json","engine/labengine/tests/fixtures/phase2_entry_intent_task.json"]]
+  with tempfile.TemporaryDirectory() as d:
+   paths=[Path(d)/x for x in ["cross.parquet","signal.parquet","intent.parquet"]]
+   tasks[0]["input_path"]=str(root/tasks[0]["input_path"]); tasks[0]["output_path"]=str(paths[0]); tasks[1]["input_path"]=str(paths[0]); tasks[1]["output_path"]=str(paths[1]); tasks[2]["input_path"]=str(paths[1]); tasks[2]["output_path"]=str(paths[2])
+   summaries=[]
+   for i,task in enumerate(tasks):p=Path(d)/(str(i)+".json");p.write_text(json.dumps(task)); summaries.append(json.loads(subprocess.run([str(binary),str(p)],check=True,capture_output=True,text=True).stdout))
+   import pyarrow.parquet as pq
+   table=pq.read_table(paths[2]); self.assertEqual(table.column_names,["timestamp","entry_intent"]); self.assertEqual(table["entry_intent"].to_pylist(),[None,None,None,False,True,True,True,True,True,True,True,True]); self.assertEqual([summaries[-1]["intent_true"],summaries[-1]["intent_false"],summaries[-1]["intent_null"]],[8,1,3]); self.assertEqual(summaries[-1]["terminal_source_signal"],True); self.assertEqual(summaries[-1]["condition_semantic_identity"],"6649fde8f30650966ef241396024d163b08432ba12ec5aab7e2f570b10e2f832")
  def test_ast_evaluate_cli_runtime_closure(self):
   import pyarrow as pa, pyarrow.parquet as pq
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; cross=json.loads((root/"engine/labengine/tests/fixtures/phase2_cross_task.json").read_text()); base=json.loads((root/"engine/labengine/tests/fixtures/phase2_ast_evaluate_task.json").read_text())
