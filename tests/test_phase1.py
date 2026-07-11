@@ -15,6 +15,12 @@ class Phase1(unittest.TestCase):
    baseline=run(json.loads(json.dumps(fixture)),"base"); self.assertEqual(baseline["output_semantic_content_identity"],"274e22b09159252cc2a964cf08623de8dd9743c3152fea672a0c9ead749ff814")
    for name,field,value in [("direction","direction","below"),("left","left",{"series":"sma3","type":"numeric"}),("right","right",{"series":"close","type":"numeric"}),("output","output","renamed.cross")]:
     variant=json.loads(json.dumps(fixture)); variant["indicators"][1][field]=value; self.assertNotEqual(run(variant,name)["output_semantic_content_identity"],baseline["output_semantic_content_identity"])
+ def test_cross_duplicate_output_rejected_by_cli(self):
+  root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
+  with tempfile.TemporaryDirectory() as d:
+   task={"task_version":1,"task_type":"compute_indicators","input_path":source,"output_path":str(Path(d)/"duplicate.parquet"),"indicators":[{"name":"SMA","output":"sma3","period":3},{"name":"Cross","left":{"series":"close","type":"numeric"},"right":{"series":"sma3","type":"numeric"},"direction":"above","output":"sma3"}]}
+   path=Path(d)/"task.json"; path.write_text(json.dumps(task)); result=subprocess.run([str(binary),str(path)],capture_output=True,text=True)
+   self.assertNotEqual(result.returncode,0); self.assertIn("duplicate output name",result.stderr); self.assertFalse(Path(task["output_path"]).exists()); self.assertFalse(result.stdout.strip()); self.assertNotIn("output_semantic_content_identity",result.stdout)
  def test_cross_boolean_rejected_by_numeric_transforms_cli(self):
   root=Path(__file__).resolve().parents[1]; binary=root/"engine"/"target"/"debug"/"labengine"; source=str(root/"engine/labengine/tests/fixtures/phase2_indicator_utc.parquet")
   with tempfile.TemporaryDirectory() as d:
