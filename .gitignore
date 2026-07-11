@@ -1,5 +1,2 @@
-phase-0a/results/*
-!phase-0a/results/.gitkeep
-phase-0a-h/results/*
-!phase-0a-h/results/.gitkeep
-__pycache__/
+phase-0a-harness/results/*
+!phase-0a-harness/results/.gitkeep
