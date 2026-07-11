@@ -142,6 +142,15 @@ def run_engine_task(state, root, tid, engine, engine_spec):
     if proc.returncode or not isinstance(summary,dict) or not summary.get("ok") or (expected and not expected.is_file()):
         state.transition(tid,"failed",{"exit_code":proc.returncode,"engine_error":proc.stderr.strip(),"summary":summary})
         return None
+    if spec.get("task_type")=="compute_indicators":
+        try:
+            import pyarrow.parquet as pq
+            source_timestamps=pq.read_table(spec["input_path"],columns=["timestamp"]).column("timestamp").to_pylist()
+            output_names=pq.read_schema(expected).names[1:]
+            validate_indicator_artifact(expected,[(name,"numeric") for name in output_names],source_timestamps)
+        except Exception as e:
+            state.transition(tid,"failed",{"exit_code":proc.returncode,"engine_error":f"indicator artifact validation: {e}","summary":summary})
+            return None
     (partial/"result.json").write_text(canon(summary)+"\n")
     os.replace(partial,out)
     aid=state.publish(tid,out,{"parents":engine_spec.get("parents",[]),"spec_hash":task["spec_hash"],"engine_task":spec})
