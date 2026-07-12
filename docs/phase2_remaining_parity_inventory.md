@@ -40,8 +40,8 @@ ATR and Distance/ATR each have accepted native parity, but neither is grammar-ad
 
 Accepted Phase-2Q commits are `a73ed6912c8dc354c36a7475dfe595d622e66d01` (Phase 2P generation), `021ac6d45e0624dd379be79a099022d22c12abd9` (native evidence), and `fc363988af9ee7b80f9ad4f071868a922628ccd6` (evidence repair).
 
-## Selected next task: Phase 2S
+## Selected next task: Phase 2U
 
-Phase 2S is a single local-only task: admit ATR and Distance/ATR into the typed AST grammar by implementing the missing schema registration, Rust evaluation path, canonicalization/hashing, and MQL5 translation, then bind the existing Phase-2Q native fixture. It is selected because it is the smallest foundational prerequisite for the initial hand-designed strategies and precedes any new indicator, strategy, search, or Phase-3 work.
+Phase 2S completed the narrow ATR3/Wilder and same-row Distance/ATR AST admission. The next task is Phase 2U: local-only deterministic MQL5 MACD fixed-data runtime and tester generation from `engine/labengine/tests/fixtures/phase2_macd_slope_task.json`. That file contains a real MACD period-4 Rust output and downstream slope values; MACD has no accepted MQL5 generation or native parity. The cited EMA fixture does not contain EMA, so EMA is not a qualifying next candidate.
 
-Required outputs are typed AST schema/evaluation/canonicalization/hash/translation tests and inventory evidence; no native rerun is authorized or required. Search and Phase 3 remain explicitly closed.
+Required outputs are frozen Rust vectors, deterministic MQL5 sources/manifests, separate identities, repeatability/mutation/atomic-publication tests, and an explicit deferred native-validation boundary. Search and Phase 3 remain explicitly closed.

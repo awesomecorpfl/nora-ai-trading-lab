@@ -114,7 +114,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertEqual(item["mql5"]["generation"], "generated")
             self.assertTrue(item["native"]["execution_evidence_paths"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["task_id"], "grammar.atr_distance_ast_admission")
+        self.assertEqual(next_task["task_id"], "layer1.macd_local_mql5_canary")
         self.assertNotIn(next_task["task_id"], items)
         self.assertNotIn(next_task["phase_label"].lower(), {item["status"] for item in items.values()})
         self.assertFalse(next_task["search_authorized"])
@@ -128,10 +128,10 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertTrue(entry["blocks_phase2"])
             self.assertTrue(entry["smallest_next_task"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["phase_label"], "Phase 2S")
+        self.assertEqual(next_task["phase_label"], "Phase 2U")
         self.assertEqual(next_task["execution_boundary"], "local-only")
         self.assertIn("search", next_task["scope"].lower())
-        self.assertIn("AST integration", next_task["why_next"])
+        self.assertIn("MACD", next_task["why_next"])
 
     def test_inventory_summary_matches_items(self):
         from collections import Counter
