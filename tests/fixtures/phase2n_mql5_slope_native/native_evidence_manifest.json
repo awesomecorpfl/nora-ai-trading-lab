@@ -1,0 +1,36 @@
+{
+  "evidence_version": "nora.phase2n.native_evidence_v2",
+  "scope": "frozen native slope-transform canary only",
+  "compile": "compile/compile_manifest.json",
+  "run1": "run1/execution_manifest.json",
+  "run2": "run2/execution_manifest.json",
+  "compile_log": "compile/compile.log",
+  "ex5": "compile/NoraPhase2SlopeTesterCanaryV1.ex5",
+  "run1_csv": "run1/nora_phase2_slope_tester_v1.csv",
+  "run2_csv": "run2/nora_phase2_slope_tester_v1.csv",
+  "run1_journal": "run1/tester-journal.log",
+  "run2_journal": "run2/tester-journal.log",
+  "run1_lifecycle": "run1/lifecycle.jsonl",
+  "run2_lifecycle": "run2/lifecycle.jsonl",
+  "run1_tester_ini": "run1/tester.ini",
+  "run2_tester_ini": "run2/tester.ini",
+  "ex5_sha256": "45c9abea8bf98825ddef761517cdfe7eeb81a329983273f69e4e51c953b24ff1",
+  "csv_sha256": "29d5d614e602d47d4badb4430272990b7bcd2c7383f7a7bbd7c511c1b8b10783",
+  "semantic_result_identity": "221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f",
+  "max_finite_abs_difference": 4.83554168928535e-17,
+  "null_positions": [0, 1, 2],
+  "row_count": 12,
+  "source_hashes": {
+    "nullable_runtime_sha256": "97de0194d7715b32ce104a9889d1a4af46cff6d0759d637f21e41025a98ee043",
+    "slope_runtime_sha256": "a3b2dc447b59e6800dee7c875e9d25ea2353fc32b04c73391871623c08842c80",
+    "tester_sha256": "6d4f2e9f0a7e1dcd33004500dfea8deaad4c5a4e9804e57ef8377369f67a4f53"
+  },
+  "identities": {
+    "nullable_runtime": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d",
+    "rust_slope": "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499",
+    "slope_runtime": "cb9eee8e4c03d6c6d95c6ba384701187c93730f77fafe3a22a2f8902410c68ae",
+    "slope_tester": "a25fe8a6b459499debdbc9d48c8d4dd498a9684bf67b196501ebed743b48b54d"
+  },
+  "runs_semantically_identical": true,
+  "binary_commit_reason": "The prior Phase-2L native canary did not commit binaries; this Phase-2N repair commits the 10,248-byte EX5 because its hash and freshness are part of the durable native compile contract."
+}

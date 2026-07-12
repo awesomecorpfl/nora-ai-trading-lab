@@ -1,29 +1,17 @@
 param([Parameter(Mandatory=$true)][string]$IncomingRoot,[Parameter(Mandatory=$true)][string]$RunId,[int]$TimeoutSeconds=300)
 $ErrorActionPreference='Stop'
-$root="$env:USERPROFILE\NoraPhase2N"
-$run=Join-Path $root $RunId
-$source=Join-Path $run 'source'
-New-Item -ItemType Directory -Force $source|Out-Null
+$root="$env:USERPROFILE\NoraPhase2N";$run=Join-Path $root $RunId;$source=Join-Path $run 'source';$compileStart=(Get-Date).ToUniversalTime()
+New-Item -ItemType Directory -Force $source | Out-Null
 foreach($name in @('NoraPhase2RuntimeV1.mqh','NoraPhase2SlopeRuntimeV1.mqh','NoraPhase2SlopeTesterCanaryV1.mq5')){Copy-Item (Join-Path $IncomingRoot $name) (Join-Path $source $name) -Force}
-$editor='C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe'
-if(!(Test-Path $editor)){throw 'configured MetaEditor64.exe absent'}
-$program=Join-Path $source 'NoraPhase2SlopeTesterCanaryV1.mq5'
-$log=Join-Path $run 'compile.log'
-$ex5=Join-Path $source 'NoraPhase2SlopeTesterCanaryV1.ex5'
-$p=Start-Process $editor -ArgumentList ('/compile:"'+$program+'" /log:"'+$log+'"') -PassThru
-if(!$p.WaitForExit($TimeoutSeconds*1000)){Stop-Process $p -Force;throw 'compiler timeout'}
-if(!(Test-Path $log)){throw 'compiler log absent'}
-$text=Get-Content $log -Raw
-$e=[regex]::Matches($text,'(?i)(\d+)\s+errors?')
-$w=[regex]::Matches($text,'(?i)(\d+)\s+warnings?')
-if($e.Count -eq 0 -or $w.Count -eq 0){throw 'compiler log lacks deterministic error/warning counts'}
-$errors=[int]$e[$e.Count-1].Groups[1].Value
-$warnings=[int]$w[$w.Count-1].Groups[1].Value
-$out=Join-Path $run 'NoraPhase2SlopeTesterCanaryV1.ex5'
-$size=0
-$sha=''
-if(Test-Path $ex5){Copy-Item $ex5 $out -Force;$size=(Get-Item $out).Length;if($size -gt 0){$sha=(Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()}}
-$status=if($errors -eq 0 -and $warnings -eq 0 -and $size -gt 0){'compiled'}else{'failed'}
-$result=[ordered]@{status=$status;compiler_path=$editor;compiler_version=(Get-Item $editor).VersionInfo.FileVersion;compiler_exit_code=$p.ExitCode;error_count=$errors;warning_count=$warnings;ex5_filename='NoraPhase2SlopeTesterCanaryV1.ex5';ex5_size_bytes=$size;ex5_sha256=$sha}
-$result|ConvertTo-Json -Compress|Set-Content (Join-Path $run 'compile.json') -Encoding utf8
-if($status -ne 'compiled'){exit 2}
+$editor='C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe';if(!(Test-Path $editor)){throw 'configured MetaEditor64.exe absent'}
+$program=Join-Path $source 'NoraPhase2SlopeTesterCanaryV1.mq5';$log=Join-Path $run 'compile.log';$sourceEx5=Join-Path $source 'NoraPhase2SlopeTesterCanaryV1.ex5';$out=Join-Path $run 'NoraPhase2SlopeTesterCanaryV1.ex5'
+$sourceEx5ExistedBefore=Test-Path $sourceEx5;$outputEx5ExistedBefore=Test-Path $out;if($sourceEx5ExistedBefore){Remove-Item $sourceEx5 -Force};if($outputEx5ExistedBefore){Remove-Item $out -Force};$sourceEx5ExistedImmediatelyBefore=Test-Path $sourceEx5;$outputEx5ExistedImmediatelyBefore=Test-Path $out
+$argumentArray=@('/compile:"'+$program+'"','/log:"'+$log+'"');$renderedCommand=$editor+' '+($argumentArray -join ' ');$p=Start-Process -FilePath $editor -ArgumentList $argumentArray -PassThru
+if(!$p.WaitForExit($TimeoutSeconds*1000)){Stop-Process $p -Force;throw 'compiler timeout'};$compileComplete=(Get-Date).ToUniversalTime();if(!(Test-Path $log)){throw 'compiler log absent'}
+$text=Get-Content $log -Raw;$e=[regex]::Matches($text,'(?i)(\d+)\s+errors?');$w=[regex]::Matches($text,'(?i)(\d+)\s+warnings?');if($e.Count -eq 0 -or $w.Count -eq 0){throw 'compiler log lacks deterministic error/warning counts'}
+$errors=[int]$e[$e.Count-1].Groups[1].Value;$warnings=[int]$w[$w.Count-1].Groups[1].Value;$diagnosticLines=@($text -split "`r?`n" | Where-Object {$_ -match '(?i)\berrors?\b|\bwarnings?\b'});$size=0;$sha='';$ex5LastWrite=$null
+if(Test-Path $sourceEx5){Copy-Item $sourceEx5 $out -Force};$ex5Exists=Test-Path $out;if($ex5Exists){$item=Get-Item $out;$size=$item.Length;$ex5LastWrite=$item.LastWriteTimeUtc.ToString('o');if($size -gt 0){$sha=(Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()}}
+$ex5AfterStart=$false;$ex5WithinCompletionAllowance=$false;if($ex5LastWrite){$ex5Time=[DateTime]::Parse($ex5LastWrite).ToUniversalTime();$ex5AfterStart=$ex5Time -ge $compileStart;$ex5WithinCompletionAllowance=$ex5Time -le $compileComplete.AddSeconds(2)}
+$status=if($errors -eq 0 -and $warnings -eq 0 -and $size -gt 0 -and !$sourceEx5ExistedImmediatelyBefore -and !$outputEx5ExistedImmediatelyBefore -and $ex5AfterStart -and $ex5WithinCompletionAllowance){'compiled'}else{'failed'}
+$result=[ordered]@{status=$status;run_id=$RunId;compiler_path=$editor;argument_array=$argumentArray;rendered_command=$renderedCommand;working_directory=$source;compile_start_utc=$compileStart.ToString('o');compile_completion_utc=$compileComplete.ToString('o');native_process_exit_status=$p.ExitCode;compiler_exit_code=$p.ExitCode;compiler_version=(Get-Item $editor).VersionInfo.FileVersion;source_paths=[ordered]@{runtime=Join-Path $source 'NoraPhase2RuntimeV1.mqh';slope_runtime=Join-Path $source 'NoraPhase2SlopeRuntimeV1.mqh';tester=$program};compile_log_path=$log;ex5_path=$out;source_ex5_existed_before=$sourceEx5ExistedBefore;output_ex5_existed_before=$outputEx5ExistedBefore;source_ex5_existed_immediately_before=$sourceEx5ExistedImmediatelyBefore;output_ex5_existed_immediately_before=$outputEx5ExistedImmediatelyBefore;error_count=$errors;warning_count=$warnings;diagnostic_lines=$diagnosticLines;ex5_exists=$ex5Exists;ex5_last_write_time_utc=$ex5LastWrite;ex5_size_bytes=$size;ex5_sha256=$sha;filesystem_resolution_allowance_seconds=2;ex5_after_compile_start=$ex5AfterStart;ex5_within_completion_allowance=$ex5WithinCompletionAllowance;ex5_filename='NoraPhase2SlopeTesterCanaryV1.ex5'}
+$result|ConvertTo-Json -Depth 8|Set-Content (Join-Path $run 'compile.json') -Encoding utf8;if($status -ne 'compiled'){exit 2}

@@ -4,6 +4,7 @@ import hashlib
 import json
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 from lab.mt5 import (
@@ -22,6 +23,9 @@ ROOT = Path(__file__).resolve().parents[1]
 TESTER_MANIFEST = ROOT / "tests/fixtures/phase2m_mql5_slope/NoraPhase2SlopeTesterCanaryV1.manifest.json"
 RUNTIME_SOURCE = ROOT / "tests/fixtures/phase2m_mql5_slope/NoraPhase2SlopeRuntimeV1.mqh"
 TESTER_SOURCE = ROOT / "tests/fixtures/phase2m_mql5_slope/NoraPhase2SlopeTesterCanaryV1.mq5"
+NATIVE_ROOT = ROOT / "tests/fixtures/phase2n_mql5_slope_native"
+NATIVE_INDEX = NATIVE_ROOT / "native_evidence_manifest.json"
+REQUIRED_STAGES = ("tester_configuration_loaded", "testing_agent_started", "ea_loaded", "ea_initialized", "fixture_execution_started", "result_csv_written", "fixture_execution_completed", "tester_completed", "terminal_shutdown")
 
 
 def _slope_text(value):
@@ -178,6 +182,78 @@ class Phase2NSlopeSemanticIdentityTests(unittest.TestCase):
     def test_lookback_2_is_not_a_variant(self):
         manifest = json.loads(TESTER_MANIFEST.read_text())
         self.assertEqual(manifest["lookback"], 1)
+
+
+class Phase2NCommittedNativeEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.index = json.loads(NATIVE_INDEX.read_text())
+        self.compile = json.loads((NATIVE_ROOT / self.index["compile"]).read_text())
+        self.runs = [json.loads((NATIVE_ROOT / self.index[name]).read_text()) for name in ("run1", "run2")]
+
+    def test_committed_paths_and_hashes(self):
+        self.assertEqual(self.index["identities"]["slope_runtime"], SLOPE_RUNTIME_IDENTITY)
+        self.assertEqual(self.index["identities"]["slope_tester"], SLOPE_TESTER_IDENTITY)
+        self.assertEqual(self.index["identities"]["rust_slope"], "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499")
+        self.assertEqual(self.index["source_hashes"]["slope_runtime_sha256"], SLOPE_RUNTIME_SOURCE_SHA256)
+        self.assertEqual(self.index["source_hashes"]["tester_sha256"], SLOPE_TESTER_SOURCE_SHA256)
+        self.assertEqual(hashlib.sha256((NATIVE_ROOT / self.index["ex5"]).read_bytes()).hexdigest(), self.index["ex5_sha256"])
+        for name in ("run1_csv", "run2_csv"):
+            self.assertEqual(hashlib.sha256((NATIVE_ROOT / self.index[name]).read_bytes()).hexdigest(), self.index["csv_sha256"])
+        self.assertEqual(self.compile["native_evidence"]["ex5_sha256"], self.index["ex5_sha256"])
+        self.assertEqual(self.compile["slope_runtime_source_sha256"], SLOPE_RUNTIME_SOURCE_SHA256)
+        self.assertEqual(self.compile["tester_source_sha256"], SLOPE_TESTER_SOURCE_SHA256)
+
+    def test_compile_command_timestamps_and_freshness(self):
+        native = self.compile["native_evidence"]
+        self.assertIn("MetaEditor64.exe", native["rendered_command"])
+        self.assertIn("/compile:\"C:\\Users\\Gasper\\NoraPhase2N\\", native["rendered_command"])
+        self.assertIn("/log:\"C:\\Users\\Gasper\\NoraPhase2N\\", native["rendered_command"])
+        self.assertFalse(native["source_ex5_existed_immediately_before"])
+        self.assertFalse(native["output_ex5_existed_immediately_before"])
+        start = datetime.fromisoformat(native["compile_start_utc"].replace("Z", "+00:00"))
+        complete = datetime.fromisoformat(native["compile_completion_utc"].replace("Z", "+00:00"))
+        ex5_time = datetime.fromisoformat(native["ex5_last_write_time_utc"].replace("Z", "+00:00"))
+        self.assertGreaterEqual(ex5_time, start)
+        self.assertLessEqual(ex5_time, complete)
+        self.assertEqual(native["native_process_exit_status"], 1)
+        self.assertEqual(native["error_count"], 0)
+        self.assertEqual(native["warning_count"], 0)
+        self.assertTrue(native["diagnostic_lines"])
+
+    def test_each_run_is_fresh_complete_and_redacted(self):
+        for number, run in enumerate(self.runs, 1):
+            native = run["native_evidence"]
+            self.assertIn("terminal64.exe /config:\"C:\\Users\\Gasper\\NoraPhase2N\\", native["terminal_rendered_command"])
+            self.assertFalse(native["csv_existed_immediately_before"])
+            start = datetime.fromisoformat(native["run_start_utc"].replace("Z", "+00:00"))
+            complete = datetime.fromisoformat(native["run_completion_utc"].replace("Z", "+00:00"))
+            csv_time = datetime.fromisoformat(native["csv_last_write_time_utc"].replace("Z", "+00:00"))
+            self.assertGreaterEqual(csv_time, start)
+            self.assertEqual(native["native_process_exit_status"], 0)
+            self.assertTrue(native["result_fresh"])
+            self.assertEqual(run["launch_stages"], {stage: True for stage in REQUIRED_STAGES})
+            lifecycle = [json.loads(line) for line in (NATIVE_ROOT / f"run{number}" / "lifecycle.jsonl").read_text(encoding="utf-8-sig").splitlines()]
+            self.assertEqual({item["event"] for item in lifecycle}, {"tester_configuration_loaded", "terminal_process_started", "tester_completed", "terminal_shutdown", "result_csv_written", "fixture_execution_started", "fixture_execution_completed", "testing_agent_started", "ea_loaded", "ea_initialized"})
+            self.assertTrue((NATIVE_ROOT / f"run{number}" / "tester.log").stat().st_size > 0)
+            for boundary in native["native_journal_boundaries"]["ending_files"]:
+                self.assertLess(boundary["start_offset_bytes"], boundary["end_offset_bytes"])
+            self.assertLessEqual(start, complete)
+            config = (NATIVE_ROOT / f"run{number}" / "tester.ini").read_text()
+            self.assertIn("Login=<redacted>", config)
+            self.assertIn("Server=<redacted>", config)
+            self.assertNotIn("4000094575", config)
+            self.assertEqual(run["row_count"], 12)
+            self.assertEqual(run["null_positions"], [0, 1, 2])
+            self.assertEqual(run["max_finite_abs_difference"], 4.83554168928535e-17)
+
+    def test_runs_are_semantically_identical_and_mutation_is_detectable(self):
+        self.assertTrue(self.index["runs_semantically_identical"])
+        self.assertEqual(self.runs[0]["semantic_result_identity"], self.runs[1]["semantic_result_identity"])
+        self.assertEqual(self.runs[0]["result_csv_sha256"], self.runs[1]["result_csv_sha256"])
+        mutated = dict(self.runs[0])
+        mutated["semantic_result_identity"] = "mutated"
+        with self.assertRaises(AssertionError):
+            self.assertEqual(mutated["semantic_result_identity"], self.index["semantic_result_identity"])
 
 
 if __name__ == "__main__":
