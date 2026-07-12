@@ -54,3 +54,25 @@ cargo test --manifest-path engine/Cargo.toml
 ```
 
 This remains the minimal simulator: no SL/TP, intrabar path or ambiguity, spread, commission, slippage, swap, sizing, trailing, pending orders, partial exits, RNG, MQL5, parity, searchable grammar, or Phase 3 work.
+
+## Optional initial bracket construction
+
+`config.initial_bracket` may be absent or `null`, preserving the simulator behavior and frozen committed-chain simulator identity `7b39a70d2fe5312a5dc1970254c50a350012309a50c7a3610992c225efa5a5b1`. When present it is strict and has `{model: "fixed_price_offsets_v1", stop_offset: Float64, target_offset: Float64, output_path: String}`. Unknown fields and models are rejected; both offsets must be finite and strictly greater than zero. This only constructs and publishes initial price levels: it does not execute stop-loss or take-profit levels.
+
+For an actual long opening at `P`, stop is `P - stop_offset` and target is `P + target_offset`. For an actual short opening at `P`, stop is `P + stop_offset` and target is `P - target_offset`. A bracket row is constructed only when the state machine actually opens a position—not for false/null entries, exit-only rows, or entries ignored while already open. A terminal `leave_open` position remains unclosed and still receives its one initial bracket row.
+
+The immutable bracket Parquet schema is `entry_id: UInt64`, `side: Utf8`, `entry_timestamp: Utf8`, `entry_index: UInt64`, `entry_price: Float64`, `initial_stop_price: Float64`, `initial_target_price: Float64`. `entry_id` starts at one and follows actual-open order. The closed-trade ledger schema and contents are unchanged.
+
+Bracket identity is separately domain-separated as `nora.initial_bracket.fixed_price_offsets_v1.semantic.v1.schema.v1`. It binds the protocol/schema, accepted simulator identity, actual opening sequence, side, entry timestamps/indices/prices, both offsets, and canonical bracket rows; it never replaces the simulator identity.
+
+Committed CLI fixtures prove: long `10.0 → stop 9.0 / target 12.0`; short `10.0 → stop 11.0 / target 8.0`; collision inputs yield one actual entry, one ignored entry while open, and one bracket row; terminal leave-open at `21.0` yields one bracket row `20.0 / 23.0` with zero closed trades.
+
+Two identical short bracket runs produced `ece1581fec67637f24283f0c0c76a343688d214d7522dce41333e20c0a82c52d` and semantically identical rows. Independent mutations yielded: side `aab6d61cf6aedd6541a8be5235f097645e56c37d5727610950a691e89a53d445`; entry price `ff1ef22ee16b6e93a221dd3e88c5b7bdcdf279819954c237c16999b803bbeaab`; stop offset `87ee9a01152d1a6cc5bbd9084cb0628cdc95a4d0f39d5d495abdf2db1ad456e2`; target offset `a8ebda35b1275f528060d80e2d9588d1d652c771b1dfcd99c7fcbaa28840f948`.
+
+The representative invalid zero-offset CLI task exited `2`, emitted `{"ok":false,"error":"initial_bracket offsets must be finite and strictly greater than zero"}` to stderr, emitted no stdout success summary, and published neither its trade ledger nor bracket artifact.
+
+Additional executed CLI evidence command:
+
+```bash
+.venv/bin/python -m unittest tests.test_phase1.Phase1.test_initial_bracket_cli_evidence
+```
