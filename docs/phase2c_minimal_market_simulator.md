@@ -95,6 +95,8 @@ Repeated long pessimistic runs produced simulator `8d4c56e148daadc93cb0cde685bf2
 
 `ohlc_pessimistic_gap_v1` alone adds carried-row open-level fills before signal handling. Long opens `<= stop` / `>= target` and short opens `>= stop` / `<= target` close at the actual open, including equality, with `initial_stop_gap` or `initial_target_gap`; the event retains the row OHLC. Four CLI cases freeze long stop `8.5/-1.5`, long target `12.5/+2.5`, short stop `11.5/-1.5`, and short target `7.5/+2.5`. Each has one gap resolution and one event. Existing two models still reject the same gap.
 
+Final gap-open seal: two fresh long stop-gap runs (`open=8.5, high=10.0, low=8.0`) produced simulator identity `a08f68c954d6b164ecd95aac8022f42b6febe3ba343ad7ad58c66848a4b67bae` and execution identity `fc9643977935e601cb22cb1d9a78321b41a2500b1407f3cb53a2730d07f56fc0` in both output directories; ledger/event rows and all summary fields other than paths matched. Deepening only the open to `8.0` (high `10.0`, low `7.5`) retained `initial_stop_gap`, changed fill to `8.0` and P&L to `-2.0`, and produced simulator `df338b8dcec7000064669ff4be22f62afa4e74625f6121247908fe0e7b455164`, execution `490899780c306fbd6f0a576ca5467c4d37461a056efec980e0d5bf1124455940`. A fresh malformed row (`low > open`) exited 2 with `{"error":"market requires low <= open <= high","ok":false}`, emitted no stdout, and published neither ledger nor event artifact.
+
 Executed sealing command:
 
 ```bash
