@@ -129,3 +129,22 @@ Executed commands:
 cargo test --manifest-path engine/Cargo.toml
 .venv/bin/python -m unittest discover -s tests
 ```
+
+## Standalone time-exit identity seal
+
+Configured standalone `time_exit` summaries include `time_exit_semantic_identity`; absent or `null` configurations do not. The domain is `nora.time_exit.max_bars_held_v1.semantic.v1.event_schema.v1`. It binds the protocol and event-schema versions, model, maximum bars, side, canonical market timestamps/opens, nullable entry and exit intents, actual entry sequence, time-close/event counts, canonical `max_bars_held` events, corresponding time-exit trade prices/P&L, and terminal state. It excludes output paths, task location, temporary-directory names, and noncanonical Parquet container metadata. There is no bracket/time-exit integration.
+
+Two real `labengine <task.json>` runs of the long fixture in fresh directories produced identical simulator identity `c1fdb17f6b5ca3694418d815c3bbf0c73b99e16927fe93dfe6cf9d034e9472dd` and time-exit identity `1d0035f0d20c2a2a96ec8beb8f7beac0b4918ae04a99728e186987ff6d50b1cd`. Ledger and event rows were semantically identical; summaries matched after artifact paths were excluded. Thus changing output paths changes neither identity.
+
+With only `max_bars_held` changed from 2 to 3 and a distinct row-3 open of `15.0`, the long trade closed at index 3 with `bars_held = 3`, fill `15.0`, and P&L `5.0`; simulator identity was `9b241c8b2cf03f542b8b5b79285b6668499de13f87abdc0400ffc48584756981` and time-exit identity was `7fd13a23e1aa046284f21388e9761f988e16e8b7db2971eb2c7b593bb87ed61b`. Keeping threshold 2 but changing only row-2 open to `13.0` retained index 2 and reason `max_bars_held`, changed fill/P&L to `13.0`/`3.0`, and produced simulator `c7a990f054aa2fb7a1f1178e451621e1ad38fa15c3e32bc2831045687fb3e7a0` and time-exit `00c26635889b451264c4b86572096fb2e911c6cc825a1fcf09f30faf70307eb3`.
+
+The equivalent short fixture retained P&L `10.0 - 8.0 = 2.0` and differed by side: simulator `4547678c1a945b8862972c27d45d21fe9c3e33d059724653e34e57ee745da835`, time-exit `b15e4359c84abbd6421bbff0660c7b01afa4f4c510ef27659a078ca8d0facd86`. The threshold-not-reached fixture emits no event but is still policy-decision-relevant: repeated terminal-open runs produced simulator `6612bb4d1bfc9f5cb09626c453422f0d68ecf8084feda08a3261a4a35ad90913` and time-exit `a4bed784ffe0d06e64b374a1fe3b191e4ff714d820f5a514f2972666a678d5e1` both times. An invalid zero maximum-bars task exits 2 with `time_exit max_bars_held must be a strictly positive integer`, prints no stdout success summary, and publishes no ledger, event artifact, identity, or successful partial.
+
+Exact CLI seal commands:
+
+```bash
+cargo build --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest tests.test_phase1.Phase1.test_time_exit_identity_cli_seal
+cargo test --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest discover -s tests
+```
