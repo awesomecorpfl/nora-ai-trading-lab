@@ -16,6 +16,14 @@ TRANSLATOR_VERSION = "nora_mql5_condition_translator_v1"
 CONDITION_SOURCE_FILENAME = "NoraPhase2ConditionV1.mqh"
 CONDITION_MANIFEST_FILENAME = "NoraPhase2ConditionV1.manifest.json"
 TRANSLATION_IDENTITY_DOMAIN = "nora.mql5.condition_translator_v1.semantic.v1"
+FIXTURE_VERSION = "nora_mql5_condition_fixture_v1"
+FIXTURE_SOURCE_FILENAME = "NoraPhase2ConditionFixtureV1.mq5"
+FIXTURE_MANIFEST_FILENAME = "NoraPhase2ConditionFixtureV1.manifest.json"
+FIXTURE_RESULT_FILENAME = "nora_phase2_condition_fixture_v1.csv"
+FIXTURE_IDENTITY_DOMAIN = "nora.mql5.condition_fixture_script_v1.semantic.v1"
+FIXTURE_CSV_COLUMNS = ["record_type", "row_index", "actual_nullable", "expected_nullable", "actual_trigger", "expected_trigger", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass"]
+EVALUATION_AST_IDENTITY = "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664"
+EVALUATED_SIGNAL_IDENTITY = "e098bfc87897802116a54ed21cdc2f530619201a22c55f41ac965e39b1bbd5a9"
 RUNTIME_IDENTITY = "2ba6078adcd10d991d3ef1ada26baa791a0c6054707a84acaceaa6fe23f2b176"
 RUNTIME_SOURCE_SHA256 = "42b7239442090a68fdacdc481925cd6b9819b572ea083efce3f3e3cbbb27d2a4"
 SUPPORTED_AST_NODES = ["numeric_series", "number", "boolean_series", "compare", "and", "or", "not"]
@@ -452,21 +460,158 @@ def translate_condition(ast_path: str | os.PathLike[str], runtime_manifest_path:
     return {"ok": True, **semantic_manifest, "header_path": str(header), "manifest_path": str(manifest)}
 
 
+def _verify_condition_manifest(path: Path) -> dict:
+    try: manifest = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error: raise GenerationError("condition manifest is unreadable or malformed") from error
+    expected_keys = {"translator_version", "runtime_identity", "canonical_ast_identity", "function_name", "trigger_function_name", "supported_ast_nodes", "supported_operators", "series_bindings", "source_filename", "source_sha256", "translation_identity"}
+    if not isinstance(manifest, dict) or set(manifest) != expected_keys: raise GenerationError("condition manifest has unknown or missing fields")
+    if manifest["translator_version"] != TRANSLATOR_VERSION or manifest["runtime_identity"] != RUNTIME_IDENTITY or manifest["canonical_ast_identity"] != EVALUATION_AST_IDENTITY or manifest["source_filename"] != CONDITION_SOURCE_FILENAME or manifest["source_sha256"] != "1c630ede14e103a62490573c746f7652cb3083096c9259711ee3c979229108a4" or manifest["translation_identity"] != "22ff3c2cc2d387173eb066c428eac99f663263a6d7dda773f44647ec371509bd" or manifest["supported_ast_nodes"] != SUPPORTED_AST_NODES or manifest["supported_operators"] != SUPPORTED_OPERATORS:
+        raise GenerationError("condition manifest contract does not match frozen Phase 2G translation")
+    bindings = manifest["series_bindings"]
+    if not isinstance(bindings, list) or not bindings or any(not isinstance(binding, dict) or set(binding) != {"original_series_name", "series_type", "parameter_name"} for binding in bindings):
+        raise GenerationError("condition manifest series_bindings are malformed")
+    return manifest
+
+
+def _nullable_text(value: object) -> str:
+    if value is None: return "null"
+    if value is True: return "true"
+    if value is False: return "false"
+    raise GenerationError("nullable Boolean values must be null, false, or true")
+
+
+def _nullable_label(value: object) -> str:
+    if value in {"null", "false", "true"}:
+        return value
+    raise GenerationError("nullable result labels must be null, false, or true")
+
+
+def _verify_evidence(path: Path, manifest: dict) -> tuple[list[dict], list[str], list[bool]]:
+    try: evidence = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error: raise GenerationError("translation evidence is unreadable or malformed") from error
+    expected_keys = {"canonical_ast_identity", "rust_evaluated_artifact_identity", "nullable_results", "triggers", "rows"}
+    if not isinstance(evidence, dict) or set(evidence) != expected_keys: raise GenerationError("translation evidence has unknown or missing fields")
+    if evidence["canonical_ast_identity"] != manifest["canonical_ast_identity"]: raise GenerationError("translation evidence AST identity does not match condition manifest")
+    rows = evidence["rows"]
+    nullable = evidence["nullable_results"]
+    triggers = evidence["triggers"]
+    bindings = manifest["series_bindings"]
+    binding_names = [binding["original_series_name"] for binding in bindings]
+    if not isinstance(rows, list) or len(rows) != 12 or not isinstance(nullable, list) or len(nullable) != 12 or not isinstance(triggers, list) or len(triggers) != 12 or any(type(value) is not bool for value in triggers):
+        raise GenerationError("translation evidence must contain exactly 12 rows and vectors")
+    checked_rows = []
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict) or set(row) != {"row_index", "bindings", "rust_nullable_result", "expected_mql5_nullable_result", "trigger"} or row["row_index"] != index:
+            raise GenerationError("translation evidence rows must be ordered and complete")
+        row_bindings = row["bindings"]
+        if not isinstance(row_bindings, dict) or set(row_bindings) != set(binding_names):
+            raise GenerationError("translation evidence bindings do not exactly match the condition manifest")
+        for binding in bindings:
+            value = row_bindings[binding["original_series_name"]]
+            if binding["series_type"] == "numeric":
+                if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or not float(value) == float(value) or abs(float(value)) == float("inf")):
+                    raise GenerationError("translation evidence numeric bindings must be finite or null")
+            elif value is not None and not isinstance(value, bool):
+                raise GenerationError("translation evidence Boolean bindings must be null, false, or true")
+            else:
+                _nullable_text(value)
+        expected = _nullable_label(row["expected_mql5_nullable_result"])
+        if row["rust_nullable_result"] not in {"null", "false", "true"} or type(row["trigger"]) is not bool or _nullable_label(nullable[index]) != expected or triggers[index] != row["trigger"]:
+            raise GenerationError("translation evidence expected results are inconsistent")
+        checked_rows.append({"row_index": index, "bindings": {name: row["bindings"][name] for name in binding_names}, "expected_nullable": expected, "expected_trigger": bool(row["trigger"])})
+    return checked_rows, [_nullable_label(value) for value in nullable], [bool(value) for value in triggers]
+
+
+def _mql5_value(value: object) -> str:
+    if value is None or value == "null": return "NORA_BOOL_NULL_V1"
+    if value is True or value == "true": return "NORA_BOOL_TRUE_V1"
+    if value is False or value == "false": return "NORA_BOOL_FALSE_V1"
+    raise GenerationError("cannot encode an invalid nullable Boolean value")
+
+
+def _fixture_identity(source: bytes, source_sha256: str, manifest: dict, rows: list[dict], nullable: list[str], triggers: list[bool]) -> str:
+    digest = hashlib.sha256()
+    _part(digest, FIXTURE_IDENTITY_DOMAIN.encode())
+    components = [FIXTURE_VERSION, manifest["runtime_identity"], manifest["translation_identity"], manifest["canonical_ast_identity"], json.dumps(manifest["series_bindings"], sort_keys=True, separators=(",", ":")), json.dumps(rows, sort_keys=True, separators=(",", ":")), json.dumps(nullable, separators=(",", ":")), json.dumps(triggers, separators=(",", ":")), json.dumps(FIXTURE_CSV_COLUMNS, separators=(",", ":")), FIXTURE_RESULT_FILENAME, source_sha256]
+    for value in components: _part(digest, value.encode("utf-8"))
+    _part(digest, source)
+    return digest.hexdigest()
+
+
+def generate_fixture_script(condition_manifest_path: str | os.PathLike[str], evidence_path: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    """Generate a deterministic MQL5 OnStart replay script from Phase 2G evidence."""
+    condition_manifest = _verify_condition_manifest(Path(condition_manifest_path))
+    rows, nullable, triggers = _verify_evidence(Path(evidence_path), condition_manifest)
+    binding_names = [binding["original_series_name"] for binding in condition_manifest["series_bindings"]]
+    arrays = []
+    constructors = []
+    arguments = []
+    for binding in condition_manifest["series_bindings"]:
+        original = binding["original_series_name"]
+        parameter = binding["parameter_name"]
+        safe = "".join(character if character.isalnum() else "_" for character in original)
+        array_name = "NoraFixture_" + ("Bool_" if binding["series_type"] == "boolean" else "Num_") + safe
+        values = [row["bindings"][original] for row in rows]
+        if binding["series_type"] == "boolean":
+            arrays.append(f"const NoraTriBoolV1 {array_name}[12] = {{" + ", ".join(_mql5_value(value) for value in values) + "};")
+            arguments.append(f"{array_name}[row_index]")
+        else:
+            null_name = array_name + "_NullMask"
+            arrays.append(f"const bool {null_name}[12] = {{" + ", ".join("true" if value is None else "false" for value in values) + "};")
+            arrays.append(f"const double {array_name}_Values[12] = {{" + ", ".join("0.0" if value is None else _literal(float(value)) for value in values) + "};")
+            constructors.append("NoraNullableDoubleV1 " + array_name + "Value(const int row_index)\n{\n   if(" + null_name + "[row_index])\n      return NoraNumericNullV1();\n   return NoraNumericValueV1(" + array_name + "_Values[row_index]);\n}")
+            arguments.append(array_name + "Value(row_index)")
+    arrays.append("const NoraTriBoolV1 NoraFixture_ExpectedNullable[12] = {" + ", ".join(_mql5_value(value) for value in nullable) + "};")
+    arrays.append("const bool NoraFixture_ExpectedTrigger[12] = {" + ", ".join("true" if value else "false" for value in triggers) + "};")
+    args = ",\n         ".join(arguments)
+    source_text = "#property strict\n\n#include \"NoraPhase2RuntimeV1.mqh\"\n#include \"NoraPhase2ConditionV1.mqh\"\n\n#define NORA_PHASE2_FIXTURE_ROW_COUNT 12\n\n" + "\n\n".join(arrays + constructors) + "\n\nstring NoraFixtureNullableText(const NoraTriBoolV1 value)\n{\n   if(value == NORA_BOOL_NULL_V1)\n      return \"null\";\n   if(value == NORA_BOOL_TRUE_V1)\n      return \"true\";\n   return \"false\";\n}\n\nstring NoraFixtureTriggerText(const bool value)\n{\n   return value ? \"true\" : \"false\";\n}\n\nvoid OnStart()\n{\n   const string filename = \"" + FIXTURE_RESULT_FILENAME + "\";\n   const int handle = FileOpen(filename, FILE_WRITE | FILE_CSV, ',');\n   if(handle == INVALID_HANDLE)\n   {\n      Print(\"nora_phase2_fixture_error,file_open_failed\");\n      return;\n   }\n   FileWrite(handle, \"record_type\", \"row_index\", \"actual_nullable\", \"expected_nullable\", \"actual_trigger\", \"expected_trigger\", \"row_pass\", \"row_count\", \"passed_rows\", \"failed_rows\", \"overall_pass\");\n   const int row_count = NORA_PHASE2_FIXTURE_ROW_COUNT;\n   int passed_rows = 0;\n   int failed_rows = 0;\n   if(row_count != 12)\n   {\n      FileWrite(handle, \"summary\", -1, \"\", \"\", \"\", \"\", \"false\", row_count, 0, row_count, \"false\");\n      FileClose(handle);\n      return;\n   }\n   for(int row_index = 0; row_index < row_count; row_index++)\n   {\n      NoraTriBoolV1 actual_nullable = " + condition_manifest["function_name"] + "(" + args + ");\n      bool actual_trigger = " + condition_manifest["trigger_function_name"] + "(" + args + ");\n      bool row_pass = actual_nullable == NoraFixture_ExpectedNullable[row_index] && actual_trigger == NoraFixture_ExpectedTrigger[row_index];\n      if(row_pass)\n         passed_rows++;\n      else\n         failed_rows++;\n      FileWrite(handle, \"row\", row_index, NoraFixtureNullableText(actual_nullable), NoraFixtureNullableText(NoraFixture_ExpectedNullable[row_index]), NoraFixtureTriggerText(actual_trigger), NoraFixtureTriggerText(NoraFixture_ExpectedTrigger[row_index]), row_pass ? \"true\" : \"false\", \"\", \"\", \"\", \"\");\n   }\n   FileWrite(handle, \"summary\", -1, \"\", \"\", \"\", \"\", failed_rows == 0 ? \"true\" : \"false\", row_count, passed_rows, failed_rows, failed_rows == 0 ? \"true\" : \"false\");\n   FileClose(handle);\n}\n"
+    source = source_text.encode("utf-8")
+    source_sha256 = hashlib.sha256(source).hexdigest()
+    fixture_identity = _fixture_identity(source, source_sha256, condition_manifest, rows, nullable, triggers)
+    output = Path(output_dir)
+    if not output.is_dir(): raise GenerationError("output directory must be an existing directory")
+    header = output / FIXTURE_SOURCE_FILENAME
+    manifest_path = output / FIXTURE_MANIFEST_FILENAME
+    if header.exists() or manifest_path.exists(): raise GenerationError("generated fixture targets must not already exist")
+    semantic_manifest = {"fixture_version": FIXTURE_VERSION, "runtime_identity": condition_manifest["runtime_identity"], "condition_translation_identity": condition_manifest["translation_identity"], "canonical_ast_identity": condition_manifest["canonical_ast_identity"], "row_count": len(rows), "series_bindings": condition_manifest["series_bindings"], "expected_nullable_vector": nullable, "expected_trigger_vector": triggers, "script_filename": FIXTURE_SOURCE_FILENAME, "result_filename": FIXTURE_RESULT_FILENAME, "source_sha256": source_sha256, "fixture_identity": fixture_identity}
+    manifest_bytes = (json.dumps(semantic_manifest, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+    published = False
+    try:
+        _publish(output, FIXTURE_SOURCE_FILENAME, source); published = True
+        _publish(output, FIXTURE_MANIFEST_FILENAME, manifest_bytes)
+    except GenerationError:
+        if published: header.unlink(missing_ok=True)
+        manifest_path.unlink(missing_ok=True)
+        raise
+    return {"ok": True, **semantic_manifest, "header_path": str(header), "manifest_path": str(manifest_path)}
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     condition_mode = bool(argv and argv[0] == "condition")
+    fixture_mode = bool(argv and argv[0] == "fixture-script")
     parser = argparse.ArgumentParser(prog="python -m lab.mql5gen")
     if condition_mode:
         parser.add_argument("condition", choices=["condition"])
         parser.add_argument("--ast", required=True)
         parser.add_argument("--runtime-manifest", required=True)
         parser.add_argument("--output-dir", required=True)
+    elif fixture_mode:
+        parser.add_argument("fixture_script", choices=["fixture-script"])
+        parser.add_argument("--condition-manifest", required=True)
+        parser.add_argument("--evidence", required=True)
+        parser.add_argument("--output-dir", required=True)
     else:
         parser.add_argument("--output-dir", required=True)
         parser.add_argument("--runtime-version", default=RUNTIME_VERSION)
     args = parser.parse_args(argv)
     try:
-        result = translate_condition(args.ast, args.runtime_manifest, args.output_dir) if condition_mode else generate(args.output_dir, args.runtime_version)
+        if condition_mode:
+            result = translate_condition(args.ast, args.runtime_manifest, args.output_dir)
+        elif fixture_mode:
+            result = generate_fixture_script(args.condition_manifest, args.evidence, args.output_dir)
+        else:
+            result = generate(args.output_dir, args.runtime_version)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
         return 0
     except GenerationError as error:
@@ -474,4 +619,4 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-__all__ = ["GenerationError", "generate", "main", "runtime_identity_for_test", "translate_condition"]
+__all__ = ["GenerationError", "generate", "generate_fixture_script", "main", "runtime_identity_for_test", "translate_condition"]
