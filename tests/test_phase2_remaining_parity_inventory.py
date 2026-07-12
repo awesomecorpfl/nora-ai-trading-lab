@@ -25,6 +25,11 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(value["phase"], "2")
         self.assertFalse(value["search_authorized"])
         self.assertEqual(set(value["status_values"]), STATUSES)
+        self.assertEqual(value["evidence_package_completeness"], {
+            "canary.condition_native": "legacy_committed_summary",
+            "canary.sma_cross_native": "legacy_committed_summary",
+            "canary.slope_native": "self_contained_raw_native",
+        })
         canonical_a = json.dumps(value, sort_keys=True, separators=(",", ":"))
         canonical_b = json.dumps(json.loads(canonical_a), sort_keys=True, separators=(",", ":"))
         self.assertEqual(canonical_a, canonical_b)
@@ -64,6 +69,30 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
                 self.assertIsNotNone(item["parity_result_identity"])
             self.assertNotIn("phase3", item["id"].lower())
             self.assertNotIn("search", item["category"].lower())
+
+    def test_legacy_canaries_remain_accepted_with_less_complete_packages(self):
+        items = {item["id"]: item for item in self.value["items"]}
+        self.assertEqual(items["canary.condition_native"]["status"], "accepted")
+        self.assertEqual(items["canary.condition_native"]["mql5"]["source_identity"], "583fe60539d2da2cb46f054d9800d7702efd577b6984d23757794ca91ab259e6")
+        self.assertEqual(items["canary.condition_native"]["parity_result_identity"], "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4")
+        self.assertEqual(items["canary.sma_cross_native"]["status"], "accepted")
+        self.assertEqual(items["canary.sma_cross_native"]["mql5"]["source_identity"], "78a52f288df45a93e3b026846c7283ddb6d93bcc8192874198827ec93d5041e4")
+        self.assertEqual(items["canary.sma_cross_native"]["parity_result_identity"], "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687")
+        self.assertEqual(items["canary.slope_native"]["status"], "accepted")
+
+    def test_phase_2p_prerequisites_are_proven_and_not_already_parity_accepted(self):
+        items = {item["id"]: item for item in self.value["items"]}
+        for item_id in ("layer1.atr", "transform.distance_atr"):
+            item = items[item_id]
+            self.assertEqual(item["rust"]["implementation"], "implemented")
+            self.assertIn("engine/labengine/src/indicators.rs", item["rust"]["source_paths"])
+            self.assertEqual(item["mql5"]["generation"], "absent")
+            self.assertFalse(item["native"]["execution_evidence_paths"])
+        prerequisite = self.value["next_task"]["prerequisites"]
+        fixture = "engine/labengine/tests/fixtures/phase2_distance_atr_task.json"
+        self.assertIn(fixture, prerequisite["real_rust_fixture"])
+        self.assertTrue((ROOT / fixture).exists())
+        self.assertIn("c1acf9dac99daf0006e138426f51b77721fbf4512fba07d10a6c019a0fafd5ad", prerequisite["real_rust_fixture"])
 
     def test_acceptance_requirement_schema_and_next_task(self):
         requirements = self.value["acceptance_requirements"]
