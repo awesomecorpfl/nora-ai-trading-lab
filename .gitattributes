@@ -1,1 +1,15 @@
 tests/fixtures/phase2n_mql5_slope_native/** whitespace=cr-at-eol
+
+# Immutable Windows-generated Phase-2Q evidence is byte-preserved and excluded
+# from textual diff/whitespace normalization; source and normal manifests remain checked.
+tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile.log -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run1/lifecycle.jsonl -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run1/nora_phase2_atr_distance_tester_v1.csv -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester-journal.log -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester.log -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester.ini -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run2/lifecycle.jsonl -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run2/nora_phase2_atr_distance_tester_v1.csv -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester-journal.log -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.log -diff -text
+tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.ini -diff -text

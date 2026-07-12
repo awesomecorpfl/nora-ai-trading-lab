@@ -7,6 +7,7 @@ import hashlib
 import io
 import json
 import os
+import shlex
 import re
 from datetime import datetime, timezone
 import subprocess
@@ -145,6 +146,15 @@ def _sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _automatic_invocation(argv: list[str]) -> tuple[str, list[str]]:
+    """Return the complete Fedora wrapper invocation from the actual CLI vector."""
+    prefix = []
+    if "UV_CACHE_DIR" in os.environ:
+        prefix.append(f"UV_CACHE_DIR={os.environ['UV_CACHE_DIR']}")
+    argument_array = prefix + ["uv", "run", "python", "-m", "lab.mt5", *argv]
+    return shlex.join(argument_array), argument_array
 
 
 def _part(digest: "hashlib._Hash", value: bytes) -> None:
@@ -908,7 +918,7 @@ def reconcile_atr_distance_csv(csv_path: str | os.PathLike[str], tester_manifest
     return {"rows": rows, "summary": {"row_count": row_count, "passed_rows": passed_rows, "failed_rows": failed_rows, "overall_pass": overall_pass}, "atr_vector": [row["actual_atr"] for row in rows], "expected_atr_vector": [row["expected_atr"] for row in rows], "distance_atr_vector": [row["actual_distance_atr"] for row in rows], "expected_distance_atr_vector": [row["expected_distance_atr"] for row in rows], "row_pass_vector": [row["row_pass"] for row in rows], "max_atr_abs_difference": max(atr_differences, default=0.0), "max_distance_atr_abs_difference": max(distance_differences, default=0.0)}
 
 
-def compile_atr_distance_tester_canary(runtime: str | os.PathLike[str], atr_runtime: str | os.PathLike[str], distance_atr_runtime: str | os.PathLike[str], tester_source: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], invocation_command: str) -> dict[str, object]:
+def compile_atr_distance_tester_canary(runtime: str | os.PathLike[str], atr_runtime: str | os.PathLike[str], distance_atr_runtime: str | os.PathLike[str], tester_source: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], invocation_command: str, invocation_argument_array: list[str] | None = None) -> dict[str, object]:
     orchestration_start = datetime.now(timezone.utc)
     runtime_path, atr_runtime_path, distance_atr_runtime_path, source_path = Path(runtime), Path(atr_runtime), Path(distance_atr_runtime), Path(tester_source)
     if runtime_path.name != RUNTIME_FILENAME or _sha256(runtime_path) != RUNTIME_SOURCE_SHA256:
@@ -946,12 +956,12 @@ def compile_atr_distance_tester_canary(runtime: str | os.PathLike[str], atr_runt
         exsha = hashlib.sha256(ex5bytes).hexdigest(); norm = _normalized_log_sha256(logbytes)
         identity = _identity(ATR_DISTANCE_COMPILE_DOMAIN, [fixture["tester_identity"], str(remote["compiler_version"]), exsha, norm])
         orchestration_complete = datetime.now(timezone.utc)
-        manifest = {"tester_compile_contract_version": ATR_DISTANCE_COMPILE_CONTRACT_VERSION, "compiler_path": remote["compiler_path"], "compiler_version": remote["compiler_version"], "compiler_exit_code": remote["compiler_exit_code"], "error_count": remote["error_count"], "warning_count": remote["warning_count"], "tester_fixture_identity": fixture["tester_identity"], "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "atr_runtime_source_sha256": ATR_RUNTIME_SOURCE_SHA256, "distance_atr_runtime_source_sha256": DISTANCE_ATR_RUNTIME_SOURCE_SHA256, "tester_source_sha256": fixture["source_sha256"], "ex5_filename": ATR_DISTANCE_TESTER_EX5, "ex5_sha256": exsha, "ex5_size_bytes": len(ex5bytes), "normalized_log_sha256": norm, "compile_contract_identity": identity, "status": "compiled", "orchestration_command": invocation_command, "working_directory": str(Path.cwd()), "orchestration_start_utc": orchestration_start.isoformat(), "orchestration_completion_utc": orchestration_complete.isoformat(), "orchestration_exit_status": 0, "native_evidence": remote}
+        manifest = {"tester_compile_contract_version": ATR_DISTANCE_COMPILE_CONTRACT_VERSION, "compiler_path": remote["compiler_path"], "compiler_version": remote["compiler_version"], "compiler_exit_code": remote["compiler_exit_code"], "error_count": remote["error_count"], "warning_count": remote["warning_count"], "tester_fixture_identity": fixture["tester_identity"], "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "atr_runtime_source_sha256": ATR_RUNTIME_SOURCE_SHA256, "distance_atr_runtime_source_sha256": DISTANCE_ATR_RUNTIME_SOURCE_SHA256, "tester_source_sha256": fixture["source_sha256"], "ex5_filename": ATR_DISTANCE_TESTER_EX5, "ex5_sha256": exsha, "ex5_size_bytes": len(ex5bytes), "normalized_log_sha256": norm, "compile_contract_identity": identity, "status": "compiled", "orchestration_command": invocation_command, "invocation_command": invocation_command, "invocation_command_argument_array": invocation_argument_array or shlex.split(invocation_command), "working_directory": str(Path.cwd()), "orchestration_start_utc": orchestration_start.isoformat(), "orchestration_completion_utc": orchestration_complete.isoformat(), "orchestration_exit_status": 0, "native_evidence": remote}
         _atomic_write(output / ATR_DISTANCE_TESTER_EX5, ex5bytes); _atomic_write(output / LOG_FILENAME, logbytes); _atomic_write(output / CANARY_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode())
         return {"ok": True, **manifest, "output_dir": str(output)}
 
 
-def execute_atr_distance_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], invocation_command: str) -> dict[str, object]:
+def execute_atr_distance_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], invocation_command: str, invocation_argument_array: list[str] | None = None) -> dict[str, object]:
     orchestration_start = datetime.now(timezone.utc)
     compile_value = _read_json(Path(compile_manifest), "atr distance tester compile")
     fixture = _verify_atr_distance_tester_fixture(Path(tester_manifest))
@@ -998,7 +1008,7 @@ def execute_atr_distance_tester_canary(compile_manifest: str | os.PathLike[str],
         execution = _identity(ATR_DISTANCE_EXECUTION_DOMAIN, [fixture["tester_identity"], compile_value["compile_contract_identity"], exsha, TERMINAL_VERSION, semantic])
         semantic_id = _identity(ATR_DISTANCE_SEMANTIC_RESULT_DOMAIN, [ATR_DISTANCE_TESTER_IDENTITY, FIXTURE_PACKAGE_IDENTITY, RUST_ATR_IDENTITY, RUST_DISTANCE_ATR_IDENTITY, TERMINAL_PRODUCT, TERMINAL_VERSION, atr_vec, distance_vec, rowpass, summary])
         orchestration_complete = datetime.now(timezone.utc)
-        manifest = {"status": "passed", "terminal_path": remote["terminal_path"], "terminal_version": remote["terminal_version"], "tester_fixture_identity": fixture["tester_identity"], "compile_contract_identity": compile_value["compile_contract_identity"], "ex5_sha256": exsha, "result_csv_sha256": hashlib.sha256(csvbytes).hexdigest(), "atr_vector": reconciliation["atr_vector"], "expected_atr_vector": reconciliation["expected_atr_vector"], "distance_atr_vector": reconciliation["distance_atr_vector"], "expected_distance_atr_vector": reconciliation["expected_distance_atr_vector"], "row_pass_vector": reconciliation["row_pass_vector"], "atr_null_positions": [index for index, value in enumerate(reconciliation["atr_vector"]) if value == "null"], "distance_atr_null_positions": [index for index, value in enumerate(reconciliation["distance_atr_vector"]) if value == "null"], "max_atr_abs_difference": reconciliation["max_atr_abs_difference"], "max_distance_atr_abs_difference": reconciliation["max_distance_atr_abs_difference"], **reconciliation["summary"], "execution_identity": execution, "semantic_result_identity": semantic_id, "launch_stages": remote["stages"], "orchestration_command": invocation_command, "working_directory": str(Path.cwd()), "orchestration_start_utc": orchestration_start.isoformat(), "orchestration_completion_utc": orchestration_complete.isoformat(), "orchestration_exit_status": 0, "native_evidence": remote}
+        manifest = {"status": "passed", "terminal_path": remote["terminal_path"], "terminal_version": remote["terminal_version"], "tester_fixture_identity": fixture["tester_identity"], "compile_contract_identity": compile_value["compile_contract_identity"], "ex5_sha256": exsha, "result_csv_sha256": hashlib.sha256(csvbytes).hexdigest(), "atr_vector": reconciliation["atr_vector"], "expected_atr_vector": reconciliation["expected_atr_vector"], "distance_atr_vector": reconciliation["distance_atr_vector"], "expected_distance_atr_vector": reconciliation["expected_distance_atr_vector"], "row_pass_vector": reconciliation["row_pass_vector"], "atr_null_positions": [index for index, value in enumerate(reconciliation["atr_vector"]) if value == "null"], "distance_atr_null_positions": [index for index, value in enumerate(reconciliation["distance_atr_vector"]) if value == "null"], "max_atr_abs_difference": reconciliation["max_atr_abs_difference"], "max_distance_atr_abs_difference": reconciliation["max_distance_atr_abs_difference"], **reconciliation["summary"], "execution_identity": execution, "semantic_result_identity": semantic_id, "launch_stages": remote["stages"], "orchestration_command": invocation_command, "invocation_command": invocation_command, "invocation_command_argument_array": invocation_argument_array or shlex.split(invocation_command), "working_directory": str(Path.cwd()), "orchestration_start_utc": orchestration_start.isoformat(), "orchestration_completion_utc": orchestration_complete.isoformat(), "orchestration_exit_status": 0, "native_evidence": remote}
         _atomic_execution_write(output / ATR_DISTANCE_TESTER_RESULT, csvbytes); _atomic_execution_write(output / "tester.log", (temp / "tester.log").read_bytes()); _atomic_execution_write(output / "lifecycle.jsonl", (temp / "lifecycle.jsonl").read_bytes()); _atomic_execution_write(output / "tester-journal.log", (temp / "tester-journal.log").read_bytes()); _atomic_execution_write(output / "tester.ini", (temp / "tester.ini.normalized").read_bytes()); _atomic_execution_write(output / EXECUTION_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode())
         if (temp / "tester.htm").is_file():
             _atomic_execution_write(output / "tester.htm", (temp / "tester.htm").read_bytes())
@@ -1100,10 +1110,11 @@ def main(argv: list[str] | None = None) -> int:
     slope_execute_parser = sub.add_parser("execute-slope-tester-canary")
     slope_execute_parser.add_argument("--compile-manifest", required=True);slope_execute_parser.add_argument("--ex5", required=True);slope_execute_parser.add_argument("--tester-manifest", required=True);slope_execute_parser.add_argument("--output-dir", required=True);slope_execute_parser.add_argument("--invocation-command", required=True)
     atr_distance_compile_parser = sub.add_parser("compile-atr-distance-tester-canary")
-    atr_distance_compile_parser.add_argument("--runtime", required=True);atr_distance_compile_parser.add_argument("--atr-runtime", required=True);atr_distance_compile_parser.add_argument("--distance-atr-runtime", required=True);atr_distance_compile_parser.add_argument("--tester-source", required=True);atr_distance_compile_parser.add_argument("--tester-manifest", required=True);atr_distance_compile_parser.add_argument("--output-dir", required=True);atr_distance_compile_parser.add_argument("--invocation-command", required=True)
+    atr_distance_compile_parser.add_argument("--runtime", required=True);atr_distance_compile_parser.add_argument("--atr-runtime", required=True);atr_distance_compile_parser.add_argument("--distance-atr-runtime", required=True);atr_distance_compile_parser.add_argument("--tester-source", required=True);atr_distance_compile_parser.add_argument("--tester-manifest", required=True);atr_distance_compile_parser.add_argument("--output-dir", required=True)
     atr_distance_execute_parser = sub.add_parser("execute-atr-distance-tester-canary")
-    atr_distance_execute_parser.add_argument("--compile-manifest", required=True);atr_distance_execute_parser.add_argument("--ex5", required=True);atr_distance_execute_parser.add_argument("--tester-manifest", required=True);atr_distance_execute_parser.add_argument("--output-dir", required=True);atr_distance_execute_parser.add_argument("--invocation-command", required=True)
+    atr_distance_execute_parser.add_argument("--compile-manifest", required=True);atr_distance_execute_parser.add_argument("--ex5", required=True);atr_distance_execute_parser.add_argument("--tester-manifest", required=True);atr_distance_execute_parser.add_argument("--output-dir", required=True)
     args = parser.parse_args(argv)
+    automatic_command, automatic_arguments = _automatic_invocation(list(argv) if argv is not None else sys.argv[1:])
     try:
         if args.command == "compile-condition-canary":
             result = compile_condition_canary(args.runtime, args.condition, args.script, args.output_dir)
@@ -1120,9 +1131,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "execute-slope-tester-canary":
             result = execute_slope_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir,args.invocation_command)
         elif args.command == "compile-atr-distance-tester-canary":
-            result = compile_atr_distance_tester_canary(args.runtime,args.atr_runtime,args.distance_atr_runtime,args.tester_source,args.tester_manifest,args.output_dir,args.invocation_command)
+            result = compile_atr_distance_tester_canary(args.runtime,args.atr_runtime,args.distance_atr_runtime,args.tester_source,args.tester_manifest,args.output_dir,automatic_command,automatic_arguments)
         elif args.command == "execute-atr-distance-tester-canary":
-            result = execute_atr_distance_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir,args.invocation_command)
+            result = execute_atr_distance_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir,automatic_command,automatic_arguments)
         else:
             result = execute_series_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))

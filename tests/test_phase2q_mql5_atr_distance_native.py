@@ -23,6 +23,7 @@ from lab.mt5 import (
     CompileError,
     ExecutionError,
     reconcile_atr_distance_csv,
+    _automatic_invocation,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -421,6 +422,26 @@ class Phase2QCommittedNativeEvidenceTests(unittest.TestCase):
             self.assertIn("orchestration_completion_utc", run)
             self.assertEqual(run["orchestration_exit_status"], 0)
 
+    def test_reconciled_fedora_provenance_is_complete_and_unambiguous(self):
+        provenance = self.index["fedora_invocation_provenance"]
+        self.assertEqual(provenance["classification"], "post_run_reconciled_from_committed_command_record")
+        self.assertIn("repair_commit_identity", provenance)
+        self.assertIn("contemporaneous", provenance["native_process_statement"])
+        expected_outputs = {"compile": "tests/fixtures/phase2q_mql5_atr_distance_native/compile", "run1": "tests/fixtures/phase2q_mql5_atr_distance_native/run1", "run2": "tests/fixtures/phase2q_mql5_atr_distance_native/run2"}
+        for name, expected_output in expected_outputs.items():
+            entry = provenance[name]
+            self.assertTrue(entry["source_document"].startswith("tests/fixtures/phase2q_mql5_atr_distance_native/"))
+            self.assertNotIn("...", entry["rendered_command"])
+            self.assertEqual(entry["rendered_command"].split()[-1], expected_output)
+            self.assertEqual(" ".join(entry["argument_array"]), entry["rendered_command"])
+
+    def test_automatic_invocation_capture_has_complete_vector(self):
+        command, arguments = _automatic_invocation(["execute-atr-distance-tester-canary", "--output-dir", "tests/fixtures/phase2q_mql5_atr_distance_native/run2"])
+        self.assertEqual(arguments[-1], "tests/fixtures/phase2q_mql5_atr_distance_native/run2")
+        self.assertEqual(command, " ".join(arguments))
+        self.assertNotIn("...", command)
+        self.assertEqual(arguments[:5], ["uv", "run", "python", "-m", "lab.mt5"] if not any(argument.startswith("UV_CACHE_DIR=") for argument in arguments) else [arguments[0], "uv", "run", "python", "-m"])
+
     def test_compiler_diagnostic_zero_errors_warnings(self):
         self.assertEqual(self.compile["error_count"], 0)
         self.assertEqual(self.compile["warning_count"], 0)
@@ -436,6 +457,12 @@ class Phase2QCommittedNativeEvidenceTests(unittest.TestCase):
     def test_raw_csv_hashes(self):
         self.assertEqual(self.runs[0]["result_csv_sha256"], "3fd319613374e0b22ac80cf1fea1cb34c2a37069ee3778cf9f154ac86a1eaccf")
         self.assertEqual(self.runs[1]["result_csv_sha256"], "3fd319613374e0b22ac80cf1fea1cb34c2a37069ee3778cf9f154ac86a1eaccf")
+
+    def test_frozen_native_identity_values(self):
+        self.assertEqual(self.compile["ex5_sha256"], "a948b4c4c4c386e14706fbafe610dfc4a4445e645a851f47780cf6a15acd770c")
+        self.assertEqual(self.index["semantic_result_identity"], "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2")
+        self.assertEqual(self.index["max_atr_abs_difference"], 4.2500725161431774e-17)
+        self.assertEqual(self.index["max_distance_atr_abs_difference"], 5.551115123125783e-17)
 
     def test_ex5_sha256(self):
         self.assertEqual(self.compile["ex5_sha256"], "a948b4c4c4c386e14706fbafe610dfc4a4445e645a851f47780cf6a15acd770c")

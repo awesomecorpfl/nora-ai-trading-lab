@@ -4,6 +4,26 @@
     1
   ],
   "binary_commit_reason": "Phase-2Q commits the 14kiB EX5, 2.9kiB CSVs, and native lifecycle evidence as part of the frozen native ATR/Distance-ATR canary contract.",
+  "fedora_invocation_provenance": {
+    "classification": "post_run_reconciled_from_committed_command_record",
+    "repair_commit_identity": "recorded by the repair commit containing this provenance section",
+    "native_process_statement": "Native Windows MetaEditor and terminal commands, timestamps, freshness relationships, and semantic results remain contemporaneous evidence from the original native manifests.",
+    "compile": {
+      "source_document": "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
+      "argument_array": ["UV_CACHE_DIR=/tmp/uv-cache", "uv", "run", "python", "-m", "lab.mt5", "compile-atr-distance-tester-canary", "--runtime", "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.mqh", "--atr-runtime", "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrRuntimeV1.mqh", "--distance-atr-runtime", "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2DistanceAtrRuntimeV1.mqh", "--tester-source", "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.mq5", "--tester-manifest", "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json", "--output-dir", "tests/fixtures/phase2q_mql5_atr_distance_native/compile"],
+      "rendered_command": "UV_CACHE_DIR=/tmp/uv-cache uv run python -m lab.mt5 compile-atr-distance-tester-canary --runtime tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.mqh --atr-runtime tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrRuntimeV1.mqh --distance-atr-runtime tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2DistanceAtrRuntimeV1.mqh --tester-source tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.mq5 --tester-manifest tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json --output-dir tests/fixtures/phase2q_mql5_atr_distance_native/compile"
+    },
+    "run1": {
+      "source_document": "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
+      "argument_array": ["UV_CACHE_DIR=/tmp/uv-cache", "uv", "run", "python", "-m", "lab.mt5", "execute-atr-distance-tester-canary", "--compile-manifest", "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json", "--ex5", "tests/fixtures/phase2q_mql5_atr_distance_native/compile/NoraPhase2AtrDistanceTesterCanaryV1.ex5", "--tester-manifest", "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json", "--output-dir", "tests/fixtures/phase2q_mql5_atr_distance_native/run1"],
+      "rendered_command": "UV_CACHE_DIR=/tmp/uv-cache uv run python -m lab.mt5 execute-atr-distance-tester-canary --compile-manifest tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json --ex5 tests/fixtures/phase2q_mql5_atr_distance_native/compile/NoraPhase2AtrDistanceTesterCanaryV1.ex5 --tester-manifest tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json --output-dir tests/fixtures/phase2q_mql5_atr_distance_native/run1"
+    },
+    "run2": {
+      "source_document": "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json",
+      "argument_array": ["UV_CACHE_DIR=/tmp/uv-cache", "uv", "run", "python", "-m", "lab.mt5", "execute-atr-distance-tester-canary", "--compile-manifest", "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json", "--ex5", "tests/fixtures/phase2q_mql5_atr_distance_native/compile/NoraPhase2AtrDistanceTesterCanaryV1.ex5", "--tester-manifest", "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json", "--output-dir", "tests/fixtures/phase2q_mql5_atr_distance_native/run2"],
+      "rendered_command": "UV_CACHE_DIR=/tmp/uv-cache uv run python -m lab.mt5 execute-atr-distance-tester-canary --compile-manifest tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json --ex5 tests/fixtures/phase2q_mql5_atr_distance_native/compile/NoraPhase2AtrDistanceTesterCanaryV1.ex5 --tester-manifest tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json --output-dir tests/fixtures/phase2q_mql5_atr_distance_native/run2"
+    }
+  },
   "compile": "compile/compile_manifest.json",
   "compile_log": "compile/compile.log",
   "csv_byte_identical": true,
