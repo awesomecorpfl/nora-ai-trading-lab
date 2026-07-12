@@ -1,6 +1,7 @@
 """Fixed-vector Phase-2Y synthetic return reconciliation."""
 import hashlib,json,math
 from pathlib import Path
+from pathlib import Path
 from .phase2x_batch import canon,load
 VERSION='nora.phase2y.reconcile_v2';TOL='abs(actual-expected) <= 1e-12 + 1e-9*abs(expected)'
 def reconcile(value):
@@ -33,3 +34,14 @@ def reconcile(value):
   targets.append({'id':t['id'],'classification':cls,'maxima':maxima,'failure_reasons':reasons})
  overall=next((x['classification'] for x in targets if x['classification'].startswith('FAIL_')),'PASS_WITHIN_TOLERANCE' if any(x['classification']=='PASS_WITHIN_TOLERANCE' for x in targets) else 'PASS_EXACT')
  out={'protocol_version':VERSION,'batch_identity':b['batch_identity'],'classification':overall,'targets':targets,'numeric_policy':{'formula':TOL,'relative_denominator':'max(abs(expected), 1e-15)'},'native_parity_updated':False};out['returned_result_identity']=hashlib.sha256(canon(value)).hexdigest();return out
+def publish(value,destination,fail_publish=False):
+ """Atomically publish immutable synthetic reconciliation evidence."""
+ out=Path(destination)
+ if out.exists():raise ValueError('existing reconciliation evidence')
+ evidence=reconcile(value);tmp=out.with_suffix('.tmp')
+ try:
+  tmp.write_bytes(canon(evidence)+b'\n')
+  if fail_publish:raise RuntimeError('injected reconciliation publication failure')
+  tmp.replace(out)
+ except Exception:tmp.unlink(missing_ok=True);raise
+ return evidence
