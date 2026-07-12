@@ -1,0 +1,11 @@
+{
+  "admitted_method": "wilder",
+  "admitted_period": 3,
+  "atr_canonical_feature_identity": "dc2a4299ef2a09dc4a78e8597411a925efa17fce4b6f3cf90ed1f591353f8e55",
+  "canonical_ast_identity": "aab0586cdf3bb2d5eea6210f3dcec9b86a52cf116a60a46930d7075cab0c3211",
+  "distance_atr_canonical_feature_identity": "1e6cb47b6a61339caa759bdd5b4d5d75bced27545763cfd4009a7a2dd9d05d28",
+  "feature_plan_translation_identity": "c78dc2437e47b14868a225916eb9acad4fd4bb0bdd0893e73f5db12032c02311",
+  "native_semantic_result_identity": "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2",
+  "search_authorized": false,
+  "phase3_authorized": false
+}

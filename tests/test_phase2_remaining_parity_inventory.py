@@ -82,7 +82,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertEqual(item["rust"]["identity"], rust_identity)
             self.assertEqual(item["mql5"]["source_identity"], runtime_identity)
             self.assertEqual(item["parity_result_identity"], "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2")
-            self.assertEqual(item["grammar_admitted"], False)
+            self.assertEqual(item["grammar_admitted"], True)
             self.assertEqual(len(item["native"]["compile_evidence_paths"]), 2)
             self.assertGreaterEqual(len(item["native"]["execution_evidence_paths"]), 10)
             self.assertEqual(item["commits"], ["a73ed6912c8dc354c36a7475dfe595d622e66d01", "021ac6d45e0624dd379be79a099022d22c12abd9", "fc363988af9ee7b80f9ad4f071868a922628ccd6"])
@@ -92,9 +92,8 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(set(rule["required_fields"]), {"typed_ast_schema_node_registration", "rust_evaluation_path", "canonicalization_support", "hashing_support", "mql5_translation", "native_parity_fixture"})
         self.assertFalse(rule["search_authorized"])
         self.assertFalse(rule["phase3_authorized"])
-        for item in self.value["items"]:
-            if item.get("grammar_admitted"):
-                self.fail("no current item may be grammar-admitted")
+        admitted = [item["id"] for item in self.value["items"] if item.get("grammar_admitted")]
+        self.assertEqual(admitted, ["layer1.atr", "transform.distance_atr"])
 
     def test_legacy_canaries_remain_accepted_with_less_complete_packages(self):
         items = {item["id"]: item for item in self.value["items"]}
@@ -142,7 +141,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(summary["item_count"], len(self.value["items"]))
         self.assertEqual(summary["status_counts"], dict(counts))
         self.assertEqual(summary["accepted_native_canary_count"], 4)
-        self.assertEqual(summary["grammar_admitted_node_count"], 0)
+        self.assertEqual(summary["grammar_admitted_node_count"], 2)
         self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
 
 

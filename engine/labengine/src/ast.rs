@@ -1,137 +1,1100 @@
 //! Phase 2B's typed, structural-only strategy AST.
-use std::{collections::HashMap, fs, path::{Path, PathBuf}};
 use arrow_array::{Array, BooleanArray, Float64Array, StringArray};
 use arrow_schema::DataType;
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use serde_json::{json, Map, Value};
 use sha2::{Digest, Sha256};
+use std::{
+    collections::{BTreeMap, HashMap},
+    fs,
+    path::{Path, PathBuf},
+};
 
 pub type Result<T> = std::result::Result<T, String>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Type { Numeric, Boolean }
-impl Type { pub fn name(self)->&'static str { match self { Self::Numeric=>"numeric", Self::Boolean=>"boolean" } } }
+pub enum Type {
+    Numeric,
+    Boolean,
+}
+impl Type {
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Numeric => "numeric",
+            Self::Boolean => "boolean",
+        }
+    }
+}
 #[derive(Clone, Debug, PartialEq)]
-pub struct Reference { series:String, ty:Type }
+pub struct Reference {
+    series: String,
+    ty: Type,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Compare { Gt, Gte, Lt, Lte }
+pub enum Compare {
+    Gt,
+    Gte,
+    Lt,
+    Lte,
+}
 #[derive(Clone, Debug, PartialEq)]
-pub enum Node { NumericSeries(Reference), Number(f64), BooleanSeries(Reference), Compare{op:Compare,left:Box<Node>,right:Box<Node>}, And(Vec<Node>), Or(Vec<Node>), Not(Box<Node>) }
+pub enum Node {
+    NumericSeries(Reference),
+    Number(f64),
+    BooleanSeries(Reference),
+    Atr {
+        high: Reference,
+        low: Reference,
+        close: Reference,
+        period: usize,
+    },
+    DistanceAtr {
+        value: Reference,
+        reference: Reference,
+        atr: Box<Node>,
+    },
+    Compare {
+        op: Compare,
+        left: Box<Node>,
+        right: Box<Node>,
+    },
+    And(Vec<Node>),
+    Or(Vec<Node>),
+    Not(Box<Node>),
+}
 #[derive(Clone, Debug, PartialEq)]
-pub struct Document { pub schema_version:u32, pub root:Node }
-#[derive(Clone,Copy,Debug,PartialEq,Eq)] pub enum Side { Long, Short }
-#[derive(Clone,Debug,PartialEq)] pub struct EntryCondition { pub schema_version:u32, pub side:Side, pub signal:String }
-
-fn only(object:&Map<String,Value>, allowed:&[&str], where_:&str)->Result<()> { for key in object.keys(){if !allowed.contains(&key.as_str()){return Err(format!("unknown {where_} field {key:?}"))}} Ok(()) }
-fn object<'a>(value:&'a Value, where_:&str)->Result<&'a Map<String,Value>> { value.as_object().ok_or_else(||format!("{where_} must be an object")) }
-fn required<'a>(object:&'a Map<String,Value>, key:&str, where_:&str)->Result<&'a Value>{object.get(key).ok_or_else(||format!("missing {where_} field {key}"))}
-fn string(object:&Map<String,Value>, key:&str, where_:&str)->Result<String>{required(object,key,where_)?.as_str().filter(|v|!v.is_empty()).map(str::to_owned).ok_or_else(||format!("{where_}.{key} must be a non-empty string"))}
-
-pub fn parse(value:&Value)->Result<Document>{
- let o=object(value,"AST document")?; only(o,&["schema_version","root"],"AST document")?;
- let schema_version=required(o,"schema_version","AST document")?.as_u64().and_then(|v|u32::try_from(v).ok()).ok_or("schema_version must be integer 1")?;
- if schema_version!=1{return Err(format!("unsupported AST schema_version {schema_version}"))}
- let root=parse_node(required(o,"root","AST document")?)?;
- if root.ty()!=Type::Boolean{return Err("AST root must resolve to boolean".into())}
- Ok(Document{schema_version,root})
+pub struct Document {
+    pub schema_version: u32,
+    pub root: Node,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Side {
+    Long,
+    Short,
+}
+#[derive(Clone, Debug, PartialEq)]
+pub struct EntryCondition {
+    pub schema_version: u32,
+    pub side: Side,
+    pub signal: String,
 }
 
-#[cfg(test)] mod more_tests {use super::*;use serde_json::json;
- #[test] fn every_node_and_representative_strict_forms(){
-  let boolean=json!({"kind":"boolean_series","ref":{"series":"b","type":"boolean"}});
-  let valid=[json!({"schema_version":1,"root":{"kind":"compare","op":"gte","left":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}},"right":{"kind":"number","value":-0.0}}}),json!({"schema_version":1,"root":{"kind":"compare","op":"lt","left":{"kind":"number","value":1},"right":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}}}}),json!({"schema_version":1,"root":{"kind":"compare","op":"lte","left":{"kind":"number","value":1},"right":{"kind":"number","value":2}}}),json!({"schema_version":1,"root":{"kind":"and","args":[boolean.clone(),boolean.clone()]}}),json!({"schema_version":1,"root":{"kind":"or","args":[boolean.clone(),boolean.clone()]}}),json!({"schema_version":1,"root":{"kind":"not","arg":boolean.clone()}})];for value in valid{assert!(parse(&value).is_ok(),"{value}")}
-  let invalid=[json!({"schema_version":1,"root":{}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{}}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"type":"numeric"}}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"series":"n"}}}),json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"series":1,"type":"numeric"}}}),json!({"schema_version":1,"root":{"kind":"and","args":"x"}}),json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"number","value":1},"right":{"kind":"number","value":"NaN"}}})];for value in invalid{assert!(parse(&value).is_err(),"{value}")}
- }
- #[test] fn negative_zero_canonicalizes_to_zero(){let d=parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"number","value":-0.0},"right":{"kind":"number","value":0}}})).unwrap();assert!(canonical_json(&d).contains("\"value\":0.0"));}
+fn only(object: &Map<String, Value>, allowed: &[&str], where_: &str) -> Result<()> {
+    for key in object.keys() {
+        if !allowed.contains(&key.as_str()) {
+            return Err(format!("unknown {where_} field {key:?}"));
+        }
+    }
+    Ok(())
 }
-fn reference(value:&Value, expected:Type)->Result<Reference>{let o=object(value,"series reference")?;only(o,&["series","type"],"series reference")?;let series=string(o,"series","series reference")?;let ty=match string(o,"type","series reference")?.as_str(){"numeric"=>Type::Numeric,"boolean"=>Type::Boolean,_=>return Err("series reference.type must be numeric or boolean".into())};if ty!=expected{return Err(format!("series reference type disagrees with node kind; expected {}",expected.name()))}Ok(Reference{series,ty})}
-fn parse_node(value:&Value)->Result<Node>{let o=object(value,"AST node")?;let kind=string(o,"kind","AST node")?;match kind.as_str(){
- "numeric_series"=>{only(o,&["kind","ref"],"numeric_series node")?;Ok(Node::NumericSeries(reference(required(o,"ref","numeric_series node")?,Type::Numeric)?))}
- "number"=>{only(o,&["kind","value"],"number node")?;let n=required(o,"value","number node")?.as_f64().filter(|n|n.is_finite()).ok_or("number.value must be a finite numeric value")?;Ok(Node::Number(if n==0. {0.}else{n}))}
- "boolean_series"=>{only(o,&["kind","ref"],"boolean_series node")?;Ok(Node::BooleanSeries(reference(required(o,"ref","boolean_series node")?,Type::Boolean)?))}
- "compare"=>{only(o,&["kind","op","left","right"],"compare node")?;let op=match string(o,"op","compare node")?.as_str(){"gt"=>Compare::Gt,"gte"=>Compare::Gte,"lt"=>Compare::Lt,"lte"=>Compare::Lte,_=>return Err("unknown comparison operator".into())};let left=parse_node(required(o,"left","compare node")?)?;let right=parse_node(required(o,"right","compare node")?)?;if left.ty()!=Type::Numeric||right.ty()!=Type::Numeric{return Err("compare operands must be numeric".into())}Ok(Node::Compare{op,left:Box::new(left),right:Box::new(right)})}
- "and"=>{only(o,&["kind","args"],"and node")?;Ok(Node::And(boolean_args(required(o,"args","and node")?,"and")?))}
- "or"=>{only(o,&["kind","args"],"or node")?;Ok(Node::Or(boolean_args(required(o,"args","or node")?,"or")?))}
- "not"=>{only(o,&["kind","arg"],"not node")?;let arg=parse_node(required(o,"arg","not node")?)?;if arg.ty()!=Type::Boolean{return Err("not argument must be boolean".into())}Ok(Node::Not(Box::new(arg)))}
- _=>Err(format!("unknown AST node kind {kind:?}")),}}
-fn boolean_args(value:&Value, kind:&str)->Result<Vec<Node>>{let values=value.as_array().ok_or_else(||format!("{kind}.args must be an array"))?;if values.len()<2{return Err(format!("{kind}.args must contain at least two boolean arguments"))}let args=values.iter().map(parse_node).collect::<Result<Vec<_>>>()?;if args.iter().any(|arg|arg.ty()!=Type::Boolean){return Err(format!("{kind}.args must contain only boolean arguments"))}Ok(args)}
-impl Node { pub fn ty(&self)->Type{match self{Self::NumericSeries(_) | Self::Number(_)=>Type::Numeric,Self::BooleanSeries(_) | Self::Compare{..} | Self::And(_) | Self::Or(_) | Self::Not(_)=>Type::Boolean}} }
-fn reference_json(reference:&Reference)->Value{json!({"series":reference.series,"type":reference.ty.name()})}
-fn node_json(node:&Node)->Value{match node{Node::NumericSeries(r)=>json!({"kind":"numeric_series","ref":reference_json(r)}),Node::Number(n)=>json!({"kind":"number","value":n}),Node::BooleanSeries(r)=>json!({"kind":"boolean_series","ref":reference_json(r)}),Node::Compare{op,left,right}=>json!({"kind":"compare","op":match op{Compare::Gt=>"gt",Compare::Gte=>"gte",Compare::Lt=>"lt",Compare::Lte=>"lte"},"left":node_json(left),"right":node_json(right)}),Node::And(args)=>json!({"kind":"and","args":args.iter().map(node_json).collect::<Vec<_>>() }),Node::Or(args)=>json!({"kind":"or","args":args.iter().map(node_json).collect::<Vec<_>>() }),Node::Not(arg)=>json!({"kind":"not","arg":node_json(arg)})}}
-pub fn canonical_json(document:&Document)->String{serde_json::to_string(&json!({"schema_version":document.schema_version,"root":node_json(&document.root)})).expect("canonical AST JSON")}
-pub fn identity(document:&Document)->String{let mut hash=Sha256::new();hash.update(b"nora-ast-semantic-v1");hash.update(canonical_json(document).as_bytes());format!("{:x}",hash.finalize())}
-pub fn parse_condition(value:&Value)->Result<EntryCondition>{let o=object(value,"entry condition")?;only(o,&["schema_version","side","entry"],"entry condition")?;let version=required(o,"schema_version","entry condition")?.as_u64().and_then(|v|u32::try_from(v).ok()).ok_or("entry condition schema_version must be integer 1")?;if version!=1{return Err("unsupported entry condition schema_version".into())}let side=match string(o,"side","entry condition")?.as_str(){"long"=>Side::Long,"short"=>Side::Short,_=>return Err("entry condition side must be long or short".into())};let entry=object(required(o,"entry","entry condition")?,"entry condition.entry")?;only(entry,&["signal","timing"],"entry condition.entry")?;if string(entry,"timing","entry condition.entry")? != "next_open"{return Err("entry condition timing must be next_open".into())}let signal=reference(required(entry,"signal","entry condition.entry")?,Type::Boolean)?.series;Ok(EntryCondition{schema_version:version,side,signal})}
-pub fn condition_json(c:&EntryCondition)->String{serde_json::to_string(&json!({"schema_version":c.schema_version,"side":match c.side{Side::Long=>"long",Side::Short=>"short"},"entry":{"signal":{"series":c.signal,"type":"boolean"},"timing":"next_open"}})).unwrap()}
-pub fn condition_identity(c:&EntryCondition)->String{let mut h=Sha256::new();h.update(b"nora-entry-condition-semantic-v1");h.update(condition_json(c).as_bytes());format!("{:x}",h.finalize())}
+fn object<'a>(value: &'a Value, where_: &str) -> Result<&'a Map<String, Value>> {
+    value
+        .as_object()
+        .ok_or_else(|| format!("{where_} must be an object"))
+}
+fn required<'a>(object: &'a Map<String, Value>, key: &str, where_: &str) -> Result<&'a Value> {
+    object
+        .get(key)
+        .ok_or_else(|| format!("missing {where_} field {key}"))
+}
+fn string(object: &Map<String, Value>, key: &str, where_: &str) -> Result<String> {
+    required(object, key, where_)?
+        .as_str()
+        .filter(|v| !v.is_empty())
+        .map(str::to_owned)
+        .ok_or_else(|| format!("{where_}.{key} must be a non-empty string"))
+}
 
-pub fn task(o:&Map<String,Value>)->Result<Value>{only(o,&["task_version","task_type","output_path","ast"],"AST task")?;let path=output(&string(o,"output_path","AST task")?)?;let document=parse(required(o,"ast","AST task")?)?;let canonical=canonical_json(&document);let identity=identity(&document);let temp=path.with_file_name(format!(".{}.{}.partial",path.file_name().and_then(|x|x.to_str()).ok_or("malformed output_path")?,std::process::id()));fs::write(&temp,&canonical).map_err(|e|format!("write AST temporary artifact: {e}"))?;if let Err(e)=fs::rename(&temp,&path){let _=fs::remove_file(&temp);return Err(format!("atomic publish AST artifact: {e}"))}Ok(json!({"ok":true,"task_type":"canonicalize_ast","schema_version":document.schema_version,"root_type":document.root.ty().name(),"ast_semantic_identity":identity,"canonical_artifact_path":path}))}
-fn output(raw:&str)->Result<PathBuf>{let path=PathBuf::from(raw);if raw.trim().is_empty()||path.exists()||path.parent().map_or(true,|parent|!parent.is_dir()){Err("output_path must not exist and its parent must exist".into())}else{Ok(path)}}
+pub fn parse(value: &Value) -> Result<Document> {
+    let o = object(value, "AST document")?;
+    only(o, &["schema_version", "root"], "AST document")?;
+    let schema_version = required(o, "schema_version", "AST document")?
+        .as_u64()
+        .and_then(|v| u32::try_from(v).ok())
+        .ok_or("schema_version must be integer 1")?;
+    if schema_version != 1 {
+        return Err(format!("unsupported AST schema_version {schema_version}"));
+    }
+    let root = parse_node(required(o, "root", "AST document")?)?;
+    if root.ty() != Type::Boolean {
+        return Err("AST root must resolve to boolean".into());
+    }
+    Ok(Document {
+        schema_version,
+        root,
+    })
+}
 
-#[derive(Clone)] struct Runtime { timestamps:Vec<String>, numeric:HashMap<String,Vec<Option<f64>>>, boolean:HashMap<String,Vec<Option<bool>>>, commitment:String }
-fn read_runtime(path:&Path)->Result<Runtime>{let builder=ParquetRecordBatchReaderBuilder::try_new(fs::File::open(path).map_err(|e|format!("open typed AST input: {e}"))?).map_err(|e|format!("read typed AST input Parquet: {e}"))?;let schema=builder.schema().clone();let timestamp=schema.field_with_name("timestamp").map_err(|_|"AST input requires timestamp column")?;if timestamp.data_type()!=&DataType::Utf8{return Err("AST input timestamp must be UTF-8".into())}let mut timestamps=Vec::new();let mut numeric:HashMap<String,Vec<Option<f64>>>=HashMap::new();let mut boolean:HashMap<String,Vec<Option<bool>>>=HashMap::new();for field in schema.fields(){if field.name()!="timestamp"{match field.data_type(){DataType::Float64=>{numeric.insert(field.name().clone(),Vec::new());},DataType::Boolean=>{boolean.insert(field.name().clone(),Vec::new());},_=>return Err(format!("unsupported AST input column type for {}",field.name()))}}}let reader=builder.build().map_err(|e|format!("read typed AST input batches: {e}"))?;for batch in reader{let batch=batch.map_err(|e|format!("read typed AST input batch: {e}"))?;let stamps=batch.column_by_name("timestamp").and_then(|v|v.as_any().downcast_ref::<StringArray>()).ok_or("AST input timestamp type mismatch")?;for row in 0..batch.num_rows(){if stamps.is_null(row){return Err("AST input timestamp must not be null".into())}timestamps.push(stamps.value(row).to_owned())}for(name,values)in numeric.iter_mut(){let col=batch.column_by_name(name).and_then(|v|v.as_any().downcast_ref::<Float64Array>()).ok_or("AST numeric input type mismatch")?;for row in 0..batch.num_rows(){values.push(if col.is_null(row){None}else{let v=col.value(row);if !v.is_finite(){return Err("AST numeric input contains non-finite value".into())}Some(v)})}}for(name,values)in boolean.iter_mut(){let col=batch.column_by_name(name).and_then(|v|v.as_any().downcast_ref::<BooleanArray>()).ok_or("AST boolean input type mismatch")?;for row in 0..batch.num_rows(){values.push(if col.is_null(row){None}else{Some(col.value(row))})}}}let mut hash=Sha256::new();hash.update(b"nora-ast-input-content-v1");for stamp in &timestamps{hash.update((stamp.len() as u64).to_be_bytes());hash.update(stamp.as_bytes())}let mut names=numeric.keys().chain(boolean.keys()).cloned().collect::<Vec<_>>();names.sort();for name in names{hash.update(name.as_bytes());if let Some(values)=numeric.get(&name){hash.update([1]);for value in values{match value{Some(v)=>{hash.update([1]);hash.update(v.to_bits().to_be_bytes())},None=>hash.update([0])}}}else{hash.update([2]);for value in &boolean[&name]{hash.update([match value{Some(true)=>1,Some(false)=>0,None=>2}])}}}Ok(Runtime{timestamps,numeric,boolean,commitment:format!("{:x}",hash.finalize())})}
-fn numeric(node:&Node,input:&Runtime)->Result<Vec<Option<f64>>>{match node{Node::Number(value)=>Ok(vec![Some(*value);input.timestamps.len()]),Node::NumericSeries(reference)=>input.numeric.get(&reference.series).cloned().ok_or_else(||format!("unknown or non-numeric runtime series {:?}",reference.series)),_=>Err("AST numeric runtime type mismatch".into())}}
-fn boolean(node:&Node,input:&Runtime)->Result<Vec<Option<bool>>>{match node{Node::BooleanSeries(reference)=>input.boolean.get(&reference.series).cloned().ok_or_else(||format!("unknown or non-boolean runtime series {:?}",reference.series)),Node::Compare{op,left,right}=>{let left=numeric(left,input)?;let right=numeric(right,input)?;Ok(left.into_iter().zip(right).map(|(left,right)|match(left,right){(Some(left),Some(right))=>Some(match op{Compare::Gt=>left>right,Compare::Gte=>left>=right,Compare::Lt=>left<right,Compare::Lte=>left<=right}),_=>None}).collect())},Node::Not(arg)=>Ok(boolean(arg,input)?.into_iter().map(|v|v.map(|v|!v)).collect()),Node::And(args)=>fold(args,input,and),Node::Or(args)=>fold(args,input,or),_=>Err("AST boolean runtime type mismatch".into())}}
-fn and(left:Option<bool>,right:Option<bool>)->Option<bool>{match(left,right){(Some(false),_)|(_,Some(false))=>Some(false),(Some(true),Some(true))=>Some(true),_=>None}}
-fn or(left:Option<bool>,right:Option<bool>)->Option<bool>{match(left,right){(Some(true),_)|(_,Some(true))=>Some(true),(Some(false),Some(false))=>Some(false),_=>None}}
-fn fold(args:&[Node],input:&Runtime,op:fn(Option<bool>,Option<bool>)->Option<bool>)->Result<Vec<Option<bool>>>{let mut out=boolean(&args[0],input)?;for arg in &args[1..]{let right=boolean(arg,input)?;out=out.into_iter().zip(right).map(|(left,right)|op(left,right)).collect()}Ok(out)}
-fn evaluation_identity(ast_identity:&str,input:&Runtime,output:&str,values:&[Option<bool>])->String{let mut hash=Sha256::new();hash.update(b"nora-ast-evaluation-semantic-v1");hash.update(ast_identity.as_bytes());hash.update(input.commitment.as_bytes());hash.update(output.as_bytes());hash.update(b"timestamp:boolean");for(stamp,value)in input.timestamps.iter().zip(values){hash.update((stamp.len()as u64).to_be_bytes());hash.update(stamp.as_bytes());hash.update([match value{Some(true)=>1,Some(false)=>0,None=>2}])}format!("{:x}",hash.finalize())}
-pub fn evaluate_task(o:&Map<String,Value>)->Result<Value>{only(o,&["task_version","task_type","input_path","output_path","output","ast"],"AST evaluation task")?;let input_path=string(o,"input_path","AST evaluation task")?;let output_path=output(&string(o,"output_path","AST evaluation task")?)?;let output_name=string(o,"output","AST evaluation task")?;if output_name=="timestamp"{return Err("AST evaluation output must not be timestamp".into())}let document=parse(required(o,"ast","AST evaluation task")?)?;let input=read_runtime(Path::new(&input_path))?;if input.numeric.contains_key(&output_name)||input.boolean.contains_key(&output_name){return Err("AST evaluation output conflicts with input column".into())}let values=boolean(&document.root,&input)?;let ast_identity=identity(&document);let artifact_identity=evaluation_identity(&ast_identity,&input,&output_name,&values);let true_count=values.iter().filter(|v|**v==Some(true)).count();let false_count=values.iter().filter(|v|**v==Some(false)).count();let null_count=values.iter().filter(|v|v.is_none()).count();let temp=output_path.with_file_name(format!(".{}.{}.partial",output_path.file_name().and_then(|x|x.to_str()).ok_or("malformed output_path")?,std::process::id()));let columns=vec![(output_name.clone(),crate::series::Series::Boolean(values))];let mut metadata=HashMap::new();metadata.insert("nora.semantic_sha256".into(),artifact_identity.clone());metadata.insert("nora.ast_semantic_sha256".into(),ast_identity.clone());metadata.insert("nora.ast_input_commitment".into(),input.commitment.clone());let write=(||{crate::indicator_artifact::write_with_metadata(&temp,&input.timestamps,&columns,metadata.clone())?;crate::indicator_artifact::validate_with_metadata(&temp,&input.timestamps,&columns,&metadata)?;Ok(())})();if let Err(error)=write{let _=fs::remove_file(&temp);return Err(error)}fs::rename(&temp,&output_path).map_err(|e|format!("atomic publish AST evaluation artifact: {e}"))?;Ok(json!({"ok":true,"task_type":"evaluate_ast","rows_written":input.timestamps.len(),"output_column":output_name,"output_type":"boolean","true_count":true_count,"false_count":false_count,"null_count":null_count,"ast_schema_version":document.schema_version,"ast_semantic_identity":ast_identity,"evaluated_artifact_semantic_identity":artifact_identity,"output_artifact_path":output_path}))}
-pub fn entry_intents_task(o:&Map<String,Value>)->Result<Value>{only(o,&["task_version","task_type","input_path","output_path","output","condition"],"entry intent task")?;let input_path=string(o,"input_path","entry intent task")?;let dst=output(&string(o,"output_path","entry intent task")?)?;let name=string(o,"output","entry intent task")?;if name=="timestamp"{return Err("entry intent output must not be timestamp".into())}let condition=parse_condition(required(o,"condition","entry intent task")?)?;let input=read_runtime(Path::new(&input_path))?;if input.numeric.contains_key(&name)||input.boolean.contains_key(&name){return Err("entry intent output conflicts with input column".into())}let source=input.boolean.get(&condition.signal).cloned().ok_or("unknown or non-boolean entry signal")?;let mut intents=vec![None;source.len()];for i in 1..source.len(){intents[i]=source[i-1]}let cid=condition_identity(&condition);let iid=evaluation_identity(&cid,&input,&name,&intents);let count=|v:&Vec<Option<bool>>,x|v.iter().filter(|z|**z==x).count();let temp=dst.with_file_name(format!(".{}.{}.partial",dst.file_name().unwrap().to_string_lossy(),std::process::id()));let cols=vec![(name.clone(),crate::series::Series::Boolean(intents.clone()))];let mut meta=HashMap::new();meta.insert("nora.semantic_sha256".into(),iid.clone());meta.insert("nora.entry_condition_sha256".into(),cid.clone());let write=(||{crate::indicator_artifact::write_with_metadata(&temp,&input.timestamps,&cols,meta.clone())?;crate::indicator_artifact::validate_with_metadata(&temp,&input.timestamps,&cols,&meta)?;Ok(())})();if let Err(e)=write{let _=fs::remove_file(&temp);return Err(e)}fs::rename(&temp,&dst).map_err(|e|format!("atomic publish entry intents: {e}"))?;Ok(json!({"ok":true,"task_type":"build_entry_intents","rows_written":source.len(),"side":match condition.side{Side::Long=>"long",Side::Short=>"short"},"timing":"next_open","signal_column":condition.signal,"output_column":name,"output_type":"boolean","source_true":count(&source,Some(true)),"source_false":count(&source,Some(false)),"source_null":count(&source,None),"intent_true":count(&intents,Some(true)),"intent_false":count(&intents,Some(false)),"intent_null":count(&intents,None),"terminal_source_signal":source.last(),"condition_schema_version":1,"condition_semantic_identity":cid,"entry_intent_semantic_identity":iid,"output_artifact_path":dst}))}
+#[cfg(test)]
+mod more_tests {
+    use super::*;
+    use serde_json::json;
+    #[test]
+    fn every_node_and_representative_strict_forms() {
+        let boolean = json!({"kind":"boolean_series","ref":{"series":"b","type":"boolean"}});
+        let valid = [
+            json!({"schema_version":1,"root":{"kind":"compare","op":"gte","left":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}},"right":{"kind":"number","value":-0.0}}}),
+            json!({"schema_version":1,"root":{"kind":"compare","op":"lt","left":{"kind":"number","value":1},"right":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}}}}),
+            json!({"schema_version":1,"root":{"kind":"compare","op":"lte","left":{"kind":"number","value":1},"right":{"kind":"number","value":2}}}),
+            json!({"schema_version":1,"root":{"kind":"and","args":[boolean.clone(),boolean.clone()]}}),
+            json!({"schema_version":1,"root":{"kind":"or","args":[boolean.clone(),boolean.clone()]}}),
+            json!({"schema_version":1,"root":{"kind":"not","arg":boolean.clone()}}),
+        ];
+        for value in valid {
+            assert!(parse(&value).is_ok(), "{value}")
+        }
+        let invalid = [
+            json!({"schema_version":1,"root":{}}),
+            json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{}}}),
+            json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"type":"numeric"}}}),
+            json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"series":"n"}}}),
+            json!({"schema_version":1,"root":{"kind":"numeric_series","ref":{"series":1,"type":"numeric"}}}),
+            json!({"schema_version":1,"root":{"kind":"and","args":"x"}}),
+            json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"number","value":1},"right":{"kind":"number","value":"NaN"}}}),
+        ];
+        for value in invalid {
+            assert!(parse(&value).is_err(), "{value}")
+        }
+    }
+    #[test]
+    fn negative_zero_canonicalizes_to_zero() {
+        let d=parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"number","value":-0.0},"right":{"kind":"number","value":0}}})).unwrap();
+        assert!(canonical_json(&d).contains("\"value\":0.0"));
+    }
+    #[test]
+    fn atr_distance_feature_nodes_are_strict_and_stable() {
+        let atr = json!({"type":"atr","high":{"type":"series","name":"high"},"low":{"type":"series","name":"low"},"close":{"type":"series","name":"close"},"period":3,"method":"wilder"});
+        let doc = json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"type":"distance_atr","value":{"type":"series","name":"close"},"reference":{"type":"series","name":"sma3"},"atr":atr.clone()},"right":{"kind":"number","value":0}}});
+        let one = parse(&doc).unwrap();
+        let two =
+            parse(&serde_json::from_str::<Value>(&serde_json::to_string(&doc).unwrap()).unwrap())
+                .unwrap();
+        assert_eq!(identity(&one), identity(&two));
+        assert_eq!(feature_plan(&one).len(), 2);
+        for bad in [
+            json!({"type":"atr","high":{"type":"series","name":"high"},"low":{"type":"series","name":"low"},"close":{"type":"series","name":"close"},"period":2,"method":"wilder"}),
+            json!({"type":"atr","high":{"type":"series","name":"high"},"low":{"type":"series","name":"low"},"close":{"type":"series","name":"close"},"period":3,"method":"sma"}),
+            json!({"type":"atr","high":{"type":"series","name":"high"},"low":{"type":"series","name":"low"},"close":{"type":"series","name":"close","extra":true},"period":3,"method":"wilder"}),
+        ] {
+            assert!(parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":bad,"right":{"kind":"number","value":0}}})).is_err())
+        }
+    }
+    #[test]
+    fn feature_evaluation_uses_accepted_kernels() {
+        let values = vec![1.1, 1.1003, 1.1009, 1.1006];
+        let mut numeric_values = HashMap::new();
+        numeric_values.insert(
+            "high".into(),
+            vec![Some(1.1008), Some(1.1011), Some(1.1014), Some(1.1016)],
+        );
+        numeric_values.insert(
+            "low".into(),
+            vec![Some(1.0995), Some(1.1), Some(1.1004), Some(1.1002)],
+        );
+        numeric_values.insert("close".into(), values.iter().copied().map(Some).collect());
+        numeric_values.insert(
+            "sma3".into(),
+            vec![None, None, Some(1.1004), Some(1.1009333333333335)],
+        );
+        let runtime = Runtime {
+            timestamps: vec!["0".into(), "1".into(), "2".into(), "3".into()],
+            numeric: numeric_values,
+            boolean: HashMap::new(),
+            commitment: "fixture".into(),
+        };
+        let atr=parse_node(&json!({"type":"atr","high":{"type":"series","name":"high"},"low":{"type":"series","name":"low"},"close":{"type":"series","name":"close"},"period":3,"method":"wilder"})).unwrap();
+        assert_eq!(
+            numeric(&atr, &runtime).unwrap()[2],
+            Some(0.0011666666666666121)
+        );
+        let distance=parse_node(&json!({"type":"distance_atr","value":{"type":"series","name":"close"},"reference":{"type":"series","name":"sma3"},"atr":{"type":"atr","high":{"type":"series","name":"high"},"low":{"type":"series","name":"low"},"close":{"type":"series","name":"close"},"period":3,"method":"wilder"}})).unwrap();
+        assert!(numeric(&distance, &runtime).unwrap()[3].unwrap() < 0.0)
+    }
+}
+fn reference(value: &Value, expected: Type) -> Result<Reference> {
+    let o = object(value, "series reference")?;
+    only(o, &["series", "type"], "series reference")?;
+    let series = string(o, "series", "series reference")?;
+    let ty = match string(o, "type", "series reference")?.as_str() {
+        "numeric" => Type::Numeric,
+        "boolean" => Type::Boolean,
+        _ => return Err("series reference.type must be numeric or boolean".into()),
+    };
+    if ty != expected {
+        return Err(format!(
+            "series reference type disagrees with node kind; expected {}",
+            expected.name()
+        ));
+    }
+    Ok(Reference { series, ty })
+}
+fn feature_reference(value: &Value) -> Result<Reference> {
+    let o = object(value, "feature series reference")?;
+    only(o, &["type", "name"], "feature series reference")?;
+    if string(o, "type", "feature series reference")? != "series" {
+        return Err("feature series reference.type must be series".into());
+    }
+    Ok(Reference {
+        series: string(o, "name", "feature series reference")?,
+        ty: Type::Numeric,
+    })
+}
+fn parse_node(value: &Value) -> Result<Node> {
+    let o = object(value, "AST node")?;
+    if let Some(feature_type) = o.get("type").and_then(Value::as_str) {
+        return match feature_type {
+            "series" => Ok(Node::NumericSeries(feature_reference(value)?)),
+            "atr" => {
+                only(
+                    o,
+                    &["type", "high", "low", "close", "period", "method"],
+                    "atr node",
+                )?;
+                let period = required(o, "period", "atr node")?
+                    .as_u64()
+                    .and_then(|v| usize::try_from(v).ok())
+                    .filter(|v| *v == 3)
+                    .ok_or("atr.period must be exactly 3")?;
+                if string(o, "method", "atr node")? != "wilder" {
+                    return Err("atr.method must be wilder".into());
+                }
+                Ok(Node::Atr {
+                    high: feature_reference(required(o, "high", "atr node")?)?,
+                    low: feature_reference(required(o, "low", "atr node")?)?,
+                    close: feature_reference(required(o, "close", "atr node")?)?,
+                    period,
+                })
+            }
+            "distance_atr" => {
+                only(
+                    o,
+                    &["type", "value", "reference", "atr"],
+                    "distance_atr node",
+                )?;
+                let atr = parse_node(required(o, "atr", "distance_atr node")?)?;
+                if !matches!(atr, Node::Atr { .. }) {
+                    return Err("distance_atr.atr must be an admitted atr node".into());
+                }
+                Ok(Node::DistanceAtr {
+                    value: feature_reference(required(o, "value", "distance_atr node")?)?,
+                    reference: feature_reference(required(o, "reference", "distance_atr node")?)?,
+                    atr: Box::new(atr),
+                })
+            }
+            _ => Err(format!("unknown feature AST node type {feature_type:?}")),
+        };
+    }
+    let kind = string(o, "kind", "AST node")?;
+    match kind.as_str() {
+        "numeric_series" => {
+            only(o, &["kind", "ref"], "numeric_series node")?;
+            Ok(Node::NumericSeries(reference(
+                required(o, "ref", "numeric_series node")?,
+                Type::Numeric,
+            )?))
+        }
+        "number" => {
+            only(o, &["kind", "value"], "number node")?;
+            let n = required(o, "value", "number node")?
+                .as_f64()
+                .filter(|n| n.is_finite())
+                .ok_or("number.value must be a finite numeric value")?;
+            Ok(Node::Number(if n == 0. { 0. } else { n }))
+        }
+        "boolean_series" => {
+            only(o, &["kind", "ref"], "boolean_series node")?;
+            Ok(Node::BooleanSeries(reference(
+                required(o, "ref", "boolean_series node")?,
+                Type::Boolean,
+            )?))
+        }
+        "compare" => {
+            only(o, &["kind", "op", "left", "right"], "compare node")?;
+            let op = match string(o, "op", "compare node")?.as_str() {
+                "gt" => Compare::Gt,
+                "gte" => Compare::Gte,
+                "lt" => Compare::Lt,
+                "lte" => Compare::Lte,
+                _ => return Err("unknown comparison operator".into()),
+            };
+            let left = parse_node(required(o, "left", "compare node")?)?;
+            let right = parse_node(required(o, "right", "compare node")?)?;
+            if left.ty() != Type::Numeric || right.ty() != Type::Numeric {
+                return Err("compare operands must be numeric".into());
+            }
+            Ok(Node::Compare {
+                op,
+                left: Box::new(left),
+                right: Box::new(right),
+            })
+        }
+        "and" => {
+            only(o, &["kind", "args"], "and node")?;
+            Ok(Node::And(boolean_args(
+                required(o, "args", "and node")?,
+                "and",
+            )?))
+        }
+        "or" => {
+            only(o, &["kind", "args"], "or node")?;
+            Ok(Node::Or(boolean_args(
+                required(o, "args", "or node")?,
+                "or",
+            )?))
+        }
+        "not" => {
+            only(o, &["kind", "arg"], "not node")?;
+            let arg = parse_node(required(o, "arg", "not node")?)?;
+            if arg.ty() != Type::Boolean {
+                return Err("not argument must be boolean".into());
+            }
+            Ok(Node::Not(Box::new(arg)))
+        }
+        _ => Err(format!("unknown AST node kind {kind:?}")),
+    }
+}
+fn boolean_args(value: &Value, kind: &str) -> Result<Vec<Node>> {
+    let values = value
+        .as_array()
+        .ok_or_else(|| format!("{kind}.args must be an array"))?;
+    if values.len() < 2 {
+        return Err(format!(
+            "{kind}.args must contain at least two boolean arguments"
+        ));
+    }
+    let args = values.iter().map(parse_node).collect::<Result<Vec<_>>>()?;
+    if args.iter().any(|arg| arg.ty() != Type::Boolean) {
+        return Err(format!("{kind}.args must contain only boolean arguments"));
+    }
+    Ok(args)
+}
+impl Node {
+    pub fn ty(&self) -> Type {
+        match self {
+            Self::NumericSeries(_)
+            | Self::Number(_)
+            | Self::Atr { .. }
+            | Self::DistanceAtr { .. } => Type::Numeric,
+            Self::BooleanSeries(_)
+            | Self::Compare { .. }
+            | Self::And(_)
+            | Self::Or(_)
+            | Self::Not(_) => Type::Boolean,
+        }
+    }
+}
+fn reference_json(reference: &Reference) -> Value {
+    json!({"series":reference.series,"type":reference.ty.name()})
+}
+fn feature_reference_json(reference: &Reference) -> Value {
+    json!({"type":"series","name":reference.series})
+}
+fn node_json(node: &Node) -> Value {
+    match node {
+        Node::NumericSeries(r) => json!({"kind":"numeric_series","ref":reference_json(r)}),
+        Node::Number(n) => json!({"kind":"number","value":n}),
+        Node::BooleanSeries(r) => json!({"kind":"boolean_series","ref":reference_json(r)}),
+        Node::Atr {
+            high,
+            low,
+            close,
+            period,
+        } => {
+            json!({"type":"atr","high":feature_reference_json(high),"low":feature_reference_json(low),"close":feature_reference_json(close),"period":period,"method":"wilder"})
+        }
+        Node::DistanceAtr {
+            value,
+            reference,
+            atr,
+        } => {
+            json!({"type":"distance_atr","value":feature_reference_json(value),"reference":feature_reference_json(reference),"atr":node_json(atr)})
+        }
+        Node::Compare { op, left, right } => {
+            json!({"kind":"compare","op":match op{Compare::Gt=>"gt",Compare::Gte=>"gte",Compare::Lt=>"lt",Compare::Lte=>"lte"},"left":node_json(left),"right":node_json(right)})
+        }
+        Node::And(args) => {
+            json!({"kind":"and","args":args.iter().map(node_json).collect::<Vec<_>>() })
+        }
+        Node::Or(args) => {
+            json!({"kind":"or","args":args.iter().map(node_json).collect::<Vec<_>>() })
+        }
+        Node::Not(arg) => json!({"kind":"not","arg":node_json(arg)}),
+    }
+}
+pub fn canonical_json(document: &Document) -> String {
+    serde_json::to_string(
+        &json!({"schema_version":document.schema_version,"root":node_json(&document.root)}),
+    )
+    .expect("canonical AST JSON")
+}
+pub fn identity(document: &Document) -> String {
+    let mut hash = Sha256::new();
+    hash.update(b"nora-ast-semantic-v1");
+    hash.update(canonical_json(document).as_bytes());
+    format!("{:x}", hash.finalize())
+}
+pub fn parse_condition(value: &Value) -> Result<EntryCondition> {
+    let o = object(value, "entry condition")?;
+    only(o, &["schema_version", "side", "entry"], "entry condition")?;
+    let version = required(o, "schema_version", "entry condition")?
+        .as_u64()
+        .and_then(|v| u32::try_from(v).ok())
+        .ok_or("entry condition schema_version must be integer 1")?;
+    if version != 1 {
+        return Err("unsupported entry condition schema_version".into());
+    }
+    let side = match string(o, "side", "entry condition")?.as_str() {
+        "long" => Side::Long,
+        "short" => Side::Short,
+        _ => return Err("entry condition side must be long or short".into()),
+    };
+    let entry = object(
+        required(o, "entry", "entry condition")?,
+        "entry condition.entry",
+    )?;
+    only(entry, &["signal", "timing"], "entry condition.entry")?;
+    if string(entry, "timing", "entry condition.entry")? != "next_open" {
+        return Err("entry condition timing must be next_open".into());
+    }
+    let signal = reference(
+        required(entry, "signal", "entry condition.entry")?,
+        Type::Boolean,
+    )?
+    .series;
+    Ok(EntryCondition {
+        schema_version: version,
+        side,
+        signal,
+    })
+}
+pub fn condition_json(c: &EntryCondition) -> String {
+    serde_json::to_string(&json!({"schema_version":c.schema_version,"side":match c.side{Side::Long=>"long",Side::Short=>"short"},"entry":{"signal":{"series":c.signal,"type":"boolean"},"timing":"next_open"}})).unwrap()
+}
+pub fn condition_identity(c: &EntryCondition) -> String {
+    let mut h = Sha256::new();
+    h.update(b"nora-entry-condition-semantic-v1");
+    h.update(condition_json(c).as_bytes());
+    format!("{:x}", h.finalize())
+}
 
-fn shift_exit_intents(source:&[Option<bool>])->Vec<Option<bool>> {
+pub fn task(o: &Map<String, Value>) -> Result<Value> {
+    only(
+        o,
+        &["task_version", "task_type", "output_path", "ast"],
+        "AST task",
+    )?;
+    let path = output(&string(o, "output_path", "AST task")?)?;
+    let document = parse(required(o, "ast", "AST task")?)?;
+    let canonical = canonical_json(&document);
+    let identity = identity(&document);
+    let temp = path.with_file_name(format!(
+        ".{}.{}.partial",
+        path.file_name()
+            .and_then(|x| x.to_str())
+            .ok_or("malformed output_path")?,
+        std::process::id()
+    ));
+    fs::write(&temp, &canonical).map_err(|e| format!("write AST temporary artifact: {e}"))?;
+    if let Err(e) = fs::rename(&temp, &path) {
+        let _ = fs::remove_file(&temp);
+        return Err(format!("atomic publish AST artifact: {e}"));
+    }
+    Ok(
+        json!({"ok":true,"task_type":"canonicalize_ast","schema_version":document.schema_version,"root_type":document.root.ty().name(),"ast_semantic_identity":identity,"canonical_artifact_path":path}),
+    )
+}
+fn output(raw: &str) -> Result<PathBuf> {
+    let path = PathBuf::from(raw);
+    if raw.trim().is_empty()
+        || path.exists()
+        || path.parent().map_or(true, |parent| !parent.is_dir())
+    {
+        Err("output_path must not exist and its parent must exist".into())
+    } else {
+        Ok(path)
+    }
+}
+
+#[derive(Clone)]
+struct Runtime {
+    timestamps: Vec<String>,
+    numeric: HashMap<String, Vec<Option<f64>>>,
+    boolean: HashMap<String, Vec<Option<bool>>>,
+    commitment: String,
+}
+fn read_runtime(path: &Path) -> Result<Runtime> {
+    let builder = ParquetRecordBatchReaderBuilder::try_new(
+        fs::File::open(path).map_err(|e| format!("open typed AST input: {e}"))?,
+    )
+    .map_err(|e| format!("read typed AST input Parquet: {e}"))?;
+    let schema = builder.schema().clone();
+    let timestamp = schema
+        .field_with_name("timestamp")
+        .map_err(|_| "AST input requires timestamp column")?;
+    if timestamp.data_type() != &DataType::Utf8 {
+        return Err("AST input timestamp must be UTF-8".into());
+    }
+    let mut timestamps = Vec::new();
+    let mut numeric: HashMap<String, Vec<Option<f64>>> = HashMap::new();
+    let mut boolean: HashMap<String, Vec<Option<bool>>> = HashMap::new();
+    for field in schema.fields() {
+        if field.name() != "timestamp" {
+            match field.data_type() {
+                DataType::Float64 => {
+                    numeric.insert(field.name().clone(), Vec::new());
+                }
+                DataType::Boolean => {
+                    boolean.insert(field.name().clone(), Vec::new());
+                }
+                _ => {
+                    return Err(format!(
+                        "unsupported AST input column type for {}",
+                        field.name()
+                    ))
+                }
+            }
+        }
+    }
+    let reader = builder
+        .build()
+        .map_err(|e| format!("read typed AST input batches: {e}"))?;
+    for batch in reader {
+        let batch = batch.map_err(|e| format!("read typed AST input batch: {e}"))?;
+        let stamps = batch
+            .column_by_name("timestamp")
+            .and_then(|v| v.as_any().downcast_ref::<StringArray>())
+            .ok_or("AST input timestamp type mismatch")?;
+        for row in 0..batch.num_rows() {
+            if stamps.is_null(row) {
+                return Err("AST input timestamp must not be null".into());
+            }
+            timestamps.push(stamps.value(row).to_owned())
+        }
+        for (name, values) in numeric.iter_mut() {
+            let col = batch
+                .column_by_name(name)
+                .and_then(|v| v.as_any().downcast_ref::<Float64Array>())
+                .ok_or("AST numeric input type mismatch")?;
+            for row in 0..batch.num_rows() {
+                values.push(if col.is_null(row) {
+                    None
+                } else {
+                    let v = col.value(row);
+                    if !v.is_finite() {
+                        return Err("AST numeric input contains non-finite value".into());
+                    }
+                    Some(v)
+                })
+            }
+        }
+        for (name, values) in boolean.iter_mut() {
+            let col = batch
+                .column_by_name(name)
+                .and_then(|v| v.as_any().downcast_ref::<BooleanArray>())
+                .ok_or("AST boolean input type mismatch")?;
+            for row in 0..batch.num_rows() {
+                values.push(if col.is_null(row) {
+                    None
+                } else {
+                    Some(col.value(row))
+                })
+            }
+        }
+    }
+    let mut hash = Sha256::new();
+    hash.update(b"nora-ast-input-content-v1");
+    for stamp in &timestamps {
+        hash.update((stamp.len() as u64).to_be_bytes());
+        hash.update(stamp.as_bytes())
+    }
+    let mut names = numeric
+        .keys()
+        .chain(boolean.keys())
+        .cloned()
+        .collect::<Vec<_>>();
+    names.sort();
+    for name in names {
+        hash.update(name.as_bytes());
+        if let Some(values) = numeric.get(&name) {
+            hash.update([1]);
+            for value in values {
+                match value {
+                    Some(v) => {
+                        hash.update([1]);
+                        hash.update(v.to_bits().to_be_bytes())
+                    }
+                    None => hash.update([0]),
+                }
+            }
+        } else {
+            hash.update([2]);
+            for value in &boolean[&name] {
+                hash.update([match value {
+                    Some(true) => 1,
+                    Some(false) => 0,
+                    None => 2,
+                }])
+            }
+        }
+    }
+    Ok(Runtime {
+        timestamps,
+        numeric,
+        boolean,
+        commitment: format!("{:x}", hash.finalize()),
+    })
+}
+fn feature_identity(node: &Node) -> String {
+    let mut hash = Sha256::new();
+    hash.update(b"nora-ast-feature-v2");
+    hash.update(serde_json::to_string(&node_json(node)).unwrap().as_bytes());
+    format!("{:x}", hash.finalize())
+}
+pub fn feature_plan(document: &Document) -> Vec<String> {
+    fn visit(node: &Node, out: &mut BTreeMap<String, ()>) {
+        match node {
+            Node::Atr { .. } | Node::DistanceAtr { .. } => {
+                if let Node::DistanceAtr { atr, .. } = node {
+                    visit(atr, out)
+                }
+                out.insert(feature_identity(node), ());
+            }
+            Node::Compare { left, right, .. } => {
+                visit(left, out);
+                visit(right, out)
+            }
+            Node::And(args) | Node::Or(args) => {
+                for arg in args {
+                    visit(arg, out)
+                }
+            }
+            Node::Not(arg) => visit(arg, out),
+            _ => {}
+        }
+    }
+    let mut out = BTreeMap::new();
+    visit(&document.root, &mut out);
+    out.into_keys().collect()
+}
+fn numeric(node: &Node, input: &Runtime) -> Result<Vec<Option<f64>>> {
+    let mut cache = HashMap::new();
+    numeric_cached(node, input, &mut cache)
+}
+fn numeric_cached(
+    node: &Node,
+    input: &Runtime,
+    cache: &mut HashMap<String, Vec<Option<f64>>>,
+) -> Result<Vec<Option<f64>>> {
+    let key = feature_identity(node);
+    if let Some(value) = cache.get(&key) {
+        return Ok(value.clone());
+    }
+    let value = match node {
+        Node::Number(value) => vec![Some(*value); input.timestamps.len()],
+        Node::NumericSeries(reference) => input
+            .numeric
+            .get(&reference.series)
+            .cloned()
+            .ok_or_else(|| {
+                format!(
+                    "unknown or non-numeric runtime series {:?}",
+                    reference.series
+                )
+            })?,
+        Node::Atr {
+            high,
+            low,
+            close,
+            period,
+        } => {
+            let get = |reference: &Reference| -> Result<Vec<f64>> {
+                input
+                    .numeric
+                    .get(&reference.series)
+                    .ok_or_else(|| {
+                        format!(
+                            "unknown or non-numeric runtime series {:?}",
+                            reference.series
+                        )
+                    })?
+                    .iter()
+                    .map(|value| value.ok_or_else(|| "atr input must be non-null".to_string()))
+                    .collect()
+            };
+            crate::indicators::atr(&get(high)?, &get(low)?, &get(close)?, *period)?
+        }
+        Node::DistanceAtr {
+            value,
+            reference,
+            atr,
+        } => {
+            let left = input.numeric.get(&value.series).cloned().ok_or_else(|| {
+                format!("unknown or non-numeric runtime series {:?}", value.series)
+            })?;
+            let right = input
+                .numeric
+                .get(&reference.series)
+                .cloned()
+                .ok_or_else(|| {
+                    format!(
+                        "unknown or non-numeric runtime series {:?}",
+                        reference.series
+                    )
+                })?;
+            let denominator = numeric_cached(atr, input, cache)?;
+            crate::indicators::transform_distance_atr(&left, &right, &denominator)?
+        }
+        _ => return Err("AST numeric runtime type mismatch".into()),
+    };
+    cache.insert(key, value.clone());
+    Ok(value)
+}
+fn boolean(node: &Node, input: &Runtime) -> Result<Vec<Option<bool>>> {
+    match node {
+        Node::BooleanSeries(reference) => {
+            input
+                .boolean
+                .get(&reference.series)
+                .cloned()
+                .ok_or_else(|| {
+                    format!(
+                        "unknown or non-boolean runtime series {:?}",
+                        reference.series
+                    )
+                })
+        }
+        Node::Compare { op, left, right } => {
+            let left = numeric(left, input)?;
+            let right = numeric(right, input)?;
+            Ok(left
+                .into_iter()
+                .zip(right)
+                .map(|(left, right)| match (left, right) {
+                    (Some(left), Some(right)) => Some(match op {
+                        Compare::Gt => left > right,
+                        Compare::Gte => left >= right,
+                        Compare::Lt => left < right,
+                        Compare::Lte => left <= right,
+                    }),
+                    _ => None,
+                })
+                .collect())
+        }
+        Node::Not(arg) => Ok(boolean(arg, input)?
+            .into_iter()
+            .map(|v| v.map(|v| !v))
+            .collect()),
+        Node::And(args) => fold(args, input, and),
+        Node::Or(args) => fold(args, input, or),
+        _ => Err("AST boolean runtime type mismatch".into()),
+    }
+}
+fn and(left: Option<bool>, right: Option<bool>) -> Option<bool> {
+    match (left, right) {
+        (Some(false), _) | (_, Some(false)) => Some(false),
+        (Some(true), Some(true)) => Some(true),
+        _ => None,
+    }
+}
+fn or(left: Option<bool>, right: Option<bool>) -> Option<bool> {
+    match (left, right) {
+        (Some(true), _) | (_, Some(true)) => Some(true),
+        (Some(false), Some(false)) => Some(false),
+        _ => None,
+    }
+}
+fn fold(
+    args: &[Node],
+    input: &Runtime,
+    op: fn(Option<bool>, Option<bool>) -> Option<bool>,
+) -> Result<Vec<Option<bool>>> {
+    let mut out = boolean(&args[0], input)?;
+    for arg in &args[1..] {
+        let right = boolean(arg, input)?;
+        out = out
+            .into_iter()
+            .zip(right)
+            .map(|(left, right)| op(left, right))
+            .collect()
+    }
+    Ok(out)
+}
+fn evaluation_identity(
+    ast_identity: &str,
+    input: &Runtime,
+    output: &str,
+    values: &[Option<bool>],
+) -> String {
+    let mut hash = Sha256::new();
+    hash.update(b"nora-ast-evaluation-semantic-v1");
+    hash.update(ast_identity.as_bytes());
+    hash.update(input.commitment.as_bytes());
+    hash.update(output.as_bytes());
+    hash.update(b"timestamp:boolean");
+    for (stamp, value) in input.timestamps.iter().zip(values) {
+        hash.update((stamp.len() as u64).to_be_bytes());
+        hash.update(stamp.as_bytes());
+        hash.update([match value {
+            Some(true) => 1,
+            Some(false) => 0,
+            None => 2,
+        }])
+    }
+    format!("{:x}", hash.finalize())
+}
+pub fn evaluate_task(o: &Map<String, Value>) -> Result<Value> {
+    only(
+        o,
+        &[
+            "task_version",
+            "task_type",
+            "input_path",
+            "output_path",
+            "output",
+            "ast",
+        ],
+        "AST evaluation task",
+    )?;
+    let input_path = string(o, "input_path", "AST evaluation task")?;
+    let output_path = output(&string(o, "output_path", "AST evaluation task")?)?;
+    let output_name = string(o, "output", "AST evaluation task")?;
+    if output_name == "timestamp" {
+        return Err("AST evaluation output must not be timestamp".into());
+    }
+    let document = parse(required(o, "ast", "AST evaluation task")?)?;
+    let input = read_runtime(Path::new(&input_path))?;
+    if input.numeric.contains_key(&output_name) || input.boolean.contains_key(&output_name) {
+        return Err("AST evaluation output conflicts with input column".into());
+    }
+    let values = boolean(&document.root, &input)?;
+    let ast_identity = identity(&document);
+    let artifact_identity = evaluation_identity(&ast_identity, &input, &output_name, &values);
+    let true_count = values.iter().filter(|v| **v == Some(true)).count();
+    let false_count = values.iter().filter(|v| **v == Some(false)).count();
+    let null_count = values.iter().filter(|v| v.is_none()).count();
+    let temp = output_path.with_file_name(format!(
+        ".{}.{}.partial",
+        output_path
+            .file_name()
+            .and_then(|x| x.to_str())
+            .ok_or("malformed output_path")?,
+        std::process::id()
+    ));
+    let columns = vec![(output_name.clone(), crate::series::Series::Boolean(values))];
+    let mut metadata = HashMap::new();
+    metadata.insert("nora.semantic_sha256".into(), artifact_identity.clone());
+    metadata.insert("nora.ast_semantic_sha256".into(), ast_identity.clone());
+    metadata.insert("nora.ast_input_commitment".into(), input.commitment.clone());
+    let write = (|| {
+        crate::indicator_artifact::write_with_metadata(
+            &temp,
+            &input.timestamps,
+            &columns,
+            metadata.clone(),
+        )?;
+        crate::indicator_artifact::validate_with_metadata(
+            &temp,
+            &input.timestamps,
+            &columns,
+            &metadata,
+        )?;
+        Ok(())
+    })();
+    if let Err(error) = write {
+        let _ = fs::remove_file(&temp);
+        return Err(error);
+    }
+    fs::rename(&temp, &output_path)
+        .map_err(|e| format!("atomic publish AST evaluation artifact: {e}"))?;
+    Ok(
+        json!({"ok":true,"task_type":"evaluate_ast","rows_written":input.timestamps.len(),"output_column":output_name,"output_type":"boolean","true_count":true_count,"false_count":false_count,"null_count":null_count,"ast_schema_version":document.schema_version,"ast_semantic_identity":ast_identity,"evaluated_artifact_semantic_identity":artifact_identity,"output_artifact_path":output_path}),
+    )
+}
+pub fn entry_intents_task(o: &Map<String, Value>) -> Result<Value> {
+    only(
+        o,
+        &[
+            "task_version",
+            "task_type",
+            "input_path",
+            "output_path",
+            "output",
+            "condition",
+        ],
+        "entry intent task",
+    )?;
+    let input_path = string(o, "input_path", "entry intent task")?;
+    let dst = output(&string(o, "output_path", "entry intent task")?)?;
+    let name = string(o, "output", "entry intent task")?;
+    if name == "timestamp" {
+        return Err("entry intent output must not be timestamp".into());
+    }
+    let condition = parse_condition(required(o, "condition", "entry intent task")?)?;
+    let input = read_runtime(Path::new(&input_path))?;
+    if input.numeric.contains_key(&name) || input.boolean.contains_key(&name) {
+        return Err("entry intent output conflicts with input column".into());
+    }
+    let source = input
+        .boolean
+        .get(&condition.signal)
+        .cloned()
+        .ok_or("unknown or non-boolean entry signal")?;
     let mut intents = vec![None; source.len()];
-    for index in 1..source.len() { intents[index] = source[index - 1]; }
+    for i in 1..source.len() {
+        intents[i] = source[i - 1]
+    }
+    let cid = condition_identity(&condition);
+    let iid = evaluation_identity(&cid, &input, &name, &intents);
+    let count = |v: &Vec<Option<bool>>, x| v.iter().filter(|z| **z == x).count();
+    let temp = dst.with_file_name(format!(
+        ".{}.{}.partial",
+        dst.file_name().unwrap().to_string_lossy(),
+        std::process::id()
+    ));
+    let cols = vec![(
+        name.clone(),
+        crate::series::Series::Boolean(intents.clone()),
+    )];
+    let mut meta = HashMap::new();
+    meta.insert("nora.semantic_sha256".into(), iid.clone());
+    meta.insert("nora.entry_condition_sha256".into(), cid.clone());
+    let write = (|| {
+        crate::indicator_artifact::write_with_metadata(
+            &temp,
+            &input.timestamps,
+            &cols,
+            meta.clone(),
+        )?;
+        crate::indicator_artifact::validate_with_metadata(&temp, &input.timestamps, &cols, &meta)?;
+        Ok(())
+    })();
+    if let Err(e) = write {
+        let _ = fs::remove_file(&temp);
+        return Err(e);
+    }
+    fs::rename(&temp, &dst).map_err(|e| format!("atomic publish entry intents: {e}"))?;
+    Ok(
+        json!({"ok":true,"task_type":"build_entry_intents","rows_written":source.len(),"side":match condition.side{Side::Long=>"long",Side::Short=>"short"},"timing":"next_open","signal_column":condition.signal,"output_column":name,"output_type":"boolean","source_true":count(&source,Some(true)),"source_false":count(&source,Some(false)),"source_null":count(&source,None),"intent_true":count(&intents,Some(true)),"intent_false":count(&intents,Some(false)),"intent_null":count(&intents,None),"terminal_source_signal":source.last(),"condition_schema_version":1,"condition_semantic_identity":cid,"entry_intent_semantic_identity":iid,"output_artifact_path":dst}),
+    )
+}
+
+fn shift_exit_intents(source: &[Option<bool>]) -> Vec<Option<bool>> {
+    let mut intents = vec![None; source.len()];
+    for index in 1..source.len() {
+        intents[index] = source[index - 1];
+    }
     intents
 }
 
-fn exit_intent_identity(condition_identity:&str, input:&Runtime, output:&str, intents:&[Option<bool>])->String {
-    let mut hash=Sha256::new();
+fn exit_intent_identity(
+    condition_identity: &str,
+    input: &Runtime,
+    output: &str,
+    intents: &[Option<bool>],
+) -> String {
+    let mut hash = Sha256::new();
     hash.update(b"nora-exit-intent-semantic-v1");
     hash.update(condition_identity.as_bytes());
     hash.update(input.commitment.as_bytes());
     hash.update(output.as_bytes());
     hash.update(b"timestamp:boolean");
-    for(stamp,value)in input.timestamps.iter().zip(intents){
-        hash.update((stamp.len()as u64).to_be_bytes());
+    for (stamp, value) in input.timestamps.iter().zip(intents) {
+        hash.update((stamp.len() as u64).to_be_bytes());
         hash.update(stamp.as_bytes());
-        hash.update([match value{Some(true)=>1,Some(false)=>0,None=>2}]);
+        hash.update([match value {
+            Some(true) => 1,
+            Some(false) => 0,
+            None => 2,
+        }]);
     }
-    format!("{:x}",hash.finalize())
+    format!("{:x}", hash.finalize())
 }
 
-fn boolean_counts(values:&[Option<bool>])->(usize,usize,usize) {
-    (values.iter().filter(|value|**value==Some(true)).count(), values.iter().filter(|value|**value==Some(false)).count(), values.iter().filter(|value|value.is_none()).count())
+fn boolean_counts(values: &[Option<bool>]) -> (usize, usize, usize) {
+    (
+        values.iter().filter(|value| **value == Some(true)).count(),
+        values.iter().filter(|value| **value == Some(false)).count(),
+        values.iter().filter(|value| value.is_none()).count(),
+    )
 }
 
-fn exit_signal(input:&Runtime, signal_name:&str)->Result<Vec<Option<bool>>> {
-    input.boolean.get(signal_name).cloned().ok_or("unknown or non-boolean exit signal".into())
+fn exit_signal(input: &Runtime, signal_name: &str) -> Result<Vec<Option<bool>>> {
+    input
+        .boolean
+        .get(signal_name)
+        .cloned()
+        .ok_or("unknown or non-boolean exit signal".into())
 }
 
-pub fn exit_intents_task(o:&Map<String,Value>)->Result<Value>{
-    only(o,&["task_version","task_type","input_path","output_path","output","condition"],"exit intent task")?;
-    let input_path=string(o,"input_path","exit intent task")?;
-    let dst=output(&string(o,"output_path","exit intent task")?)?;
-    let name=string(o,"output","exit intent task")?;
-    if name=="timestamp"{return Err("exit intent output must not be timestamp".into())}
-    let condition=crate::exit_condition::parse(required(o,"condition","exit intent task")?)?;
-    let input=read_runtime(Path::new(&input_path))?;
-    if input.numeric.contains_key(&name)||input.boolean.contains_key(&name){return Err("exit intent output conflicts with input column".into())}
-    let signal_name=&condition.exit.signal.series;
-    let source=exit_signal(&input,signal_name)?;
-    let intents=shift_exit_intents(&source);
-    let condition_identity=crate::exit_condition::semantic_identity(&condition);
-    let intent_identity=exit_intent_identity(&condition_identity,&input,&name,&intents);
-    let (source_true,source_false,source_null)=boolean_counts(&source);
-    let (intent_true,intent_false,intent_null)=boolean_counts(&intents);
-    let temp=dst.with_file_name(format!(".{}.{}.partial",dst.file_name().unwrap().to_string_lossy(),std::process::id()));
-    let columns=vec![(name.clone(),crate::series::Series::Boolean(intents.clone()))];
-    let mut metadata=HashMap::new();
-    metadata.insert("nora.semantic_sha256".into(),intent_identity.clone());
-    metadata.insert("nora.exit_condition_sha256".into(),condition_identity.clone());
-    let write=(||{crate::indicator_artifact::write_with_metadata(&temp,&input.timestamps,&columns,metadata.clone())?;crate::indicator_artifact::validate_with_metadata(&temp,&input.timestamps,&columns,&metadata)?;Ok(())})();
-    if let Err(error)=write{let _=fs::remove_file(&temp);return Err(error)}
-    fs::rename(&temp,&dst).map_err(|error|format!("atomic publish exit intents: {error}"))?;
-    Ok(json!({"ok":true,"task_type":"build_exit_intents","rows_written":source.len(),"side":match condition.side{crate::exit_condition::Side::Long=>"long",crate::exit_condition::Side::Short=>"short"},"timing":"next_open","signal_column":signal_name,"output_column":name,"output_type":"boolean","source_true":source_true,"source_false":source_false,"source_null":source_null,"intent_true":intent_true,"intent_false":intent_false,"intent_null":intent_null,"terminal_source_signal":source.last(),"condition_schema_version":condition.schema_version,"exit_condition_semantic_identity":condition_identity,"exit_intent_semantic_identity":intent_identity,"output_artifact_path":dst}))
+pub fn exit_intents_task(o: &Map<String, Value>) -> Result<Value> {
+    only(
+        o,
+        &[
+            "task_version",
+            "task_type",
+            "input_path",
+            "output_path",
+            "output",
+            "condition",
+        ],
+        "exit intent task",
+    )?;
+    let input_path = string(o, "input_path", "exit intent task")?;
+    let dst = output(&string(o, "output_path", "exit intent task")?)?;
+    let name = string(o, "output", "exit intent task")?;
+    if name == "timestamp" {
+        return Err("exit intent output must not be timestamp".into());
+    }
+    let condition = crate::exit_condition::parse(required(o, "condition", "exit intent task")?)?;
+    let input = read_runtime(Path::new(&input_path))?;
+    if input.numeric.contains_key(&name) || input.boolean.contains_key(&name) {
+        return Err("exit intent output conflicts with input column".into());
+    }
+    let signal_name = &condition.exit.signal.series;
+    let source = exit_signal(&input, signal_name)?;
+    let intents = shift_exit_intents(&source);
+    let condition_identity = crate::exit_condition::semantic_identity(&condition);
+    let intent_identity = exit_intent_identity(&condition_identity, &input, &name, &intents);
+    let (source_true, source_false, source_null) = boolean_counts(&source);
+    let (intent_true, intent_false, intent_null) = boolean_counts(&intents);
+    let temp = dst.with_file_name(format!(
+        ".{}.{}.partial",
+        dst.file_name().unwrap().to_string_lossy(),
+        std::process::id()
+    ));
+    let columns = vec![(
+        name.clone(),
+        crate::series::Series::Boolean(intents.clone()),
+    )];
+    let mut metadata = HashMap::new();
+    metadata.insert("nora.semantic_sha256".into(), intent_identity.clone());
+    metadata.insert(
+        "nora.exit_condition_sha256".into(),
+        condition_identity.clone(),
+    );
+    let write = (|| {
+        crate::indicator_artifact::write_with_metadata(
+            &temp,
+            &input.timestamps,
+            &columns,
+            metadata.clone(),
+        )?;
+        crate::indicator_artifact::validate_with_metadata(
+            &temp,
+            &input.timestamps,
+            &columns,
+            &metadata,
+        )?;
+        Ok(())
+    })();
+    if let Err(error) = write {
+        let _ = fs::remove_file(&temp);
+        return Err(error);
+    }
+    fs::rename(&temp, &dst).map_err(|error| format!("atomic publish exit intents: {error}"))?;
+    Ok(
+        json!({"ok":true,"task_type":"build_exit_intents","rows_written":source.len(),"side":match condition.side{crate::exit_condition::Side::Long=>"long",crate::exit_condition::Side::Short=>"short"},"timing":"next_open","signal_column":signal_name,"output_column":name,"output_type":"boolean","source_true":source_true,"source_false":source_false,"source_null":source_null,"intent_true":intent_true,"intent_false":intent_false,"intent_null":intent_null,"terminal_source_signal":source.last(),"condition_schema_version":condition.schema_version,"exit_condition_semantic_identity":condition_identity,"exit_intent_semantic_identity":intent_identity,"output_artifact_path":dst}),
+    )
 }
 
 #[cfg(test)]
@@ -145,60 +1108,311 @@ mod exit_intent_tests {
     #[test]
     fn shift_preserves_hard_coded_nullable_boolean_semantics() {
         let cases: &[(&[Option<bool>], &[Option<bool>])] = &[
-            (&[None, Some(false), Some(true), Some(true), None, Some(false)], &[None, None, Some(false), Some(true), Some(true), None]),
-            (&[Some(true)], &[None]), (&[Some(false)], &[None]), (&[None], &[None]),
-            (&[Some(true), Some(true), Some(true)], &[None, Some(true), Some(true)]),
-            (&[Some(false), Some(false)], &[None, Some(false)]), (&[None, None], &[None, None]),
+            (
+                &[None, Some(false), Some(true), Some(true), None, Some(false)],
+                &[None, None, Some(false), Some(true), Some(true), None],
+            ),
+            (&[Some(true)], &[None]),
+            (&[Some(false)], &[None]),
+            (&[None], &[None]),
+            (
+                &[Some(true), Some(true), Some(true)],
+                &[None, Some(true), Some(true)],
+            ),
+            (&[Some(false), Some(false)], &[None, Some(false)]),
+            (&[None, None], &[None, None]),
         ];
-        for (source, expected) in cases { assert_eq!(shift_exit_intents(source), *expected); }
+        for (source, expected) in cases {
+            assert_eq!(shift_exit_intents(source), *expected);
+        }
     }
 
     #[test]
     fn terminal_source_counts_timestamps_and_identity_are_stable() {
-        let source=vec![None,Some(false),Some(true),Some(true),None,Some(false)];
-        let intents=shift_exit_intents(&source);
-        let input=Runtime{timestamps:vec!["a".into(),"b".into(),"c".into(),"d".into(),"e".into(),"f".into()],numeric:HashMap::new(),boolean:HashMap::new(),commitment:"input-content".into()};
+        let source = vec![None, Some(false), Some(true), Some(true), None, Some(false)];
+        let intents = shift_exit_intents(&source);
+        let input = Runtime {
+            timestamps: vec![
+                "a".into(),
+                "b".into(),
+                "c".into(),
+                "d".into(),
+                "e".into(),
+                "f".into(),
+            ],
+            numeric: HashMap::new(),
+            boolean: HashMap::new(),
+            commitment: "input-content".into(),
+        };
         let condition=crate::exit_condition::parse_json(r#"{"schema_version":1,"side":"long","exit":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}}"#).unwrap();
-        let condition_identity=crate::exit_condition::semantic_identity(&condition);
-        assert_eq!(intents.len(),input.timestamps.len());
-        assert_eq!(boolean_counts(&source),(2,2,2));
-        assert_eq!(boolean_counts(&intents),(2,1,3));
-        assert_eq!(source.last(),Some(&Some(false)));
-        assert_eq!(exit_intent_identity(&condition_identity,&input,"exit_intent",&intents),exit_intent_identity(&condition_identity,&input,"exit_intent",&intents));
+        let condition_identity = crate::exit_condition::semantic_identity(&condition);
+        assert_eq!(intents.len(), input.timestamps.len());
+        assert_eq!(boolean_counts(&source), (2, 2, 2));
+        assert_eq!(boolean_counts(&intents), (2, 1, 3));
+        assert_eq!(source.last(), Some(&Some(false)));
+        assert_eq!(
+            exit_intent_identity(&condition_identity, &input, "exit_intent", &intents),
+            exit_intent_identity(&condition_identity, &input, "exit_intent", &intents)
+        );
     }
 
     #[test]
     fn runtime_failures_reject_unknown_numeric_missing_timestamp_and_conflicting_output() {
-        let root=std::env::temp_dir().join(format!("labengine-exit-intent-{}",std::process::id()));
+        let root =
+            std::env::temp_dir().join(format!("labengine-exit-intent-{}", std::process::id()));
         std::fs::create_dir_all(&root).unwrap();
-        let timestamps=vec!["2025.01.01 00:00".into()];
-        let numeric=root.join("numeric.parquet");
-        crate::indicator_artifact::write_with_metadata(&numeric,&timestamps,&[("numeric_signal".into(),crate::series::Series::Numeric(vec![Some(1.0)]))],HashMap::new()).unwrap();
-        let boolean=root.join("boolean.parquet");
-        crate::indicator_artifact::write_with_metadata(&boolean,&timestamps,&[("entry_signal".into(),crate::series::Series::Boolean(vec![Some(true)]))],HashMap::new()).unwrap();
-        let missing_timestamp=root.join("missing-timestamp.parquet");
-        let schema=Arc::new(Schema::new(vec![Field::new("entry_signal",arrow_schema::DataType::Boolean,true)]));
-        let batch=RecordBatch::try_new(schema.clone(),vec![Arc::new(BooleanArray::from(vec![Some(true)])) as ArrayRef]).unwrap();
-        let mut writer=ArrowWriter::try_new(std::fs::File::create(&missing_timestamp).unwrap(),schema,None).unwrap(); writer.write(&batch).unwrap(); writer.close().unwrap();
-        let condition=json!({"schema_version":1,"side":"long","exit":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}});
-        let task=|input_path:&Path,output:&str,condition:Value|json!({"task_version":1,"task_type":"build_exit_intents","input_path":input_path,"output_path":root.join(format!("{output}.parquet")),"output":output,"condition":condition});
+        let timestamps = vec!["2025.01.01 00:00".into()];
+        let numeric = root.join("numeric.parquet");
+        crate::indicator_artifact::write_with_metadata(
+            &numeric,
+            &timestamps,
+            &[(
+                "numeric_signal".into(),
+                crate::series::Series::Numeric(vec![Some(1.0)]),
+            )],
+            HashMap::new(),
+        )
+        .unwrap();
+        let boolean = root.join("boolean.parquet");
+        crate::indicator_artifact::write_with_metadata(
+            &boolean,
+            &timestamps,
+            &[(
+                "entry_signal".into(),
+                crate::series::Series::Boolean(vec![Some(true)]),
+            )],
+            HashMap::new(),
+        )
+        .unwrap();
+        let missing_timestamp = root.join("missing-timestamp.parquet");
+        let schema = Arc::new(Schema::new(vec![Field::new(
+            "entry_signal",
+            arrow_schema::DataType::Boolean,
+            true,
+        )]));
+        let batch = RecordBatch::try_new(
+            schema.clone(),
+            vec![Arc::new(BooleanArray::from(vec![Some(true)])) as ArrayRef],
+        )
+        .unwrap();
+        let mut writer = ArrowWriter::try_new(
+            std::fs::File::create(&missing_timestamp).unwrap(),
+            schema,
+            None,
+        )
+        .unwrap();
+        writer.write(&batch).unwrap();
+        writer.close().unwrap();
+        let condition = json!({"schema_version":1,"side":"long","exit":{"signal":{"series":"entry_signal","type":"boolean"},"timing":"next_open"}});
+        let task = |input_path: &Path, output: &str, condition: Value| json!({"task_version":1,"task_type":"build_exit_intents","input_path":input_path,"output_path":root.join(format!("{output}.parquet")),"output":output,"condition":condition});
         assert!(exit_intents_task(task(&boolean,"unknown",json!({"schema_version":1,"side":"long","exit":{"signal":{"series":"missing","type":"boolean"},"timing":"next_open"}})).as_object().unwrap()).unwrap_err().contains("unknown or non-boolean"));
-        assert!(exit_intents_task(task(&numeric,"numeric-out",condition.clone()).as_object().unwrap()).unwrap_err().contains("unknown or non-boolean"));
-        assert!(exit_intents_task(task(&missing_timestamp,"missing-time",condition.clone()).as_object().unwrap()).unwrap_err().contains("timestamp"));
-        assert!(exit_intents_task(task(&boolean,"entry_signal",condition).as_object().unwrap()).unwrap_err().contains("conflicts"));
-        let _=std::fs::remove_dir_all(root);
+        assert!(exit_intents_task(
+            task(&numeric, "numeric-out", condition.clone())
+                .as_object()
+                .unwrap()
+        )
+        .unwrap_err()
+        .contains("unknown or non-boolean"));
+        assert!(exit_intents_task(
+            task(&missing_timestamp, "missing-time", condition.clone())
+                .as_object()
+                .unwrap()
+        )
+        .unwrap_err()
+        .contains("timestamp"));
+        assert!(exit_intents_task(
+            task(&boolean, "entry_signal", condition)
+                .as_object()
+                .unwrap()
+        )
+        .unwrap_err()
+        .contains("conflicts"));
+        let _ = std::fs::remove_dir_all(root);
     }
 }
 
-#[cfg(test)] mod evaluation_tests {use super::*;use serde_json::json;
- fn input()->Runtime{let mut numeric=HashMap::new();numeric.insert("n".into(),vec![None,Some(2.),Some(3.),Some(4.)]);let mut boolean=HashMap::new();boolean.insert("a".into(),vec![Some(true),Some(false),None,Some(true)]);boolean.insert("b".into(),vec![Some(false),None,Some(true),Some(true)]);Runtime{timestamps:vec!["0".into(),"1".into(),"2".into(),"3".into()],numeric,boolean,commitment:"input".into()}}
- #[test] fn comparison_truth_tables_and_nested_vector(){let i=input();for(op,expected)in [(Compare::Gt,vec![None,Some(false),Some(true),Some(true)]),(Compare::Gte,vec![None,Some(true),Some(true),Some(true)]),(Compare::Lt,vec![None,Some(false),Some(false),Some(false)]),(Compare::Lte,vec![None,Some(true),Some(false),Some(false)])]{let node=Node::Compare{op,left:Box::new(Node::NumericSeries(Reference{series:"n".into(),ty:Type::Numeric})),right:Box::new(Node::Number(2.))};assert_eq!(boolean(&node,&i).unwrap(),expected)}let nested=parse(&json!({"schema_version":1,"root":{"kind":"and","args":[{"kind":"compare","op":"gt","left":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}},"right":{"kind":"number","value":2}},{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"a","type":"boolean"}},{"kind":"not","arg":{"kind":"boolean_series","ref":{"series":"b","type":"boolean"}}}]}]}})).unwrap();assert_eq!(boolean(&nested.root,&i).unwrap(),vec![None,Some(false),None,Some(true)]);}
- #[test] fn kleene_truth_tables_and_determinism(){let values=[Some(false),Some(true),None];assert_eq!(values.iter().flat_map(|a|values.iter().map(move|b|and(*a,*b))).collect::<Vec<_>>(),vec![Some(false),Some(false),Some(false),Some(false),Some(true),None,Some(false),None,None]);assert_eq!(values.iter().flat_map(|a|values.iter().map(move|b|or(*a,*b))).collect::<Vec<_>>(),vec![Some(false),Some(true),None,Some(true),Some(true),Some(true),None,Some(true),None]);assert_eq!(Node::Not(Box::new(Node::BooleanSeries(Reference{series:"a".into(),ty:Type::Boolean}))).ty(),Type::Boolean);let i=input();let d=parse(&json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"a","type":"boolean"}}})).unwrap();let v=boolean(&d.root,&i).unwrap();assert_eq!(evaluation_identity(&identity(&d),&i,"x",&v),evaluation_identity(&identity(&d),&i,"x",&v));}
+#[cfg(test)]
+mod evaluation_tests {
+    use super::*;
+    use serde_json::json;
+    fn input() -> Runtime {
+        let mut numeric = HashMap::new();
+        numeric.insert("n".into(), vec![None, Some(2.), Some(3.), Some(4.)]);
+        let mut boolean = HashMap::new();
+        boolean.insert("a".into(), vec![Some(true), Some(false), None, Some(true)]);
+        boolean.insert("b".into(), vec![Some(false), None, Some(true), Some(true)]);
+        Runtime {
+            timestamps: vec!["0".into(), "1".into(), "2".into(), "3".into()],
+            numeric,
+            boolean,
+            commitment: "input".into(),
+        }
+    }
+    #[test]
+    fn comparison_truth_tables_and_nested_vector() {
+        let i = input();
+        for (op, expected) in [
+            (Compare::Gt, vec![None, Some(false), Some(true), Some(true)]),
+            (Compare::Gte, vec![None, Some(true), Some(true), Some(true)]),
+            (
+                Compare::Lt,
+                vec![None, Some(false), Some(false), Some(false)],
+            ),
+            (
+                Compare::Lte,
+                vec![None, Some(true), Some(false), Some(false)],
+            ),
+        ] {
+            let node = Node::Compare {
+                op,
+                left: Box::new(Node::NumericSeries(Reference {
+                    series: "n".into(),
+                    ty: Type::Numeric,
+                })),
+                right: Box::new(Node::Number(2.)),
+            };
+            assert_eq!(boolean(&node, &i).unwrap(), expected)
+        }
+        let nested=parse(&json!({"schema_version":1,"root":{"kind":"and","args":[{"kind":"compare","op":"gt","left":{"kind":"numeric_series","ref":{"series":"n","type":"numeric"}},"right":{"kind":"number","value":2}},{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"a","type":"boolean"}},{"kind":"not","arg":{"kind":"boolean_series","ref":{"series":"b","type":"boolean"}}}]}]}})).unwrap();
+        assert_eq!(
+            boolean(&nested.root, &i).unwrap(),
+            vec![None, Some(false), None, Some(true)]
+        );
+    }
+    #[test]
+    fn kleene_truth_tables_and_determinism() {
+        let values = [Some(false), Some(true), None];
+        assert_eq!(
+            values
+                .iter()
+                .flat_map(|a| values.iter().map(move |b| and(*a, *b)))
+                .collect::<Vec<_>>(),
+            vec![
+                Some(false),
+                Some(false),
+                Some(false),
+                Some(false),
+                Some(true),
+                None,
+                Some(false),
+                None,
+                None
+            ]
+        );
+        assert_eq!(
+            values
+                .iter()
+                .flat_map(|a| values.iter().map(move |b| or(*a, *b)))
+                .collect::<Vec<_>>(),
+            vec![
+                Some(false),
+                Some(true),
+                None,
+                Some(true),
+                Some(true),
+                Some(true),
+                None,
+                Some(true),
+                None
+            ]
+        );
+        assert_eq!(
+            Node::Not(Box::new(Node::BooleanSeries(Reference {
+                series: "a".into(),
+                ty: Type::Boolean
+            })))
+            .ty(),
+            Type::Boolean
+        );
+        let i = input();
+        let d=parse(&json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"a","type":"boolean"}}})).unwrap();
+        let v = boolean(&d.root, &i).unwrap();
+        assert_eq!(
+            evaluation_identity(&identity(&d), &i, "x", &v),
+            evaluation_identity(&identity(&d), &i, "x", &v)
+        );
+    }
 }
-#[cfg(test)] mod tests {use super::*;use serde_json::json;
- fn valid()->Value{json!({"schema_version":1,"root":{"kind":"and","args":[{"kind":"compare","op":"gt","left":{"kind":"numeric_series","ref":{"series":"rsi14","type":"numeric"}},"right":{"kind":"number","value":50.0}},{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"close.cross_above.sma3","type":"boolean"}},{"kind":"not","arg":{"kind":"boolean_series","ref":{"series":"rollover_blocked","type":"boolean"}}}]}]}})}
- #[test] fn allowed_nodes_and_nested_boolean_parse(){let d=parse(&valid()).unwrap();assert_eq!(d.root.ty(),Type::Boolean);for node in [json!({"kind":"numeric_series","ref":{"series":"x","type":"numeric"}}),json!({"kind":"number","value":1}),json!({"kind":"boolean_series","ref":{"series":"x","type":"boolean"}})]{assert!(parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":node,"right":{"kind":"number","value":0}}})).is_ok()||parse(&json!({"schema_version":1,"root":{"kind":"and","args":[node,{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}]}})).is_ok())}}
- #[test] fn strict_and_type_failures(){let cases=[json!({"schema_version":1,"root":{"kind":"number","value":1}}),json!({"schema_version":1,"root":{"kind":"compare","op":"eq","left":{"kind":"number","value":1},"right":{"kind":"number","value":2}}}),json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}},"right":{"kind":"number","value":2}}}),json!({"schema_version":1,"root":{"kind":"and","args":[]}}),json!({"schema_version":1,"root":{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}]}}),json!({"schema_version":1,"root":{"kind":"not","arg":{"kind":"number","value":1}}}),json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"x","type":"numeric"}}}),json!({"schema_version":1,"root":{"kind":"wat"}}),json!({"schema_version":1,"root":{"kind":"number","value":1,"extra":true}}),json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"x","type":"boolean","extra":true}}}),json!({"schema_version":1,"root":{"kind":"number"}}),json!({"schema_version":2,"root":{"kind":"number","value":1}}),json!({"root":{"kind":"number","value":1}}),json!({"schema_version":1,"extra":true,"root":{"kind":"number","value":1}})];for case in cases{assert!(parse(&case).is_err(),"{case}")}}
- #[test] fn canonical_is_independent_and_round_trips(){let d=parse(&valid()).unwrap();let expected=r#"{"root":{"args":[{"kind":"compare","left":{"kind":"numeric_series","ref":{"series":"rsi14","type":"numeric"}},"op":"gt","right":{"kind":"number","value":50.0}},{"args":[{"kind":"boolean_series","ref":{"series":"close.cross_above.sma3","type":"boolean"}},{"arg":{"kind":"boolean_series","ref":{"series":"rollover_blocked","type":"boolean"}},"kind":"not"}],"kind":"or"}],"kind":"and"},"schema_version":1}"#;assert_eq!(canonical_json(&d),expected);let reordered:Value=serde_json::from_str(r#"{"root":{"args":[{"right":{"value":50,"kind":"number"},"left":{"ref":{"type":"numeric","series":"rsi14"},"kind":"numeric_series"},"op":"gt","kind":"compare"},{"args":[{"ref":{"type":"boolean","series":"close.cross_above.sma3"},"kind":"boolean_series"},{"arg":{"ref":{"type":"boolean","series":"rollover_blocked"},"kind":"boolean_series"},"kind":"not"}],"kind":"or"}],"kind":"and"},"schema_version":1}"#).unwrap();let other=parse(&reordered).unwrap();assert_eq!(canonical_json(&other),expected);assert_eq!(identity(&d),identity(&other));let round=parse(&serde_json::from_str(&canonical_json(&d)).unwrap()).unwrap();assert_eq!(canonical_json(&round),expected);assert_eq!(identity(&round),identity(&d));}
- #[test] fn identity_is_sensitive_and_deterministic(){let d=parse(&valid()).unwrap();let base=identity(&d);assert_eq!(base,"7f6898acef2fb8a2cfa2d07f951931dd68834e6729e2d1c57952dd3f5f5f0afd");assert_eq!(base,identity(&d));for pointer_value in [("op","lte"),("threshold","51"),("series","rsi13"),("kind","or")] {let mut value=valid();match pointer_value.0{"op"=>value["root"]["args"][0]["op"]=json!(pointer_value.1),"threshold"=>value["root"]["args"][0]["right"]["value"]=json!(51),"series"=>value["root"]["args"][0]["left"]["ref"]["series"]=json!(pointer_value.1),"kind"=>value["root"]["kind"]=json!(pointer_value.1),_=>unreachable!()};assert_ne!(base,identity(&parse(&value).unwrap()));}}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+    fn valid() -> Value {
+        json!({"schema_version":1,"root":{"kind":"and","args":[{"kind":"compare","op":"gt","left":{"kind":"numeric_series","ref":{"series":"rsi14","type":"numeric"}},"right":{"kind":"number","value":50.0}},{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"close.cross_above.sma3","type":"boolean"}},{"kind":"not","arg":{"kind":"boolean_series","ref":{"series":"rollover_blocked","type":"boolean"}}}]}]}})
+    }
+    #[test]
+    fn allowed_nodes_and_nested_boolean_parse() {
+        let d = parse(&valid()).unwrap();
+        assert_eq!(d.root.ty(), Type::Boolean);
+        for node in [
+            json!({"kind":"numeric_series","ref":{"series":"x","type":"numeric"}}),
+            json!({"kind":"number","value":1}),
+            json!({"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}),
+        ] {
+            assert!(parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":node,"right":{"kind":"number","value":0}}})).is_ok()||parse(&json!({"schema_version":1,"root":{"kind":"and","args":[node,{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}]}})).is_ok())
+        }
+    }
+    #[test]
+    fn strict_and_type_failures() {
+        let cases = [
+            json!({"schema_version":1,"root":{"kind":"number","value":1}}),
+            json!({"schema_version":1,"root":{"kind":"compare","op":"eq","left":{"kind":"number","value":1},"right":{"kind":"number","value":2}}}),
+            json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}},"right":{"kind":"number","value":2}}}),
+            json!({"schema_version":1,"root":{"kind":"and","args":[]}}),
+            json!({"schema_version":1,"root":{"kind":"or","args":[{"kind":"boolean_series","ref":{"series":"x","type":"boolean"}}]}}),
+            json!({"schema_version":1,"root":{"kind":"not","arg":{"kind":"number","value":1}}}),
+            json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"x","type":"numeric"}}}),
+            json!({"schema_version":1,"root":{"kind":"wat"}}),
+            json!({"schema_version":1,"root":{"kind":"number","value":1,"extra":true}}),
+            json!({"schema_version":1,"root":{"kind":"boolean_series","ref":{"series":"x","type":"boolean","extra":true}}}),
+            json!({"schema_version":1,"root":{"kind":"number"}}),
+            json!({"schema_version":2,"root":{"kind":"number","value":1}}),
+            json!({"root":{"kind":"number","value":1}}),
+            json!({"schema_version":1,"extra":true,"root":{"kind":"number","value":1}}),
+        ];
+        for case in cases {
+            assert!(parse(&case).is_err(), "{case}")
+        }
+    }
+    #[test]
+    fn canonical_is_independent_and_round_trips() {
+        let d = parse(&valid()).unwrap();
+        let expected = r#"{"root":{"args":[{"kind":"compare","left":{"kind":"numeric_series","ref":{"series":"rsi14","type":"numeric"}},"op":"gt","right":{"kind":"number","value":50.0}},{"args":[{"kind":"boolean_series","ref":{"series":"close.cross_above.sma3","type":"boolean"}},{"arg":{"kind":"boolean_series","ref":{"series":"rollover_blocked","type":"boolean"}},"kind":"not"}],"kind":"or"}],"kind":"and"},"schema_version":1}"#;
+        assert_eq!(canonical_json(&d), expected);
+        let reordered:Value=serde_json::from_str(r#"{"root":{"args":[{"right":{"value":50,"kind":"number"},"left":{"ref":{"type":"numeric","series":"rsi14"},"kind":"numeric_series"},"op":"gt","kind":"compare"},{"args":[{"ref":{"type":"boolean","series":"close.cross_above.sma3"},"kind":"boolean_series"},{"arg":{"ref":{"type":"boolean","series":"rollover_blocked"},"kind":"boolean_series"},"kind":"not"}],"kind":"or"}],"kind":"and"},"schema_version":1}"#).unwrap();
+        let other = parse(&reordered).unwrap();
+        assert_eq!(canonical_json(&other), expected);
+        assert_eq!(identity(&d), identity(&other));
+        let round = parse(&serde_json::from_str(&canonical_json(&d)).unwrap()).unwrap();
+        assert_eq!(canonical_json(&round), expected);
+        assert_eq!(identity(&round), identity(&d));
+    }
+    #[test]
+    fn identity_is_sensitive_and_deterministic() {
+        let d = parse(&valid()).unwrap();
+        let base = identity(&d);
+        assert_eq!(
+            base,
+            "7f6898acef2fb8a2cfa2d07f951931dd68834e6729e2d1c57952dd3f5f5f0afd"
+        );
+        assert_eq!(base, identity(&d));
+        for pointer_value in [
+            ("op", "lte"),
+            ("threshold", "51"),
+            ("series", "rsi13"),
+            ("kind", "or"),
+        ] {
+            let mut value = valid();
+            match pointer_value.0 {
+                "op" => value["root"]["args"][0]["op"] = json!(pointer_value.1),
+                "threshold" => value["root"]["args"][0]["right"]["value"] = json!(51),
+                "series" => {
+                    value["root"]["args"][0]["left"]["ref"]["series"] = json!(pointer_value.1)
+                }
+                "kind" => value["root"]["kind"] = json!(pointer_value.1),
+                _ => unreachable!(),
+            };
+            assert_ne!(base, identity(&parse(&value).unwrap()));
+        }
+    }
 }

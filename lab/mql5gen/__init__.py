@@ -16,6 +16,12 @@ TRANSLATOR_VERSION = "nora_mql5_condition_translator_v1"
 CONDITION_SOURCE_FILENAME = "NoraPhase2ConditionV1.mqh"
 CONDITION_MANIFEST_FILENAME = "NoraPhase2ConditionV1.manifest.json"
 TRANSLATION_IDENTITY_DOMAIN = "nora.mql5.condition_translator_v1.semantic.v1"
+ATR_DISTANCE_FEATURE_TRANSLATOR_VERSION = "nora.mql5.atr_distance_feature_plan_v1"
+ATR_DISTANCE_FEATURE_SOURCE_FILENAME = "NoraPhase2AtrDistanceFeaturePlanV1.mqh"
+ATR_DISTANCE_FEATURE_MANIFEST_FILENAME = "NoraPhase2AtrDistanceFeaturePlanV1.manifest.json"
+ATR_DISTANCE_FEATURE_TRANSLATION_DOMAIN = "nora.mql5.atr_distance_feature_plan_v1.semantic.v1"
+ATR_RUNTIME_IDENTITY = "80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194"
+DISTANCE_ATR_RUNTIME_IDENTITY = "008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12"
 FIXTURE_VERSION = "nora_mql5_condition_fixture_v1"
 FIXTURE_SOURCE_FILENAME = "NoraPhase2ConditionFixtureV1.mq5"
 FIXTURE_MANIFEST_FILENAME = "NoraPhase2ConditionFixtureV1.manifest.json"
@@ -465,6 +471,80 @@ def translate_condition(ast_path: str | os.PathLike[str], runtime_manifest_path:
         manifest.unlink(missing_ok=True)
         raise
     return {"ok": True, **semantic_manifest, "header_path": str(header), "manifest_path": str(manifest)}
+
+
+def _atr_distance_ast(raw: object) -> tuple[dict, list[dict]]:
+    if not isinstance(raw, dict) or set(raw) != {"schema_version", "root"} or raw.get("schema_version") != 1:
+        raise GenerationError("ATR/Distance feature AST must be a schema-version-1 document")
+    features: dict[str, dict] = {}
+    def series(value: object) -> dict:
+        if not isinstance(value, dict) or set(value) != {"type", "name"} or value.get("type") != "series" or not isinstance(value.get("name"), str) or not value["name"]:
+            raise GenerationError("feature series references must be typed numeric series names")
+        return {"type": "series", "name": value["name"]}
+    def numeric(value: object) -> dict:
+        if not isinstance(value, dict): raise GenerationError("feature numeric node must be an object")
+        if value.get("type") == "atr":
+            if set(value) != {"type", "high", "low", "close", "period", "method"} or value.get("period") != 3 or value.get("method") != "wilder":
+                raise GenerationError("ATR admission requires period 3 and wilder method")
+            node = {"type": "atr", "high": series(value["high"]), "low": series(value["low"]), "close": series(value["close"]), "period": 3, "method": "wilder"}
+        elif value.get("type") == "distance_atr":
+            if set(value) != {"type", "value", "reference", "atr"}: raise GenerationError("distance_atr node has unknown fields")
+            atr = numeric(value["atr"])
+            if atr["type"] != "atr": raise GenerationError("distance_atr.atr must be an admitted atr node")
+            node = {"type": "distance_atr", "value": series(value["value"]), "reference": series(value["reference"]), "atr": atr}
+        else: raise GenerationError("unsupported numeric feature node")
+        canonical = json.dumps(node, sort_keys=True, separators=(",", ":"))
+        identity = hashlib.sha256(b"nora-ast-feature-v2" + canonical.encode()).hexdigest()
+        if node["type"] == "distance_atr": numeric(node["atr"])
+        features[identity] = node
+        return node
+    def visit(value: object) -> None:
+        if not isinstance(value, dict): raise GenerationError("AST node must be an object")
+        if "type" in value: numeric(value); return
+        kind = value.get("kind")
+        if kind == "compare": visit(value.get("left")); visit(value.get("right"))
+        elif kind in {"and", "or"}:
+            for argument in value.get("args", []): visit(argument)
+        elif kind == "not": visit(value.get("arg"))
+    visit(raw["root"])
+    canonical = {"schema_version": 1, "root": raw["root"]}
+    ordered = [{"identity": identity, "node": features[identity]} for identity in sorted(features, key=lambda identity: (features[identity]["type"] != "atr", identity))]
+    return canonical, ordered
+
+
+def translate_atr_distance_feature_plan(ast_path: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    """Emit Stage-A MQL5 buffers for admitted ATR3/Wilder and Distance/ATR features."""
+    try: raw = json.loads(Path(ast_path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error: raise GenerationError("feature AST is unreadable or malformed") from error
+    canonical, features = _atr_distance_ast(raw)
+    ast_json = json.dumps(canonical, sort_keys=True, separators=(",", ":"))
+    ast_identity = hashlib.sha256(b"nora-ast-semantic-v1" + ast_json.encode()).hexdigest()
+    definitions, initializers = [], []
+    for feature in features:
+        prefix = feature["identity"][:16]; name = f"nora_feature_{prefix}"
+        definitions.append(f"NoraNullableDoubleV1 {name}[];")
+        node = feature["node"]
+        if node["type"] == "atr":
+            initializers.append(f"{name}[row_index] = NoraAtr3V1(high, low, close, row_index);")
+        else:
+            dependency = hashlib.sha256(b"nora-ast-feature-v2" + json.dumps(node["atr"], sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:16]
+            initializers.append(f"{name}[row_index] = NoraDistanceAtrV1(NoraNumericValueV1(close[row_index]), NoraNumericValueV1(sma3[row_index]), nora_feature_{dependency}[row_index]);")
+    guard = "NORA_PHASE2_ATR_DISTANCE_FEATURE_PLAN_V1_MQH"
+    resize = "\n   ".join(f"ArrayResize(nora_feature_{feature['identity'][:16]}, row_count);" for feature in features)
+    source_text = f"#ifndef {guard}\n#define {guard}\n\n#include \"NoraPhase2AtrRuntimeV1.mqh\"\n#include \"NoraPhase2DistanceAtrRuntimeV1.mqh\"\n\n" + "\n".join(definitions) + "\n\nvoid NoraPhase2SInitializeFeatures(const double &high[], const double &low[], const double &close[], const double &sma3[], const int row_count)\n{\n   " + resize + "\n   for(int row_index = 0; row_index < row_count; row_index++)\n   {\n      " + "\n      ".join(initializers) + "\n   }\n}\n\n#endif\n"
+    source = source_text.encode(); source_sha256 = hashlib.sha256(source).hexdigest()
+    digest = hashlib.sha256(); _part(digest, ATR_DISTANCE_FEATURE_TRANSLATION_DOMAIN.encode())
+    for value in [ATR_DISTANCE_FEATURE_TRANSLATOR_VERSION, ast_identity, ATR_RUNTIME_IDENTITY, DISTANCE_ATR_RUNTIME_IDENTITY, json.dumps(features, sort_keys=True, separators=(",", ":")), source_sha256]: _part(digest, value.encode())
+    _part(digest, source); translation_identity = digest.hexdigest()
+    output = Path(output_dir)
+    if not output.is_dir(): raise GenerationError("feature output directory must exist")
+    header, manifest = output / ATR_DISTANCE_FEATURE_SOURCE_FILENAME, output / ATR_DISTANCE_FEATURE_MANIFEST_FILENAME
+    if header.exists() or manifest.exists(): raise GenerationError("feature output targets must not already exist")
+    semantic = {"translator_version": ATR_DISTANCE_FEATURE_TRANSLATOR_VERSION, "canonical_ast_identity": ast_identity, "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "features": features, "source_filename": header.name, "source_sha256": source_sha256, "translation_identity": translation_identity}
+    _publish(output, header.name, source)
+    try: _publish(output, manifest.name, (json.dumps(semantic, sort_keys=True, separators=(",", ":")) + "\n").encode())
+    except GenerationError: header.unlink(missing_ok=True); raise
+    return {"ok": True, **semantic, "header_path": str(header), "manifest_path": str(manifest)}
 
 
 def _verify_condition_manifest(path: Path) -> dict:
