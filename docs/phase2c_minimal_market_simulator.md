@@ -115,17 +115,38 @@ Executed sealing command:
 }
 ```
 
-`model` must be exactly `max_bars_held_v1`; `max_bars_held` must be a strictly positive integer; and `event_output_path` must be non-empty. Unknown fields are rejected. `time_exit` together with `initial_bracket_execution` fails deterministically with `time_exit and initial_bracket_execution cannot both be configured`; no ledger, event artifact, or success summary is published.
+`model` must be exactly `max_bars_held_v1`; `max_bars_held` must be a strictly positive integer; and `event_output_path` must be non-empty. Unknown fields are rejected. `time_exit` and `initial_bracket_execution` may coexist under the documented combined ordering.
 
 For a position opened at `entry_index`, the standalone time exit is due on the first later row where `current_index - entry_index >= max_bars_held`. It never runs on the entry row. For a carried position, a true signal exit at the current open wins first; only otherwise does a due time exit close at that same open. A closing-row entry is ignored and counted, and no same-row reopen occurs. If the threshold is not reached by the final row, the position stays terminal-open with no time-exit event.
 
 Time exits fill at the current open and preserve the closed-trade ledger economics. Their event artifact has non-null fields `trade_id: UInt64`, `side: Utf8`, `entry_timestamp: Utf8`, `entry_index: UInt64`, `exit_timestamp: Utf8`, `exit_index: UInt64`, `exit_reason: Utf8` (always `max_bars_held`), `exit_price: Float64`, `bars_held: UInt64`, and `max_bars_held: UInt64`. Summary fields are `time_exit_closes` and `time_exit_event_rows`; signal exits produce no time event.
 
-Committed fixtures seal: long entry `10.0` at index 0 with threshold 2 closes at index 2 / `12.0`, `bars_held = 2`, P&L `2.0`; short entry `10.0` with threshold 2 closes at index 2 / `8.0`, P&L `2.0`; threshold 3 over rows 0–2 remains open with no events; and a due-row signal plus entry closes by signal, emits no time event, ignores the entry, and does not reopen. No separate time-exit identity exists. Absent or `null` `time_exit` preserves all prior simulator behavior and frozen simulator/bracket/execution identities exactly.
+Committed fixtures seal: long entry `10.0` at index 0 with threshold 2 closes at index 2 / `12.0`, `bars_held = 2`, P&L `2.0`; short entry `10.0` with threshold 2 closes at index 2 / `8.0`, P&L `2.0`; threshold 3 over rows 0–2 remains open with no events; and a due-row signal plus entry closes by signal, emits no time event, ignores the entry, and does not reopen. Configured time exits have their own time-exit identity; absent or `null` `time_exit` preserves all prior simulator and bracket identities exactly.
 
 Executed commands:
 
 ```bash
+cargo test --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest discover -s tests
+```
+
+## Combined exit identity seal
+
+Two fresh real-CLI runs of the combined time-wins case (`open=10.5`, later target touch, threshold 1) produced the identical triplet: simulator `febe2e780e027d0df4ab1a4237205ce3f3be53c87a29b17fa30e29b990a8c45c`, bracket execution `23be1c1145d7b9e6ed4dbef6736d9308f62830e0fbc4bd7a19fc31cb88547313`, and time exit `635c5bf8b8a50d7ea4cdaed3bab45b72fa020acddde402f910064bc4f9e6bf59`. Fresh ledger, bracket-event, time-event, and task paths did not affect the identities; semantic rows and path-stripped summaries matched.
+
+For a gap winner, changing only `max_bars_held` from 2 to 3 left the trade, `initial_stop_gap` event, gap count, and P&L unchanged. The full triplet changed from simulator `643aa3064755e65834359141a8d650c82abc52f9fb464736835eeb3695b10bda`, bracket `fb7cb40ab8b10f2ad6459471a0ed2dc31b4a9a467af3efdfe74d26c89762c6de`, time `5caf9d77cb95f3307710e0f514752c52ce9f20c49316ff095a26e13a2028f87d` to simulator `33ce741bcb653e6c01e0f8de65c7dda1b1f931dce4783ec6ae57bc2de6e5ee78`, bracket `f6a1ac91020a21ba0cf7c8aaa449da67fd5604f996db669035dd04d2dd4e2514`, time `906dbf3330950d469311e533bf6ad463e5b78466a183681e73ce3155964bfca9`. Bracket identity intentionally changes because its canonical contract is rooted in the combined simulator identity.
+
+Changing only the losing bracket model on a time-winning inside-open row (`ohlc_pessimistic_v1` to `ohlc_pessimistic_gap_v1`) leaves the time trade unchanged but changes all three identities: pessimistic `93a79b88a13967fb404a5715379891d35ac721585d796487076ecfe17046e2eb` / `2bf89ba6d0f96dcec91ef285c840ef986d96638ee16eea9d5912a47d9bf36a10` / `386e780027dcfdf6267f7ed38c0d7b5e9cc90d982c738e1e2e275dba35436d71`; gap-capable `4f8e58b1459f4e2a5b6d0db695ffdde0342b0d04e257ccecc9bc252b7ebf0a51` / `750192accc1ccb902de0364a3e6ce1de5443f65b51c101f8547098aae2822830` / `bff29865cab89159d22ac920798bdcc63331379d5bc1eac7431a044adac63c81`. The time identity intentionally binds combined bracket policy/OHLC.
+
+Changing the time threshold so the same time-winning row is not due makes the intrabar target win at `12.0`: time events change `1 → 0`, bracket events `0 → 1`, time count `1 → 0`, target count `0 → 1`. The frozen triplet is simulator `f4805ec8d20024e7a65d86f0c541d9536904251cdd4c118cc59ae1f21016079b`, bracket `ba065457ad3e3ef2f1663daa6c58b9f581a01f161eff0c2deb230a7c04097eb3`, time `bd1dab0dac102fbb73f2d8c92aabee9bf08f3c2f5e14e74bdc8490264fac060b`.
+
+The combined terminal-open case repeated exactly with simulator `3868cb0d5399ce2409f1308c6803cebafae2b555d36db84e792617dfce6b1ab7`, bracket `08f24a6bb1f1f5719581402f220ed0528198187131f08efc2243bc8a9ec7cb70`, and time `e5a390171aca42218d788bdaa8bf254f392d95b1b39f84d3c1912012eaf032fb`; it has zero trades and zero events. The retained non-due unambiguous dual-touch failure exits 2 with `unsupported ambiguous bracket bar`, no stdout success summary, and no final ledger or event artifacts.
+
+Exact CLI commands:
+
+```bash
+cargo build --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest tests.test_phase1.Phase1.test_combined_exit_identity_cli_seal
 cargo test --manifest-path engine/Cargo.toml
 .venv/bin/python -m unittest discover -s tests
 ```
