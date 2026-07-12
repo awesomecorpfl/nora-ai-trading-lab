@@ -4,10 +4,53 @@
 
 Market data must have aligned UTF-8 `timestamp` and finite non-null Float64 `open`. Both intent artifacts must have exactly aligned timestamps and their configured native nullable Boolean columns. No joins, timestamp conversion, filling, or coercion occurs.
 
-At each open, an open position exits on true exit intent and ignores that row's entry intent. Otherwise it remains open and true entry is ignored. When flat, true entry opens and that row's exit intent is ignored; otherwise true exit is ignored. There is no same-row close/reopen. Null means no action. Quantity is one; long P&L is exit minus entry, short P&L is entry minus exit, and closed `bars_held` is exit index minus entry index. A final open position is left open and excluded from the ledger.
+## Frozen state order and economics
 
-The atomic closed-trade ledger has `trade_id`, entry/exit timestamps and indices, entry/exit prices, `bars_held`, and `gross_pnl_per_unit`. Identity uses `nora-market-simulator-v1-semantic-v1` over typed config, market/intents, closed ledger, and terminal state; paths do not affect it. Failures publish no final ledger or successful identity summary.
+At each current open, the simulator performs exactly this ordering:
 
-The committed chain produces four long trades, rows `4→5`, `6→7`, `8→9`, and `10→11`, all held one bar. Entry prices are `1.1013, 1.1017, 1.1021, 1.1025`; exits are `1.1010, 1.1014, 1.1018, 1.1022`; gross P&Ls are approximately `-0.0003` each, totaling `-0.0012`. It opens and closes four trades, ignores four exits while flat and four entries while open, and ends flat. Its identity is `f913e382d93cfc125ae57171cfcf0bb28a5f8a7abaa77c3dab13eda6bd023c17`.
+1. If open and exit is `true`, close at that current open; a same-row entry `true` is ignored and counted.
+2. If open and exit is not `true`, a true entry is ignored and counted.
+3. If flat and entry is `true`, open at that current open; a same-row exit `true` is ignored and counted.
+4. If flat and entry is not `true`, a true exit is ignored and counted.
 
-This is not the complete v1 simulator. No SL/TP, intrabar path or ambiguity, costs, sizing, trailing, time exits, pending orders, partial exits, MQL5, parity, or searchable grammar exists. Phase 3 remains blocked.
+`null` does nothing. There is no same-row close/reopen. One unit is modeled: long gross P&L is `exit_price - entry_price`; short gross P&L is `entry_price - exit_price`; `bars_held` is `exit_index - entry_index`. `leave_open` creates no artificial terminal close.
+
+## Final closed-trade ledger schema
+
+The atomically published Parquet ledger has these required non-null typed fields: `trade_id: UInt64`, `side: Utf8` (`long` or `short` only), `entry_timestamp: Utf8`, `exit_timestamp: Utf8`, `entry_index: UInt64`, `exit_index: UInt64`, `entry_price: Float64`, `exit_price: Float64`, `bars_held: UInt64`, and `gross_pnl_per_unit: Float64`. Terminal-open reporting includes `state`, `side`, `entry_index`, `entry_timestamp`, `entry_price`, and `bars_open_through_final_row`.
+
+## Committed-chain evidence
+
+The long chain produces the following ledger (zero-based rows):
+
+| trade | side | entry row / price | exit row / price | bars | gross P&L |
+| --- | --- | --- | --- | --- | --- |
+| 1 | long | 4 / 1.1013 | 5 / 1.1010 | 1 | -0.0003 |
+| 2 | long | 6 / 1.1017 | 7 / 1.1014 | 1 | -0.0003 |
+| 3 | long | 8 / 1.1021 | 9 / 1.1018 | 1 | -0.0003 |
+| 4 | long | 10 / 1.1025 | 11 / 1.1022 | 1 | -0.0003 |
+
+Counts are four entries, four closes, four ignored exits while flat, four ignored entries while open, and terminal `flat`; total gross P&L per unit is `-0.0012`. Its frozen simulator identity is `7b39a70d2fe5312a5dc1970254c50a350012309a50c7a3610992c225efa5a5b1`.
+
+The committed short fixture (`phase2_market_simulator_short_*`) opens short at index 0 / `2030.01.02 00:00` at `10.0`, closes at index 2 / `2030.01.02 00:02` at `8.0`, has `bars_held = 2`, ledger `side = short`, gross P&L `10.0 - 8.0 = 2.0`, and ends flat.
+
+The committed leave-open fixture (`phase2_market_simulator_leave_open_*`) opens long at index 1 / `2030.01.03 00:01` at `21.0`, creates zero closed trades, and reports `{state: open, side: long, entry_index: 1, entry_timestamp: 2030.01.03 00:01, entry_price: 21.0, bars_open_through_final_row: 1}`. Its task explicitly sets `terminal_policy: leave_open`.
+
+## Identity and failed-publication evidence
+
+The domain-separated identity protocol is `nora.market_simulator.simulate_market_v1.semantic.v2.ledger_side_v1`. It binds typed config (including side and terminal policy), the canonical market timestamps and open values, nullable entry and exit intent values, final ledger schema/content (including side), and terminal state. Paths and Parquet container bytes are deliberately not identity inputs.
+
+Running identical short-fixture inputs twice yielded `2dedf9984a2e09ec91602b6819fee8474f9ea6b69e1fa20cd428c8e9927cb8ad` both times; ledger and summary semantics matched. The independent deterministic mutations yielded: side `3d38e45e34ae977fad93729c8401644562269dc94b3c223c77b3b693882e28ee`; one market open `7ac5de22b10872be6f12cb19eaeffdd560c8006d0cc9c419edf0eb635163700b`; entry intent `799b8176167f7edb34304be15971aebc5c8cda6421cc7cd2d5c97594464d22ed`; exit intent `3c6e27b5bcf24ad4a4912e8f1d91222353ac3c177b02a8250b49c2035e3f47ad`.
+
+A fresh-output CLI run with a one-row, timestamp-misaligned entry artifact exited `2`, wrote the deterministic stderr JSON error `{"ok":false,"error":"simulator timestamps must match exactly"}`, emitted no stdout success summary, and published neither the requested final ledger nor a `.partial` artifact.
+
+Commands executed (the two named Python tests execute real `labengine <task.json>` subprocesses, including the repeat, mutations, fixtures, and failure):
+
+```bash
+cargo build --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest tests.test_phase1.Phase1.test_market_simulator_committed_cli_chain tests.test_phase1.Phase1.test_market_simulator_short_leave_open_identity_and_failure_evidence
+cargo test --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest discover -s tests
+```
+
+This remains the minimal simulator: no SL/TP, intrabar path or ambiguity, spread, commission, slippage, swap, sizing, trailing, pending orders, partial exits, RNG, MQL5, parity, searchable grammar, or Phase 3 work.
