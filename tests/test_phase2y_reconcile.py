@@ -1,17 +1,20 @@
-import json,tempfile,unittest
-from pathlib import Path
-from lab.phase2x_batch import manifest
+import unittest
+from lab.phase2x_batch import load
 from lab.phase2y_reconcile import reconcile
 class Reconcile(unittest.TestCase):
- def _fixture(self,path,**changes):
-  batch=manifest();value={'batch_identity':batch['batch_identity'],'targets':{}}
-  for target in batch['targets']:value['targets'][target['id']]={'target_identity':target['package_identity'],'compile':'compiled','runtime':'completed','completion_marker':target['completion_marker'],'rows':[{'row':i,'values':[0.0]} for i in range(target['expected_vectors']['row_count'])]}
-  value.update(changes);(path/'result.json').write_text(json.dumps(value));return value
- def test_exact_synthetic_protocol_match(self):
-  with tempfile.TemporaryDirectory() as d:
-   p=Path(d);self._fixture(p);r=reconcile(p);self.assertEqual(r['classification'],'PASS_EXACT');self.assertTrue(r['synthetic_protocol_fixture']);self.assertFalse(r['native_parity_updated'])
- def test_identity_compile_runtime_row_and_nonfinite_failures(self):
-  cases=(('identity',lambda x:x.update(batch_identity='0'*64),'FAIL_IDENTITY'),('compile',lambda x:x['targets']['macd'].update(compile='failed'),'FAIL_COMPILE'),('runtime',lambda x:x['targets']['macd'].update(runtime='interrupted'),'FAIL_INTERRUPTED'),('row',lambda x:x['targets']['macd'].update(rows=[]),'FAIL_ROW_ALIGNMENT'),('nan',lambda x:x['targets']['macd']['rows'][0].update(values=[float('nan')]),'FAIL_CONTRACT'))
-  for _,mut,expected in cases:
-   with tempfile.TemporaryDirectory() as d:
-    p=Path(d);value=self._fixture(p);mut(value);(p/'result.json').write_text(json.dumps(value));self.assertEqual(reconcile(p)['classification'],expected)
+ def fixture(self):
+  b=load();v={'batch_identity':b['batch_identity'],'targets':{}}
+  for t in b['targets']:
+   e=t['expected_vectors'];rows=[]
+   for i in e['rows']:
+    row={'row':i}
+    for k,x in e['vectors'].items():
+     if k not in ('row','close','source','null_masks'):row[k]=x[i]
+    rows.append(row)
+   v['targets'][t['id']]={k:t[k] for k in ('rust_component_identity','runtime_identity','tester_identity','package_identity')};v['targets'][t['id']].update({'expected_vector_identity':e['expected_vector_identity'],'compile':'compiled','runtime':'completed','completion_marker':t['completion_marker'],'rows':rows})
+  return v
+ def test_exact_and_within_tolerance(self):
+  v=self.fixture();self.assertEqual(reconcile(v)['classification'],'PASS_EXACT');v['targets']['macd']['rows'][3]['macd']+=1e-13;self.assertEqual(reconcile(v)['classification'],'PASS_WITHIN_TOLERANCE')
+ def test_identity_compile_interrupt_row_null_value_and_nonfinite_failures(self):
+  for mutate,expected in ((lambda v:v.update(batch_identity='0'*64),'FAIL_IDENTITY'),(lambda v:v['targets']['macd'].update(compile='failed'),'FAIL_COMPILE'),(lambda v:v['targets']['macd'].update(runtime='interrupted'),'FAIL_INTERRUPTED'),(lambda v:v['targets']['macd'].update(rows=[]),'FAIL_ROW_ALIGNMENT'),(lambda v:v['targets']['macd']['rows'][3].update(macd=None),'FAIL_NULL_ALIGNMENT'),(lambda v:v['targets']['macd']['rows'][3].update(macd=1.0),'FAIL_VALUE_MISMATCH'),(lambda v:v['targets']['macd']['rows'][3].update(macd=float('nan')),'FAIL_CONTRACT')):
+   v=self.fixture();mutate(v);self.assertEqual(reconcile(v)['classification'],expected)
