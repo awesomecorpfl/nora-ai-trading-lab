@@ -102,3 +102,19 @@ Executed sealing command:
 ```bash
 .venv/bin/python -m unittest tests.test_phase1.Phase1.test_unambiguous_bracket_execution_cli_matrix
 ```
+
+## Typed maximum-bars time-exit configuration (unsupported execution)
+
+`config.time_exit` is optional and nullable. When non-null, it is a strict object with exactly this schema:
+
+```json
+{
+  "model": "max_bars_held_v1",
+  "max_bars_held": 2,
+  "event_output_path": "path/to/time_exit_events.parquet"
+}
+```
+
+`model` must be exactly `max_bars_held_v1`; `max_bars_held` must be a strictly positive integer; and `event_output_path` must be non-empty. Unknown fields are rejected. A non-null valid configuration fails before any input processing or artifact-path handling with `time_exit execution is not implemented`; no success summary, final artifact, partial artifact, time-exit event artifact, or time-exit identity is produced. `time_exit` together with `initial_bracket_execution` instead fails deterministically with `time_exit and initial_bracket_execution cannot both be configured`.
+
+Execution is deliberately unsupported after this commit. Absent or `null` `time_exit` preserves all prior simulator behavior and frozen simulator/bracket/execution identities exactly.
