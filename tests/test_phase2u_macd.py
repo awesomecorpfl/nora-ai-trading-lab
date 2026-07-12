@@ -9,6 +9,11 @@ class TestMacd(unittest.TestCase):
    self.assertEqual(ra,rb)
    for n in (RUNTIME,TESTER,EVIDENCE,PACKAGE):self.assertEqual((x/n).read_bytes(),(y/n).read_bytes())
    e=json.loads((x/EVIDENCE).read_text());self.assertEqual(e['task_semantic_identity'],TASK_ID);self.assertEqual(e['signal_input'],'compact ordered non-null MACD sequence realigned to original rows');self.assertEqual(e['macd'][:3],[None]*3);self.assertEqual(e['signal'][:5],[None]*5)
+   self.assertEqual(e['rust_macd_component_identity'],'fef4a9583d0a12d5f067be9d977015a4f6d441e20232d2e8241b6a5539eee6f9')
+   runtime=(x/RUNTIME).read_text();tester=(x/TESTER).read_text()
+   self.assertIn('NoraPhase2MacdCompute',runtime);self.assertIn('NoraMacdEma',runtime);self.assertIn('MathIsValidNumber',runtime)
+   self.assertIn('int OnInit()',tester);self.assertIn('FileWrite',tester);self.assertIn('NORA_PHASE2U_MACD_COMPLETE_V2',tester)
+   self.assertEqual(e['csv_schema'],['row','close','macd_null','macd','signal_null','signal','histogram_null','histogram','pass'])
  def test_atomic_existing_target(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);(p/RUNTIME).write_text('x')
@@ -21,11 +26,11 @@ class TestMacd(unittest.TestCase):
    try:
     subject.CLOSE=[1.1004,*original_close[1:]]
     (root/'early').mkdir(); early=generate(root/'early')
-    self.assertNotEqual(early['rust_macd_component_identity'],baseline['rust_macd_component_identity'])
+    self.assertNotEqual(early['executable_contract_identity'],baseline['executable_contract_identity'])
     self.assertNotEqual(early['tester_identity'],baseline['tester_identity'])
     subject.CLOSE=[*original_close[:-1],1.1030]
     (root/'late').mkdir(); late=generate(root/'late')
-    self.assertNotEqual(late['rust_macd_component_identity'],baseline['rust_macd_component_identity'])
+    self.assertNotEqual(late['executable_contract_identity'],baseline['executable_contract_identity'])
     subject.TASK_ID='0'*64
     (root/'task').mkdir(); changed=generate(root/'task')
     self.assertNotEqual(changed['package_identity'],baseline['package_identity'])
@@ -54,3 +59,11 @@ class TestMacd(unittest.TestCase):
    finally: subject._publish=original
    self.assertEqual(calls[:2],[RUNTIME,TESTER])
    for name in (EVIDENCE,RUNTIME,TESTER,PACKAGE): self.assertFalse((p/name).exists())
+ def test_expected_vector_mutation_changes_tester_and_package_without_native_claim(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d);(p/'base').mkdir();base=generate(p/'base');original=subject.MACD
+   try:
+    subject.MACD=[*original[:-1],0.0];(p/'mut').mkdir();mut=generate(p/'mut')
+    self.assertNotEqual(mut['tester_identity'],base['tester_identity']);self.assertNotEqual(mut['package_identity'],base['package_identity'])
+    self.assertFalse(mut['native_parity']);self.assertFalse(mut['grammar_admitted']);self.assertFalse(mut['searchable'])
+   finally: subject.MACD=original
