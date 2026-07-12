@@ -87,6 +87,8 @@ Bracket event Parquet rows are `trade_id: UInt64`, `entry_id: UInt64`, `side: Ut
 
 The CLI matrix freezes long stop `9.0/-1.0`, long target `12.0/+2.0`, short stop `11.0/-1.0`, and short target `8.0/+2.0`, each at index 1 after a `10.0` entry with one bar held. The entry row deliberately crosses both levels yet remains open until the next row. Signal precedence closes at the carried-row open, emits no event, ignores same-row entry, and does not reopen; a bracket-close collision emits one event and likewise ignores its same-row entry. Ambiguous dual-touch and open-at-level gap tasks exit 2 with the explicit unsupported errors and publish neither ledger nor event artifact.
 
+`ohlc_pessimistic_v1` is a separate strict execution model. It preserves all ordering, signal precedence, entry-row exclusion, and gap failure rules of `ohlc_unambiguous_v1`; only a later non-gap bar touching both inclusive levels differs. It always closes at the initial stop, for both long and short, and emits `initial_stop_pessimistic`. The close increments both `initial_stop_closes` and `pessimistic_ambiguity_resolutions` exactly once. The original unambiguous model continues to fail such bars.
+
 Executed sealing command:
 
 ```bash
