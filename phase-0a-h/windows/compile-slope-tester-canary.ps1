@@ -1,0 +1,29 @@
+param([Parameter(Mandatory=$true)][string]$IncomingRoot,[Parameter(Mandatory=$true)][string]$RunId,[int]$TimeoutSeconds=300)
+$ErrorActionPreference='Stop'
+$root="$env:USERPROFILE\NoraPhase2N"
+$run=Join-Path $root $RunId
+$source=Join-Path $run 'source'
+New-Item -ItemType Directory -Force $source|Out-Null
+foreach($name in @('NoraPhase2RuntimeV1.mqh','NoraPhase2SlopeRuntimeV1.mqh','NoraPhase2SlopeTesterCanaryV1.mq5')){Copy-Item (Join-Path $IncomingRoot $name) (Join-Path $source $name) -Force}
+$editor='C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe'
+if(!(Test-Path $editor)){throw 'configured MetaEditor64.exe absent'}
+$program=Join-Path $source 'NoraPhase2SlopeTesterCanaryV1.mq5'
+$log=Join-Path $run 'compile.log'
+$ex5=Join-Path $source 'NoraPhase2SlopeTesterCanaryV1.ex5'
+$p=Start-Process $editor -ArgumentList ('/compile:"'+$program+'" /log:"'+$log+'"') -PassThru
+if(!$p.WaitForExit($TimeoutSeconds*1000)){Stop-Process $p -Force;throw 'compiler timeout'}
+if(!(Test-Path $log)){throw 'compiler log absent'}
+$text=Get-Content $log -Raw
+$e=[regex]::Matches($text,'(?i)(\d+)\s+errors?')
+$w=[regex]::Matches($text,'(?i)(\d+)\s+warnings?')
+if($e.Count -eq 0 -or $w.Count -eq 0){throw 'compiler log lacks deterministic error/warning counts'}
+$errors=[int]$e[$e.Count-1].Groups[1].Value
+$warnings=[int]$w[$w.Count-1].Groups[1].Value
+$out=Join-Path $run 'NoraPhase2SlopeTesterCanaryV1.ex5'
+$size=0
+$sha=''
+if(Test-Path $ex5){Copy-Item $ex5 $out -Force;$size=(Get-Item $out).Length;if($size -gt 0){$sha=(Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()}}
+$status=if($errors -eq 0 -and $warnings -eq 0 -and $size -gt 0){'compiled'}else{'failed'}
+$result=[ordered]@{status=$status;compiler_path=$editor;compiler_version=(Get-Item $editor).VersionInfo.FileVersion;compiler_exit_code=$p.ExitCode;error_count=$errors;warning_count=$warnings;ex5_filename='NoraPhase2SlopeTesterCanaryV1.ex5';ex5_size_bytes=$size;ex5_sha256=$sha}
+$result|ConvertTo-Json -Compress|Set-Content (Join-Path $run 'compile.json') -Encoding utf8
+if($status -ne 'compiled'){exit 2}

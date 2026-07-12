@@ -78,6 +78,28 @@ SERIES_COMPILE_CONTRACT_VERSION = "nora.mql5.series_tester_compile_v1"
 SERIES_EXECUTION_CONTRACT_VERSION = "nora.mt5.series_tester_execution_v1"
 SERIES_SEMANTIC_RESULT_VERSION = "nora.mt5.series_semantic_result_v1"
 
+SLOPE_RUNTIME_FILENAME = "NoraPhase2SlopeRuntimeV1.mqh"
+SLOPE_RUNTIME_MANIFEST = "NoraPhase2SlopeRuntimeV1.manifest.json"
+SLOPE_TESTER_SOURCE = "NoraPhase2SlopeTesterCanaryV1.mq5"
+SLOPE_TESTER_EX5 = "NoraPhase2SlopeTesterCanaryV1.ex5"
+SLOPE_TESTER_MANIFEST = "NoraPhase2SlopeTesterCanaryV1.manifest.json"
+SLOPE_TESTER_RESULT = "nora_phase2_slope_tester_v1.csv"
+SLOPE_COMPILE_DOMAIN = "nora.mt5.slope_tester_compile_v1.semantic.v1"
+SLOPE_EXECUTION_DOMAIN = "nora.mt5.slope_tester_execution_v1.semantic.v1"
+SLOPE_SEMANTIC_RESULT_DOMAIN = "nora.mt5.slope_semantic_result_v1.semantic.v1"
+SLOPE_CSV_SCHEMA = ["record_type", "row_index", "actual_slope", "expected_slope", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass"]
+SLOPE_EXPECTED_VECTOR = [None, None, None, 0.00033333333333351867, 0.00003333333333310762, 0.00036666666666684833, 0.00003333333333310762, 0.00036666666666684833, 0.00003333333333310762, 0.00036666666666684833, 0.00003333333333310762, 0.00036666666666684833]
+SLOPE_NULL_POSITIONS = [0, 1, 2]
+SLOPE_RUNTIME_IDENTITY = "cb9eee8e4c03d6c6d95c6ba384701187c93730f77fafe3a22a2f8902410c68ae"
+SLOPE_RUNTIME_SOURCE_SHA256 = "a3b2dc447b59e6800dee7c875e9d25ea2353fc32b04c73391871623c08842c80"
+SLOPE_TESTER_IDENTITY = "a25fe8a6b459499debdbc9d48c8d4dd498a9684bf67b196501ebed743b48b54d"
+SLOPE_TESTER_SOURCE_SHA256 = "6d4f2e9f0a7e1dcd33004500dfea8deaad4c5a4e9804e57ef8377369f67a4f53"
+SLOPE_INPUT_IDENTITY = "5d10e5722faaf64f1b243bb27feb8a4f84940d46c4acb1697d6514cd4da94383"
+SLOPE_RUST_SLOPE_IDENTITY = "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499"
+SLOPE_COMPILE_CONTRACT_VERSION = "nora.mql5.slope_tester_compile_v1"
+SLOPE_EXECUTION_CONTRACT_VERSION = "nora.mt5.slope_tester_execution_v1"
+SLOPE_SEMANTIC_RESULT_VERSION = "nora.mt5.slope_semantic_result_v1"
+
 
 class CompileError(RuntimeError):
     """Deterministic compile-control failure."""
@@ -604,6 +626,162 @@ def execute_series_tester_canary(compile_manifest: str | os.PathLike[str], ex5: 
         return {"ok":True,**manifest,"output_dir":str(output)}
 
 
+def _verify_slope_tester_fixture(path: Path) -> dict:
+    value = _read_json(path, "slope tester fixture")
+    expected = {"slope_tester_version": "nora_mql5_slope_tester_canary_v1", "nullable_runtime_identity": RUNTIME_IDENTITY, "slope_runtime_identity": SLOPE_RUNTIME_IDENTITY, "rust_input_identity": SLOPE_INPUT_IDENTITY, "rust_slope_identity": SLOPE_RUST_SLOPE_IDENTITY, "lookback": 1, "row_count": 12, "result_filename": SLOPE_TESTER_RESULT, "source_filename": SLOPE_TESTER_SOURCE}
+    for key, item in expected.items():
+        if value.get(key) != item:
+            raise CompileError(f"slope tester fixture contract mismatch: {key}")
+    if _sha256(path.parent / SLOPE_TESTER_SOURCE) != value.get("source_sha256"):
+        raise CompileError("slope tester fixture source hash mismatch")
+    return value
+
+
+def reconcile_slope_csv(csv_path: str | os.PathLike[str], tester_manifest: str | os.PathLike[str]) -> dict[str, object]:
+    fixture = _read_json(Path(tester_manifest), "slope tester fixture")
+    if fixture.get("result_filename") != SLOPE_TESTER_RESULT:
+        raise ExecutionError("slope tester expectations do not match frozen vectors")
+    expected_slope = fixture.get("expected_slope_vector", [])
+    if len(expected_slope) != 12:
+        raise ExecutionError("slope tester expectations do not match frozen vectors")
+    try:
+        text = Path(csv_path).read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError) as error:
+        raise ExecutionError("result CSV is unreadable or not UTF-8") from error
+    reader = csv.reader(io.StringIO(text, newline=""))
+    try:
+        header = next(reader)
+    except StopIteration as error:
+        raise ExecutionError("result CSV is empty") from error
+    if header != SLOPE_CSV_SCHEMA:
+        raise ExecutionError("result CSV header does not match frozen schema")
+    records = list(reader)
+    if len(records) != 13:
+        raise ExecutionError("result CSV must contain exactly 12 rows and one summary")
+    rows: list[dict[str, object]] = []
+    for expected_index, values in enumerate(records[:12]):
+        if len(values) != len(SLOPE_CSV_SCHEMA) or values[0] != "row":
+            raise ExecutionError(f"malformed row record at index {expected_index}")
+        if values[1] != str(expected_index):
+            raise ExecutionError("row indices must be exactly 0..11 in order")
+        actual_slope = _canonical_numeric(values[2], "actual_slope")
+        expected_slope_val = _canonical_numeric(values[3], "expected_slope")
+        row_pass = _canonical_bool(values[4], "row_pass")
+        if values[5:] != ["", "", "", ""]:
+            raise ExecutionError("row record contains unexpected summary fields")
+        expected = expected_slope[expected_index]
+        if expected is None and expected_slope_val != "null":
+            raise ExecutionError("row expected value disagrees with frozen fixture vector")
+        if expected is not None and not _numeric_match(expected_slope_val, expected):
+            raise ExecutionError("row expected value disagrees with frozen fixture vector")
+        if expected is None and actual_slope != "null":
+            raise ExecutionError(f"row {expected_index} failed slope reconciliation")
+        if expected is not None and not _numeric_match(actual_slope, expected):
+            raise ExecutionError(f"row {expected_index} failed slope reconciliation")
+        if not row_pass:
+            raise ExecutionError(f"row {expected_index} row_pass is false")
+        rows.append({"row_index": expected_index, "actual_slope": actual_slope, "expected_slope": expected_slope_val, "row_pass": row_pass})
+    summary = records[12]
+    if len(summary) != len(SLOPE_CSV_SCHEMA) or summary[0] != "summary" or summary[1] != "-1":
+        raise ExecutionError("result CSV summary record is malformed")
+    if summary[2:4] != ["", ""]:
+        raise ExecutionError("summary contains unexpected row value fields")
+    overall_pass = _canonical_bool(summary[4], "overall_pass")
+    try:
+        row_count, passed_rows, failed_rows = (int(summary[index]) for index in (5, 6, 7))
+    except (TypeError, ValueError) as error:
+        raise ExecutionError("summary counts must be integers") from error
+    if summary[8] not in {"false", "true"}:
+        raise ExecutionError("invalid summary overall_pass token")
+    if row_count != 12 or passed_rows != 12 or failed_rows != 0 or not overall_pass or summary[8] != "true":
+        raise ExecutionError("summary does not prove a 12-row pass")
+    return {"rows": rows, "summary": {"row_count": row_count, "passed_rows": passed_rows, "failed_rows": failed_rows, "overall_pass": overall_pass}, "slope_vector": [row["actual_slope"] for row in rows], "expected_slope_vector": [row["expected_slope"] for row in rows], "row_pass_vector": [row["row_pass"] for row in rows]}
+
+
+def compile_slope_tester_canary(runtime: str | os.PathLike[str], slope_runtime: str | os.PathLike[str], tester_source: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    runtime_path, slope_runtime_path, source_path = Path(runtime), Path(slope_runtime), Path(tester_source)
+    if runtime_path.name != RUNTIME_FILENAME or _sha256(runtime_path) != RUNTIME_SOURCE_SHA256:
+        raise CompileError("frozen source hash mismatch: NoraPhase2RuntimeV1.mqh")
+    if slope_runtime_path.name != SLOPE_RUNTIME_FILENAME or _sha256(slope_runtime_path) != SLOPE_RUNTIME_SOURCE_SHA256:
+        raise CompileError("frozen source hash mismatch: NoraPhase2SlopeRuntimeV1.mqh")
+    fixture = _verify_slope_tester_fixture(Path(tester_manifest))
+    if source_path.name != SLOPE_TESTER_SOURCE or _sha256(source_path) != fixture["source_sha256"]:
+        raise CompileError("slope tester source does not match tester fixture manifest")
+    output = Path(output_dir); output.mkdir(parents=True, exist_ok=True)
+    for name in (SLOPE_TESTER_EX5, LOG_FILENAME, CANARY_MANIFEST_FILENAME):
+        if (output / name).exists():
+            raise CompileError(f"local output target already exists: {name}")
+    run_id = "slope-tester-compile-" + uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2n-tester-") as temp:
+        temp = Path(temp)
+        helper = Path(__file__).resolve().parents[2] / "phase-0a-h/windows/compile-slope-tester-canary.ps1"
+        for source in (runtime_path, slope_runtime_path, source_path, helper):
+            (temp / source.name).write_bytes(source.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2N\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp / x) for x in (RUNTIME_FILENAME, SLOPE_RUNTIME_FILENAME, SLOPE_TESTER_SOURCE, helper.name)], f"{REMOTE_TARGET}:NoraPhase2N/incoming/{run_id}/")
+        result = _ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2N\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2N\\incoming\\{run_id}" -RunId "{run_id}"', check=False)
+        for name in ("compile.json", LOG_FILENAME, SLOPE_TESTER_EX5):
+            _scp([f"{REMOTE_TARGET}:NoraPhase2N/{run_id}/{name}"], str(temp / name), check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2N\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2N\\incoming\\{run_id}\'"', check=False)
+        remote = _read_json(temp / "compile.json", "remote slope tester compile")
+        if result.returncode or remote.get("status") != "compiled" or remote.get("error_count") != 0 or remote.get("warning_count") != 0:
+            raise CompileError("slope tester compiler failed")
+        ex5 = temp / SLOPE_TESTER_EX5; log = temp / LOG_FILENAME
+        if not ex5.is_file() or not log.is_file() or not ex5.stat().st_size:
+            raise CompileError("slope tester compiler did not return ex5/log")
+        ex5bytes = ex5.read_bytes(); logbytes = log.read_bytes()
+        exsha = hashlib.sha256(ex5bytes).hexdigest(); norm = _normalized_log_sha256(logbytes)
+        identity = _identity(SLOPE_COMPILE_DOMAIN, [fixture["slope_tester_identity"], str(remote["compiler_version"]), exsha, norm])
+        manifest = {"tester_compile_contract_version": SLOPE_COMPILE_CONTRACT_VERSION, "compiler_path": remote["compiler_path"], "compiler_version": remote["compiler_version"], "compiler_exit_code": remote["compiler_exit_code"], "error_count": 0, "warning_count": 0, "tester_fixture_identity": fixture["slope_tester_identity"], "ex5_filename": SLOPE_TESTER_EX5, "ex5_sha256": exsha, "ex5_size_bytes": len(ex5bytes), "normalized_log_sha256": norm, "compile_contract_identity": identity, "status": "compiled"}
+        _atomic_write(output / SLOPE_TESTER_EX5, ex5bytes); _atomic_write(output / LOG_FILENAME, logbytes); _atomic_write(output / CANARY_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode())
+        return {"ok": True, **manifest, "output_dir": str(output)}
+
+
+def execute_slope_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    compile_value = _read_json(Path(compile_manifest), "slope tester compile")
+    fixture = _verify_slope_tester_fixture(Path(tester_manifest))
+    ex5_path = Path(ex5)
+    if compile_value.get("status") != "compiled" or compile_value.get("tester_fixture_identity") != fixture["slope_tester_identity"] or compile_value.get("ex5_sha256") != _sha256(ex5_path):
+        raise ExecutionError("slope tester compile/fixture contract mismatch")
+    output = Path(output_dir); output.mkdir(parents=True, exist_ok=True)
+    for name in (SLOPE_TESTER_RESULT, "tester.log", EXECUTION_MANIFEST_FILENAME):
+        if (output / name).exists():
+            raise ExecutionError(f"local output target already exists: {name}")
+    run_id = "slope-tester-execute-" + uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2n-tester-exec-") as temp:
+        temp = Path(temp)
+        helper = Path(__file__).resolve().parents[2] / "phase-0a-h/windows/execute-slope-tester-canary.ps1"
+        (temp / SLOPE_TESTER_EX5).write_bytes(ex5_path.read_bytes())
+        (temp / helper.name).write_bytes(helper.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2N\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp / SLOPE_TESTER_EX5), str(temp / helper.name)], f"{REMOTE_TARGET}:NoraPhase2N/incoming/{run_id}/")
+        result = _ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2N\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2N\\incoming\\{run_id}" -RunId "{run_id}"', check=False)
+        for name in ("execution.json", "tester.log", SLOPE_TESTER_RESULT, "tester.htm"):
+            _scp([f"{REMOTE_TARGET}:NoraPhase2N/{run_id}/{name}"], str(temp / name), check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2N\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2N\\incoming\\{run_id}\'"', check=False)
+        remote = _read_json(temp / "execution.json", "remote slope tester execution")
+        if result.returncode or remote.get("status") != "completed" or not remote.get("result_fresh"):
+            if (temp / "tester.log").is_file():
+                _atomic_execution_write(output / "tester.log", (temp / "tester.log").read_bytes())
+            raise ExecutionError(f"slope tester execution failed: {remote.get('error', 'unknown')}")
+        required = ("tester_configuration_loaded", "testing_agent_started", "ea_loaded", "ea_initialized", "fixture_execution_started", "result_csv_written", "fixture_execution_completed", "tester_completed", "terminal_shutdown")
+        missing = [x for x in required if remote.get("stages", {}).get(x) is not True]
+        if missing:
+            raise ExecutionError("slope tester launch evidence missing stages: " + ",".join(missing))
+        csv_path = temp / SLOPE_TESTER_RESULT
+        reconciliation = reconcile_slope_csv(csv_path, Path(__file__).resolve().parents[2] / "tests/fixtures/phase2m_mql5_slope/NoraPhase2SlopeTesterCanaryV1.manifest.json")
+        csvbytes = csv_path.read_bytes(); exsha = _sha256(ex5_path)
+        semantic = json.dumps({"rows": reconciliation["rows"], "summary": reconciliation["summary"]}, sort_keys=True, separators=(",", ":"))
+        slope = json.dumps(reconciliation["slope_vector"], separators=(",", ":")); rowpass = json.dumps(reconciliation["row_pass_vector"], separators=(",", ":")); summary = json.dumps(reconciliation["summary"], sort_keys=True, separators=(",", ":"))
+        execution = _identity(SLOPE_EXECUTION_DOMAIN, [fixture["slope_tester_identity"], compile_value["compile_contract_identity"], exsha, TERMINAL_VERSION, semantic])
+        semantic_id = _identity(SLOPE_SEMANTIC_RESULT_DOMAIN, [SLOPE_TESTER_IDENTITY, SLOPE_INPUT_IDENTITY, SLOPE_RUST_SLOPE_IDENTITY, TERMINAL_PRODUCT, TERMINAL_VERSION, slope, rowpass, summary])
+        manifest = {"status": "passed", "terminal_path": remote["terminal_path"], "terminal_version": remote["terminal_version"], "tester_fixture_identity": fixture["slope_tester_identity"], "compile_contract_identity": compile_value["compile_contract_identity"], "ex5_sha256": exsha, "result_csv_sha256": hashlib.sha256(csvbytes).hexdigest(), "slope_vector": reconciliation["slope_vector"], "expected_slope_vector": reconciliation["expected_slope_vector"], "row_pass_vector": reconciliation["row_pass_vector"], **reconciliation["summary"], "execution_identity": execution, "semantic_result_identity": semantic_id, "launch_stages": remote["stages"]}
+        _atomic_execution_write(output / SLOPE_TESTER_RESULT, csvbytes); _atomic_execution_write(output / "tester.log", (temp / "tester.log").read_bytes()); _atomic_execution_write(output / EXECUTION_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode())
+        if (temp / "tester.htm").is_file():
+            _atomic_execution_write(output / "tester.htm", (temp / "tester.htm").read_bytes())
+        return {"ok": True, **manifest, "output_dir": str(output)}
+
+
 def _require_launch_evidence(remote: dict[str, object]) -> None:
     stages = remote.get("stages")
     if not isinstance(stages, dict):
@@ -694,6 +872,10 @@ def main(argv: list[str] | None = None) -> int:
     series_compile_parser.add_argument("--runtime", required=True);series_compile_parser.add_argument("--condition", required=True);series_compile_parser.add_argument("--series-runtime", required=True);series_compile_parser.add_argument("--tester-source", required=True);series_compile_parser.add_argument("--tester-manifest", required=True);series_compile_parser.add_argument("--output-dir", required=True)
     series_execute_parser = sub.add_parser("execute-series-tester-canary")
     series_execute_parser.add_argument("--compile-manifest", required=True);series_execute_parser.add_argument("--ex5", required=True);series_execute_parser.add_argument("--tester-manifest", required=True);series_execute_parser.add_argument("--output-dir", required=True)
+    slope_compile_parser = sub.add_parser("compile-slope-tester-canary")
+    slope_compile_parser.add_argument("--runtime", required=True);slope_compile_parser.add_argument("--slope-runtime", required=True);slope_compile_parser.add_argument("--tester-source", required=True);slope_compile_parser.add_argument("--tester-manifest", required=True);slope_compile_parser.add_argument("--output-dir", required=True)
+    slope_execute_parser = sub.add_parser("execute-slope-tester-canary")
+    slope_execute_parser.add_argument("--compile-manifest", required=True);slope_execute_parser.add_argument("--ex5", required=True);slope_execute_parser.add_argument("--tester-manifest", required=True);slope_execute_parser.add_argument("--output-dir", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "compile-condition-canary":
