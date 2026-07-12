@@ -2,7 +2,7 @@
 
 ## Verdict: BLOCKED
 
-The historical native canary remains blocked and no successful execution evidence is published. The narrow launch repair is implemented, but the established SSH endpoint was unavailable during this continuation (`127.0.0.1:2222: connection refused`), so the repaired helper could not inspect the terminal or execute either native run. No execution manifest, accepted CSV, semantic-result identity, Strategy Tester run, order, or parity claim was published.
+The native canary remains blocked. The existing VM and SSH boundary were recovered, both frozen Phase-2I compile artifacts were regenerated successfully, and the first repaired native attempt reached the terminal but failed to open `GDAXI` before script load. No accepted CSV, execution manifest, semantic-result identity, Strategy Tester run, order, or parity claim was published.
 
 ## Command and ownership
 
@@ -73,7 +73,14 @@ ecc5754496a7470d3037e897f9f8e7934325c102f04df900f5f6dda76b4639b6
 
 This is consistent with the preserved Phase 0A-H finding that the existing config-driven Startup invocation did not execute the importer and that the terminal remained running until the owned process was stopped. Creating a separate portable terminal/data directory or using UI automation would expand beyond the accepted Phase 2J boundary, so no such workaround was attempted.
 
-Evidence is committed in `tests/fixtures/phase2j_blocked_execution_evidence.json` and remains unchanged as historical evidence. The exact Phase-2I compile artifacts were not present locally; the requested first execution command therefore failed preflight with `compile manifest is unreadable or malformed`, and the compile boundary reached the unavailable SSH endpoint. No native CSV hash, continuation `.ex5` hash, execution identity, or semantic-result identity exists.
+Evidence is committed in `tests/fixtures/phase2j_blocked_execution_evidence.json` and remains unchanged as historical evidence. The initially absent Phase-2I artifacts were regenerated through the accepted compiler harness. Both manifests prove compile contract `a089a280eeebe82be78660410391323887cade8d36c0c26c2173e8ab4076558d`, compiler `5.0.0.5836`, zero errors, and zero warnings:
+
+```text
+run1 ex5: 6ff452557308fc1385badd7291764db872703f1b3493664efefb390ef1390ecb (10366 bytes)
+run2 ex5: 724aeb95dcbb74bfea561c2f1f5a8c6043795d189e9ed11eabed60060b8029a5 (11298 bytes)
+```
+
+The first native attempt reached the terminal and loaded the Startup configuration, but the retrieved UTF-16 terminal journal recorded `Charts open chart 'GDAXI' failed`; `chart_opened=false`, `script_loaded=false`, `script_started=false`, and no fresh CSV was created before the bounded timeout. The final Startup contract was `Script=NoraPhase2J\NoraPhase2ConditionFixtureV1`, `Symbol=GDAXI`, `Period=M1`, `ShutdownTerminal=1`. The Windows VM is `win10` and was already running; direct transport reached `DESKTOP-21I1FJP` as `Gasper`, with `sshd` running. Plain `ssh -G nora-win10` is blocked locally by invalid ownership/permissions on `/etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf`; the accepted Phase-2J `-F /dev/null` transport avoids that local parser issue. No second native attempt was started after the exact GDAXI chart-open failure. No native CSV hash, execution identity, or semantic-result identity exists.
 
 ## Local failure checks
 
@@ -89,7 +96,7 @@ Focused launch-stage checks reject unavailable symbols, stale/conflicting proces
 
 ## Scope
 
-This passes one native nullable-condition semantic canary only.
+No native nullable-condition semantic canary has passed yet.
 The complete Phase-2 Rust↔MT5 parity gate remains open.
 Phase 3 remains blocked.
 

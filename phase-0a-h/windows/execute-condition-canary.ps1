@@ -18,7 +18,7 @@ function Save-Execution([string]$status,[string]$errorMessage='') {
   $payload|ConvertTo-Json -Depth 8|Set-Content (Join-Path $run 'execution.json') -Encoding utf8
 }
 function Find-DataRoot {
-  $roots=Get-ChildItem "$env:APPDATA\MetaQuotes\Terminal" -Directory|?{Test-Path (Join-Path $_.FullName 'origin.txt') -and ((Get-Content (Join-Path $_.FullName 'origin.txt') -Raw).Trim() -eq 'C:\Program Files\Darwinex MetaTrader 5')}
+  $roots=Get-ChildItem "$env:APPDATA\MetaQuotes\Terminal" -Directory|?{(Test-Path (Join-Path $_.FullName 'origin.txt')) -and ((Get-Content (Join-Path $_.FullName 'origin.txt') -Raw).Trim() -eq 'C:\Program Files\Darwinex MetaTrader 5')}
   if(@($roots).Count -ne 1){throw "expected exactly one Darwinex terminal data root; found $(@($roots).Count)"}
   return $roots[0].FullName
 }
@@ -26,20 +26,21 @@ function Find-Profile([string]$DataRoot) {
   $profileRoot=Join-Path $DataRoot 'MQL5\Profiles\Charts'
   $profile=Join-Path $profileRoot $ProfileName
   if(!(Test-Path $profile)){
-    $source=Get-ChildItem $profileRoot -Directory -ErrorAction SilentlyContinue|?{@(Get-ChildItem $_.FullName -File -Filter '*.chr' -ErrorAction SilentlyContinue|?{$_.BaseName -ieq $RequestedSymbol}).Count -gt 0}|select -First 1
-    if(!$source){throw "no existing profile contains pinned chart $RequestedSymbol"}
-    Copy-Item $source.FullName $profile -Recurse -Force
+    $sourceChart=Get-ChildItem $profileRoot -Directory -ErrorAction SilentlyContinue|%{Get-ChildItem $_.FullName -File -Filter '*.chr' -ErrorAction SilentlyContinue}|select -First 1
+    if(!$sourceChart){throw 'no existing chart profile material is available'}
+    New-Item -ItemType Directory -Force $profile|Out-Null
+    Copy-Item $sourceChart.FullName (Join-Path $profile 'chart01.chr') -Force
+    $sourceOrder=Join-Path $sourceChart.Directory.FullName 'order.wnd'
+    if(Test-Path $sourceOrder){Copy-Item $sourceOrder (Join-Path $profile 'order.wnd') -Force}
     $script:profile_created=$true
   }
   $charts=@(Get-ChildItem $profile -File -Filter '*.chr' -ErrorAction SilentlyContinue)
   if($charts.Count -eq 0){throw "dedicated profile has no chart: $ProfileName"}
-  $symbolChart=$charts|?{$_.BaseName -ieq $RequestedSymbol}|select -First 1
-  if(!$symbolChart){throw "dedicated profile has no pinned chart for $RequestedSymbol"}
   return $profile
 }
 function Journal-Text([string]$DataRoot,[datetime]$Before) {
   $paths=@((Join-Path $DataRoot 'logs'),(Join-Path $DataRoot 'MQL5\Logs'))
-  $files=$paths|%{Get-ChildItem $_ -File -ErrorAction SilentlyContinue}|?{$_.LastWriteTimeUtc -ge $Before.AddSeconds(-2)}|sort LastWriteTimeUtc
+  $files=$paths|%{Get-ChildItem $_ -File -ErrorAction SilentlyContinue}|sort LastWriteTimeUtc -Descending|select -First 8
   (($files|%{Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue}) -join "`n")
 }
 if(!(Test-Path $terminal)){throw 'configured terminal64.exe absent'}
