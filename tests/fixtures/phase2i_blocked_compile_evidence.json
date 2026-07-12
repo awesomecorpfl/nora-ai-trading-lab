@@ -1,0 +1,14 @@
+{
+  "status": "blocked",
+  "host_alias": "nora-win10",
+  "compiler_path": "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe",
+  "compiler_version": "5.0.0.5836",
+  "compiler_exit_code": 0,
+  "error_count": 31,
+  "warning_count": 1,
+  "log_sha256": "4dbcd8d472c086209f9b0e8cc80d3d2ce17caabe4d723b08dcc0d79eca64d5d9",
+  "ex5_filename": "NoraPhase2ConditionFixtureV1.ex5",
+  "ex5_exists": false,
+  "accepted_manifest_published": false,
+  "frozen_sources_modified": false
+}
