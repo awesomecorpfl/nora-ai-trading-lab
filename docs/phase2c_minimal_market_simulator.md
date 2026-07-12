@@ -76,3 +76,11 @@ Additional executed CLI evidence command:
 ```bash
 .venv/bin/python -m unittest tests.test_phase1.Phase1.test_initial_bracket_cli_evidence
 ```
+
+## Optional initial bracket execution
+
+`config.initial_bracket_execution` is strict and optional: `{model: "ohlc_unambiguous_v1", event_output_path: String}`. It requires `initial_bracket`; absence or `null` remains construction-only and preserves all prior simulator and bracket identities. Execution requires finite Float64 `open`, `high`, and `low` with `low <= open <= high`.
+
+Only a carried position is eligible. Its later-row open must be strictly inside the initial bracket or the run fails closed as an unsupported gap/open-level event. A true signal exit closes at that open before OHLC evaluation. Otherwise long hits are `low <= stop` and `high >= target`; short hits are `high >= stop` and `low <= target`. Exactly one hit closes at its bracket level; both hits fail closed as an unsupported ambiguous bracket bar. An entry-row bracket is never evaluated, and a same-row entry following any carried-position close is ignored.
+
+Bracket event Parquet rows are `trade_id: UInt64`, `entry_id: UInt64`, `side: Utf8`, `exit_timestamp: Utf8`, `exit_index: UInt64`, `exit_reason: Utf8`, `exit_price: Float64`, `bar_open: Float64`, `bar_high: Float64`, `bar_low: Float64`; reasons are only `initial_stop` or `initial_target`. Signal exits have no event row. Execution has its own domain-separated identity binding execution protocol/model, simulator identity, bracket identity, canonical eligible OHLC, event rows, and resulting trade outcomes.
