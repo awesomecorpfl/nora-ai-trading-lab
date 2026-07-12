@@ -11,6 +11,7 @@ path = "src/main.rs"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"
+rand_chacha = "=0.9.0"
 chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = "0.10"
 parquet = { version = "54", features = ["arrow"] }
