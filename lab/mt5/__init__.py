@@ -55,6 +55,29 @@ TESTER_RESULT = "nora_phase2_condition_tester_v1.csv"
 TESTER_COMPILE_DOMAIN = "nora.mt5.condition_tester_compile_v1.semantic.v1"
 TESTER_EXECUTION_DOMAIN = "nora.mt5.condition_tester_execution_v1.semantic.v1"
 
+SERIES_RUNTIME_FILENAME = "NoraPhase2SeriesRuntimeV1.mqh"
+SERIES_RUNTIME_MANIFEST = "NoraPhase2SeriesRuntimeV1.manifest.json"
+SERIES_TESTER_SOURCE = "NoraPhase2SeriesTesterCanaryV1.mq5"
+SERIES_TESTER_EX5 = "NoraPhase2SeriesTesterCanaryV1.ex5"
+SERIES_TESTER_MANIFEST = "NoraPhase2SeriesTesterCanaryV1.manifest.json"
+SERIES_TESTER_RESULT = "nora_phase2_series_tester_v1.csv"
+SERIES_COMPILE_DOMAIN = "nora.mt5.series_tester_compile_v1.semantic.v1"
+SERIES_EXECUTION_DOMAIN = "nora.mt5.series_tester_execution_v1.semantic.v1"
+SERIES_SEMANTIC_RESULT_DOMAIN = "nora.mt5.series_semantic_result_v1.semantic.v1"
+SERIES_CSV_SCHEMA = ["record_type", "row_index", "actual_sma", "expected_sma", "actual_cross_above", "expected_cross_above", "actual_cross_below", "expected_cross_below", "actual_nullable", "expected_nullable", "actual_trigger", "expected_trigger", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass"]
+SERIES_EXPECTED_SMA = [None, None, 1.1006, 1.1009333333333335, 1.1009666666666666, 1.1013333333333335, 1.1013666666666666, 1.1017333333333335, 1.1017666666666666, 1.1021333333333334, 1.1021666666666665, 1.1025333333333334]
+SERIES_EXPECTED_ABOVE = [None, None, None, True, False, False, False, False, False, False, False, False]
+SERIES_EXPECTED_BELOW = [None, None, None, True, False, False, False, False, False, False, False, False]
+SERIES_EXPECTED_NULLABLE = ["null", "null", "false", "true", "true", "true", "true", "true", "true", "true", "true", "true"]
+SERIES_EXPECTED_TRIGGER = [False, False, False, True, True, True, True, True, True, True, True, True]
+SERIES_RUNTIME_IDENTITY = "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
+SERIES_RUNTIME_SOURCE_SHA256 = "6fbbe35045be59cdf571a623e38a213ca053be32fab153f858d461c1d4ac1b2d"
+SERIES_TESTER_IDENTITY = "78a52f288df45a93e3b026846c7283ddb6d93bcc8192874198827ec93d5041e4"
+SERIES_TESTER_SOURCE_SHA256 = "bc62801db8965d268e192d3dadb8ba7b11a7c5e3d5a432fbadd3f2241a4d2757"
+SERIES_COMPILE_CONTRACT_VERSION = "nora.mql5.series_tester_compile_v1"
+SERIES_EXECUTION_CONTRACT_VERSION = "nora.mt5.series_tester_execution_v1"
+SERIES_SEMANTIC_RESULT_VERSION = "nora.mt5.series_semantic_result_v1"
+
 
 class CompileError(RuntimeError):
     """Deterministic compile-control failure."""
@@ -342,6 +365,100 @@ def reconcile_condition_csv(csv_path: str | os.PathLike[str], fixture_manifest: 
     return {"rows": rows, "summary": {"row_count": row_count, "passed_rows": passed_rows, "failed_rows": failed_rows, "overall_pass": overall_pass}, "nullable_vector": [row["actual_nullable"] for row in rows], "trigger_vector": [row["actual_trigger"] for row in rows], "row_pass_vector": [row["row_pass"] for row in rows]}
 
 
+def _canonical_numeric(value: str, field: str) -> str:
+    if value == "null":
+        return "null"
+    try:
+        float(value)
+        return value
+    except ValueError:
+        raise ExecutionError(f"invalid numeric token in {field}")
+
+
+def _numeric_match(actual: str, expected_value: object) -> bool:
+    if expected_value is None:
+        return actual == "null"
+    if actual == "null":
+        return False
+    try:
+        return abs(float(actual) - float(expected_value)) < 0.000000000000001
+    except ValueError:
+        return False
+
+
+def _canonical_cross(value: str, field: str) -> str:
+    if value not in {"null", "true", "false"}:
+        raise ExecutionError(f"invalid cross token in {field}")
+    return value
+
+
+def reconcile_series_csv(csv_path: str | os.PathLike[str], tester_manifest: str | os.PathLike[str]) -> dict[str, object]:
+    """Strictly reconcile one native series canary CSV against the frozen Phase-2K tester contract."""
+    fixture = _read_json(Path(tester_manifest), "tester fixture")
+    if fixture.get("csv_schema") != SERIES_CSV_SCHEMA:
+        raise ExecutionError("tester expectations do not match frozen vectors")
+    expected_sma = fixture.get("expected_sma_vector", [])
+    expected_above = fixture.get("expected_cross_above_vector", [])
+    expected_below = fixture.get("expected_cross_below_vector", [])
+    expected_nullable = fixture.get("expected_nullable_vector", [])
+    expected_trigger = fixture.get("expected_trigger_vector", [])
+    if len(expected_sma) != 12 or len(expected_above) != 12 or len(expected_below) != 12 or len(expected_nullable) != 12 or len(expected_trigger) != 12:
+        raise ExecutionError("tester expectations do not match frozen vectors")
+    try:
+        text = Path(csv_path).read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError) as error:
+        raise ExecutionError("result CSV is unreadable or not UTF-8") from error
+    reader = csv.reader(io.StringIO(text, newline=""))
+    try:
+        header = next(reader)
+    except StopIteration as error:
+        raise ExecutionError("result CSV is empty") from error
+    if header != SERIES_CSV_SCHEMA:
+        raise ExecutionError("result CSV header does not match frozen schema")
+    records = list(reader)
+    if len(records) != 13:
+        raise ExecutionError("result CSV must contain exactly 12 rows and one summary")
+    rows: list[dict[str, object]] = []
+    for expected_index, values in enumerate(records[:12]):
+        if len(values) != len(SERIES_CSV_SCHEMA) or values[0] != "row":
+            raise ExecutionError(f"malformed row record at index {expected_index}")
+        if values[1] != str(expected_index):
+            raise ExecutionError("row indices must be exactly 0..11 in order")
+        actual_sma = _canonical_numeric(values[2], "actual_sma")
+        expected_sma_val = _canonical_numeric(values[3], "expected_sma")
+        actual_above = _canonical_cross(values[4], "actual_cross_above")
+        expected_above_val = _canonical_cross(values[5], "expected_cross_above")
+        actual_below = _canonical_cross(values[6], "actual_cross_below")
+        expected_below_val = _canonical_cross(values[7], "expected_cross_below")
+        actual_nullable = _canonical_nullable(values[8], "actual_nullable")
+        expected_nullable_val = _canonical_nullable(values[9], "expected_nullable")
+        actual_trigger = _canonical_bool(values[10], "actual_trigger")
+        expected_trigger_val = _canonical_bool(values[11], "expected_trigger")
+        row_pass = _canonical_bool(values[12], "row_pass")
+        if values[13:] != ["", "", "", ""]:
+            raise ExecutionError("row record contains unexpected summary fields")
+        if not _numeric_match(expected_sma_val, expected_sma[expected_index]) or expected_above_val != (str(expected_above[expected_index]).lower() if expected_above[expected_index] is not None else "null") or expected_below_val != (str(expected_below[expected_index]).lower() if expected_below[expected_index] is not None else "null") or expected_nullable_val != expected_nullable[expected_index] or expected_trigger_val != expected_trigger[expected_index]:
+            raise ExecutionError("row expected value disagrees with frozen fixture vector")
+        if not _numeric_match(actual_sma, expected_sma[expected_index]) or actual_above != expected_above_val or actual_below != expected_below_val or actual_nullable != expected_nullable_val or actual_trigger != expected_trigger_val or not row_pass:
+            raise ExecutionError(f"row {expected_index} failed series reconciliation")
+        rows.append({"row_index": expected_index, "actual_sma": actual_sma, "expected_sma": expected_sma_val, "actual_cross_above": actual_above, "expected_cross_above": expected_above_val, "actual_cross_below": actual_below, "expected_cross_below": expected_below_val, "actual_nullable": actual_nullable, "expected_nullable": expected_nullable_val, "actual_trigger": actual_trigger, "expected_trigger": expected_trigger_val, "row_pass": row_pass})
+    summary = records[12]
+    if len(summary) != len(SERIES_CSV_SCHEMA) or summary[0] != "summary" or summary[1] != "-1":
+        raise ExecutionError("result CSV summary record is malformed")
+    if summary[2:12] != ["", "", "", "", "", "", "", "", "", ""]:
+        raise ExecutionError("summary contains unexpected row value fields")
+    overall_pass = _canonical_bool(summary[12], "overall_pass")
+    try:
+        row_count, passed_rows, failed_rows = (int(summary[index]) for index in (13, 14, 15))
+    except (TypeError, ValueError) as error:
+        raise ExecutionError("summary counts must be integers") from error
+    if summary[16] not in {"false", "true"}:
+        raise ExecutionError("invalid summary overall_pass token")
+    if row_count != 12 or passed_rows != 12 or failed_rows != 0 or not overall_pass or summary[16] != "true":
+        raise ExecutionError("summary does not prove a 12-row pass")
+    return {"rows": rows, "summary": {"row_count": row_count, "passed_rows": passed_rows, "failed_rows": failed_rows, "overall_pass": overall_pass}, "sma_vector": [row["actual_sma"] for row in rows], "cross_above_vector": [row["actual_cross_above"] for row in rows], "cross_below_vector": [row["actual_cross_below"] for row in rows], "nullable_vector": [row["actual_nullable"] for row in rows], "trigger_vector": [row["actual_trigger"] for row in rows], "row_pass_vector": [row["row_pass"] for row in rows]}
+
+
 def _identity(domain: str, values: list[str]) -> str:
     digest = hashlib.sha256()
     for value in [domain, *values]:
@@ -414,6 +531,75 @@ def execute_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | o
         semantic_id=_identity(SEMANTIC_RESULT_IDENTITY_DOMAIN,[FIXTURE_IDENTITY,fixture["tester_fixture_identity"],TERMINAL_PRODUCT,TERMINAL_VERSION,nullable,trigger,rowpass,summary])
         manifest={"status":"passed","terminal_path":remote["terminal_path"],"terminal_version":remote["terminal_version"],"tester_fixture_identity":fixture["tester_fixture_identity"],"compile_contract_identity":compile_value["compile_contract_identity"],"ex5_sha256":exsha,"result_csv_sha256":hashlib.sha256(csvbytes).hexdigest(),"nullable_vector":reconciliation["nullable_vector"],"trigger_vector":reconciliation["trigger_vector"],"row_pass_vector":reconciliation["row_pass_vector"],**reconciliation["summary"],"execution_identity":execution,"semantic_result_identity":semantic_id,"launch_stages":remote["stages"]}
         _atomic_execution_write(output/TESTER_RESULT,csvbytes);_atomic_execution_write(output/"tester.log",(temp/"tester.log").read_bytes());_atomic_execution_write(output/EXECUTION_MANIFEST_FILENAME,(json.dumps(manifest,sort_keys=True,separators=(",",":"))+"\n").encode())
+        if (temp/"tester.htm").is_file(): _atomic_execution_write(output/"tester.htm",(temp/"tester.htm").read_bytes())
+        return {"ok":True,**manifest,"output_dir":str(output)}
+
+
+def _verify_series_tester_fixture(path: Path) -> dict:
+    value = _read_json(path, "series tester fixture")
+    expected = {"tester_fixture_version": "nora_mql5.series_tester_canary_v1", "nullable_runtime_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d", "series_runtime_identity": SERIES_RUNTIME_IDENTITY, "condition_translation_identity": CONDITION_IDENTITY, "evaluation_ast_identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664", "rust_source_data_identity": "5d10e5722faaf64f1b243bb27feb8a4f84940d46c4acb1697d6514cd4da94383", "rust_sma_artifact_identity": "bd53bf9c88cd55fbf8d0fffb791648ff7ee6bf585efd4294042671e79eb995e9", "rust_cross_artifact_identity": "274e22b09159252cc2a964cf08623de8dd9743c3152fea672a0c9ead749ff814", "source_filename": SERIES_TESTER_SOURCE}
+    for key, item in expected.items():
+        if value.get(key) != item: raise CompileError(f"series tester fixture contract mismatch: {key}")
+    if _sha256(path.parent / SERIES_TESTER_SOURCE) != value.get("source_sha256"): raise CompileError("series tester fixture source hash mismatch")
+    return value
+
+
+def compile_series_tester_canary(runtime: str | os.PathLike[str], condition: str | os.PathLike[str], series_runtime: str | os.PathLike[str], tester_source: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    runtime_path, condition_path, series_runtime_path, source_path = Path(runtime), Path(condition), Path(series_runtime), Path(tester_source)
+    _verify_sources(runtime_path, condition_path, Path(__file__).resolve().parents[2] / "tests/fixtures/phase2h_mql5_condition_fixture/NoraPhase2ConditionFixtureV1.mq5")
+    fixture = _verify_series_tester_fixture(Path(tester_manifest))
+    if source_path.name != SERIES_TESTER_SOURCE or _sha256(source_path) != fixture["source_sha256"]: raise CompileError("series tester source does not match tester fixture manifest")
+    output=Path(output_dir);output.mkdir(parents=True,exist_ok=True)
+    for name in (SERIES_TESTER_EX5, LOG_FILENAME, CANARY_MANIFEST_FILENAME):
+        if (output/name).exists(): raise CompileError(f"local output target already exists: {name}")
+    run_id="series-tester-compile-"+uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2l-tester-") as temp:
+        temp=Path(temp); helper=Path(__file__).resolve().parents[2]/"phase-0a-h/windows/compile-series-tester-canary.ps1"
+        for source in (runtime_path,condition_path,series_runtime_path,source_path,helper): (temp/source.name).write_bytes(source.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2L\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp/x) for x in (RUNTIME_FILENAME,CONDITION_FILENAME,SERIES_RUNTIME_FILENAME,SERIES_TESTER_SOURCE,helper.name)],f"{REMOTE_TARGET}:NoraPhase2L/incoming/{run_id}/")
+        result=_ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2L\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2L\\incoming\\{run_id}" -RunId "{run_id}"',check=False)
+        for name in ("compile.json",LOG_FILENAME,SERIES_TESTER_EX5): _scp([f"{REMOTE_TARGET}:NoraPhase2L/{run_id}/{name}"],str(temp/name),check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2L\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2L\\incoming\\{run_id}\'"',check=False)
+        remote=_read_json(temp/"compile.json","remote series tester compile")
+        if result.returncode or remote.get("status")!="compiled" or remote.get("error_count")!=0 or remote.get("warning_count")!=0: raise CompileError("series tester compiler failed")
+        ex5=temp/SERIES_TESTER_EX5; log=temp/LOG_FILENAME
+        if not ex5.is_file() or not log.is_file() or not ex5.stat().st_size: raise CompileError("series tester compiler did not return ex5/log")
+        ex5bytes=ex5.read_bytes(); logbytes=log.read_bytes(); exsha=hashlib.sha256(ex5bytes).hexdigest(); norm=_normalized_log_sha256(logbytes)
+        identity=_identity(SERIES_COMPILE_DOMAIN,[fixture["tester_fixture_identity"],str(remote["compiler_version"]),exsha,norm])
+        manifest={"tester_compile_contract_version":"nora_mql5_series_tester_compile_v1","compiler_path":remote["compiler_path"],"compiler_version":remote["compiler_version"],"compiler_exit_code":remote["compiler_exit_code"],"error_count":0,"warning_count":0,"tester_fixture_identity":fixture["tester_fixture_identity"],"ex5_filename":SERIES_TESTER_EX5,"ex5_sha256":exsha,"ex5_size_bytes":len(ex5bytes),"normalized_log_sha256":norm,"compile_contract_identity":identity,"status":"compiled"}
+        _atomic_write(output/SERIES_TESTER_EX5,ex5bytes);_atomic_write(output/LOG_FILENAME,logbytes);_atomic_write(output/CANARY_MANIFEST_FILENAME,(json.dumps(manifest,sort_keys=True,separators=(",",":"))+"\n").encode())
+        return {"ok":True,**manifest,"output_dir":str(output)}
+
+
+def execute_series_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    compile_value=_read_json(Path(compile_manifest),"series tester compile"); fixture=_verify_series_tester_fixture(Path(tester_manifest)); ex5_path=Path(ex5)
+    if compile_value.get("status")!="compiled" or compile_value.get("tester_fixture_identity")!=fixture["tester_fixture_identity"] or compile_value.get("ex5_sha256")!=_sha256(ex5_path): raise ExecutionError("series tester compile/fixture contract mismatch")
+    output=Path(output_dir);output.mkdir(parents=True,exist_ok=True)
+    for name in (SERIES_TESTER_RESULT,"tester.log",EXECUTION_MANIFEST_FILENAME):
+        if (output/name).exists(): raise ExecutionError(f"local output target already exists: {name}")
+    run_id="series-tester-execute-"+uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2l-tester-exec-") as temp:
+        temp=Path(temp); helper=Path(__file__).resolve().parents[2]/"phase-0a-h/windows/execute-series-tester-canary.ps1";(temp/SERIES_TESTER_EX5).write_bytes(ex5_path.read_bytes());(temp/helper.name).write_bytes(helper.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2L\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp/SERIES_TESTER_EX5),str(temp/helper.name)],f"{REMOTE_TARGET}:NoraPhase2L/incoming/{run_id}/")
+        result=_ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2L\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2L\\incoming\\{run_id}" -RunId "{run_id}"',check=False)
+        for name in ("execution.json","tester.log",SERIES_TESTER_RESULT,"tester.htm"): _scp([f"{REMOTE_TARGET}:NoraPhase2L/{run_id}/{name}"],str(temp/name),check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2L\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2L\\incoming\\{run_id}\'"',check=False)
+        remote=_read_json(temp/"execution.json","remote series tester execution")
+        if result.returncode or remote.get("status")!="completed" or not remote.get("result_fresh"):
+            if (temp/"tester.log").is_file(): _atomic_execution_write(output/"tester.log",(temp/"tester.log").read_bytes())
+            raise ExecutionError(f"series tester execution failed: {remote.get('error','unknown')}")
+        required=("tester_configuration_loaded","testing_agent_started","ea_loaded","ea_initialized","fixture_execution_started","result_csv_written","fixture_execution_completed","tester_completed","terminal_shutdown")
+        missing=[x for x in required if remote.get("stages",{}).get(x) is not True]
+        if missing: raise ExecutionError("series tester launch evidence missing stages: "+",".join(missing))
+        csv=temp/SERIES_TESTER_RESULT
+        reconciliation=reconcile_series_csv(csv,Path(__file__).resolve().parents[2]/"tests/fixtures/phase2k_mql5_sma_cross/tester/NoraPhase2SeriesTesterCanaryV1.manifest.json")
+        csvbytes=csv.read_bytes(); exsha=_sha256(ex5_path); semantic=json.dumps({"rows":reconciliation["rows"],"summary":reconciliation["summary"]},sort_keys=True,separators=(",",":")); sma=json.dumps(reconciliation["sma_vector"],separators=(",",":")); above=json.dumps(reconciliation["cross_above_vector"],separators=(",",":")); below=json.dumps(reconciliation["cross_below_vector"],separators=(",",":")); nullable=json.dumps(reconciliation["nullable_vector"],separators=(",",":")); trigger=json.dumps(reconciliation["trigger_vector"],separators=(",",":")); rowpass=json.dumps(reconciliation["row_pass_vector"],separators=(",",":")); summary=json.dumps(reconciliation["summary"],sort_keys=True,separators=(",",":"))
+        execution=_identity(SERIES_EXECUTION_DOMAIN,[fixture["tester_fixture_identity"],compile_value["compile_contract_identity"],exsha,TERMINAL_VERSION,semantic])
+        semantic_id=_identity(SERIES_SEMANTIC_RESULT_DOMAIN,[SERIES_TESTER_IDENTITY,TERMINAL_PRODUCT,TERMINAL_VERSION,sma,above,below,nullable,trigger,rowpass,summary])
+        manifest={"status":"passed","terminal_path":remote["terminal_path"],"terminal_version":remote["terminal_version"],"tester_fixture_identity":fixture["tester_fixture_identity"],"compile_contract_identity":compile_value["compile_contract_identity"],"ex5_sha256":exsha,"result_csv_sha256":hashlib.sha256(csvbytes).hexdigest(),"sma_vector":reconciliation["sma_vector"],"cross_above_vector":reconciliation["cross_above_vector"],"cross_below_vector":reconciliation["cross_below_vector"],"nullable_vector":reconciliation["nullable_vector"],"trigger_vector":reconciliation["trigger_vector"],"row_pass_vector":reconciliation["row_pass_vector"],**reconciliation["summary"],"execution_identity":execution,"semantic_result_identity":semantic_id,"launch_stages":remote["stages"]}
+        _atomic_execution_write(output/SERIES_TESTER_RESULT,csvbytes);_atomic_execution_write(output/"tester.log",(temp/"tester.log").read_bytes());_atomic_execution_write(output/EXECUTION_MANIFEST_FILENAME,(json.dumps(manifest,sort_keys=True,separators=(",",":"))+"\n").encode())
         if (temp/"tester.htm").is_file(): _atomic_execution_write(output/"tester.htm",(temp/"tester.htm").read_bytes())
         return {"ok":True,**manifest,"output_dir":str(output)}
 
@@ -504,6 +690,10 @@ def main(argv: list[str] | None = None) -> int:
     execute_parser.add_argument("--profile", default=CANARY_PROFILE)
     tester_execute_parser = sub.add_parser("execute-condition-tester-canary")
     tester_execute_parser.add_argument("--compile-manifest", required=True);tester_execute_parser.add_argument("--ex5", required=True);tester_execute_parser.add_argument("--tester-manifest", required=True);tester_execute_parser.add_argument("--output-dir", required=True)
+    series_compile_parser = sub.add_parser("compile-series-tester-canary")
+    series_compile_parser.add_argument("--runtime", required=True);series_compile_parser.add_argument("--condition", required=True);series_compile_parser.add_argument("--series-runtime", required=True);series_compile_parser.add_argument("--tester-source", required=True);series_compile_parser.add_argument("--tester-manifest", required=True);series_compile_parser.add_argument("--output-dir", required=True)
+    series_execute_parser = sub.add_parser("execute-series-tester-canary")
+    series_execute_parser.add_argument("--compile-manifest", required=True);series_execute_parser.add_argument("--ex5", required=True);series_execute_parser.add_argument("--tester-manifest", required=True);series_execute_parser.add_argument("--output-dir", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "compile-condition-canary":
@@ -512,8 +702,12 @@ def main(argv: list[str] | None = None) -> int:
             result = compile_tester_canary(args.runtime,args.condition,args.tester_source,args.tester_manifest,args.output_dir)
         elif args.command == "execute-condition-canary":
             result = execute_condition_canary(args.compile_manifest, args.ex5, args.fixture_manifest, args.output_dir, symbol=args.symbol, profile=args.profile)
-        else:
+        elif args.command == "execute-condition-tester-canary":
             result = execute_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir)
+        elif args.command == "compile-series-tester-canary":
+            result = compile_series_tester_canary(args.runtime,args.condition,args.series_runtime,args.tester_source,args.tester_manifest,args.output_dir)
+        else:
+            result = execute_series_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
         return 0
     except (CompileError, ExecutionError) as error:
@@ -521,4 +715,4 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-__all__ = ["CompileError", "ExecutionError", "compile_condition_canary", "compile_tester_canary", "execute_condition_canary", "execute_tester_canary", "reconcile_condition_csv", "main"]
+__all__ = ["CompileError", "ExecutionError", "compile_condition_canary", "compile_tester_canary", "execute_condition_canary", "execute_tester_canary", "compile_series_tester_canary", "execute_series_tester_canary", "reconcile_condition_csv", "reconcile_series_csv", "main"]
