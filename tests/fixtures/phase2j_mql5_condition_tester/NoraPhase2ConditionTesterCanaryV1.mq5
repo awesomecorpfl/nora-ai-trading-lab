@@ -45,10 +45,11 @@ void NoraTesterPublish()
    const int handle = FileOpen("nora_phase2_condition_tester_v1.csv", FILE_WRITE | FILE_CSV | FILE_ANSI | FILE_COMMON, ',');
    if(handle == INVALID_HANDLE)
    {
-      Print("nora_phase2_tester,file_open_failed");
+      Print("NORA_PHASE2J_FILE_OPEN_FAILED:" + (string)GetLastError());
       return;
    }
-   Print("nora_phase2_tester,fixture_execution_started");
+   Print("NORA_PHASE2J_FILE_OPEN_OK");
+   Print("NORA_PHASE2J_FIXTURE_BEGIN");
    FileWrite(handle, "record_type", "row_index", "actual_nullable", "expected_nullable", "actual_trigger", "expected_trigger", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass");
    int passed_rows = 0;
    int failed_rows = 0;
@@ -70,13 +71,14 @@ void NoraTesterPublish()
    bool overall_pass = failed_rows == 0 && passed_rows == NORA_PHASE2_TESTER_ROW_COUNT;
    FileWrite(handle, "summary", -1, "", "", "", "", NoraTesterBoolText(overall_pass), NORA_PHASE2_TESTER_ROW_COUNT, passed_rows, failed_rows, NoraTesterBoolText(overall_pass));
    FileFlush(handle);
+   Print("NORA_PHASE2J_CSV_FLUSHED");
    FileClose(handle);
-   Print("nora_phase2_tester,fixture_execution_completed");
+   Print(overall_pass ? "NORA_PHASE2J_FIXTURE_PASS" : "NORA_PHASE2J_FIXTURE_FAIL");
 }
 
 int OnInit()
 {
-   Print("nora_phase2_tester,ea_initialized");
+   Print("NORA_PHASE2J_EA_INIT_ENTER");
    return INIT_SUCCEEDED;
 }
 
@@ -86,5 +88,6 @@ void OnTick()
       return;
    NoraTesterDone = true;
    NoraTesterPublish();
+   Print("NORA_PHASE2J_TESTER_STOP_REQUESTED");
    TesterStop();
 }
