@@ -1,0 +1,14 @@
+{
+  "rust_source_data_identity": "5d10e5722faaf64f1b243bb27feb8a4f84940d46c4acb1697d6514cd4da94383",
+  "rust_sma_artifact_identity": "bd53bf9c88cd55fbf8d0fffb791648ff7ee6bf585efd4294042671e79eb995e9",
+  "rust_cross_artifact_identity": "274e22b09159252cc2a964cf08623de8dd9743c3152fea672a0c9ead749ff814",
+  "input_series_name": "close",
+  "input_vector": [1.1003, 1.1009, 1.1006, 1.1013, 1.101, 1.1017, 1.1014, 1.1021, 1.1018, 1.1025, 1.1022, 1.1029],
+  "input_null_positions": [],
+  "sma_period": 3,
+  "expected_sma": [null, null, 1.1006, 1.1009333333333335, 1.1009666666666666, 1.1013333333333335, 1.1013666666666666, 1.1017333333333335, 1.1017666666666666, 1.1021333333333334, 1.1021666666666665, 1.1025333333333334],
+  "expected_cross_above": [null, null, null, true, false, false, false, false, false, false, false, false],
+  "expected_cross_below": [null, null, null, true, false, false, false, false, false, false, false, false],
+  "expected_nullable_vector": ["null", "null", "false", "true", "true", "true", "true", "true", "true", "true", "true", "true"],
+  "expected_trigger_vector": [false, false, false, true, true, true, true, true, true, true, true, true]
+}

@@ -654,6 +654,8 @@ def main(argv: list[str] | None = None) -> int:
     condition_mode = bool(argv and argv[0] == "condition")
     fixture_mode = bool(argv and argv[0] == "fixture-script")
     tester_mode = bool(argv and argv[0] == "tester-canary")
+    series_runtime_mode = bool(argv and argv[0] == "series-runtime")
+    series_tester_mode = bool(argv and argv[0] == "series-tester")
     parser = argparse.ArgumentParser(prog="python -m lab.mql5gen")
     if condition_mode:
         parser.add_argument("condition", choices=["condition"])
@@ -671,6 +673,15 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--evidence", required=True)
         parser.add_argument("--source-fixture-manifest", required=True)
         parser.add_argument("--output-dir", required=True)
+    elif series_runtime_mode:
+        parser.add_argument("series_runtime", choices=["series-runtime"])
+        parser.add_argument("--output-dir", required=True)
+    elif series_tester_mode:
+        parser.add_argument("series_tester", choices=["series-tester"])
+        parser.add_argument("--evidence", required=True)
+        parser.add_argument("--runtime-manifest", required=True)
+        parser.add_argument("--condition-manifest", required=True)
+        parser.add_argument("--output-dir", required=True)
     else:
         parser.add_argument("--output-dir", required=True)
         parser.add_argument("--runtime-version", default=RUNTIME_VERSION)
@@ -682,6 +693,12 @@ def main(argv: list[str] | None = None) -> int:
             result = generate_fixture_script(args.condition_manifest, args.evidence, args.output_dir)
         elif tester_mode:
             result = generate_tester_canary(args.condition_manifest, args.evidence, args.source_fixture_manifest, args.output_dir)
+        elif series_runtime_mode:
+            from .series import generate_series_runtime
+            result = generate_series_runtime(args.output_dir)
+        elif series_tester_mode:
+            from .series import generate_series_tester
+            result = generate_series_tester(args.evidence, args.runtime_manifest, args.condition_manifest, args.output_dir)
         else:
             result = generate(args.output_dir, args.runtime_version)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
