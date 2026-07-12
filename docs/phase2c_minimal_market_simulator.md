@@ -148,3 +148,22 @@ cargo build --manifest-path engine/Cargo.toml
 cargo test --manifest-path engine/Cargo.toml
 .venv/bin/python -m unittest discover -s tests
 ```
+
+## Combined bracket and maximum-bars execution
+
+The temporary incompatibility is removed: `initial_bracket_execution` and `time_exit` may coexist. For each carried position the frozen order is: validate OHLC; for `ohlc_pessimistic_gap_v1`, resolve a gap-open bracket close; then signal at the row open; then due maximum-bars exit at the row open; then selected-model intrabar bracket evaluation. A same-row entry after any close is ignored, and neither mechanism runs on the entry row.
+
+The event artifacts remain separate and exclusive: a bracket gap/intrabar close creates one bracket event and no time event; a due time close creates one time event and no bracket event; a signal close creates neither. Each trade increments exactly one category among signal, time, initial stop, and initial target; gap/pessimistic mechanism counters remain additional, consistent evidence.
+
+Focused real-CLI coverage proves: a pessimistic-gap stop at `8.5` beats same-row signal/time/entry (one `initial_stop_gap` event, no time event); signal at `10.0` beats due time and an otherwise ambiguous unambiguous bar (no events and no ambiguity failure); due time closes at open `10.5` before a later target touch (one time event, no bracket event); when threshold is not due, a target touch produces one bracket event; and a non-touch/non-due final row remains terminal-open with zero events while both identities are present. A non-due, no-signal unambiguous dual-touch still fails atomically with `unsupported ambiguous bracket bar` and publishes no ledger or final events.
+
+Combined runs use the existing simulator, bracket-execution, and time-exit identities—no fourth identity. Their existing input/outcome commitments include both configured policies; the time identity additionally commits bracket policy and canonical OHLC only in combined runs, leaving standalone time identities unchanged.
+
+Executed commands:
+
+```bash
+cargo build --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest tests.test_phase1.Phase1.test_combined_time_bracket_cli_ordering
+cargo test --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest discover -s tests
+```
