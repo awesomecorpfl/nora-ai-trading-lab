@@ -1,10 +1,10 @@
-# Phase 2O: Remaining Parity Inventory
+# Phase 2R: Remaining Parity Inventory and Acceptance
 
 The machine-readable source of truth is `tests/fixtures/phase2_remaining_parity_inventory.json`. It records 50 Phase-2 items and deliberately separates Rust implementation, MQL5 generation, compilation evidence, native execution evidence, and semantic parity. No item is searchable and Phase 3 is not authorized.
 
 ## Evidence position
 
-Three narrow native canaries are accepted project evidence. Phase 2J accepts only the nullable-condition tester fixture (tester identity `583fe60539d2da2cb46f054d9800d7702efd577b6984d23757794ca91ab259e6`, semantic identity `b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4`). Phase 2L accepts only SMA period 3, cross-above, cross-below, and that accepted nullable-condition fixture (series runtime `4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e`, series tester `78a52f288df45a93e3b026846c7283ddb6d93bcc8192874198827ec93d5041e4`, CSV SHA-256 `2f7ffa9a8e32b5b3bcadf1fa00013de3969cc3ea34cf52ed754c3979d3843756`, semantic identity `ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687`).
+Four native canaries are accepted project evidence. Phase 2Q adds the self-contained ATR/Distance-ATR package with native semantic identity `8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2`, ATR runtime identity `80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194`, Distance/ATR runtime identity `008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12`, tester identity `38c4e578079fd42ec31c390c84e78162d120b67a7bad48fb7859eb350dbad51e`, and CSV SHA-256 `3fd319613374e0b22ac80cf1fea1cb34c2a37069ee3778cf9f154ac86a1eaccf`. Its raw-native evidence is under `tests/fixtures/phase2q_mql5_atr_distance_native/`.
 
 Phase 2N accepts the fixed 12-row slope canary with semantic identity `221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f`. It alone has the current self-contained raw-native package: committed compile log, EX5, manifests, CSVs, bounded journals, configurations, and contemporaneous freshness metadata. Phase 2J and 2L remain accepted legacy native canaries with committed fixture/manifests/tests and committed native-result summaries, but without that later package-completeness standard. No defect invalidating either legacy canary was found.
 
@@ -34,8 +34,14 @@ Phase 2N accepts the fixed 12-row slope canary with semantic identity `221f85942
 5. Phase 2T: native hand-designed strategies, time/session/DST, replay, and placebo fixtures.
 6. Phase 2U: complete Phase-2 gate audit; only then consider Phase-3 authorization.
 
-## Selected next task: Phase 2P
+## Phase-2Q indicator admission
 
-Phase 2P remains local-only: generate deterministic MQL5 ATR plus Distance/ATR runtime and fixed-data tester from `engine/labengine/tests/fixtures/phase2_distance_atr_task.json`. That real Rust fixture has semantic identity `c1acf9dac99daf0006e138426f51b77721fbf4512fba07d10a6c019a0fafd5ad`; it exercises ATR3 and Distance/ATR before a slope consumer. Prerequisites are the Rust ATR and Distance/ATR implementations in `engine/labengine/src/indicators.rs`, their focused Rust tests, `tests/test_phase1.py::test_committed_distance_atr_fixture`, and nullable runtime identity `1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d`. Neither ATR nor Distance/ATR has accepted MQL5/native parity evidence. They remain separate generated identities and failure cases despite sharing one bounded prerequisite fixture.
+ATR and Distance/ATR each have accepted native parity, but neither is grammar-admitted or searchable. Native parity does not imply AST admission. The inventory requires typed AST schema/node registration, Rust evaluation, canonicalization, hashing, MQL5 translation, and a native parity fixture; the missing integration paths are `engine/labengine/src/ast.rs` for typed registration/evaluation and canonicalization/hashing, and `lab/mql5gen/__init__.py` for translation coverage. Grammar-admitted node count remains zero; search and Phase 3 remain unauthorized.
 
-Required outputs are frozen Rust vectors, generated MQL5 runtime/tester sources, source hashes and identities, manifests, repeatability and mutation tests, and a Phase-2Q native-run plan. It must not claim native parity or make any grammar item searchable. Recommended model: GPT-5 Codex.
+Accepted Phase-2Q commits are `a73ed6912c8dc354c36a7475dfe595d622e66d01` (Phase 2P generation), `021ac6d45e0624dd379be79a099022d22c12abd9` (native evidence), and `fc363988af9ee7b80f9ad4f071868a922628ccd6` (evidence repair).
+
+## Selected next task: Phase 2S
+
+Phase 2S is a single local-only task: admit ATR and Distance/ATR into the typed AST grammar by implementing the missing schema registration, Rust evaluation path, canonicalization/hashing, and MQL5 translation, then bind the existing Phase-2Q native fixture. It is selected because it is the smallest foundational prerequisite for the initial hand-designed strategies and precedes any new indicator, strategy, search, or Phase-3 work.
+
+Required outputs are typed AST schema/evaluation/canonicalization/hash/translation tests and inventory evidence; no native rerun is authorized or required. Search and Phase 3 remain explicitly closed.

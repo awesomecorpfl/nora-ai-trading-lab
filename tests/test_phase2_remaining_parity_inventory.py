@@ -29,6 +29,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             "canary.condition_native": "legacy_committed_summary",
             "canary.sma_cross_native": "legacy_committed_summary",
             "canary.slope_native": "self_contained_raw_native",
+            "canary.atr_distance_native": "self_contained_raw_native",
         })
         canonical_a = json.dumps(value, sort_keys=True, separators=(",", ":"))
         canonical_b = json.dumps(json.loads(canonical_a), sort_keys=True, separators=(",", ":"))
@@ -41,7 +42,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(len(items), 50)
         self.assertEqual(len({item["id"] for item in items}), len(items))
         for item in items:
-            self.assertEqual(set(item), required)
+            self.assertTrue(set(item) in (required, required | {"grammar_admitted"}))
             self.assertIn(item["status"], STATUSES)
             self.assertTrue(item["missing_gate"])
             self.assertEqual(set(item["rust"]), {"implementation", "source_paths", "identity", "tests"})
@@ -70,6 +71,31 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertNotIn("phase3", item["id"].lower())
             self.assertNotIn("search", item["category"].lower())
 
+    def test_atr_distance_native_acceptance_is_self_contained(self):
+        items = {item["id"]: item for item in self.value["items"]}
+        for item_id, rust_identity, runtime_identity in (
+            ("layer1.atr", "26363cfb22ba13fdd5f922173373d56f6aff5b57c3e66604dbec28908b68708d", "80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194"),
+            ("transform.distance_atr", "f4964fe1ecba67ab79654e59069ca5110e8330956b02b381517cf37bccf17f1f", "008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12"),
+        ):
+            item = items[item_id]
+            self.assertEqual(item["status"], "accepted")
+            self.assertEqual(item["rust"]["identity"], rust_identity)
+            self.assertEqual(item["mql5"]["source_identity"], runtime_identity)
+            self.assertEqual(item["parity_result_identity"], "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2")
+            self.assertEqual(item["grammar_admitted"], False)
+            self.assertEqual(len(item["native"]["compile_evidence_paths"]), 2)
+            self.assertGreaterEqual(len(item["native"]["execution_evidence_paths"]), 10)
+            self.assertEqual(item["commits"], ["a73ed6912c8dc354c36a7475dfe595d622e66d01", "021ac6d45e0624dd379be79a099022d22c12abd9", "fc363988af9ee7b80f9ad4f071868a922628ccd6"])
+
+    def test_grammar_admission_requires_all_fields(self):
+        rule = self.value["grammar_admission_rule"]
+        self.assertEqual(set(rule["required_fields"]), {"typed_ast_schema_node_registration", "rust_evaluation_path", "canonicalization_support", "hashing_support", "mql5_translation", "native_parity_fixture"})
+        self.assertFalse(rule["search_authorized"])
+        self.assertFalse(rule["phase3_authorized"])
+        for item in self.value["items"]:
+            if item.get("grammar_admitted"):
+                self.fail("no current item may be grammar-admitted")
+
     def test_legacy_canaries_remain_accepted_with_less_complete_packages(self):
         items = {item["id"]: item for item in self.value["items"]}
         self.assertEqual(items["canary.condition_native"]["status"], "accepted")
@@ -80,19 +106,20 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(items["canary.sma_cross_native"]["parity_result_identity"], "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687")
         self.assertEqual(items["canary.slope_native"]["status"], "accepted")
 
-    def test_phase_2p_prerequisites_are_proven_and_not_already_parity_accepted(self):
+    def test_phase_2q_acceptance_and_next_task_prerequisites(self):
         items = {item["id"]: item for item in self.value["items"]}
         for item_id in ("layer1.atr", "transform.distance_atr"):
             item = items[item_id]
             self.assertEqual(item["rust"]["implementation"], "implemented")
             self.assertIn("engine/labengine/src/indicators.rs", item["rust"]["source_paths"])
-            self.assertEqual(item["mql5"]["generation"], "absent")
-            self.assertFalse(item["native"]["execution_evidence_paths"])
-        prerequisite = self.value["next_task"]["prerequisites"]
-        fixture = "engine/labengine/tests/fixtures/phase2_distance_atr_task.json"
-        self.assertIn(fixture, prerequisite["real_rust_fixture"])
-        self.assertTrue((ROOT / fixture).exists())
-        self.assertIn("c1acf9dac99daf0006e138426f51b77721fbf4512fba07d10a6c019a0fafd5ad", prerequisite["real_rust_fixture"])
+            self.assertEqual(item["mql5"]["generation"], "generated")
+            self.assertTrue(item["native"]["execution_evidence_paths"])
+        next_task = self.value["next_task"]
+        self.assertEqual(next_task["task_id"], "grammar.atr_distance_ast_admission")
+        self.assertNotIn(next_task["task_id"], items)
+        self.assertNotIn(next_task["phase_label"].lower(), {item["status"] for item in items.values()})
+        self.assertFalse(next_task["search_authorized"])
+        self.assertFalse(next_task["phase3_authorized"])
 
     def test_acceptance_requirement_schema_and_next_task(self):
         requirements = self.value["acceptance_requirements"]
@@ -102,9 +129,21 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertTrue(entry["blocks_phase2"])
             self.assertTrue(entry["smallest_next_task"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["phase_label"], "Phase 2P")
+        self.assertEqual(next_task["phase_label"], "Phase 2S")
         self.assertEqual(next_task["execution_boundary"], "local-only")
-        self.assertNotIn("search", next_task["scope"].lower())
+        self.assertIn("search", next_task["scope"].lower())
+        self.assertIn("AST integration", next_task["why_next"])
+
+    def test_inventory_summary_matches_items(self):
+        from collections import Counter
+        counts = Counter({status: 0 for status in STATUSES})
+        counts.update(item["status"] for item in self.value["items"])
+        summary = self.value["inventory_summary"]
+        self.assertEqual(summary["item_count"], len(self.value["items"]))
+        self.assertEqual(summary["status_counts"], dict(counts))
+        self.assertEqual(summary["accepted_native_canary_count"], 4)
+        self.assertEqual(summary["grammar_admitted_node_count"], 0)
+        self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
 
 
 if __name__ == "__main__":
