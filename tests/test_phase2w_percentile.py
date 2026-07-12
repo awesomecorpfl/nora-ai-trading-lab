@@ -1,4 +1,4 @@
-import tempfile,unittest
+import math,tempfile,unittest
 from pathlib import Path
 from lab.mql5gen.percentile import *
 import lab.mql5gen.percentile as subject
@@ -39,3 +39,12 @@ class TestPercentile(unittest.TestCase):
     with self.assertRaises(GenerationError):generate(p)
    finally: subject._publish=original
    for name in (RUNTIME,TESTER,EVIDENCE,PACKAGE):self.assertFalse((p/name).exists())
+ def test_non_finite_source_is_rejected_before_artifact_publication(self):
+  original=subject.INPUT
+  try:
+   for value in (math.nan,math.inf,-math.inf):
+    with tempfile.TemporaryDirectory() as d:
+     subject.INPUT=[*original[:-1],value]
+     with self.assertRaisesRegex(GenerationError,'finite or null'):generate(d)
+     for name in (RUNTIME,TESTER,EVIDENCE,PACKAGE):self.assertFalse((Path(d)/name).exists())
+  finally: subject.INPUT=original
