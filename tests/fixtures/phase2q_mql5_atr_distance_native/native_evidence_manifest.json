@@ -1,0 +1,49 @@
+{
+  "atr_null_positions": [
+    0,
+    1
+  ],
+  "binary_commit_reason": "Phase-2Q commits the 14kiB EX5, 2.9kiB CSVs, and native lifecycle evidence as part of the frozen native ATR/Distance-ATR canary contract.",
+  "compile": "compile/compile_manifest.json",
+  "compile_log": "compile/compile.log",
+  "csv_byte_identical": true,
+  "csv_sha256": "3fd319613374e0b22ac80cf1fea1cb34c2a37069ee3778cf9f154ac86a1eaccf",
+  "distance_atr_null_positions": [
+    0,
+    1
+  ],
+  "evidence_version": "nora.phase2q.native_evidence_v1",
+  "ex5": "compile/NoraPhase2AtrDistanceTesterCanaryV1.ex5",
+  "ex5_sha256": "a948b4c4c4c386e14706fbafe610dfc4a4445e645a851f47780cf6a15acd770c",
+  "identities": {
+    "atr_distance_tester": "38c4e578079fd42ec31c390c84e78162d120b67a7bad48fb7859eb350dbad51e",
+    "atr_runtime": "80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194",
+    "distance_atr_runtime": "008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12",
+    "fixture_package": "d48e68ceb2c6d9eb331875679bca810f257cc5b6b4e3a1087cff658bbf979ab2",
+    "nullable_runtime": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d",
+    "rust_atr": "26363cfb22ba13fdd5f922173373d56f6aff5b57c3e66604dbec28908b68708d",
+    "rust_distance_atr": "f4964fe1ecba67ab79654e59069ca5110e8330956b02b381517cf37bccf17f1f"
+  },
+  "max_atr_abs_difference": 4.2500725161431774e-17,
+  "max_distance_atr_abs_difference": 5.551115123125783e-17,
+  "row_count": 12,
+  "run1": "run1/execution_manifest.json",
+  "run1_csv": "run1/nora_phase2_atr_distance_tester_v1.csv",
+  "run1_journal": "run1/tester-journal.log",
+  "run1_lifecycle": "run1/lifecycle.jsonl",
+  "run1_tester_ini": "run1/tester.ini",
+  "run2": "run2/execution_manifest.json",
+  "run2_csv": "run2/nora_phase2_atr_distance_tester_v1.csv",
+  "run2_journal": "run2/tester-journal.log",
+  "run2_lifecycle": "run2/lifecycle.jsonl",
+  "run2_tester_ini": "run2/tester.ini",
+  "runs_semantically_identical": true,
+  "scope": "frozen native ATR and Distance/ATR transform canary only",
+  "semantic_result_identity": "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2",
+  "source_hashes": {
+    "atr_runtime_sha256": "aa88f1627a016c20859b8eb4ecf7717b3d922ab879adeb63f3f460fa8d2c478c",
+    "distance_atr_runtime_sha256": "80dada0eb19f53672e90009bce8d39fc74e18eaaed530e0725715be0fa417a19",
+    "nullable_runtime_sha256": "97de0194d7715b32ce104a9889d1a4af46cff6d0759d637f21e41025a98ee043",
+    "tester_sha256": "490a0c37f1d611c48f57e50dfb533265790950fa76b0e0a08edd915c91f05f0a"
+  }
+}

@@ -101,6 +101,35 @@ SLOPE_COMPILE_CONTRACT_VERSION = "nora.mql5.slope_tester_compile_v1"
 SLOPE_EXECUTION_CONTRACT_VERSION = "nora.mt5.slope_tester_execution_v1"
 SLOPE_SEMANTIC_RESULT_VERSION = "nora.mt5.slope_semantic_result_v1"
 
+ATR_RUNTIME_FILENAME = "NoraPhase2AtrRuntimeV1.mqh"
+ATR_RUNTIME_MANIFEST = "NoraPhase2AtrRuntimeV1.manifest.json"
+DISTANCE_ATR_RUNTIME_FILENAME = "NoraPhase2DistanceAtrRuntimeV1.mqh"
+DISTANCE_ATR_RUNTIME_MANIFEST = "NoraPhase2DistanceAtrRuntimeV1.manifest.json"
+ATR_DISTANCE_TESTER_SOURCE = "NoraPhase2AtrDistanceTesterCanaryV1.mq5"
+ATR_DISTANCE_TESTER_EX5 = "NoraPhase2AtrDistanceTesterCanaryV1.ex5"
+ATR_DISTANCE_TESTER_MANIFEST = "NoraPhase2AtrDistanceTesterCanaryV1.manifest.json"
+ATR_DISTANCE_TESTER_RESULT = "nora_phase2_atr_distance_tester_v1.csv"
+ATR_DISTANCE_COMPILE_DOMAIN = "nora.mt5.atr_distance_tester_compile_v1.semantic.v1"
+ATR_DISTANCE_EXECUTION_DOMAIN = "nora.mt5.atr_distance_tester_execution_v1.semantic.v1"
+ATR_DISTANCE_SEMANTIC_RESULT_DOMAIN = "nora.mt5.atr_distance_semantic_result_v1.semantic.v1"
+ATR_DISTANCE_CSV_SCHEMA = ["record_type", "row_index", "timestamp", "open", "high", "low", "close", "previous_close", "actual_atr", "expected_atr", "distance_numerator", "actual_distance_atr", "expected_distance_atr", "atr_nullable", "distance_atr_nullable", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass"]
+ATR_EXPECTED_VECTOR = [None, None, 0.0011333333333332825, 0.001222222222222137, 0.0011814814814813843, 0.0011876543209876195, 0.00115843621399178, 0.0012389574759945426, 0.0011926383173297287, 0.0012617588782198417, 0.0012078392521465207, 0.0012718928347643698]
+DISTANCE_ATR_EXPECTED_VECTOR = [None, None, 0.0, 0.2999999999998062, 0.02821316614419984, 0.30873180873159684, 0.028774422735342933, 0.2959477413639993, 0.027949238967905805, 0.2905996327792356, 0.027597491366763517, 0.28828424584572393]
+ATR_NULL_POSITIONS = [0, 1]
+DISTANCE_ATR_NULL_POSITIONS = [0, 1]
+ATR_RUNTIME_IDENTITY = "80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194"
+ATR_RUNTIME_SOURCE_SHA256 = "aa88f1627a016c20859b8eb4ecf7717b3d922ab879adeb63f3f460fa8d2c478c"
+DISTANCE_ATR_RUNTIME_IDENTITY = "008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12"
+DISTANCE_ATR_RUNTIME_SOURCE_SHA256 = "80dada0eb19f53672e90009bce8d39fc74e18eaaed530e0725715be0fa417a19"
+ATR_DISTANCE_TESTER_IDENTITY = "38c4e578079fd42ec31c390c84e78162d120b67a7bad48fb7859eb350dbad51e"
+ATR_DISTANCE_TESTER_SOURCE_SHA256 = "490a0c37f1d611c48f57e50dfb533265790950fa76b0e0a08edd915c91f05f0a"
+FIXTURE_PACKAGE_IDENTITY = "d48e68ceb2c6d9eb331875679bca810f257cc5b6b4e3a1087cff658bbf979ab2"
+RUST_ATR_IDENTITY = "26363cfb22ba13fdd5f922173373d56f6aff5b57c3e66604dbec28908b68708d"
+RUST_DISTANCE_ATR_IDENTITY = "f4964fe1ecba67ab79654e59069ca5110e8330956b02b381517cf37bccf17f1f"
+ATR_DISTANCE_COMPILE_CONTRACT_VERSION = "nora.mql5.atr_distance_tester_compile_v1"
+ATR_DISTANCE_EXECUTION_CONTRACT_VERSION = "nora.mt5.atr_distance_tester_execution_v1"
+ATR_DISTANCE_SEMANTIC_RESULT_VERSION = "nora.mt5.atr_distance_semantic_result_v1"
+
 
 class CompileError(RuntimeError):
     """Deterministic compile-control failure."""
@@ -795,6 +824,187 @@ def execute_slope_tester_canary(compile_manifest: str | os.PathLike[str], ex5: s
         return {"ok": True, **manifest, "output_dir": str(output)}
 
 
+def _verify_atr_distance_tester_fixture(path: Path) -> dict:
+    value = _read_json(path, "atr distance tester fixture")
+    expected = {"tester_version": "nora_mql5_atr_distance_tester_canary_v1", "nullable_runtime_identity": RUNTIME_IDENTITY, "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "fixture_package_identity": FIXTURE_PACKAGE_IDENTITY, "rust_atr_evidence_identity": RUST_ATR_IDENTITY, "rust_distance_atr_evidence_identity": RUST_DISTANCE_ATR_IDENTITY, "row_count": 12, "result_filename": ATR_DISTANCE_TESTER_RESULT, "source_filename": ATR_DISTANCE_TESTER_SOURCE}
+    for key, item in expected.items():
+        if value.get(key) != item:
+            raise CompileError(f"atr distance tester fixture contract mismatch: {key}")
+    if _sha256(path.parent / ATR_DISTANCE_TESTER_SOURCE) != value.get("source_sha256"):
+        raise CompileError("atr distance tester fixture source hash mismatch")
+    return value
+
+
+def reconcile_atr_distance_csv(csv_path: str | os.PathLike[str], tester_manifest: str | os.PathLike[str]) -> dict[str, object]:
+    fixture = _read_json(Path(tester_manifest), "atr distance tester fixture")
+    if fixture.get("result_filename") != ATR_DISTANCE_TESTER_RESULT:
+        raise ExecutionError("atr distance tester expectations do not match frozen vectors")
+    expected_atr = ATR_EXPECTED_VECTOR
+    expected_distance = DISTANCE_ATR_EXPECTED_VECTOR
+    if len(expected_atr) != 12 or len(expected_distance) != 12:
+        raise ExecutionError("atr distance tester expectations do not match frozen vectors")
+    try:
+        text = Path(csv_path).read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError) as error:
+        raise ExecutionError("result CSV is unreadable or not UTF-8") from error
+    reader = csv.reader(io.StringIO(text, newline=""))
+    try:
+        header = next(reader)
+    except StopIteration as error:
+        raise ExecutionError("result CSV is empty") from error
+    if header != ATR_DISTANCE_CSV_SCHEMA:
+        raise ExecutionError("result CSV header does not match frozen schema")
+    records = list(reader)
+    if len(records) != 13:
+        raise ExecutionError("result CSV must contain exactly 12 rows and one summary")
+    rows: list[dict[str, object]] = []
+    for expected_index, values in enumerate(records[:12]):
+        if len(values) != len(ATR_DISTANCE_CSV_SCHEMA) or values[0] != "row":
+            raise ExecutionError(f"malformed row record at index {expected_index}")
+        if values[1] != str(expected_index):
+            raise ExecutionError("row indices must be exactly 0..11 in order")
+        actual_atr = _canonical_numeric(values[8], "actual_atr")
+        expected_atr_val = _canonical_numeric(values[9], "expected_atr")
+        actual_distance = _canonical_numeric(values[11], "actual_distance_atr")
+        expected_distance_val = _canonical_numeric(values[12], "expected_distance_atr")
+        row_pass = _canonical_bool(values[15], "row_pass")
+        if values[16:] != ["", "", "", ""]:
+            raise ExecutionError("row record contains unexpected summary fields")
+        if expected_atr[expected_index] is None and expected_atr_val != "null":
+            raise ExecutionError("row expected ATR value disagrees with frozen fixture vector")
+        if expected_atr[expected_index] is not None and not _numeric_match(expected_atr_val, expected_atr[expected_index]):
+            raise ExecutionError("row expected ATR value disagrees with frozen fixture vector")
+        if expected_distance[expected_index] is None and expected_distance_val != "null":
+            raise ExecutionError("row expected distance/ATR value disagrees with frozen fixture vector")
+        if expected_distance[expected_index] is not None and not _numeric_match(expected_distance_val, expected_distance[expected_index]):
+            raise ExecutionError("row expected distance/ATR value disagrees with frozen fixture vector")
+        if expected_atr[expected_index] is None and actual_atr != "null":
+            raise ExecutionError(f"row {expected_index} failed ATR reconciliation")
+        if expected_atr[expected_index] is not None and not _numeric_match(actual_atr, expected_atr[expected_index]):
+            raise ExecutionError(f"row {expected_index} failed ATR reconciliation")
+        if expected_distance[expected_index] is None and actual_distance != "null":
+            raise ExecutionError(f"row {expected_index} failed distance/ATR reconciliation")
+        if expected_distance[expected_index] is not None and not _numeric_match(actual_distance, expected_distance[expected_index]):
+            raise ExecutionError(f"row {expected_index} failed distance/ATR reconciliation")
+        if not row_pass:
+            raise ExecutionError(f"row {expected_index} row_pass is false")
+        rows.append({"row_index": expected_index, "actual_atr": actual_atr, "expected_atr": expected_atr_val, "actual_distance_atr": actual_distance, "expected_distance_atr": expected_distance_val, "row_pass": row_pass})
+    summary = records[12]
+    if len(summary) != len(ATR_DISTANCE_CSV_SCHEMA) or summary[0] != "summary" or summary[1] != "-1":
+        raise ExecutionError("result CSV summary record is malformed")
+    if summary[2:15] != ["", "", "", "", "", "", "", "", "", "", "", "", ""]:
+        raise ExecutionError("summary contains unexpected row value fields")
+    overall_pass = _canonical_bool(summary[15], "overall_pass")
+    try:
+        row_count, passed_rows, failed_rows = (int(summary[index]) for index in (16, 17, 18))
+    except (TypeError, ValueError) as error:
+        raise ExecutionError("summary counts must be integers") from error
+    if summary[19] not in {"false", "true"}:
+        raise ExecutionError("invalid summary overall_pass token")
+    if row_count != 12 or passed_rows != 12 or failed_rows != 0 or not overall_pass or summary[19] != "true":
+        raise ExecutionError("summary does not prove a 12-row pass")
+    atr_differences = [abs(float(row["actual_atr"]) - ATR_EXPECTED_VECTOR[index]) for index, row in enumerate(rows) if row["actual_atr"] != "null"]
+    distance_differences = [abs(float(row["actual_distance_atr"]) - DISTANCE_ATR_EXPECTED_VECTOR[index]) for index, row in enumerate(rows) if row["actual_distance_atr"] != "null"]
+    return {"rows": rows, "summary": {"row_count": row_count, "passed_rows": passed_rows, "failed_rows": failed_rows, "overall_pass": overall_pass}, "atr_vector": [row["actual_atr"] for row in rows], "expected_atr_vector": [row["expected_atr"] for row in rows], "distance_atr_vector": [row["actual_distance_atr"] for row in rows], "expected_distance_atr_vector": [row["expected_distance_atr"] for row in rows], "row_pass_vector": [row["row_pass"] for row in rows], "max_atr_abs_difference": max(atr_differences, default=0.0), "max_distance_atr_abs_difference": max(distance_differences, default=0.0)}
+
+
+def compile_atr_distance_tester_canary(runtime: str | os.PathLike[str], atr_runtime: str | os.PathLike[str], distance_atr_runtime: str | os.PathLike[str], tester_source: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], invocation_command: str) -> dict[str, object]:
+    orchestration_start = datetime.now(timezone.utc)
+    runtime_path, atr_runtime_path, distance_atr_runtime_path, source_path = Path(runtime), Path(atr_runtime), Path(distance_atr_runtime), Path(tester_source)
+    if runtime_path.name != RUNTIME_FILENAME or _sha256(runtime_path) != RUNTIME_SOURCE_SHA256:
+        raise CompileError("frozen source hash mismatch: NoraPhase2RuntimeV1.mqh")
+    if atr_runtime_path.name != ATR_RUNTIME_FILENAME or _sha256(atr_runtime_path) != ATR_RUNTIME_SOURCE_SHA256:
+        raise CompileError("frozen source hash mismatch: NoraPhase2AtrRuntimeV1.mqh")
+    if distance_atr_runtime_path.name != DISTANCE_ATR_RUNTIME_FILENAME or _sha256(distance_atr_runtime_path) != DISTANCE_ATR_RUNTIME_SOURCE_SHA256:
+        raise CompileError("frozen source hash mismatch: NoraPhase2DistanceAtrRuntimeV1.mqh")
+    fixture = _verify_atr_distance_tester_fixture(Path(tester_manifest))
+    if source_path.name != ATR_DISTANCE_TESTER_SOURCE or _sha256(source_path) != fixture["source_sha256"]:
+        raise CompileError("atr distance tester source does not match tester fixture manifest")
+    output = Path(output_dir); output.mkdir(parents=True, exist_ok=True)
+    for name in (ATR_DISTANCE_TESTER_EX5, LOG_FILENAME, CANARY_MANIFEST_FILENAME):
+        if (output / name).exists():
+            raise CompileError(f"local output target already exists: {name}")
+    run_id = "atr-distance-tester-compile-" + uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2q-tester-") as temp:
+        temp = Path(temp)
+        helper = Path(__file__).resolve().parents[2] / "phase-0a-h/windows/compile-atr-distance-tester-canary.ps1"
+        for source in (runtime_path, atr_runtime_path, distance_atr_runtime_path, source_path, helper):
+            (temp / source.name).write_bytes(source.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2Q\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp / x) for x in (RUNTIME_FILENAME, ATR_RUNTIME_FILENAME, DISTANCE_ATR_RUNTIME_FILENAME, ATR_DISTANCE_TESTER_SOURCE, helper.name)], f"{REMOTE_TARGET}:NoraPhase2Q/incoming/{run_id}/")
+        result = _ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2Q\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2Q\\incoming\\{run_id}" -RunId "{run_id}"', check=False)
+        for name in ("compile.json", LOG_FILENAME, ATR_DISTANCE_TESTER_EX5):
+            _scp([f"{REMOTE_TARGET}:NoraPhase2Q/{run_id}/{name}"], str(temp / name), check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2Q\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2Q\\incoming\\{run_id}\'"', check=False)
+        remote = _read_json(temp / "compile.json", "remote atr distance tester compile")
+        if result.returncode or remote.get("status") != "compiled" or remote.get("error_count") != 0 or remote.get("warning_count") != 0:
+            raise CompileError("atr distance tester compiler failed")
+        ex5 = temp / ATR_DISTANCE_TESTER_EX5; log = temp / LOG_FILENAME
+        if not ex5.is_file() or not log.is_file() or not ex5.stat().st_size:
+            raise CompileError("atr distance tester compiler did not return ex5/log")
+        ex5bytes = ex5.read_bytes(); logbytes = log.read_bytes()
+        exsha = hashlib.sha256(ex5bytes).hexdigest(); norm = _normalized_log_sha256(logbytes)
+        identity = _identity(ATR_DISTANCE_COMPILE_DOMAIN, [fixture["tester_identity"], str(remote["compiler_version"]), exsha, norm])
+        orchestration_complete = datetime.now(timezone.utc)
+        manifest = {"tester_compile_contract_version": ATR_DISTANCE_COMPILE_CONTRACT_VERSION, "compiler_path": remote["compiler_path"], "compiler_version": remote["compiler_version"], "compiler_exit_code": remote["compiler_exit_code"], "error_count": remote["error_count"], "warning_count": remote["warning_count"], "tester_fixture_identity": fixture["tester_identity"], "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "atr_runtime_source_sha256": ATR_RUNTIME_SOURCE_SHA256, "distance_atr_runtime_source_sha256": DISTANCE_ATR_RUNTIME_SOURCE_SHA256, "tester_source_sha256": fixture["source_sha256"], "ex5_filename": ATR_DISTANCE_TESTER_EX5, "ex5_sha256": exsha, "ex5_size_bytes": len(ex5bytes), "normalized_log_sha256": norm, "compile_contract_identity": identity, "status": "compiled", "orchestration_command": invocation_command, "working_directory": str(Path.cwd()), "orchestration_start_utc": orchestration_start.isoformat(), "orchestration_completion_utc": orchestration_complete.isoformat(), "orchestration_exit_status": 0, "native_evidence": remote}
+        _atomic_write(output / ATR_DISTANCE_TESTER_EX5, ex5bytes); _atomic_write(output / LOG_FILENAME, logbytes); _atomic_write(output / CANARY_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode())
+        return {"ok": True, **manifest, "output_dir": str(output)}
+
+
+def execute_atr_distance_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], invocation_command: str) -> dict[str, object]:
+    orchestration_start = datetime.now(timezone.utc)
+    compile_value = _read_json(Path(compile_manifest), "atr distance tester compile")
+    fixture = _verify_atr_distance_tester_fixture(Path(tester_manifest))
+    ex5_path = Path(ex5)
+    if compile_value.get("status") != "compiled" or compile_value.get("tester_fixture_identity") != fixture["tester_identity"] or compile_value.get("ex5_sha256") != _sha256(ex5_path):
+        raise ExecutionError("atr distance tester compile/fixture contract mismatch")
+    output = Path(output_dir); output.mkdir(parents=True, exist_ok=True)
+    for name in (ATR_DISTANCE_TESTER_RESULT, "tester.log", EXECUTION_MANIFEST_FILENAME):
+        if (output / name).exists():
+            raise ExecutionError(f"local output target already exists: {name}")
+    run_id = "atr-distance-tester-execute-" + uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2q-tester-exec-") as temp:
+        temp = Path(temp)
+        helper = Path(__file__).resolve().parents[2] / "phase-0a-h/windows/execute-atr-distance-tester-canary.ps1"
+        (temp / ATR_DISTANCE_TESTER_EX5).write_bytes(ex5_path.read_bytes())
+        (temp / helper.name).write_bytes(helper.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2Q\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp / ATR_DISTANCE_TESTER_EX5), str(temp / helper.name)], f"{REMOTE_TARGET}:NoraPhase2Q/incoming/{run_id}/")
+        result = _ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2Q\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2Q\\incoming\\{run_id}" -RunId "{run_id}"', check=False)
+        for name in ("execution.json", "tester.log", "lifecycle.jsonl", "tester-journal.log", "tester.ini.normalized", ATR_DISTANCE_TESTER_RESULT, "tester.htm"):
+            _scp([f"{REMOTE_TARGET}:NoraPhase2Q/{run_id}/{name}"], str(temp / name), check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2Q\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2Q\\incoming\\{run_id}\'"', check=False)
+        remote = _read_json(temp / "execution.json", "remote atr distance tester execution")
+        if result.returncode or remote.get("status") != "completed" or not remote.get("result_fresh"):
+            if (temp / "tester.log").is_file():
+                _atomic_execution_write(output / "tester.log", (temp / "tester.log").read_bytes())
+            raise ExecutionError(f"atr distance tester execution failed: {remote.get('error', 'unknown')}")
+        required = ("tester_configuration_loaded", "testing_agent_started", "ea_loaded", "ea_initialized", "fixture_execution_started", "result_csv_written", "fixture_execution_completed", "tester_completed", "terminal_shutdown")
+        missing = [x for x in required if remote.get("stages", {}).get(x) is not True]
+        if missing:
+            raise ExecutionError("atr distance tester launch evidence missing stages: " + ",".join(missing))
+        csv_path = temp / ATR_DISTANCE_TESTER_RESULT
+        try:
+            reconciliation = reconcile_atr_distance_csv(csv_path, Path(__file__).resolve().parents[2] / "tests/fixtures/phase2p_mql5_atr_distance/NoraPhase2AtrDistanceTesterCanaryV1.manifest.json")
+        except ExecutionError:
+            for preserved_name in (ATR_DISTANCE_TESTER_RESULT, "tester.log", "lifecycle.jsonl", "tester-journal.log", "tester.ini.normalized"):
+                preserved = temp / preserved_name
+                if preserved.is_file() and not (output / preserved_name).exists():
+                    _atomic_execution_write(output / preserved_name, preserved.read_bytes())
+            raise
+        csvbytes = csv_path.read_bytes(); exsha = _sha256(ex5_path)
+        semantic = json.dumps({"rows": reconciliation["rows"], "summary": reconciliation["summary"]}, sort_keys=True, separators=(",", ":"))
+        atr_vec = json.dumps(reconciliation["atr_vector"], separators=(",", ":")); distance_vec = json.dumps(reconciliation["distance_atr_vector"], separators=(",", ":")); rowpass = json.dumps(reconciliation["row_pass_vector"], separators=(",", ":")); summary = json.dumps(reconciliation["summary"], sort_keys=True, separators=(",", ":"))
+        execution = _identity(ATR_DISTANCE_EXECUTION_DOMAIN, [fixture["tester_identity"], compile_value["compile_contract_identity"], exsha, TERMINAL_VERSION, semantic])
+        semantic_id = _identity(ATR_DISTANCE_SEMANTIC_RESULT_DOMAIN, [ATR_DISTANCE_TESTER_IDENTITY, FIXTURE_PACKAGE_IDENTITY, RUST_ATR_IDENTITY, RUST_DISTANCE_ATR_IDENTITY, TERMINAL_PRODUCT, TERMINAL_VERSION, atr_vec, distance_vec, rowpass, summary])
+        orchestration_complete = datetime.now(timezone.utc)
+        manifest = {"status": "passed", "terminal_path": remote["terminal_path"], "terminal_version": remote["terminal_version"], "tester_fixture_identity": fixture["tester_identity"], "compile_contract_identity": compile_value["compile_contract_identity"], "ex5_sha256": exsha, "result_csv_sha256": hashlib.sha256(csvbytes).hexdigest(), "atr_vector": reconciliation["atr_vector"], "expected_atr_vector": reconciliation["expected_atr_vector"], "distance_atr_vector": reconciliation["distance_atr_vector"], "expected_distance_atr_vector": reconciliation["expected_distance_atr_vector"], "row_pass_vector": reconciliation["row_pass_vector"], "atr_null_positions": [index for index, value in enumerate(reconciliation["atr_vector"]) if value == "null"], "distance_atr_null_positions": [index for index, value in enumerate(reconciliation["distance_atr_vector"]) if value == "null"], "max_atr_abs_difference": reconciliation["max_atr_abs_difference"], "max_distance_atr_abs_difference": reconciliation["max_distance_atr_abs_difference"], **reconciliation["summary"], "execution_identity": execution, "semantic_result_identity": semantic_id, "launch_stages": remote["stages"], "orchestration_command": invocation_command, "working_directory": str(Path.cwd()), "orchestration_start_utc": orchestration_start.isoformat(), "orchestration_completion_utc": orchestration_complete.isoformat(), "orchestration_exit_status": 0, "native_evidence": remote}
+        _atomic_execution_write(output / ATR_DISTANCE_TESTER_RESULT, csvbytes); _atomic_execution_write(output / "tester.log", (temp / "tester.log").read_bytes()); _atomic_execution_write(output / "lifecycle.jsonl", (temp / "lifecycle.jsonl").read_bytes()); _atomic_execution_write(output / "tester-journal.log", (temp / "tester-journal.log").read_bytes()); _atomic_execution_write(output / "tester.ini", (temp / "tester.ini.normalized").read_bytes()); _atomic_execution_write(output / EXECUTION_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode())
+        if (temp / "tester.htm").is_file():
+            _atomic_execution_write(output / "tester.htm", (temp / "tester.htm").read_bytes())
+        return {"ok": True, **manifest, "output_dir": str(output)}
+
+
 def _require_launch_evidence(remote: dict[str, object]) -> None:
     stages = remote.get("stages")
     if not isinstance(stages, dict):
@@ -889,6 +1099,10 @@ def main(argv: list[str] | None = None) -> int:
     slope_compile_parser.add_argument("--runtime", required=True);slope_compile_parser.add_argument("--slope-runtime", required=True);slope_compile_parser.add_argument("--tester-source", required=True);slope_compile_parser.add_argument("--tester-manifest", required=True);slope_compile_parser.add_argument("--output-dir", required=True);slope_compile_parser.add_argument("--invocation-command", required=True)
     slope_execute_parser = sub.add_parser("execute-slope-tester-canary")
     slope_execute_parser.add_argument("--compile-manifest", required=True);slope_execute_parser.add_argument("--ex5", required=True);slope_execute_parser.add_argument("--tester-manifest", required=True);slope_execute_parser.add_argument("--output-dir", required=True);slope_execute_parser.add_argument("--invocation-command", required=True)
+    atr_distance_compile_parser = sub.add_parser("compile-atr-distance-tester-canary")
+    atr_distance_compile_parser.add_argument("--runtime", required=True);atr_distance_compile_parser.add_argument("--atr-runtime", required=True);atr_distance_compile_parser.add_argument("--distance-atr-runtime", required=True);atr_distance_compile_parser.add_argument("--tester-source", required=True);atr_distance_compile_parser.add_argument("--tester-manifest", required=True);atr_distance_compile_parser.add_argument("--output-dir", required=True);atr_distance_compile_parser.add_argument("--invocation-command", required=True)
+    atr_distance_execute_parser = sub.add_parser("execute-atr-distance-tester-canary")
+    atr_distance_execute_parser.add_argument("--compile-manifest", required=True);atr_distance_execute_parser.add_argument("--ex5", required=True);atr_distance_execute_parser.add_argument("--tester-manifest", required=True);atr_distance_execute_parser.add_argument("--output-dir", required=True);atr_distance_execute_parser.add_argument("--invocation-command", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "compile-condition-canary":
@@ -905,6 +1119,10 @@ def main(argv: list[str] | None = None) -> int:
             result = compile_slope_tester_canary(args.runtime,args.slope_runtime,args.tester_source,args.tester_manifest,args.output_dir,args.invocation_command)
         elif args.command == "execute-slope-tester-canary":
             result = execute_slope_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir,args.invocation_command)
+        elif args.command == "compile-atr-distance-tester-canary":
+            result = compile_atr_distance_tester_canary(args.runtime,args.atr_runtime,args.distance_atr_runtime,args.tester_source,args.tester_manifest,args.output_dir,args.invocation_command)
+        elif args.command == "execute-atr-distance-tester-canary":
+            result = execute_atr_distance_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir,args.invocation_command)
         else:
             result = execute_series_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
@@ -914,4 +1132,4 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-__all__ = ["CompileError", "ExecutionError", "compile_condition_canary", "compile_tester_canary", "execute_condition_canary", "execute_tester_canary", "compile_series_tester_canary", "execute_series_tester_canary", "compile_slope_tester_canary", "execute_slope_tester_canary", "reconcile_condition_csv", "reconcile_series_csv", "reconcile_slope_csv", "main"]
+__all__ = ["CompileError", "ExecutionError", "compile_condition_canary", "compile_tester_canary", "execute_condition_canary", "execute_tester_canary", "compile_series_tester_canary", "execute_series_tester_canary", "compile_slope_tester_canary", "execute_slope_tester_canary", "compile_atr_distance_tester_canary", "execute_atr_distance_tester_canary", "reconcile_condition_csv", "reconcile_series_csv", "reconcile_slope_csv", "reconcile_atr_distance_csv", "main"]
