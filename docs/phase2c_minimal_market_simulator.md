@@ -93,6 +93,8 @@ CLI sealing covers long ambiguity (`9.0`, `-1.0`), short ambiguity (`11.0`, `-1.
 
 Repeated long pessimistic runs produced simulator `8d4c56e148daadc93cb0cde685bf226a794648382b49928788fb7425134f9114` and execution `ec29fa95b3f88765aba68dca233aa17b74330db8648f622b346692a02c020eb1`, independent of distinct output paths. Changing only low from `8.5` to `9.5` makes the bar target-only (`initial_target`, `12.0`, `+2.0`, zero pessimistic resolutions) and yields simulator `805227ddf7da24e5e81732989b08573d24778f1ce25dd1d1c5be6f6c7eaf6e85`, execution `c2f0ddb599881455376acc25e338d88bc6a352e378da6ca1b0d30325f2bdd0c3`.
 
+`ohlc_pessimistic_gap_v1` alone adds carried-row open-level fills before signal handling. Long opens `<= stop` / `>= target` and short opens `>= stop` / `<= target` close at the actual open, including equality, with `initial_stop_gap` or `initial_target_gap`; the event retains the row OHLC. Four CLI cases freeze long stop `8.5/-1.5`, long target `12.5/+2.5`, short stop `11.5/-1.5`, and short target `7.5/+2.5`. Each has one gap resolution and one event. Existing two models still reject the same gap.
+
 Executed sealing command:
 
 ```bash
