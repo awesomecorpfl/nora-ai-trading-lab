@@ -89,6 +89,10 @@ The CLI matrix freezes long stop `9.0/-1.0`, long target `12.0/+2.0`, short stop
 
 `ohlc_pessimistic_v1` is a separate strict execution model. It preserves all ordering, signal precedence, entry-row exclusion, and gap failure rules of `ohlc_unambiguous_v1`; only a later non-gap bar touching both inclusive levels differs. It always closes at the initial stop, for both long and short, and emits `initial_stop_pessimistic`. The close increments both `initial_stop_closes` and `pessimistic_ambiguity_resolutions` exactly once. The original unambiguous model continues to fail such bars.
 
+CLI sealing covers long ambiguity (`9.0`, `-1.0`), short ambiguity (`11.0`, `-1.0`), and exact boundaries (`high == target`, `low == stop`), all with one bar held and a single pessimistic event. Signal intent still wins over ambiguity at the carried-row open and emits no event; an ambiguous entry row remains excluded. The legacy model returns exit 2 with `unsupported ambiguous bracket bar`; pessimistic gaps return exit 2 with `unsupported gap/open-level bracket event`; neither publishes ledger or event output.
+
+Repeated long pessimistic runs produced simulator `8d4c56e148daadc93cb0cde685bf226a794648382b49928788fb7425134f9114` and execution `ec29fa95b3f88765aba68dca233aa17b74330db8648f622b346692a02c020eb1`, independent of distinct output paths. Changing only low from `8.5` to `9.5` makes the bar target-only (`initial_target`, `12.0`, `+2.0`, zero pessimistic resolutions) and yields simulator `805227ddf7da24e5e81732989b08573d24778f1ce25dd1d1c5be6f6c7eaf6e85`, execution `c2f0ddb599881455376acc25e338d88bc6a352e378da6ca1b0d30325f2bdd0c3`.
+
 Executed sealing command:
 
 ```bash
