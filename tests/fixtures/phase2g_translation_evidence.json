@@ -1,0 +1,166 @@
+{
+  "canonical_ast_identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+  "nullable_results": [
+    "null",
+    "null",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+  ],
+  "rows": [
+    {
+      "bindings": {
+        "close.cross_above.sma3": null,
+        "sma3": null,
+        "sma3.cross_below.close": null
+      },
+      "expected_mql5_nullable_result": "null",
+      "row_index": 0,
+      "rust_nullable_result": "null",
+      "trigger": false
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": null,
+        "sma3": null,
+        "sma3.cross_below.close": null
+      },
+      "expected_mql5_nullable_result": "null",
+      "row_index": 1,
+      "rust_nullable_result": "null",
+      "trigger": false
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": null,
+        "sma3": 1.1006,
+        "sma3.cross_below.close": null
+      },
+      "expected_mql5_nullable_result": "false",
+      "row_index": 2,
+      "rust_nullable_result": "false",
+      "trigger": false
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": true,
+        "sma3": 1.1009333333333335,
+        "sma3.cross_below.close": true
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 3,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1009666666666666,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 4,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1013333333333335,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 5,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1013666666666666,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 6,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1017333333333335,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 7,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1017666666666666,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 8,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1021333333333334,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 9,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1021666666666665,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 10,
+      "rust_nullable_result": "true",
+      "trigger": true
+    },
+    {
+      "bindings": {
+        "close.cross_above.sma3": false,
+        "sma3": 1.1025333333333334,
+        "sma3.cross_below.close": false
+      },
+      "expected_mql5_nullable_result": "true",
+      "row_index": 11,
+      "rust_nullable_result": "true",
+      "trigger": true
+    }
+  ],
+  "rust_evaluated_artifact_identity": "e098bfc87897802116a54ed21cdc2f530619201a22c55f41ac965e39b1bbd5a9",
+  "triggers": [
+    false,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ]
+}
