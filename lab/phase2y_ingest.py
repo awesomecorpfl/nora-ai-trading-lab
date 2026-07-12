@@ -139,4 +139,5 @@ def ingest(directory, manifest_name=MANIFEST_NAME):
             overall = classification
     normalized["classification"] = overall
     normalized["accepted"] = overall is None
+    normalized["reasons"] = [reason for target in normalized["targets"].values() for reason in target["reasons"]]
     return normalized
