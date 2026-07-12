@@ -46,8 +46,8 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertIn(item["status"], STATUSES)
             self.assertTrue(item["missing_gate"])
             self.assertEqual(set(item["rust"]), {"implementation", "source_paths", "identity", "tests"})
-            self.assertEqual(set(item["mql5"]), {"generation", "source_identity"})
-            self.assertEqual(set(item["native"]), {"compile_evidence_paths", "execution_evidence_paths"})
+            self.assertTrue({"generation", "source_identity"}.issubset(item["mql5"]))
+            self.assertTrue({"compile_evidence_paths", "execution_evidence_paths"}.issubset(item["native"]))
 
     def test_claimed_evidence_paths_and_identities_are_valid(self):
         for item in self.value["items"]:
@@ -143,6 +143,19 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(summary["accepted_native_canary_count"], 4)
         self.assertEqual(summary["grammar_admitted_node_count"], 2)
         self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
+
+    def test_scaffold_artifacts_cannot_claim_executable_or_native_admission(self):
+        items = {item["id"]: item for item in self.value["items"]}
+        for item_id in ("layer1.macd", "transform.percentile"):
+            item = items[item_id]
+            self.assertEqual(item["mql5"]["generation"], "scaffold_generated")
+            self.assertFalse(item["mql5"]["executable_translation_generated"])
+            self.assertEqual(set(item["mql5"]["historical_scaffold_identities"]), {"runtime", "tester", "package"})
+            self.assertFalse(item["native"]["handoff_ready"])
+            self.assertFalse(item["native"]["execution_attempted"])
+            self.assertFalse(item["native"]["parity_accepted"])
+            self.assertFalse(item.get("grammar_admitted", False))
+            self.assertFalse(item["searchable"])
 
 
 if __name__ == "__main__":

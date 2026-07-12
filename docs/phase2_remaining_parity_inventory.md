@@ -2,6 +2,10 @@
 
 The machine-readable source of truth is `tests/fixtures/phase2_remaining_parity_inventory.json`. It records 50 Phase-2 items and deliberately separates Rust implementation, MQL5 generation, compilation evidence, native execution evidence, and semantic parity. No item is searchable and Phase 3 is not authorized.
 
+## Executable-source correction
+
+The historical Phase-2U MACD and Phase-2W percentile artifacts are preserved as deterministic scaffolds, not executable MQL5 translations. Their runtime, tester, and package identities remain recorded as historical scaffold identities. They establish neither executable translation nor native handoff/parity, grammar admission, or searchability.
+
 ## Evidence position
 
 Four native canaries are accepted project evidence. Phase 2Q adds the self-contained ATR/Distance-ATR package with native semantic identity `8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2`, ATR runtime identity `80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194`, Distance/ATR runtime identity `008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12`, tester identity `38c4e578079fd42ec31c390c84e78162d120b67a7bad48fb7859eb350dbad51e`, and CSV SHA-256 `3fd319613374e0b22ac80cf1fea1cb34c2a37069ee3778cf9f154ac86a1eaccf`. Its raw-native evidence is under `tests/fixtures/phase2q_mql5_atr_distance_native/`.
