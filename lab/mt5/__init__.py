@@ -46,6 +46,8 @@ EXPECTED_TRIGGER_VECTOR = [False, False, False, True, True, True, True, True, Tr
 TERMINAL_PRODUCT = "MetaTrader 5"
 TERMINAL_VERSION = "5.0.0.5836"
 EXECUTION_TIMEOUT_SECONDS = 60
+BROKER_NATIVE_SYMBOL = "GDAXI"
+CANARY_PROFILE = "NoraPhase2ConditionCanaryV1"
 
 
 class CompileError(RuntimeError):
@@ -341,7 +343,17 @@ def _identity(domain: str, values: list[str]) -> str:
     return digest.hexdigest()
 
 
-def execute_condition_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], fixture_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+def _require_launch_evidence(remote: dict[str, object]) -> None:
+    stages = remote.get("stages")
+    if not isinstance(stages, dict):
+        raise ExecutionError("native launch evidence is absent")
+    required = ("terminal_started", "startup_configuration_loaded", "chart_opened", "script_loaded", "script_started", "result_csv_created", "script_completed", "terminal_shutdown")
+    missing = [name for name in required if stages.get(name) is not True]
+    if missing:
+        raise ExecutionError("native launch evidence missing stages: " + ",".join(missing))
+
+
+def execute_condition_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], fixture_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str], *, symbol: str = BROKER_NATIVE_SYMBOL, profile: str = CANARY_PROFILE) -> dict[str, object]:
     compile_path, ex5_path, fixture_path = Path(compile_manifest), Path(ex5), Path(fixture_manifest)
     contracts = _verify_execution_contract(compile_path, ex5_path, fixture_path)
     output = Path(output_dir)
@@ -359,9 +371,9 @@ def execute_condition_canary(compile_manifest: str | os.PathLike[str], ex5: str 
         _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path {remote_incoming} | Out-Null"')
         _scp([str(incoming_path / EX5_FILENAME), str(incoming_path / helper.name)], f"{REMOTE_TARGET}:NoraPhase2J/incoming/{run_id}/")
         remote_ps = f"C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}\\{helper.name}"
-        result = _ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "{remote_ps}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}" -RunId "{run_id}" -TimeoutSeconds {EXECUTION_TIMEOUT_SECONDS}', check=False)
-        local_result = incoming_path / "execution.json";local_log = incoming_path / EXECUTION_LOG_FILENAME;local_csv = incoming_path / RESULT_FILENAME
-        for remote_name, local_path in (("execution.json", local_result), (EXECUTION_LOG_FILENAME, local_log), (RESULT_FILENAME, local_csv)):
+        result = _ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "{remote_ps}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}" -RunId "{run_id}" -RequestedSymbol "{symbol}" -ProfileName "{profile}" -TimeoutSeconds {EXECUTION_TIMEOUT_SECONDS}', check=False)
+        local_result = incoming_path / "execution.json";local_log = incoming_path / EXECUTION_LOG_FILENAME;local_csv = incoming_path / RESULT_FILENAME;local_journal = incoming_path / "terminal-journal.log"
+        for remote_name, local_path in (("execution.json", local_result), (EXECUTION_LOG_FILENAME, local_log), (RESULT_FILENAME, local_csv), ("terminal-journal.log", local_journal)):
             _scp([f"{REMOTE_TARGET}:NoraPhase2J/{run_id}/{remote_name}"], str(local_path), check=False)
         _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2J\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2J\\incoming\\{run_id}\'"', check=False)
         if not local_result.is_file():
@@ -373,14 +385,19 @@ def execute_condition_canary(compile_manifest: str | os.PathLike[str], ex5: str 
         if result.returncode != 0 or remote.get("status") != "completed" or remote.get("terminal_version") != TERMINAL_VERSION or remote.get("result_filename") != RESULT_FILENAME or not remote.get("result_fresh"):
             if local_log.is_file():
                 _atomic_execution_write(output / EXECUTION_LOG_FILENAME, local_log.read_bytes())
+            if local_journal.is_file():
+                _atomic_execution_write(output / "terminal-journal.log", local_journal.read_bytes())
             raise ExecutionError(f"native execution failed: {remote.get('error', remote.get('status', 'unknown'))}")
         if not local_csv.is_file() or local_csv.stat().st_size == 0 or not local_log.is_file():
             raise ExecutionError("fresh result CSV or execution log was not retrieved")
+        _require_launch_evidence(remote)
         try:
             reconciliation = reconcile_condition_csv(local_csv, fixture_path)
         except ExecutionError:
             _atomic_execution_write(output / RESULT_FILENAME, local_csv.read_bytes())
             _atomic_execution_write(output / EXECUTION_LOG_FILENAME, local_log.read_bytes())
+            if local_journal.is_file():
+                _atomic_execution_write(output / "terminal-journal.log", local_journal.read_bytes())
             raise
         csv_bytes = local_csv.read_bytes();log_bytes = local_log.read_bytes();result_sha = hashlib.sha256(csv_bytes).hexdigest();ex5_sha = contracts["ex5_sha256"]
         semantic_content = json.dumps({"schema": CSV_SCHEMA, "rows": reconciliation["rows"], "summary": reconciliation["summary"]}, sort_keys=True, separators=(",", ":"))
@@ -388,7 +405,7 @@ def execute_condition_canary(compile_manifest: str | os.PathLike[str], ex5: str 
         terminal_version = str(remote["terminal_version"]);terminal_path = str(remote["terminal_path"])
         execution_identity = _identity(EXECUTION_IDENTITY_DOMAIN, [EXECUTION_CONTRACT_VERSION, RUNTIME_IDENTITY, CONDITION_IDENTITY, FIXTURE_IDENTITY, contracts["compile"]["compile_contract_identity"], TERMINAL_PRODUCT, terminal_version, ex5_sha, json.dumps(CSV_SCHEMA, separators=(",", ":")), nullable_json, trigger_json, row_pass_json, summary_json, semantic_content])
         semantic_identity = _identity(SEMANTIC_RESULT_IDENTITY_DOMAIN, [FIXTURE_IDENTITY, TERMINAL_PRODUCT, terminal_version, nullable_json, trigger_json, row_pass_json, summary_json, semantic_content])
-        manifest = {"execution_contract_version": EXECUTION_CONTRACT_VERSION, "host_alias": HOST_ALIAS, "terminal_path": terminal_path, "terminal_version": terminal_version, "compiler_version": TERMINAL_VERSION, "compile_contract_identity": contracts["compile"]["compile_contract_identity"], "fixture_identity": FIXTURE_IDENTITY, "ex5_sha256": ex5_sha, "result_filename": RESULT_FILENAME, "result_csv_sha256": result_sha, "row_count": reconciliation["summary"]["row_count"], "passed_rows": reconciliation["summary"]["passed_rows"], "failed_rows": reconciliation["summary"]["failed_rows"], "overall_pass": reconciliation["summary"]["overall_pass"], "nullable_vector": reconciliation["nullable_vector"], "trigger_vector": reconciliation["trigger_vector"], "row_pass_vector": reconciliation["row_pass_vector"], "execution_identity": execution_identity, "semantic_result_identity": semantic_identity, "status": "passed"}
+        manifest = {"execution_contract_version": EXECUTION_CONTRACT_VERSION, "host_alias": HOST_ALIAS, "terminal_path": terminal_path, "terminal_version": terminal_version, "terminal_process_id": remote.get("terminal_process_id"), "profile_name": remote.get("profile_name", profile), "requested_symbol": remote.get("requested_symbol", symbol), "resolved_broker_symbol": remote.get("resolved_broker_symbol", symbol), "period": remote.get("period", "M1"), "script_name": remote.get("script_name", "NoraPhase2ConditionFixtureV1"), "script_load_observed": remote.get("stages", {}).get("script_loaded"), "fresh_csv_observed": remote.get("stages", {}).get("result_csv_created"), "launch_stages": remote.get("stages"), "compiler_version": TERMINAL_VERSION, "compile_contract_identity": contracts["compile"]["compile_contract_identity"], "fixture_identity": FIXTURE_IDENTITY, "ex5_sha256": ex5_sha, "result_filename": RESULT_FILENAME, "result_csv_sha256": result_sha, "row_count": reconciliation["summary"]["row_count"], "passed_rows": reconciliation["summary"]["passed_rows"], "failed_rows": reconciliation["summary"]["failed_rows"], "overall_pass": reconciliation["summary"]["overall_pass"], "nullable_vector": reconciliation["nullable_vector"], "trigger_vector": reconciliation["trigger_vector"], "row_pass_vector": reconciliation["row_pass_vector"], "execution_identity": execution_identity, "semantic_result_identity": semantic_identity, "status": "passed"}
         _atomic_execution_write(output / RESULT_FILENAME, csv_bytes);_atomic_execution_write(output / EXECUTION_LOG_FILENAME, log_bytes);_atomic_execution_write(output / EXECUTION_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8"))
         return {"ok": True, **manifest, "output_dir": str(output)}
 
@@ -406,12 +423,14 @@ def main(argv: list[str] | None = None) -> int:
     execute_parser.add_argument("--ex5", required=True)
     execute_parser.add_argument("--fixture-manifest", required=True)
     execute_parser.add_argument("--output-dir", required=True)
+    execute_parser.add_argument("--symbol", default=BROKER_NATIVE_SYMBOL)
+    execute_parser.add_argument("--profile", default=CANARY_PROFILE)
     args = parser.parse_args(argv)
     try:
         if args.command == "compile-condition-canary":
             result = compile_condition_canary(args.runtime, args.condition, args.script, args.output_dir)
         else:
-            result = execute_condition_canary(args.compile_manifest, args.ex5, args.fixture_manifest, args.output_dir)
+            result = execute_condition_canary(args.compile_manifest, args.ex5, args.fixture_manifest, args.output_dir, symbol=args.symbol, profile=args.profile)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
         return 0
     except (CompileError, ExecutionError) as error:

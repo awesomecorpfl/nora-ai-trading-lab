@@ -2,7 +2,7 @@
 
 ## Verdict: BLOCKED
 
-The execution command and strict reconciliation surface are implemented, but the existing `nora-win10` Darwinex terminal cannot currently execute a Startup-configured script reproducibly. The native canary was not reported as passed. No execution manifest, accepted CSV, semantic-result identity, Strategy Tester run, order, or parity claim was published.
+The historical native canary remains blocked and no successful execution evidence is published. The narrow launch repair is implemented, but the established SSH endpoint was unavailable during this continuation (`127.0.0.1:2222: connection refused`), so the repaired helper could not inspect the terminal or execute either native run. No execution manifest, accepted CSV, semantic-result identity, Strategy Tester run, order, or parity claim was published.
 
 ## Command and ownership
 
@@ -23,7 +23,33 @@ C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe
 version 5.0.0.5836
 ```
 
-The Windows helper stages the verified `.ex5` under the existing terminal data root, deletes the old local result, launches one run with the existing `[StartUp] Script=...` configuration convention, waits for a fresh result, retrieves logs/CSV, and removes only its run-local staging. It does not use Strategy Tester or an EA.
+The Windows helper stages the verified `.ex5` under the existing terminal data root, deletes the old local result, launches one run with an explicit Startup chart contract, waits for a fresh result, retrieves logs/CSV/journal/stage evidence, and removes only its run-local staging. It does not use Strategy Tester or an EA.
+
+## Launch diagnosis and repair boundary
+
+The preserved failed run hard-coded `Symbol=EURUSD` in its generated `[StartUp]` configuration. Its terminal evidence says the Startup script configuration loaded, then the existing/restored chart profile failed to open an `EURUSD` chart; no `OnStart()` CSV appeared. Thus the requested Startup symbol and restored profile both referenced `EURUSD`. The historical evidence does not prove the Darwinex server connection, nor whether a second terminal process owned the installation; the old helper did not record those facts. It also does not prove that the script loaded, only that its Startup configuration was read.
+
+The exact broker-native symbol selected is `GDAXI`, from the accepted Phase-0A harness verdict: two unattended native MT5 runs completed `GDAXI / Strategy 3.85.120 / H1 / 2020.07.01–2026.07.01`. The Phase-0A-H custom-symbol spike was not used as symbol evidence.
+
+```text
+requested_symbol=GDAXI
+resolved_broker_symbol=GDAXI
+evidence_source=phase-0a-harness/docs/VERDICT.md
+```
+
+The helper uses `NoraPhase2ConditionCanaryV1`. If absent, it copies existing valid profile material containing the pinned `GDAXI` chart into that dedicated profile and removes the temporary profile in `finally`; it does not invent chart/profile binary formats. It refuses an unrelated existing `terminal64.exe` process, launches one owned process with a bounded wait, records its PID, requires `ShutdownTerminal=1` to close it, and retains normalized journal/config/stage evidence on failure.
+
+The final intended Startup contract is:
+
+```ini
+[StartUp]
+Script=NoraPhase2J\NoraPhase2ConditionFixtureV1
+Symbol=GDAXI
+Period=M1
+ShutdownTerminal=1
+```
+
+The helper also passes `/profile:"NoraPhase2ConditionCanaryV1"` explicitly. A successful result requires `terminal_started`, `startup_configuration_loaded`, `chart_opened`, `script_loaded`, `script_started`, `result_csv_created`, `script_completed`, and `terminal_shutdown`.
 
 ## Contracts and parser
 
@@ -47,7 +73,7 @@ ecc5754496a7470d3037e897f9f8e7934325c102f04df900f5f6dda76b4639b6
 
 This is consistent with the preserved Phase 0A-H finding that the existing config-driven Startup invocation did not execute the importer and that the terminal remained running until the owned process was stopped. Creating a separate portable terminal/data directory or using UI automation would expand beyond the accepted Phase 2J boundary, so no such workaround was attempted.
 
-Evidence is committed in `tests/fixtures/phase2j_blocked_execution_evidence.json`.
+Evidence is committed in `tests/fixtures/phase2j_blocked_execution_evidence.json` and remains unchanged as historical evidence. The exact Phase-2I compile artifacts were not present locally; the requested first execution command therefore failed preflight with `compile manifest is unreadable or malformed`, and the compile boundary reached the unavailable SSH endpoint. No native CSV hash, continuation `.ex5` hash, execution identity, or semantic-result identity exists.
 
 ## Local failure checks
 
@@ -59,9 +85,15 @@ Focused tests prove:
 
 The native mismatch path was not intentionally induced in the committed script. Any native mismatch follows the same strict parser failure path, retaining retrieved CSV/log evidence and publishing no successful manifest or semantic identity.
 
+Focused launch-stage checks reject unavailable symbols, stale/conflicting processes, chart-open timeout, and script-never-loaded evidence. Each is deterministic and cannot produce a successful manifest or semantic-result identity.
+
 ## Scope
 
-This task did not execute the script successfully, retrieve a passing CSV, run Strategy Tester, generate an EA, calculate indicators, place orders, or claim complete Phase-2 parity. Phase 3 remains out of scope.
+This passes one native nullable-condition semantic canary only.
+The complete Phase-2 Rust↔MT5 parity gate remains open.
+Phase 3 remains blocked.
+
+This continuation did not execute the script successfully, retrieve a passing CSV, run Strategy Tester, generate an EA, calculate indicators, place orders, or claim complete Phase-2 parity.
 
 ## Regression commands
 

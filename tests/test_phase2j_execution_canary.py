@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from lab.mt5 import ExecutionError, reconcile_condition_csv, execute_condition_canary
+from lab.mt5 import ExecutionError, reconcile_condition_csv, execute_condition_canary, _require_launch_evidence
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,6 +58,26 @@ class Phase2jExecutionCanary(unittest.TestCase):
                 with self.assertRaisesRegex(ExecutionError, "compile contract mismatch"):
                     execute_condition_canary(mutated, EX5, FIXTURE_MANIFEST, directory / "output")
             self.assertFalse((directory / "output" / "execution_manifest.json").exists())
+
+    def test_unavailable_symbol_evidence_cannot_pass(self):
+        evidence = {"stages": {"terminal_started": True, "startup_configuration_loaded": True, "requested_symbol": "NOT_A_SYMBOL"}}
+        with self.assertRaisesRegex(ExecutionError, "launch evidence"):
+            _require_launch_evidence(evidence)
+
+    def test_stale_process_evidence_cannot_pass(self):
+        evidence = {"status": "failed", "error": "unrelated terminal process already owns installation", "stages": {}}
+        with self.assertRaisesRegex(ExecutionError, "launch evidence"):
+            _require_launch_evidence(evidence)
+
+    def test_chart_timeout_evidence_cannot_pass(self):
+        evidence = {"stages": {"terminal_started": True, "startup_configuration_loaded": True, "chart_opened": False, "script_loaded": False, "script_started": False, "result_csv_created": False, "script_completed": False, "terminal_shutdown": True}}
+        with self.assertRaisesRegex(ExecutionError, "chart_opened"):
+            _require_launch_evidence(evidence)
+
+    def test_script_never_loaded_evidence_cannot_pass(self):
+        evidence = {"stages": {"terminal_started": True, "startup_configuration_loaded": True, "chart_opened": True, "script_loaded": False, "script_started": False, "result_csv_created": False, "script_completed": False, "terminal_shutdown": True}}
+        with self.assertRaisesRegex(ExecutionError, "script_loaded"):
+            _require_launch_evidence(evidence)
 
 
 if __name__ == "__main__":
