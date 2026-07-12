@@ -199,13 +199,13 @@
       },
       "mql5": {
         "generation": "scaffold_generated",
-        "source_identity": null,
+        "source_identity": "3412ee2fae1bea47f4ffeca225d2fcbd68a4fd34480e8ebe4e64034ded8446cd",
         "historical_scaffold_identities": {"runtime": "5b78e5c7e4f8f0e7ce72e5aff72d930139e0e6f9050d8900cfa1564be9c136ee", "tester": "4b2a22a94539d6c989e93173c581ae71963a0ad7896cdca36b00e6abba957ffc", "package": "52d53fc3300eca2db3646eaab52ddaa2d0ae862632f60e6dac42c3ad5e6ac7ca"},
-        "executable_translation_generated": false
+        "executable_translation_generated": true
       },
       "native": {
         "compile_evidence_paths": [],
-        "execution_evidence_paths": [], "handoff_ready": false, "execution_attempted": false, "parity_accepted": false
+        "execution_evidence_paths": [], "handoff_ready": true, "execution_attempted": false, "parity_accepted": false
       },
       "parity_result_identity": null,
       "evidence_paths": [
@@ -773,13 +773,13 @@
       },
       "mql5": {
         "generation": "scaffold_generated",
-        "source_identity": null,
+        "source_identity": "b98e1664b592c4f7c627b8c39c98f8a9748a568ca6055f59283895319ca76fb2",
         "historical_scaffold_identities": {"runtime": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644", "tester": "d1410d4c3789f7fd8753a564debc272ca215ffd332e5ed4c278d3ec9f4cb4f39", "package": "9872eb22d8647546a0253d706454453847ad7e87489dbede3a0a3c51117f9fcd"},
-        "executable_translation_generated": false
+        "executable_translation_generated": true
       },
       "native": {
         "compile_evidence_paths": [],
-        "execution_evidence_paths": [], "handoff_ready": false, "execution_attempted": false, "parity_accepted": false
+        "execution_evidence_paths": [], "handoff_ready": true, "execution_attempted": false, "parity_accepted": false
       },
       "parity_result_identity": "943765d83d115309867fa8da768fc2a69500e7292f6048ed87541f4e26e63775",
       "evidence_paths": [

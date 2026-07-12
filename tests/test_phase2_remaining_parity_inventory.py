@@ -149,9 +149,9 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         for item_id in ("layer1.macd", "transform.percentile"):
             item = items[item_id]
             self.assertEqual(item["mql5"]["generation"], "scaffold_generated")
-            self.assertFalse(item["mql5"]["executable_translation_generated"])
+            self.assertTrue(item["mql5"]["executable_translation_generated"])
             self.assertEqual(set(item["mql5"]["historical_scaffold_identities"]), {"runtime", "tester", "package"})
-            self.assertFalse(item["native"]["handoff_ready"])
+            self.assertTrue(item["native"]["handoff_ready"])
             self.assertFalse(item["native"]["execution_attempted"])
             self.assertFalse(item["native"]["parity_accepted"])
             self.assertFalse(item.get("grammar_admitted", False))
