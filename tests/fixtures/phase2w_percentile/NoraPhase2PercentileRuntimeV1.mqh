@@ -1,0 +1,4 @@
+#ifndef NORA_PHASE2W_PERCENTILE_RUNTIME_V1_MQH
+#define NORA_PHASE2W_PERCENTILE_RUNTIME_V1_MQH
+#include "NoraPhase2RuntimeV1.mqh"
+#endif
