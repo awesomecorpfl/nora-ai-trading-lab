@@ -42,6 +42,8 @@ class Phase2SAtrDistanceAstAdmissionTests(unittest.TestCase):
             self.assertNotIn("previous_atr", source)
             self.assertNotIn("high[row_index] - low[row_index]", source)
             self.assertEqual(len(result_one["features"]), 2)
+            translations = result_one["feature_translation_identities"]
+            self.assertEqual(set(translations), {feature["identity"] for feature in result_one["features"]})
             self.assertEqual(json.loads((one / ATR_DISTANCE_FEATURE_MANIFEST_FILENAME).read_text())["translation_identity"], result_one["translation_identity"])
 
     def test_invalid_and_mutated_nodes_fail_or_change_identity(self):
@@ -63,4 +65,8 @@ class Phase2SAtrDistanceAstAdmissionTests(unittest.TestCase):
         self.assertEqual(fixture["native_semantic_result_identity"], NATIVE_IDENTITY)
         self.assertEqual(fixture["admitted_period"], 3)
         self.assertEqual(fixture["admitted_method"], "wilder")
+        self.assertEqual(fixture["atr_mql5_translation_identity"], "e8b07eea8fd6d4052a95dcde0ade1e6b31769d7bc320ce6f1c0ddc1a3d0da253")
+        self.assertEqual(fixture["distance_atr_mql5_translation_identity"], "01fb662e6d31d4f20efdfaef1f9ad0c6c701ae171015983f870e74f8afa6a583")
+        self.assertEqual(fixture["atr_rust_evaluation_identity"], "9ae012127d7c79ca433d69292a835e2b50721ec05a38cd08ce3603a15f2b0211")
+        self.assertEqual(fixture["distance_atr_rust_evaluation_identity"], "f40773899d21fc6523c3857dfacbe8c5375e1ca41b247155d66a72b8d4a10b3c")
         self.assertFalse(fixture["search_authorized"])

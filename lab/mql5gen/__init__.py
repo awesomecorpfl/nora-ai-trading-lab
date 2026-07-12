@@ -540,7 +540,12 @@ def translate_atr_distance_feature_plan(ast_path: str | os.PathLike[str], output
     if not output.is_dir(): raise GenerationError("feature output directory must exist")
     header, manifest = output / ATR_DISTANCE_FEATURE_SOURCE_FILENAME, output / ATR_DISTANCE_FEATURE_MANIFEST_FILENAME
     if header.exists() or manifest.exists(): raise GenerationError("feature output targets must not already exist")
-    semantic = {"translator_version": ATR_DISTANCE_FEATURE_TRANSLATOR_VERSION, "canonical_ast_identity": ast_identity, "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "features": features, "source_filename": header.name, "source_sha256": source_sha256, "translation_identity": translation_identity}
+    feature_translation_identities = {}
+    for feature in features:
+        feature_digest = hashlib.sha256(); _part(feature_digest, b"nora.mql5.atr_distance_feature_translation_v1")
+        for value in [ATR_DISTANCE_FEATURE_TRANSLATOR_VERSION, ast_identity, ATR_RUNTIME_IDENTITY, DISTANCE_ATR_RUNTIME_IDENTITY, json.dumps(feature, sort_keys=True, separators=(",", ":")), source_sha256]: _part(feature_digest, value.encode())
+        _part(feature_digest, source); feature_translation_identities[feature["identity"]] = feature_digest.hexdigest()
+    semantic = {"translator_version": ATR_DISTANCE_FEATURE_TRANSLATOR_VERSION, "canonical_ast_identity": ast_identity, "atr_runtime_identity": ATR_RUNTIME_IDENTITY, "distance_atr_runtime_identity": DISTANCE_ATR_RUNTIME_IDENTITY, "features": features, "feature_translation_identities": feature_translation_identities, "source_filename": header.name, "source_sha256": source_sha256, "translation_identity": translation_identity}
     _publish(output, header.name, source)
     try: _publish(output, manifest.name, (json.dumps(semantic, sort_keys=True, separators=(",", ":")) + "\n").encode())
     except GenerationError: header.unlink(missing_ok=True); raise
