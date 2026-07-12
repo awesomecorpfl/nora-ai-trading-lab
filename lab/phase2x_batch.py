@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib,json,shutil,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; MANIFEST='tests/fixtures/phase2x_native_batch_v2.json'; VERSION='nora.phase2x.native_batch_v2'
+FROZEN={'macd':('c1d1d4a1003a3c0bc8f6b8b3d3ec736349db90082647a349cebf89b6dd07cb1e','fef4a9583d0a12d5f067be9d977015a4f6d441e20232d2e8241b6a5539eee6f9'),'percentile':('943765d83d115309867fa8da768fc2a69500e7292f6048ed87541f4e26e63775','3e05d035eed7e607a8107c3e2c66b54c386da9adb4bf0f213a19dc5e6e8193f8')}
 def canon(v):return json.dumps(v,sort_keys=True,separators=(',',':')).encode()
 def sha(b):return hashlib.sha256(b).hexdigest()
 def file_sha(path):return sha((ROOT/path).read_bytes())
@@ -31,6 +32,7 @@ def preflight(report,manifest_path=MANIFEST,fail_publish=False):
  paths=[]
  for t in v.get('targets',[]):
   if t.get('native_parity') or t.get('grammar_admitted') or t.get('searchable'):errors.append('state:'+str(t.get('id')))
+  if FROZEN.get(t.get('id'))!=(t.get('rust_task_identity'),t.get('rust_component_identity')):errors.append('rust:'+str(t.get('id')))
   ev=t.get('expected_vectors',{});copy=dict(ev);identity=copy.pop('expected_vector_identity',None)
   if identity!=sha(canon(copy)):errors.append('vectors:'+str(t.get('id')))
   if ev.get('row_count')!=len(ev.get('rows',[])) or ev.get('rows')!=list(range(ev.get('row_count',-1))):errors.append('rows:'+str(t.get('id')))

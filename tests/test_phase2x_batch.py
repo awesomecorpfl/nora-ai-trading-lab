@@ -2,6 +2,8 @@ import json,tempfile,unittest
 from pathlib import Path
 from lab.phase2x_batch import ROOT,MANIFEST,load,preflight,stage
 class BatchV2(unittest.TestCase):
+ def mutated(self,d,fn):
+  p=Path(d)/'mut.json';v=load();fn(v);p.write_text(json.dumps(v));return p.relative_to(ROOT)
  def copy_manifest(self,d):
   p=Path(d)/'manifest.json';p.write_bytes((ROOT/MANIFEST).read_bytes());return p.relative_to(ROOT) if p.is_relative_to(ROOT) else None
  def test_valid_frozen_preflight_and_two_directory_staging(self):
@@ -19,3 +21,21 @@ class BatchV2(unittest.TestCase):
    self.assertFalse((p/'fail').exists());self.assertFalse(list(p.glob('.phase2xv2-*')))
    with self.assertRaises(RuntimeError):preflight(p/'no.json',fail_publish=True)
    self.assertFalse((p/'no.tmp').exists())
+ def test_manifest_vector_identity_schema_and_state_tampering(self):
+  cases=(
+   lambda v:v['targets'][0]['expected_vectors']['vectors']['macd'].__setitem__(3,0.0),
+   lambda v:v['targets'][0]['expected_vectors']['vectors']['null_masks']['macd'].__setitem__(3,True),
+   lambda v:v['targets'][0]['expected_vectors']['rows'].reverse(),
+   lambda v:v['targets'][0]['expected_vectors']['columns'].__setitem__(1,'renamed'),
+   lambda v:v['targets'][0].__setitem__('rust_task_identity','0'*64),
+   lambda v:v['targets'][0].__setitem__('runtime_identity','0'*64),
+   lambda v:v['targets'][0].__setitem__('tester_identity','0'*64),
+   lambda v:v['targets'][0].__setitem__('package_identity','0'*64),
+   lambda v:v['targets'][0].__setitem__('completion_marker','wrong'),
+   lambda v:v['targets'][0].__setitem__('searchable',True),
+   lambda v:v['targets'].__setitem__(1,dict(v['targets'][0])),
+   lambda v:v['allowlisted_paths'].append(v['allowlisted_paths'][1]),
+  )
+  with tempfile.TemporaryDirectory(dir=ROOT) as d:
+   for fn in cases:
+    rel=self.mutated(d,fn);self.assertEqual(preflight(Path(d)/'r.json',rel)['status'],'FAIL')
