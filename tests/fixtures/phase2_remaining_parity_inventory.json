@@ -763,28 +763,32 @@
         "source_paths": [
           "engine/labengine/src/indicators.rs"
         ],
-        "identity": null,
+        "identity": "3e05d035eed7e607a8107c3e2c66b54c386da9adb4bf0f213a19dc5e6e8193f8",
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2w_percentile.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644"
       },
       "native": {
         "compile_evidence_paths": [],
         "execution_evidence_paths": []
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "943765d83d115309867fa8da768fc2a69500e7292f6048ed87541f4e26e63775",
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_percentile_task.json"
+        "engine/labengine/tests/fixtures/phase2_percentile_task.json",
+        "tests/fixtures/phase2w_percentile/phase2w_percentile_package.json",
+        "tests/fixtures/phase2w_percentile/phase2w_percentile_rust_evidence.json"
       ],
       "commits": [
-        "f56681271b72e30dbc7904e2e41d69a9fd3aa857"
+        "f56681271b72e30dbc7904e2e41d69a9fd3aa857",
+        "939297b9d40b6cc441719ae9a56206bf8b6c73e9"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation and fixed native transform canary"
+      "missing_gate": "native MT5 parity; AST admission and search remain closed"
     },
     {
       "id": "ast.numeric_series",
