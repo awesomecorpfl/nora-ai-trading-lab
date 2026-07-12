@@ -1,0 +1,36 @@
+{
+  "compile_contract_version": "nora_mql5_condition_compile_v1",
+  "compiler_path": "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe",
+  "compiler_version": "5.0.0.5836",
+  "compile_contract_identity": "a089a280eeebe82be78660410391323887cade8d36c0c26c2173e8ab4076558d",
+  "runtime_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d",
+  "condition_translation_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af",
+  "fixture_identity": "d283a5a37e64f426f39f813d1f2f68fa64e4c92cbd61b2cdbd59b9f1eac1f858",
+  "runs": [
+    {
+      "compiler_exit_code": 1,
+      "error_count": 0,
+      "warning_count": 0,
+      "normalized_log_sha256": "d36387714d0bcaba022368561a2ddea4482471efd07714f7574e1790561a7792",
+      "log_sha256": "8a7639d5b8350f3eafcf6605486559b1267a3668204ab74096ea9e9bff64cc77",
+      "ex5_sha256": "a9985b2140f40b2ae35d2facb5123b58c807dd455de98eeab740efdbbac75b5a",
+      "ex5_size_bytes": 10834,
+      "status": "compiled"
+    },
+    {
+      "compiler_exit_code": 1,
+      "error_count": 0,
+      "warning_count": 0,
+      "normalized_log_sha256": "d36387714d0bcaba022368561a2ddea4482471efd07714f7574e1790561a7792",
+      "log_sha256": "aac45a1192fd75d77fa37e9c15b125fd778b5808316e06fd4a2eb8ff87659f20",
+      "ex5_sha256": "55581f9c1497737108723cd8396e6bcf2921e9c306fcde5d28cecdb5e109b5b9",
+      "ex5_size_bytes": 10980,
+      "status": "compiled"
+    }
+  ],
+  "ex5_bytes_match": false,
+  "syntax_invalid_error_count": 1,
+  "syntax_invalid_warning_count": 0,
+  "syntax_invalid_log_sha256": "3add703a422fa5abd7dc27cc1dbf473b94d634fd0e3e909344956dde58fdae50",
+  "syntax_invalid_published": false
+}

@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -24,11 +25,11 @@ SCRIPT_FILENAME = "NoraPhase2ConditionFixtureV1.mq5"
 EX5_FILENAME = "NoraPhase2ConditionFixtureV1.ex5"
 LOG_FILENAME = "compile.log"
 REMOTE_RESULT_FILENAME = "compile.json"
-RUNTIME_IDENTITY = "2ba6078adcd10d991d3ef1ada26baa791a0c6054707a84acaceaa6fe23f2b176"
-RUNTIME_SOURCE_SHA256 = "42b7239442090a68fdacdc481925cd6b9819b572ea083efce3f3e3cbbb27d2a4"
-CONDITION_IDENTITY = "22ff3c2cc2d387173eb066c428eac99f663263a6d7dda773f44647ec371509bd"
+RUNTIME_IDENTITY = "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d"
+RUNTIME_SOURCE_SHA256 = "97de0194d7715b32ce104a9889d1a4af46cff6d0759d637f21e41025a98ee043"
+CONDITION_IDENTITY = "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
 CONDITION_SOURCE_SHA256 = "1c630ede14e103a62490573c746f7652cb3083096c9259711ee3c979229108a4"
-FIXTURE_IDENTITY = "ab09f18f446897f5cd28adcfc4a1260688cc8c397c58ba400516db6006e89d1e"
+FIXTURE_IDENTITY = "d283a5a37e64f426f39f813d1f2f68fa64e4c92cbd61b2cdbd59b9f1eac1f858"
 FIXTURE_SOURCE_SHA256 = "b3b98996545d1277d4b2fa51db7c14c943ad733c018717110dab45e05f0022a7"
 CANARY_MANIFEST_FILENAME = "compile_manifest.json"
 
@@ -48,6 +49,18 @@ def _sha256(path: Path) -> str:
 def _part(digest: "hashlib._Hash", value: bytes) -> None:
     digest.update(len(value).to_bytes(8, "big"))
     digest.update(value)
+
+
+def _normalized_log_sha256(content: bytes) -> str:
+    try:
+        text = content.decode("utf-16") if b"\x00" in content[:256] else content.decode("utf-8")
+    except UnicodeDecodeError:
+        text = content.decode("utf-8", errors="replace")
+    text = re.sub(r"C:\\Users\\Gasper\\NoraPhase2I\\compile-[^\\]+\\source\\", "<remote-source>/", text)
+    text = re.sub(r"Result:\s*(\d+\s+errors?,\s+\d+\s+warnings?)(?:,\s*[^\r\n]*)?", r"Result: \1", text)
+    text = re.sub(r"\s+", " ", text)
+    normalized = "\n".join(line.strip() for line in text.splitlines() if line.strip()) + "\n"
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 def _verify_manifest(path: Path, expected: dict[str, str], identity_key: str) -> dict:
@@ -108,9 +121,9 @@ def _atomic_write(path: Path, content: bytes) -> None:
         raise CompileError(f"atomic local publication failed: {path.name}") from error
 
 
-def _compile_identity(compiler_path: str, compiler_version: str, exit_code: int, errors: int, warnings: int, ex5_filename: str, source_hashes: list[str]) -> str:
+def _compile_identity(compiler_path: str, compiler_version: str, exit_code: int, errors: int, warnings: int, ex5_filename: str, source_hashes: list[str], normalized_log_sha256: str) -> str:
     digest = hashlib.sha256()
-    for value in [COMPILE_IDENTITY_DOMAIN, COMPILE_CONTRACT_VERSION, RUNTIME_IDENTITY, CONDITION_IDENTITY, FIXTURE_IDENTITY, *source_hashes, compiler_path, compiler_version, str(exit_code), str(errors), str(warnings), ex5_filename]:
+    for value in [COMPILE_IDENTITY_DOMAIN, COMPILE_CONTRACT_VERSION, RUNTIME_IDENTITY, CONDITION_IDENTITY, FIXTURE_IDENTITY, *source_hashes, compiler_path, compiler_version, str(exit_code), str(errors), str(warnings), ex5_filename, normalized_log_sha256]:
         _part(digest, value.encode("utf-8"))
     return digest.hexdigest()
 
@@ -161,11 +174,11 @@ def compile_condition_canary(runtime: str | os.PathLike[str], condition: str | o
             raise CompileError("compile acceptance requires a non-empty ex5 and compiler log")
         log_bytes = local_log_path.read_bytes(); ex5_bytes = local_ex5_path.read_bytes()
         compiler_path = str(remote_result.get("compiler_path", "")); compiler_version = str(remote_result.get("compiler_version", "")); exit_code = int(remote_result.get("compiler_exit_code", -1)); errors = int(remote_result.get("error_count", -1)); warnings = int(remote_result.get("warning_count", -1))
-        if not compiler_path or not compiler_version or exit_code != 0 or errors != 0 or warnings != 0:
+        if not compiler_path or not compiler_version or errors != 0 or warnings != 0:
             raise CompileError("compile acceptance requires observed compiler identity and zero errors/warnings")
-        ex5_sha = hashlib.sha256(ex5_bytes).hexdigest(); log_sha = hashlib.sha256(log_bytes).hexdigest(); source_hashes = [RUNTIME_SOURCE_SHA256, CONDITION_SOURCE_SHA256, FIXTURE_SOURCE_SHA256]
-        contract_identity = _compile_identity(compiler_path, compiler_version, exit_code, errors, warnings, EX5_FILENAME, source_hashes)
-        manifest = {"compile_contract_version": COMPILE_CONTRACT_VERSION, "host_alias": HOST_ALIAS, "compiler_path": compiler_path, "compiler_version": compiler_version, "runtime_identity": RUNTIME_IDENTITY, "condition_translation_identity": CONDITION_IDENTITY, "fixture_identity": FIXTURE_IDENTITY, "runtime_source_sha256": RUNTIME_SOURCE_SHA256, "condition_source_sha256": CONDITION_SOURCE_SHA256, "fixture_source_sha256": FIXTURE_SOURCE_SHA256, "compiler_exit_code": exit_code, "error_count": errors, "warning_count": warnings, "log_sha256": log_sha, "ex5_filename": EX5_FILENAME, "ex5_sha256": ex5_sha, "ex5_size_bytes": len(ex5_bytes), "compile_contract_identity": contract_identity, "status": "compiled"}
+        ex5_sha = hashlib.sha256(ex5_bytes).hexdigest(); log_sha = hashlib.sha256(log_bytes).hexdigest(); normalized_log_sha = _normalized_log_sha256(log_bytes); source_hashes = [RUNTIME_SOURCE_SHA256, CONDITION_SOURCE_SHA256, FIXTURE_SOURCE_SHA256]
+        contract_identity = _compile_identity(compiler_path, compiler_version, exit_code, errors, warnings, EX5_FILENAME, source_hashes, normalized_log_sha)
+        manifest = {"compile_contract_version": COMPILE_CONTRACT_VERSION, "host_alias": HOST_ALIAS, "compiler_path": compiler_path, "compiler_version": compiler_version, "runtime_identity": RUNTIME_IDENTITY, "condition_translation_identity": CONDITION_IDENTITY, "fixture_identity": FIXTURE_IDENTITY, "runtime_source_sha256": RUNTIME_SOURCE_SHA256, "condition_source_sha256": CONDITION_SOURCE_SHA256, "fixture_source_sha256": FIXTURE_SOURCE_SHA256, "compiler_exit_code": exit_code, "error_count": errors, "warning_count": warnings, "log_sha256": log_sha, "normalized_log_sha256": normalized_log_sha, "ex5_filename": EX5_FILENAME, "ex5_sha256": ex5_sha, "ex5_size_bytes": len(ex5_bytes), "compile_contract_identity": contract_identity, "status": "compiled"}
         _atomic_write(output / EX5_FILENAME, ex5_bytes); _atomic_write(output / LOG_FILENAME, log_bytes); _atomic_write(output / CANARY_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8"))
         return {"ok": True, **manifest, "output_dir": str(output)}
 

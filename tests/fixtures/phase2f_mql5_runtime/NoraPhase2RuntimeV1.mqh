@@ -29,14 +29,14 @@ NoraTriBoolV1 NoraBoolTrueV1()
    return NORA_BOOL_TRUE_V1;
 }
 
-bool NoraBoolIsNullV1(const NoraTriBoolV1 input)
+bool NoraBoolIsNullV1(NoraTriBoolV1 condition)
 {
-   return input == NORA_BOOL_NULL_V1;
+   return condition == NORA_BOOL_NULL_V1;
 }
 
-NoraTriBoolV1 NoraBoolGetValueV1(const NoraTriBoolV1 input)
+NoraTriBoolV1 NoraBoolGetValueV1(NoraTriBoolV1 condition)
 {
-   return input;
+   return condition;
 }
 
 NoraNullableDoubleV1 NoraNumericNullV1()
@@ -47,32 +47,32 @@ NoraNullableDoubleV1 NoraNumericNullV1()
    return result;
 }
 
-NoraNullableDoubleV1 NoraNumericValueV1(const double input)
+NoraNullableDoubleV1 NoraNumericValueV1(double value)
 {
    NoraNullableDoubleV1 result;
    result.is_null = false;
-   result.value = input;
+   result.value = value;
    return result;
 }
 
-bool NoraNumericIsNullV1(const NoraNullableDoubleV1 &input)
+bool NoraNumericIsNullV1(const NoraNullableDoubleV1 &value)
 {
-   return input.is_null;
+   return value.is_null;
 }
 
-bool NoraNumericTryGetValueV1(const NoraNullableDoubleV1 &input, double &output)
+bool NoraNumericTryGetValueV1(const NoraNullableDoubleV1 &value, double &output)
 {
-   if(input.is_null)
+   if(value.is_null)
       return false;
-   output = input.value;
+   output = value.value;
    return true;
 }
 
-NoraTriBoolV1 NoraBoolNotV1(const NoraTriBoolV1 input)
+NoraTriBoolV1 NoraBoolNotV1(NoraTriBoolV1 condition)
 {
-   if(input == NORA_BOOL_NULL_V1)
+   if(condition == NORA_BOOL_NULL_V1)
       return NORA_BOOL_NULL_V1;
-   if(input == NORA_BOOL_TRUE_V1)
+   if(condition == NORA_BOOL_TRUE_V1)
       return NORA_BOOL_FALSE_V1;
    return NORA_BOOL_TRUE_V1;
 }

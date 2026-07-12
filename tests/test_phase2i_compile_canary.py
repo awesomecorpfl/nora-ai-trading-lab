@@ -27,7 +27,7 @@ class Phase2iCompileCanary(unittest.TestCase):
 
     def test_frozen_contract_values_are_present(self):
         manifest = json.loads((ROOT / "tests/fixtures/phase2h_mql5_condition_fixture/NoraPhase2ConditionFixtureV1.manifest.json").read_text())
-        self.assertEqual(manifest["runtime_identity"], "2ba6078adcd10d991d3ef1ada26baa791a0c6054707a84acaceaa6fe23f2b176")
+        self.assertEqual(manifest["runtime_identity"], "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d")
         self.assertEqual(manifest["row_count"], 12)
         self.assertEqual(len(manifest["expected_nullable_vector"]), 12)
         self.assertEqual(len(manifest["expected_trigger_vector"]), 12)

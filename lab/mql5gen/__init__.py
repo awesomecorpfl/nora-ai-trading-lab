@@ -24,8 +24,10 @@ FIXTURE_IDENTITY_DOMAIN = "nora.mql5.condition_fixture_script_v1.semantic.v1"
 FIXTURE_CSV_COLUMNS = ["record_type", "row_index", "actual_nullable", "expected_nullable", "actual_trigger", "expected_trigger", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass"]
 EVALUATION_AST_IDENTITY = "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664"
 EVALUATED_SIGNAL_IDENTITY = "e098bfc87897802116a54ed21cdc2f530619201a22c55f41ac965e39b1bbd5a9"
-RUNTIME_IDENTITY = "2ba6078adcd10d991d3ef1ada26baa791a0c6054707a84acaceaa6fe23f2b176"
-RUNTIME_SOURCE_SHA256 = "42b7239442090a68fdacdc481925cd6b9819b572ea083efce3f3e3cbbb27d2a4"
+RUNTIME_IDENTITY = "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d"
+RUNTIME_SOURCE_SHA256 = "97de0194d7715b32ce104a9889d1a4af46cff6d0759d637f21e41025a98ee043"
+CONDITION_IDENTITY = "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+CONDITION_SOURCE_SHA256 = "1c630ede14e103a62490573c746f7652cb3083096c9259711ee3c979229108a4"
 SUPPORTED_AST_NODES = ["numeric_series", "number", "boolean_series", "compare", "and", "or", "not"]
 SUPPORTED_OPERATORS = ["gt", "gte", "lt", "lte", "and", "or", "not"]
 TRI_VALUES = ["null", "false", "true"]
@@ -87,14 +89,14 @@ NoraTriBoolV1 NoraBoolTrueV1()
    return NORA_BOOL_TRUE_V1;
 }
 
-bool NoraBoolIsNullV1(const NoraTriBoolV1 input)
+bool NoraBoolIsNullV1(NoraTriBoolV1 condition)
 {
-   return input == NORA_BOOL_NULL_V1;
+   return condition == NORA_BOOL_NULL_V1;
 }
 
-NoraTriBoolV1 NoraBoolGetValueV1(const NoraTriBoolV1 input)
+NoraTriBoolV1 NoraBoolGetValueV1(NoraTriBoolV1 condition)
 {
-   return input;
+   return condition;
 }
 
 NoraNullableDoubleV1 NoraNumericNullV1()
@@ -105,32 +107,32 @@ NoraNullableDoubleV1 NoraNumericNullV1()
    return result;
 }
 
-NoraNullableDoubleV1 NoraNumericValueV1(const double input)
+NoraNullableDoubleV1 NoraNumericValueV1(double value)
 {
    NoraNullableDoubleV1 result;
    result.is_null = false;
-   result.value = input;
+   result.value = value;
    return result;
 }
 
-bool NoraNumericIsNullV1(const NoraNullableDoubleV1 &input)
+bool NoraNumericIsNullV1(const NoraNullableDoubleV1 &value)
 {
-   return input.is_null;
+   return value.is_null;
 }
 
-bool NoraNumericTryGetValueV1(const NoraNullableDoubleV1 &input, double &output)
+bool NoraNumericTryGetValueV1(const NoraNullableDoubleV1 &value, double &output)
 {
-   if(input.is_null)
+   if(value.is_null)
       return false;
-   output = input.value;
+   output = value.value;
    return true;
 }
 
-NoraTriBoolV1 NoraBoolNotV1(const NoraTriBoolV1 input)
+NoraTriBoolV1 NoraBoolNotV1(NoraTriBoolV1 condition)
 {
-   if(input == NORA_BOOL_NULL_V1)
+   if(condition == NORA_BOOL_NULL_V1)
       return NORA_BOOL_NULL_V1;
-   if(input == NORA_BOOL_TRUE_V1)
+   if(condition == NORA_BOOL_TRUE_V1)
       return NORA_BOOL_FALSE_V1;
    return NORA_BOOL_TRUE_V1;
 }
@@ -465,7 +467,7 @@ def _verify_condition_manifest(path: Path) -> dict:
     except (OSError, json.JSONDecodeError) as error: raise GenerationError("condition manifest is unreadable or malformed") from error
     expected_keys = {"translator_version", "runtime_identity", "canonical_ast_identity", "function_name", "trigger_function_name", "supported_ast_nodes", "supported_operators", "series_bindings", "source_filename", "source_sha256", "translation_identity"}
     if not isinstance(manifest, dict) or set(manifest) != expected_keys: raise GenerationError("condition manifest has unknown or missing fields")
-    if manifest["translator_version"] != TRANSLATOR_VERSION or manifest["runtime_identity"] != RUNTIME_IDENTITY or manifest["canonical_ast_identity"] != EVALUATION_AST_IDENTITY or manifest["source_filename"] != CONDITION_SOURCE_FILENAME or manifest["source_sha256"] != "1c630ede14e103a62490573c746f7652cb3083096c9259711ee3c979229108a4" or manifest["translation_identity"] != "22ff3c2cc2d387173eb066c428eac99f663263a6d7dda773f44647ec371509bd" or manifest["supported_ast_nodes"] != SUPPORTED_AST_NODES or manifest["supported_operators"] != SUPPORTED_OPERATORS:
+    if manifest["translator_version"] != TRANSLATOR_VERSION or manifest["runtime_identity"] != RUNTIME_IDENTITY or manifest["canonical_ast_identity"] != EVALUATION_AST_IDENTITY or manifest["source_filename"] != CONDITION_SOURCE_FILENAME or manifest["source_sha256"] != CONDITION_SOURCE_SHA256 or manifest["translation_identity"] != CONDITION_IDENTITY or manifest["supported_ast_nodes"] != SUPPORTED_AST_NODES or manifest["supported_operators"] != SUPPORTED_OPERATORS:
         raise GenerationError("condition manifest contract does not match frozen Phase 2G translation")
     bindings = manifest["series_bindings"]
     if not isinstance(bindings, list) or not bindings or any(not isinstance(binding, dict) or set(binding) != {"original_series_name", "series_type", "parameter_name"} for binding in bindings):
