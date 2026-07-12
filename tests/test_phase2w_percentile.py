@@ -7,6 +7,9 @@ class TestPercentile(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);(p/'a').mkdir();(p/'b').mkdir();a=generate(p/'a');b=generate(p/'b');self.assertEqual(a,b)
    for n in (RUNTIME,TESTER,EVIDENCE,PACKAGE):self.assertEqual((p/'a'/n).read_bytes(),(p/'b'/n).read_bytes())
+   runtime=(p/'a'/RUNTIME).read_text();tester=(p/'a'/TESTER).read_text()
+   self.assertIn('NoraPhase2Percentile',runtime);self.assertIn('(equal-1.0)/2.0',runtime);self.assertIn('MathIsValidNumber',runtime)
+   self.assertIn('int OnInit()',tester);self.assertIn('FileWrite',tester);self.assertIn('NORA_PHASE2W_PERCENTILE_COMPLETE_V2',tester)
    (p/'c').mkdir();(p/'c'/RUNTIME).write_text('x')
    with self.assertRaises(GenerationError):generate(p/'c')
    self.assertFalse((p/'c'/EVIDENCE).exists())
@@ -14,7 +17,7 @@ class TestPercentile(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);(p/'a').mkdir();base=generate(p/'a'); original,original_output=subject.INPUT,subject.OUTPUT
    try:
-    subject.INPUT=[*original[:-1],1.1030];(p/'b').mkdir();mut=generate(p/'b');self.assertNotEqual(mut['rust_percentile_identity'],base['rust_percentile_identity'])
+    subject.INPUT=[*original[:-1],1.1030];(p/'b').mkdir();mut=generate(p/'b');self.assertNotEqual(mut['executable_contract_identity'],base['executable_contract_identity'])
     subject.INPUT=original
     subject.OUTPUT=[*subject.OUTPUT[:-1],0.5]
     (p/'c').mkdir();contract=generate(p/'c');self.assertNotEqual(contract['package_identity'],base['package_identity'])
