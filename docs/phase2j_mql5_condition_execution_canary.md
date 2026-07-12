@@ -100,6 +100,8 @@ No native nullable-condition semantic canary has passed yet.
 The complete Phase-2 Rust↔MT5 parity gate remains open.
 Phase 3 remains blocked.
 
+The chart-bound Startup-script execution route is retained as historical blocked evidence and is superseded for this canary by the test-only Strategy Tester wrapper documented in `phase2j_mql5_condition_tester_canary.md`.
+
 This continuation did not execute the script successfully, retrieve a passing CSV, run Strategy Tester, generate an EA, calculate indicators, place orders, or claim complete Phase-2 parity.
 
 ## Regression commands

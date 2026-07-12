@@ -48,6 +48,12 @@ TERMINAL_VERSION = "5.0.0.5836"
 EXECUTION_TIMEOUT_SECONDS = 60
 BROKER_NATIVE_SYMBOL = "GDAXI"
 CANARY_PROFILE = "NoraPhase2ConditionCanaryV1"
+TESTER_SOURCE = "NoraPhase2ConditionTesterCanaryV1.mq5"
+TESTER_EX5 = "NoraPhase2ConditionTesterCanaryV1.ex5"
+TESTER_MANIFEST = "NoraPhase2ConditionTesterCanaryV1.manifest.json"
+TESTER_RESULT = "nora_phase2_condition_tester_v1.csv"
+TESTER_COMPILE_DOMAIN = "nora.mt5.condition_tester_compile_v1.semantic.v1"
+TESTER_EXECUTION_DOMAIN = "nora.mt5.condition_tester_execution_v1.semantic.v1"
 
 
 class CompileError(RuntimeError):
@@ -85,7 +91,7 @@ def _normalized_log_sha256(content: bytes) -> str:
 
 def _verify_manifest(path: Path, expected: dict[str, str], identity_key: str) -> dict:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        value = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as error:
         raise CompileError(f"manifest unreadable or malformed: {path.name}") from error
     if not isinstance(value, dict):
@@ -217,7 +223,7 @@ def compile_condition_canary(runtime: str | os.PathLike[str], condition: str | o
 
 def _read_json(path: Path, label: str) -> dict:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        value = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as error:
         raise ExecutionError(f"{label} manifest is unreadable or malformed") from error
     if not isinstance(value, dict):
@@ -343,6 +349,75 @@ def _identity(domain: str, values: list[str]) -> str:
     return digest.hexdigest()
 
 
+def _verify_tester_fixture(path: Path) -> dict:
+    value = _read_json(path, "tester fixture")
+    expected = {"tester_fixture_version": "nora_mql5_condition_tester_canary_v1", "runtime_identity": RUNTIME_IDENTITY, "condition_translation_identity": CONDITION_IDENTITY, "evaluation_ast_identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664", "source_evidence_fixture_identity": FIXTURE_IDENTITY, "row_count": 12, "result_filename": TESTER_RESULT, "source_filename": TESTER_SOURCE}
+    for key, item in expected.items():
+        if value.get(key) != item: raise CompileError(f"tester fixture contract mismatch: {key}")
+    if _sha256(path.parent / TESTER_SOURCE) != value.get("source_sha256"): raise CompileError("tester fixture source hash mismatch")
+    return value
+
+
+def compile_tester_canary(runtime: str | os.PathLike[str], condition: str | os.PathLike[str], tester_source: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    runtime_path, condition_path, source_path = Path(runtime), Path(condition), Path(tester_source)
+    _verify_sources(runtime_path, condition_path, Path(__file__).resolve().parents[2] / "tests/fixtures/phase2h_mql5_condition_fixture/NoraPhase2ConditionFixtureV1.mq5")
+    fixture = _verify_tester_fixture(Path(tester_manifest))
+    if source_path.name != TESTER_SOURCE or _sha256(source_path) != fixture["source_sha256"]: raise CompileError("tester source does not match tester fixture manifest")
+    output=Path(output_dir);output.mkdir(parents=True,exist_ok=True)
+    for name in (TESTER_EX5, LOG_FILENAME, CANARY_MANIFEST_FILENAME):
+        if (output/name).exists(): raise CompileError(f"local output target already exists: {name}")
+    run_id="tester-compile-"+uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2j-tester-") as temp:
+        temp=Path(temp); helper=Path(__file__).resolve().parents[2]/"phase-0a-h/windows/compile-condition-tester-canary.ps1"
+        for source in (runtime_path,condition_path,source_path,helper): (temp/source.name).write_bytes(source.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2J\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp/x) for x in (RUNTIME_FILENAME,CONDITION_FILENAME,TESTER_SOURCE,helper.name)],f"{REMOTE_TARGET}:NoraPhase2J/incoming/{run_id}/")
+        result=_ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}" -RunId "{run_id}"',check=False)
+        for name in ("compile.json",LOG_FILENAME,TESTER_EX5): _scp([f"{REMOTE_TARGET}:NoraPhase2J/{run_id}/{name}"],str(temp/name),check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2J\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2J\\incoming\\{run_id}\'"',check=False)
+        remote=_read_json(temp/"compile.json","remote tester compile")
+        if result.returncode or remote.get("status")!="compiled" or remote.get("error_count")!=0 or remote.get("warning_count")!=0: raise CompileError("tester compiler failed")
+        ex5=temp/TESTER_EX5; log=temp/LOG_FILENAME
+        if not ex5.is_file() or not log.is_file() or not ex5.stat().st_size: raise CompileError("tester compiler did not return ex5/log")
+        ex5bytes=ex5.read_bytes(); logbytes=log.read_bytes(); exsha=hashlib.sha256(ex5bytes).hexdigest(); norm=_normalized_log_sha256(logbytes)
+        identity=_identity(TESTER_COMPILE_DOMAIN,[fixture["tester_fixture_identity"],str(remote["compiler_version"]),exsha,norm])
+        manifest={"tester_compile_contract_version":"nora_mql5_condition_tester_compile_v1","compiler_path":remote["compiler_path"],"compiler_version":remote["compiler_version"],"compiler_exit_code":remote["compiler_exit_code"],"error_count":0,"warning_count":0,"tester_fixture_identity":fixture["tester_fixture_identity"],"ex5_filename":TESTER_EX5,"ex5_sha256":exsha,"ex5_size_bytes":len(ex5bytes),"normalized_log_sha256":norm,"compile_contract_identity":identity,"status":"compiled"}
+        _atomic_write(output/TESTER_EX5,ex5bytes);_atomic_write(output/LOG_FILENAME,logbytes);_atomic_write(output/CANARY_MANIFEST_FILENAME,(json.dumps(manifest,sort_keys=True,separators=(",",":"))+"\n").encode())
+        return {"ok":True,**manifest,"output_dir":str(output)}
+
+
+def execute_tester_canary(compile_manifest: str | os.PathLike[str], ex5: str | os.PathLike[str], tester_manifest: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    compile_value=_read_json(Path(compile_manifest),"tester compile"); fixture=_verify_tester_fixture(Path(tester_manifest)); ex5_path=Path(ex5)
+    if compile_value.get("status")!="compiled" or compile_value.get("tester_fixture_identity")!=fixture["tester_fixture_identity"] or compile_value.get("ex5_sha256")!=_sha256(ex5_path): raise ExecutionError("tester compile/fixture contract mismatch")
+    output=Path(output_dir);output.mkdir(parents=True,exist_ok=True)
+    for name in (TESTER_RESULT,"tester.log",EXECUTION_MANIFEST_FILENAME):
+        if (output/name).exists(): raise ExecutionError(f"local output target already exists: {name}")
+    run_id="tester-execute-"+uuid.uuid4().hex
+    with tempfile.TemporaryDirectory(prefix="phase2j-tester-exec-") as temp:
+        temp=Path(temp); helper=Path(__file__).resolve().parents[2]/"phase-0a-h/windows/execute-condition-tester-canary.ps1";(temp/TESTER_EX5).write_bytes(ex5_path.read_bytes());(temp/helper.name).write_bytes(helper.read_bytes())
+        _ssh(f'powershell.exe -NoProfile -Command "New-Item -ItemType Directory -Force -Path $env:USERPROFILE\\NoraPhase2J\\incoming\\{run_id} | Out-Null"')
+        _scp([str(temp/TESTER_EX5),str(temp/helper.name)],f"{REMOTE_TARGET}:NoraPhase2J/incoming/{run_id}/")
+        result=_ssh(f'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}\\{helper.name}" -IncomingRoot "C:\\Users\\Gasper\\NoraPhase2J\\incoming\\{run_id}" -RunId "{run_id}"',check=False)
+        for name in ("execution.json","tester.log",TESTER_RESULT,"tester.htm"): _scp([f"{REMOTE_TARGET}:NoraPhase2J/{run_id}/{name}"],str(temp/name),check=False)
+        _ssh(f'powershell.exe -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2J\\{run_id}\'; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'$env:USERPROFILE\\NoraPhase2J\\incoming\\{run_id}\'"',check=False)
+        remote=_read_json(temp/"execution.json","remote tester execution")
+        if result.returncode or remote.get("status")!="completed" or not remote.get("result_fresh"):
+            if (temp/"tester.log").is_file(): _atomic_execution_write(output/"tester.log",(temp/"tester.log").read_bytes())
+            raise ExecutionError(f"tester execution failed: {remote.get('error','unknown')}")
+        required=("tester_configuration_loaded","testing_agent_started","ea_loaded","ea_initialized","fixture_execution_started","result_csv_written","fixture_execution_completed","tester_completed","terminal_shutdown")
+        missing=[x for x in required if remote.get("stages",{}).get(x) is not True]
+        if missing: raise ExecutionError("tester launch evidence missing stages: "+",".join(missing))
+        csv=temp/TESTER_RESULT
+        reconciliation=reconcile_condition_csv(csv,Path(__file__).resolve().parents[2]/"tests/fixtures/phase2h_mql5_condition_fixture/NoraPhase2ConditionFixtureV1.manifest.json")
+        csvbytes=csv.read_bytes(); exsha=_sha256(ex5_path); semantic=json.dumps({"rows":reconciliation["rows"],"summary":reconciliation["summary"]},sort_keys=True,separators=(",",":")); nullable=json.dumps(reconciliation["nullable_vector"],separators=(",",":")); trigger=json.dumps(reconciliation["trigger_vector"],separators=(",",":")); rowpass=json.dumps(reconciliation["row_pass_vector"],separators=(",",":")); summary=json.dumps(reconciliation["summary"],sort_keys=True,separators=(",",":"))
+        execution=_identity(TESTER_EXECUTION_DOMAIN,[fixture["tester_fixture_identity"],compile_value["compile_contract_identity"],exsha,TERMINAL_VERSION,semantic])
+        semantic_id=_identity(SEMANTIC_RESULT_IDENTITY_DOMAIN,[FIXTURE_IDENTITY,fixture["tester_fixture_identity"],TERMINAL_PRODUCT,TERMINAL_VERSION,nullable,trigger,rowpass,summary])
+        manifest={"status":"passed","terminal_path":remote["terminal_path"],"terminal_version":remote["terminal_version"],"tester_fixture_identity":fixture["tester_fixture_identity"],"compile_contract_identity":compile_value["compile_contract_identity"],"ex5_sha256":exsha,"result_csv_sha256":hashlib.sha256(csvbytes).hexdigest(),"nullable_vector":reconciliation["nullable_vector"],"trigger_vector":reconciliation["trigger_vector"],"row_pass_vector":reconciliation["row_pass_vector"],**reconciliation["summary"],"execution_identity":execution,"semantic_result_identity":semantic_id,"launch_stages":remote["stages"]}
+        _atomic_execution_write(output/TESTER_RESULT,csvbytes);_atomic_execution_write(output/"tester.log",(temp/"tester.log").read_bytes());_atomic_execution_write(output/EXECUTION_MANIFEST_FILENAME,(json.dumps(manifest,sort_keys=True,separators=(",",":"))+"\n").encode())
+        if (temp/"tester.htm").is_file(): _atomic_execution_write(output/"tester.htm",(temp/"tester.htm").read_bytes())
+        return {"ok":True,**manifest,"output_dir":str(output)}
+
+
 def _require_launch_evidence(remote: dict[str, object]) -> None:
     stages = remote.get("stages")
     if not isinstance(stages, dict):
@@ -418,6 +493,8 @@ def main(argv: list[str] | None = None) -> int:
     compile_parser.add_argument("--condition", required=True)
     compile_parser.add_argument("--script", required=True)
     compile_parser.add_argument("--output-dir", required=True)
+    tester_compile_parser = sub.add_parser("compile-condition-tester-canary")
+    tester_compile_parser.add_argument("--runtime", required=True);tester_compile_parser.add_argument("--condition", required=True);tester_compile_parser.add_argument("--tester-source", required=True);tester_compile_parser.add_argument("--tester-manifest", required=True);tester_compile_parser.add_argument("--output-dir", required=True)
     execute_parser = sub.add_parser("execute-condition-canary")
     execute_parser.add_argument("--compile-manifest", required=True)
     execute_parser.add_argument("--ex5", required=True)
@@ -425,12 +502,18 @@ def main(argv: list[str] | None = None) -> int:
     execute_parser.add_argument("--output-dir", required=True)
     execute_parser.add_argument("--symbol", default=BROKER_NATIVE_SYMBOL)
     execute_parser.add_argument("--profile", default=CANARY_PROFILE)
+    tester_execute_parser = sub.add_parser("execute-condition-tester-canary")
+    tester_execute_parser.add_argument("--compile-manifest", required=True);tester_execute_parser.add_argument("--ex5", required=True);tester_execute_parser.add_argument("--tester-manifest", required=True);tester_execute_parser.add_argument("--output-dir", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "compile-condition-canary":
             result = compile_condition_canary(args.runtime, args.condition, args.script, args.output_dir)
-        else:
+        elif args.command == "compile-condition-tester-canary":
+            result = compile_tester_canary(args.runtime,args.condition,args.tester_source,args.tester_manifest,args.output_dir)
+        elif args.command == "execute-condition-canary":
             result = execute_condition_canary(args.compile_manifest, args.ex5, args.fixture_manifest, args.output_dir, symbol=args.symbol, profile=args.profile)
+        else:
+            result = execute_tester_canary(args.compile_manifest,args.ex5,args.tester_manifest,args.output_dir)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
         return 0
     except (CompileError, ExecutionError) as error:
@@ -438,4 +521,4 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-__all__ = ["CompileError", "ExecutionError", "compile_condition_canary", "execute_condition_canary", "reconcile_condition_csv", "main"]
+__all__ = ["CompileError", "ExecutionError", "compile_condition_canary", "compile_tester_canary", "execute_condition_canary", "execute_tester_canary", "reconcile_condition_csv", "main"]

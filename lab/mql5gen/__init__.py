@@ -21,6 +21,11 @@ FIXTURE_SOURCE_FILENAME = "NoraPhase2ConditionFixtureV1.mq5"
 FIXTURE_MANIFEST_FILENAME = "NoraPhase2ConditionFixtureV1.manifest.json"
 FIXTURE_RESULT_FILENAME = "nora_phase2_condition_fixture_v1.csv"
 FIXTURE_IDENTITY_DOMAIN = "nora.mql5.condition_fixture_script_v1.semantic.v1"
+TESTER_FIXTURE_VERSION = "nora_mql5_condition_tester_canary_v1"
+TESTER_SOURCE_FILENAME = "NoraPhase2ConditionTesterCanaryV1.mq5"
+TESTER_MANIFEST_FILENAME = "NoraPhase2ConditionTesterCanaryV1.manifest.json"
+TESTER_RESULT_FILENAME = "nora_phase2_condition_tester_v1.csv"
+TESTER_IDENTITY_DOMAIN = "nora.mql5.condition_tester_canary_v1.semantic.v1"
 FIXTURE_CSV_COLUMNS = ["record_type", "row_index", "actual_nullable", "expected_nullable", "actual_trigger", "expected_trigger", "row_pass", "row_count", "passed_rows", "failed_rows", "overall_pass"]
 EVALUATION_AST_IDENTITY = "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664"
 EVALUATED_SIGNAL_IDENTITY = "e098bfc87897802116a54ed21cdc2f530619201a22c55f41ac965e39b1bbd5a9"
@@ -588,10 +593,67 @@ def generate_fixture_script(condition_manifest_path: str | os.PathLike[str], evi
     return {"ok": True, **semantic_manifest, "header_path": str(header), "manifest_path": str(manifest_path)}
 
 
+def _verify_source_fixture(path: Path) -> dict:
+    try: value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error: raise GenerationError("source evidence fixture manifest is unreadable or malformed") from error
+    expected = {"fixture_identity": "d283a5a37e64f426f39f813d1f2f68fa64e4c92cbd61b2cdbd59b9f1eac1f858", "runtime_identity": RUNTIME_IDENTITY, "condition_translation_identity": CONDITION_IDENTITY, "canonical_ast_identity": EVALUATION_AST_IDENTITY, "row_count": 12, "result_filename": FIXTURE_RESULT_FILENAME, "source_sha256": "b3b98996545d1277d4b2fa51db7c14c943ad733c018717110dab45e05f0022a7"}
+    for key, expected_value in expected.items():
+        if value.get(key) != expected_value: raise GenerationError("source evidence fixture contract does not match frozen Phase 2H fixture")
+    return value
+
+
+def _tester_identity(source: bytes, source_sha256: str, condition_manifest: dict, source_fixture: dict, rows: list[dict], nullable: list[str], triggers: list[bool]) -> str:
+    digest = hashlib.sha256()
+    _part(digest, TESTER_IDENTITY_DOMAIN.encode())
+    values = [TESTER_FIXTURE_VERSION, condition_manifest["runtime_identity"], condition_manifest["translation_identity"], condition_manifest["canonical_ast_identity"], source_fixture["fixture_identity"], json.dumps(condition_manifest["series_bindings"], sort_keys=True, separators=(",", ":")), json.dumps(rows, sort_keys=True, separators=(",", ":")), json.dumps(nullable, separators=(",", ":")), json.dumps(triggers, separators=(",", ":")), json.dumps(FIXTURE_CSV_COLUMNS, separators=(",", ":")), TESTER_RESULT_FILENAME, source_sha256]
+    for value in values: _part(digest, value.encode("utf-8"))
+    _part(digest, source)
+    return digest.hexdigest()
+
+
+def generate_tester_canary(condition_manifest_path: str | os.PathLike[str], evidence_path: str | os.PathLike[str], source_fixture_manifest_path: str | os.PathLike[str], output_dir: str | os.PathLike[str]) -> dict[str, object]:
+    """Generate a deterministic, no-trading EA wrapper for the frozen condition fixture."""
+    condition_manifest = _verify_condition_manifest(Path(condition_manifest_path))
+    source_fixture = _verify_source_fixture(Path(source_fixture_manifest_path))
+    rows, nullable, triggers = _verify_evidence(Path(evidence_path), condition_manifest)
+    arrays, constructors, arguments = [], [], []
+    for binding in condition_manifest["series_bindings"]:
+        original, parameter = binding["original_series_name"], binding["parameter_name"]
+        safe = "".join(character if character.isalnum() else "_" for character in original)
+        name = "NoraTester_" + ("Bool_" if binding["series_type"] == "boolean" else "Num_") + safe
+        values = [row["bindings"][original] for row in rows]
+        if binding["series_type"] == "boolean":
+            arrays.append(f"const NoraTriBoolV1 {name}[12] = {{" + ", ".join(_mql5_value(value) for value in values) + "};")
+            arguments.append(f"{name}[row_index]")
+        else:
+            arrays.append(f"const bool {name}_NullMask[12] = {{" + ", ".join("true" if value is None else "false" for value in values) + "};")
+            arrays.append(f"const double {name}_Values[12] = {{" + ", ".join("0.0" if value is None else _literal(float(value)) for value in values) + "};")
+            constructors.append("NoraNullableDoubleV1 " + name + "Value(const int row_index)\n{\n   if(" + name + "_NullMask[row_index])\n      return NoraNumericNullV1();\n   return NoraNumericValueV1(" + name + "_Values[row_index]);\n}")
+            arguments.append(name + "Value(row_index)")
+    arrays.append("const NoraTriBoolV1 NoraTester_ExpectedNullable[12] = {" + ", ".join(_mql5_value(value) for value in nullable) + "};")
+    arrays.append("const bool NoraTester_ExpectedTrigger[12] = {" + ", ".join("true" if value else "false" for value in triggers) + "};")
+    args = ",\n         ".join(arguments)
+    source_text = "#property strict\n\n#include \"NoraPhase2RuntimeV1.mqh\"\n#include \"NoraPhase2ConditionV1.mqh\"\n\n#define NORA_PHASE2_TESTER_ROW_COUNT 12\n\n" + "\n\n".join(arrays + constructors) + "\n\nbool NoraTesterDone = false;\n\nstring NoraTesterNullableText(const NoraTriBoolV1 value)\n{\n   if(value == NORA_BOOL_NULL_V1)\n      return \"null\";\n   if(value == NORA_BOOL_TRUE_V1)\n      return \"true\";\n   return \"false\";\n}\n\nstring NoraTesterBoolText(const bool value)\n{\n   return value ? \"true\" : \"false\";\n}\n\nvoid NoraTesterPublish()\n{\n   const int handle = FileOpen(\"" + TESTER_RESULT_FILENAME + "\", FILE_WRITE | FILE_CSV | FILE_ANSI | FILE_COMMON, ',');\n   if(handle == INVALID_HANDLE)\n   {\n      Print(\"nora_phase2_tester,file_open_failed\");\n      return;\n   }\n   Print(\"nora_phase2_tester,fixture_execution_started\");\n   FileWrite(handle, \"record_type\", \"row_index\", \"actual_nullable\", \"expected_nullable\", \"actual_trigger\", \"expected_trigger\", \"row_pass\", \"row_count\", \"passed_rows\", \"failed_rows\", \"overall_pass\");\n   int passed_rows = 0;\n   int failed_rows = 0;\n   for(int row_index = 0; row_index < NORA_PHASE2_TESTER_ROW_COUNT; row_index++)\n   {\n      NoraTriBoolV1 actual_nullable = " + condition_manifest["function_name"] + "(" + args + ");\n      bool actual_trigger = " + condition_manifest["trigger_function_name"] + "(" + args + ");\n      bool row_pass = actual_nullable == NoraTester_ExpectedNullable[row_index] && actual_trigger == NoraTester_ExpectedTrigger[row_index];\n      if(row_pass)\n         passed_rows++;\n      else\n         failed_rows++;\n      FileWrite(handle, \"row\", row_index, NoraTesterNullableText(actual_nullable), NoraTesterNullableText(NoraTester_ExpectedNullable[row_index]), NoraTesterBoolText(actual_trigger), NoraTesterBoolText(NoraTester_ExpectedTrigger[row_index]), NoraTesterBoolText(row_pass), \"\", \"\", \"\", \"\");\n   }\n   bool overall_pass = failed_rows == 0 && passed_rows == NORA_PHASE2_TESTER_ROW_COUNT;\n   FileWrite(handle, \"summary\", -1, \"\", \"\", \"\", \"\", NoraTesterBoolText(overall_pass), NORA_PHASE2_TESTER_ROW_COUNT, passed_rows, failed_rows, NoraTesterBoolText(overall_pass));\n   FileFlush(handle);\n   FileClose(handle);\n   Print(\"nora_phase2_tester,fixture_execution_completed\");\n}\n\nint OnInit()\n{\n   Print(\"nora_phase2_tester,ea_initialized\");\n   return INIT_SUCCEEDED;\n}\n\nvoid OnTick()\n{\n   if(NoraTesterDone)\n      return;\n   NoraTesterDone = true;\n   NoraTesterPublish();\n   TesterStop();\n}\n"
+    source = source_text.encode("utf-8")
+    source_sha256 = hashlib.sha256(source).hexdigest()
+    tester_identity = _tester_identity(source, source_sha256, condition_manifest, source_fixture, rows, nullable, triggers)
+    manifest = {"tester_fixture_version": TESTER_FIXTURE_VERSION, "runtime_identity": condition_manifest["runtime_identity"], "condition_translation_identity": condition_manifest["translation_identity"], "evaluation_ast_identity": condition_manifest["canonical_ast_identity"], "source_evidence_fixture_identity": source_fixture["fixture_identity"], "row_count": 12, "series_bindings": condition_manifest["series_bindings"], "expected_nullable_vector": nullable, "expected_trigger_vector": triggers, "result_filename": TESTER_RESULT_FILENAME, "source_filename": TESTER_SOURCE_FILENAME, "source_sha256": source_sha256, "tester_fixture_identity": tester_identity}
+    output = Path(output_dir)
+    if not output.is_dir(): raise GenerationError("output directory must be an existing directory")
+    target, manifest_path = output / TESTER_SOURCE_FILENAME, output / TESTER_MANIFEST_FILENAME
+    if target.exists() or manifest_path.exists(): raise GenerationError("generated tester fixture targets must not already exist")
+    _publish(output, TESTER_SOURCE_FILENAME, source)
+    try: _publish(output, TESTER_MANIFEST_FILENAME, (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8"))
+    except GenerationError:
+        target.unlink(missing_ok=True); raise
+    return {"ok": True, **manifest, "source_path": str(target), "manifest_path": str(manifest_path)}
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     condition_mode = bool(argv and argv[0] == "condition")
     fixture_mode = bool(argv and argv[0] == "fixture-script")
+    tester_mode = bool(argv and argv[0] == "tester-canary")
     parser = argparse.ArgumentParser(prog="python -m lab.mql5gen")
     if condition_mode:
         parser.add_argument("condition", choices=["condition"])
@@ -603,6 +665,12 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--condition-manifest", required=True)
         parser.add_argument("--evidence", required=True)
         parser.add_argument("--output-dir", required=True)
+    elif tester_mode:
+        parser.add_argument("tester_canary", choices=["tester-canary"])
+        parser.add_argument("--condition-manifest", required=True)
+        parser.add_argument("--evidence", required=True)
+        parser.add_argument("--source-fixture-manifest", required=True)
+        parser.add_argument("--output-dir", required=True)
     else:
         parser.add_argument("--output-dir", required=True)
         parser.add_argument("--runtime-version", default=RUNTIME_VERSION)
@@ -612,6 +680,8 @@ def main(argv: list[str] | None = None) -> int:
             result = translate_condition(args.ast, args.runtime_manifest, args.output_dir)
         elif fixture_mode:
             result = generate_fixture_script(args.condition_manifest, args.evidence, args.output_dir)
+        elif tester_mode:
+            result = generate_tester_canary(args.condition_manifest, args.evidence, args.source_fixture_manifest, args.output_dir)
         else:
             result = generate(args.output_dir, args.runtime_version)
         print(json.dumps(result, sort_keys=True, separators=(",", ":")))
@@ -621,4 +691,4 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-__all__ = ["GenerationError", "generate", "generate_fixture_script", "main", "runtime_identity_for_test", "translate_condition"]
+__all__ = ["GenerationError", "generate", "generate_fixture_script", "generate_tester_canary", "main", "runtime_identity_for_test", "translate_condition"]
