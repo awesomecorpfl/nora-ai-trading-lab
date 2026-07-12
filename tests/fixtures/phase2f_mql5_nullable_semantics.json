@@ -1,0 +1,51 @@
+{
+  "runtime_version": "nora_mql5_nullable_runtime_v1",
+  "boolean_values": {
+    "null": -1,
+    "false": 0,
+    "true": 1
+  },
+  "not": {
+    "null": "null",
+    "false": "true",
+    "true": "false"
+  },
+  "and_order": [
+    "null",
+    "false",
+    "true"
+  ],
+  "and": [
+    ["null", "false", "null"],
+    ["false", "false", "false"],
+    ["null", "false", "true"]
+  ],
+  "or_order": [
+    "null",
+    "false",
+    "true"
+  ],
+  "or": [
+    ["null", "null", "true"],
+    ["null", "false", "true"],
+    ["true", "true", "true"]
+  ],
+  "comparison_cases": [
+    {"left": 2.0, "right": 1.0},
+    {"left": 1.0, "right": 2.0},
+    {"left": null, "right": 1.0},
+    {"left": 1.0, "right": null},
+    {"left": null, "right": null}
+  ],
+  "comparisons": {
+    "gt": ["true", "false", "null", "null", "null"],
+    "gte": ["true", "false", "null", "null", "null"],
+    "lt": ["false", "true", "null", "null", "null"],
+    "lte": ["false", "true", "null", "null", "null"]
+  },
+  "trigger": {
+    "null": false,
+    "false": false,
+    "true": true
+  }
+}
