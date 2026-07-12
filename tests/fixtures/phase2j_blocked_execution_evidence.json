@@ -1,0 +1,16 @@
+{
+  "status": "blocked",
+  "host_alias": "nora-win10",
+  "terminal_path": "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe",
+  "terminal_version": "5.0.0.5836",
+  "execution_contract_version": "nora_mt5_condition_execution_v1",
+  "fixture_identity": "d283a5a37e64f426f39f813d1f2f68fa64e4c92cbd61b2cdbd59b9f1eac1f858",
+  "attempted_ex5_sha256": "a9985b2140f40b2ae35d2facb5123b58c807dd455de98eeab740efdbbac75b5a",
+  "result_filename": "nora_phase2_condition_fixture_v1.csv",
+  "result_fresh": false,
+  "native_error": "fresh result CSV was not created before timeout",
+  "execution_log_sha256": "ecc5754496a7470d3037e897f9f8e7934325c102f04df900f5f6dda76b4639b6",
+  "terminal_log_evidence": "Startup config loaded the requested script, but the existing terminal failed to open its EURUSD chart profile; no OnStart result CSV appeared.",
+  "accepted_manifest_published": false,
+  "accepted_csv_published": false
+}
