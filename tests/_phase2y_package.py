@@ -43,3 +43,16 @@ def build(root, mutate=None):
         out = root / path; out.parent.mkdir(parents=True, exist_ok=True); out.write_bytes(contents)
     (root / MANIFEST_NAME).write_text(json.dumps(value, sort_keys=True))
     return value
+
+
+def rewrite(root, mutate, rehash=True):
+    """Mutate synthetic protocol evidence and optionally refresh its inventory."""
+    root = Path(root); manifest_path = root / MANIFEST_NAME; value = json.loads(manifest_path.read_text())
+    mutate(value, root)
+    if rehash:
+        for item in value['files']:
+            data = (root / item['relative_path']).read_bytes()
+            item['size'] = len(data); item['sha256'] = hashlib.sha256(data).hexdigest()
+    value['returned_package_semantic_identity'] = returned_package_identity(value)
+    manifest_path.write_text(json.dumps(value, sort_keys=True))
+    return value
