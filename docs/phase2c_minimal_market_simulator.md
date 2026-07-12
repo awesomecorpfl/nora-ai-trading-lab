@@ -115,6 +115,17 @@ Executed sealing command:
 }
 ```
 
-`model` must be exactly `max_bars_held_v1`; `max_bars_held` must be a strictly positive integer; and `event_output_path` must be non-empty. Unknown fields are rejected. A non-null valid configuration fails before any input processing or artifact-path handling with `time_exit execution is not implemented`; no success summary, final artifact, partial artifact, time-exit event artifact, or time-exit identity is produced. `time_exit` together with `initial_bracket_execution` instead fails deterministically with `time_exit and initial_bracket_execution cannot both be configured`.
+`model` must be exactly `max_bars_held_v1`; `max_bars_held` must be a strictly positive integer; and `event_output_path` must be non-empty. Unknown fields are rejected. `time_exit` together with `initial_bracket_execution` fails deterministically with `time_exit and initial_bracket_execution cannot both be configured`; no ledger, event artifact, or success summary is published.
 
-Execution is deliberately unsupported after this commit. Absent or `null` `time_exit` preserves all prior simulator behavior and frozen simulator/bracket/execution identities exactly.
+For a position opened at `entry_index`, the standalone time exit is due on the first later row where `current_index - entry_index >= max_bars_held`. It never runs on the entry row. For a carried position, a true signal exit at the current open wins first; only otherwise does a due time exit close at that same open. A closing-row entry is ignored and counted, and no same-row reopen occurs. If the threshold is not reached by the final row, the position stays terminal-open with no time-exit event.
+
+Time exits fill at the current open and preserve the closed-trade ledger economics. Their event artifact has non-null fields `trade_id: UInt64`, `side: Utf8`, `entry_timestamp: Utf8`, `entry_index: UInt64`, `exit_timestamp: Utf8`, `exit_index: UInt64`, `exit_reason: Utf8` (always `max_bars_held`), `exit_price: Float64`, `bars_held: UInt64`, and `max_bars_held: UInt64`. Summary fields are `time_exit_closes` and `time_exit_event_rows`; signal exits produce no time event.
+
+Committed fixtures seal: long entry `10.0` at index 0 with threshold 2 closes at index 2 / `12.0`, `bars_held = 2`, P&L `2.0`; short entry `10.0` with threshold 2 closes at index 2 / `8.0`, P&L `2.0`; threshold 3 over rows 0–2 remains open with no events; and a due-row signal plus entry closes by signal, emits no time event, ignores the entry, and does not reopen. No separate time-exit identity exists. Absent or `null` `time_exit` preserves all prior simulator behavior and frozen simulator/bracket/execution identities exactly.
+
+Executed commands:
+
+```bash
+cargo test --manifest-path engine/Cargo.toml
+.venv/bin/python -m unittest discover -s tests
+```
