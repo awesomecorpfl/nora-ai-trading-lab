@@ -84,3 +84,11 @@ Additional executed CLI evidence command:
 Only a carried position is eligible. Its later-row open must be strictly inside the initial bracket or the run fails closed as an unsupported gap/open-level event. A true signal exit closes at that open before OHLC evaluation. Otherwise long hits are `low <= stop` and `high >= target`; short hits are `high >= stop` and `low <= target`. Exactly one hit closes at its bracket level; both hits fail closed as an unsupported ambiguous bracket bar. An entry-row bracket is never evaluated, and a same-row entry following any carried-position close is ignored.
 
 Bracket event Parquet rows are `trade_id: UInt64`, `entry_id: UInt64`, `side: Utf8`, `exit_timestamp: Utf8`, `exit_index: UInt64`, `exit_reason: Utf8`, `exit_price: Float64`, `bar_open: Float64`, `bar_high: Float64`, `bar_low: Float64`; reasons are only `initial_stop` or `initial_target`. Signal exits have no event row. Execution has its own domain-separated identity binding execution protocol/model, simulator identity, bracket identity, canonical eligible OHLC, event rows, and resulting trade outcomes.
+
+The CLI matrix freezes long stop `9.0/-1.0`, long target `12.0/+2.0`, short stop `11.0/-1.0`, and short target `8.0/+2.0`, each at index 1 after a `10.0` entry with one bar held. The entry row deliberately crosses both levels yet remains open until the next row. Signal precedence closes at the carried-row open, emits no event, ignores same-row entry, and does not reopen; a bracket-close collision emits one event and likewise ignores its same-row entry. Ambiguous dual-touch and open-at-level gap tasks exit 2 with the explicit unsupported errors and publish neither ledger nor event artifact.
+
+Executed sealing command:
+
+```bash
+.venv/bin/python -m unittest tests.test_phase1.Phase1.test_unambiguous_bracket_execution_cli_matrix
+```
