@@ -122,11 +122,11 @@ def validate_graph(nodes: dict) -> list[str]:
     return errors
 
 
-def build_packet(record: dict, compile_input: dict) -> dict:
+def build_packet(record: dict, compile_input: dict, compiler_record_sha256: str) -> dict:
     package, _ = generated_sources(); evidence=json.loads(EVIDENCE.read_text())
     scripts={p.name:{"path":str(p.relative_to(ROOT)),"sha256":file_sha(p),"identity":sha({"path":str(p.relative_to(ROOT)),"sha256":file_sha(p)})} for p in (
         ROOT/"phase-0a-h/windows/execute-execution-tester-canary.ps1", ROOT/"phase-0a-h/windows/build-execution-returned-package.ps1")}
-    value={"schema_version":PACKET_VERSION,"compile_input_identity":compile_input["compile_input_identity"],"compiler_output_identity":record["compiler_output_identity"],"compiler_output_record_sha256":raw_sha((canon(record)+"\n").encode()),"compiler_log_sha256":record["log_sha256"],"ex5_path":record["ex5_path"],"ex5_size":record["ex5_size"],"ex5_sha256":record["ex5_sha256"],"runtime_identity":package["runtime_identity"],"runtime_sha256":package["runtime_sha256"],"tester_identity":package["tester_identity"],"tester_sha256":package["tester_sha256"],"package_identity":package["package_identity"],"execution_plan_identity":evidence["execution_plan_identity"],"expected_vector_identity":package["expected_execution_vector_identity"],"csv_schema_identity":package["execution_csv_schema_identity"],"scenario_identities":{x["scenario_id"]:x["scenario_identity"] for x in evidence["scenarios"]},"execution_and_collection_scripts":scripts,"evidence_capture_contract_identity":sha({"version":"nora.phase2.execution_tester_evidence_v1","bounded_journal":True,"markers":True}),"host_context_matrix":["GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"],"completion_marker":package["completion_marker"],"failure_marker":package["failure_marker"],"result_filename":package["result_filename"]}
+    value={"schema_version":PACKET_VERSION,"compile_input_identity":compile_input["compile_input_identity"],"compiler_output_identity":record["compiler_output_identity"],"compiler_output_record_sha256":compiler_record_sha256,"compiler_log_sha256":record["log_sha256"],"ex5_path":record["ex5_path"],"ex5_size":record["ex5_size"],"ex5_sha256":record["ex5_sha256"],"runtime_identity":package["runtime_identity"],"runtime_sha256":package["runtime_sha256"],"tester_identity":package["tester_identity"],"tester_sha256":package["tester_sha256"],"package_identity":package["package_identity"],"execution_plan_identity":evidence["execution_plan_identity"],"expected_vector_identity":package["expected_execution_vector_identity"],"csv_schema_identity":package["execution_csv_schema_identity"],"scenario_identities":{x["scenario_id"]:x["scenario_identity"] for x in evidence["scenarios"]},"execution_and_collection_scripts":scripts,"evidence_capture_contract_identity":sha({"version":"nora.phase2.execution_tester_evidence_v1","bounded_journal":True,"markers":True}),"host_context_matrix":["GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"],"completion_marker":package["completion_marker"],"failure_marker":package["failure_marker"],"result_filename":package["result_filename"]}
     return identified(value,"execution_packet_identity")
 
 
@@ -153,7 +153,7 @@ def import_evidence(evidence_dir: Path, destination: Path, *, inject_failure: bo
     if {x.get("path") for x in declared}!={"compiler_record.json","compile.log","NoraPhase2ExecutionTesterCanaryV1.ex5","compile_evidence_manifest.json"}:raise ValueError("inventory allowlist")
     for item in declared:
         if not _safe_relative(item["path"]) or file_sha(evidence_dir/item["path"])!=item["sha256"]:raise ValueError("inventory")
-    packet=build_packet(record,compile_input)
+    packet=build_packet(record,compile_input,file_sha(evidence_dir/"compiler_record.json"))
     inventory=[{"path":"compile/"+x["path"],"role":x["role"],"sha256":x["sha256"]} for x in declared]+[{"path":"execution_packet.json","role":"execution_packet","sha256":"generated"}]
     batch=build_final_batch(packet,record,compile_input,inventory)
     temporary=Path(tempfile.mkdtemp(prefix=".execution-compile-import-",dir=destination.parent))
