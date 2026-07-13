@@ -9,6 +9,11 @@ class ExecutionNativeContracts(unittest.TestCase):
   paths=[ROOT/'phase-0a-h/windows'/x for x in ('compile-execution-tester-canary.ps1','execute-execution-tester-canary.ps1','build-execution-returned-package.ps1')]
   text='\n'.join(x.read_text().lower() for x in paths)
   self.assertIn('execution',text);self.assertNotIn('ordersend',text);self.assertNotIn('macd',text);self.assertNotIn('percentile',text)
+ def test_returned_package_hashing_is_windows_powershell_compatible(self):
+  text=(ROOT/'phase-0a-h/windows/build-execution-returned-package.ps1').read_text()
+  self.assertNotIn('::HashData(',text)
+  self.assertIn('[Security.Cryptography.SHA256]::Create()',text)
+  self.assertIn('.ComputeHash($bytes)',text)
  def test_preflight_and_exact_ledger_reconciliation(self):
   import tempfile
   with tempfile.TemporaryDirectory() as d:
