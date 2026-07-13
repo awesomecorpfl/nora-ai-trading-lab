@@ -144,16 +144,17 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(summary["grammar_admitted_node_count"], 2)
         self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
 
-    def test_scaffold_artifacts_cannot_claim_executable_or_native_admission(self):
+    def test_accepted_macd_and_percentile_remain_narrow_and_non_searchable(self):
         items = {item["id"]: item for item in self.value["items"]}
         for item_id in ("layer1.macd", "transform.percentile"):
             item = items[item_id]
-            self.assertEqual(item["mql5"]["generation"], "scaffold_generated")
+            self.assertEqual(item["status"], "accepted")
+            self.assertEqual(item["mql5"]["generation"], "generated")
             self.assertTrue(item["mql5"]["executable_translation_generated"])
             self.assertEqual(set(item["mql5"]["historical_scaffold_identities"]), {"runtime", "tester", "package"})
             self.assertTrue(item["native"]["handoff_ready"])
-            self.assertFalse(item["native"]["execution_attempted"])
-            self.assertFalse(item["native"]["parity_accepted"])
+            self.assertTrue(item["native"]["execution_attempted"])
+            self.assertTrue(item["native"]["parity_accepted"])
             self.assertFalse(item.get("grammar_admitted", False))
             self.assertFalse(item["searchable"])
 

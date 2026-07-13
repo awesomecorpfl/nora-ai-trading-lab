@@ -12,7 +12,7 @@ class BatchV2(unittest.TestCase):
  def test_vector_bindings_and_closed_states(self):
   v=load();self.assertIn('46329192b3fa4dedf6d3f1f007cc45e7e9cb035b56f06d50097c42d51dbfb9d6',v['historical_batch_identities'])
   for t in v['targets']:
-   self.assertEqual(len(t['expected_vectors']['expected_vector_identity']),64);self.assertTrue(t['native_execution_attempted']);self.assertTrue(t['native_result_returned']);self.assertTrue(t['native_reconciliation_passed']);self.assertTrue(t['native_parity_evidence_available']);self.assertFalse(t['native_parity']);self.assertFalse(t['grammar_admitted']);self.assertFalse(t['searchable'])
+   self.assertEqual(len(t['expected_vectors']['expected_vector_identity']),64);self.assertTrue(t['native_execution_attempted']);self.assertTrue(t['native_result_returned']);self.assertTrue(t['native_reconciliation_passed']);self.assertTrue(t['native_parity_evidence_available']);self.assertTrue(t['native_parity']);self.assertTrue(t.get('native_parity_accepted',False));self.assertFalse(t['grammar_admitted']);self.assertFalse(t['searchable'])
  def test_existing_and_injected_failure_cleanup(self):
   with tempfile.TemporaryDirectory(dir=ROOT) as d:
    p=Path(d);(p/'x').mkdir();

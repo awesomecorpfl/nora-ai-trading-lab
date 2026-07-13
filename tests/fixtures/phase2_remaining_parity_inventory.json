@@ -186,7 +186,7 @@
       "id": "layer1.macd",
       "category": "layer1_indicator",
       "name": "MACD",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -198,24 +198,24 @@
         ]
       },
       "mql5": {
-        "generation": "scaffold_generated",
-        "source_identity": "3412ee2fae1bea47f4ffeca225d2fcbd68a4fd34480e8ebe4e64034ded8446cd",
+        "generation": "generated",
+        "source_identity": "893820984f8ad8291c5ae1a8de2b3a654c2fca21aaf7d4f64dda5490d7172b6b",
         "historical_scaffold_identities": {"runtime": "5b78e5c7e4f8f0e7ce72e5aff72d930139e0e6f9050d8900cfa1564be9c136ee", "tester": "4b2a22a94539d6c989e93173c581ae71963a0ad7896cdca36b00e6abba957ffc", "package": "52d53fc3300eca2db3646eaab52ddaa2d0ae862632f60e6dac42c3ad5e6ac7ca"},
         "executable_translation_generated": true
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": [], "handoff_ready": true, "execution_attempted": false, "parity_accepted": false
+        "compile_evidence_paths": ["tests/fixtures/phase2u_macd_native/compile/compile.json", "tests/fixtures/phase2u_macd_native/compile/compile.log"],
+        "execution_evidence_paths": ["tests/fixtures/phase2u_macd_native/gdaxi_m1_1/execution.json", "tests/fixtures/phase2u_macd_native/gdaxi_m1_2/execution.json", "tests/fixtures/phase2u_macd_native/audcad_m1_1/execution.json", "tests/fixtures/phase2u_macd_native/audcad_m1_2/execution.json"], "handoff_ready": true, "execution_attempted": true, "result_returned": true, "reconciliation_passed": true, "parity_evidence_available": true, "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "353c0406e4c62c256cc6525e2fdc429bb740f075e3badde9f0c19b14da0d0df7",
       "evidence_paths": [
         "engine/labengine/tests/fixtures/phase2_macd_slope_task.json"
       ],
       "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
+        "58e29e51a27edf37c62a9734034c9e7864f976a9", "c3d3048cd4105422d34902e7b4668ac98a141300", "23ddd31d47c2d24e27da73249d20a94760fed91e"
       ],
       "searchable": false,
-      "missing_gate": "replace historical deterministic scaffold with executable fixed-vector MQL5 source, then native parity"
+      "missing_gate": "complete Phase-2 gate; accepted parity is restricted to close/EMA2/EMA4/signal3 arithmetic-seed committed-recurrence compact-signal CSV V3 contracts on GDAXI/M1 and AUDCAD/M1"
     },
     {
       "id": "layer1.linear_regression",
@@ -759,7 +759,7 @@
       "id": "transform.percentile",
       "category": "typed_transform",
       "name": "Rolling percentile",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -772,16 +772,16 @@
         ]
       },
       "mql5": {
-        "generation": "scaffold_generated",
-        "source_identity": "b98e1664b592c4f7c627b8c39c98f8a9748a568ca6055f59283895319ca76fb2",
+        "generation": "generated",
+        "source_identity": "d727c93b192979af6cf44b978d487a2bcef923eb801d14372d17651ab6b0d840",
         "historical_scaffold_identities": {"runtime": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644", "tester": "d1410d4c3789f7fd8753a564debc272ca215ffd332e5ed4c278d3ec9f4cb4f39", "package": "9872eb22d8647546a0253d706454453847ad7e87489dbede3a0a3c51117f9fcd"},
         "executable_translation_generated": true
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": [], "handoff_ready": true, "execution_attempted": false, "parity_accepted": false
+        "compile_evidence_paths": ["tests/fixtures/phase2w_percentile_native/compile/compile.json", "tests/fixtures/phase2w_percentile_native/compile/compile.log"],
+        "execution_evidence_paths": ["tests/fixtures/phase2w_percentile_native/gdaxi_m1_1/execution.json", "tests/fixtures/phase2w_percentile_native/gdaxi_m1_2/execution.json", "tests/fixtures/phase2w_percentile_native/audcad_m1_1/execution.json", "tests/fixtures/phase2w_percentile_native/audcad_m1_2/execution.json"], "handoff_ready": true, "execution_attempted": true, "result_returned": true, "reconciliation_passed": true, "parity_evidence_available": true, "parity_accepted": true
       },
-      "parity_result_identity": "943765d83d115309867fa8da768fc2a69500e7292f6048ed87541f4e26e63775",
+      "parity_result_identity": "5ba578e6f15e3e627c7640e261ed6341d9bebf6cdb2a580b87fa36389b88c34c",
       "evidence_paths": [
         "engine/labengine/tests/fixtures/phase2_percentile_task.json",
         "tests/fixtures/phase2w_percentile/phase2w_percentile_package.json",
@@ -789,10 +789,12 @@
       ],
       "commits": [
         "f56681271b72e30dbc7904e2e41d69a9fd3aa857",
-        "939297b9d40b6cc441719ae9a56206bf8b6c73e9"
+        "939297b9d40b6cc441719ae9a56206bf8b6c73e9",
+        "3820eab68711366e7b33f92b06793cf26c1a3bb1",
+        "23ddd31d47c2d24e27da73249d20a94760fed91e"
       ],
       "searchable": false,
-      "missing_gate": "replace historical deterministic scaffold with executable fixed-vector MQL5 source, then native parity; AST admission and search remain closed"
+      "missing_gate": "complete Phase-2 gate; accepted parity is restricted to nullable aligned finite input/lookback4 average-rank committed-null-window CSV V3 contracts on GDAXI/M1 and AUDCAD/M1; AST admission and search remain closed"
     },
     {
       "id": "ast.numeric_series",
@@ -1765,9 +1767,9 @@
   "inventory_summary": {
     "item_count": 50,
     "status_counts": {
-      "accepted": 13,
+      "accepted": 15,
       "partially_proven": 9,
-      "implemented_but_unproved": 24,
+      "implemented_but_unproved": 22,
       "absent": 3,
       "deferred": 1,
       "out_of_scope": 0

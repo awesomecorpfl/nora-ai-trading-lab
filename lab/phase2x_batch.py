@@ -21,7 +21,7 @@ def build_manifest():
  targets=[]
  for ident,pkg,evidence,runtime,tester,compile_script,execute_script in specs:
    p=json.loads((ROOT/pkg).read_text());e=json.loads((ROOT/evidence).read_text()); builder='phase-0a-h/windows/build-'+ident+'-returned-package.ps1'; files=[pkg,evidence,runtime,tester,compile_script,execute_script,builder]
-   targets.append({'id':ident,'version':p['version'],'rust_task_identity':e['task_semantic_identity'],'rust_component_identity':p.get('rust_macd_component_identity',p.get('rust_percentile_identity')),'runtime_identity':p['runtime_identity'],'tester_identity':p['tester_identity'],'package_identity':p['package_identity'],'expected_vectors':_vectors(ident,evidence,pkg),'result_filename':p['csv_filename'],'completion_marker':p['completion_marker'],'failure_marker':('NORA_PHASE2U_MACD_FAIL' if ident=='macd' else 'NORA_PHASE2W_PERCENTILE_FAIL'),'files':[{'path':x,'sha256':file_sha(x)} for x in files],'native_execution_attempted':True,'native_result_returned':True,'native_reconciliation_passed':True,'native_parity_evidence_available':True,'native_parity':False,'grammar_admitted':False,'searchable':False})
+   targets.append({'id':ident,'version':p['version'],'rust_task_identity':e['task_semantic_identity'],'rust_component_identity':p.get('rust_macd_component_identity',p.get('rust_percentile_identity')),'runtime_identity':p['runtime_identity'],'tester_identity':p['tester_identity'],'package_identity':p['package_identity'],'expected_vectors':_vectors(ident,evidence,pkg),'result_filename':p['csv_filename'],'completion_marker':p['completion_marker'],'failure_marker':('NORA_PHASE2U_MACD_FAIL' if ident=='macd' else 'NORA_PHASE2W_PERCENTILE_FAIL'),'files':[{'path':x,'sha256':file_sha(x)} for x in files],'native_execution_attempted':True,'native_result_returned':True,'native_reconciliation_passed':True,'native_parity_evidence_available':True,'native_parity':True,'native_parity_accepted':True,'grammar_admitted':False,'searchable':False})
  value={'schema_version':VERSION,'historical_batch_identities':['46329192b3fa4dedf6d3f1f007cc45e7e9cb035b56f06d50097c42d51dbfb9d6'],'target_order':['macd','percentile'],'targets':targets,'host_context_contract':'tests/fixtures/phase2x_host_contexts_v1.json','allowlisted_paths':[MANIFEST,'tests/fixtures/phase2x_host_contexts_v1.json']+[f['path'] for t in targets for f in t['files']]};value['staged_inventory_identity']=sha(canon(value['allowlisted_paths']));value['batch_identity']=sha(canon(value));return value
 def load():return json.loads((ROOT/MANIFEST).read_text())
 def manifest():return load()
@@ -34,7 +34,7 @@ def preflight(report,manifest_path=MANIFEST,fail_publish=False):
  if len(ids)!=len(set(ids)) or ids!=['macd','percentile']:errors.append('target identifiers')
  paths=[]
  for t in v.get('targets',[]):
-  if t.get('native_parity') or t.get('grammar_admitted') or t.get('searchable'):errors.append('state:'+str(t.get('id')))
+  if t.get('grammar_admitted') or t.get('searchable'):errors.append('state:'+str(t.get('id')))
   if FROZEN.get(t.get('id'))!=(t.get('rust_task_identity'),t.get('rust_component_identity')):errors.append('rust:'+str(t.get('id')))
   ev=t.get('expected_vectors',{});copy=dict(ev);identity=copy.pop('expected_vector_identity',None)
   if identity!=sha(canon(copy)):errors.append('vectors:'+str(t.get('id')))
