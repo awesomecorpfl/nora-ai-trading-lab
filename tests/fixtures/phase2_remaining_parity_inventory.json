@@ -1072,22 +1072,24 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534"
       },
       "native": {
-        "compile_evidence_paths": [],
+        "compile_evidence_paths": ["phase-0a-h/windows/compile-execution-tester-canary.ps1"],
         "execution_evidence_paths": []
       },
       "parity_result_identity": null,
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_entry_intent_task.json"
+        "tests/fixtures/phase2_execution_rust_evidence.json",
+        "tests/fixtures/phase2x_native_batch_v4.json"
       ],
       "commits": [
-        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414"
+        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
+        "ef32a87e3bf89c9e0ce7f8206607cdd72fd20f85"
       ],
       "searchable": false,
-      "missing_gate": "MQL5 strategy execution harness and trade-by-trade reconciliation"
+      "missing_gate": "four native execution returns (GDAXI/M1 twice and AUDCAD/M1 twice), compile evidence, exact reconciliation, and repeatability/neutrality acceptance"
     },
     {
       "id": "execution.initial_brackets",

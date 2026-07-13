@@ -68,6 +68,7 @@
     "determinism.canonical_hashes": "IMPLEMENTED_UNPROVED",
     "integrity.placebo_scrambled_edge_destruction": "ABSENT"
   },
+  "execution_canary_local_readiness": {"rust_evidence_complete": true, "executable_mql5_generated": true, "local_native_batch_ready": true, "native_execution_attempted": false, "native_parity_accepted": false, "grammar_admitted": false, "searchable": false, "required_native_matrix": ["compile", "GDAXI/M1 run 1", "GDAXI/M1 run 2", "AUDCAD/M1 run 1", "AUDCAD/M1 run 2"]},
   "next_critical_path": "execution_model_native_reconciliation",
   "next_critical_path_reason": "It is the smallest dependency tranche that can establish next-open, signal-exit, time-exit, combined-precedence, gap, and pessimistic intrabar semantics before strategy, clock, and search-dependent work.",
   "closed_boundaries": ["search", "phase_3", "new_grammar_admission", "searchability_enablement", "deployment"]

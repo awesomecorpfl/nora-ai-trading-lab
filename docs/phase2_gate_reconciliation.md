@@ -16,6 +16,10 @@ The machine-readable matrix is `tests/fixtures/phase2_gate_reconciliation.json`.
 
 The remaining Layer-1 indicators are implemented in Rust where recorded by the source inventory, but have no complete MQL5/native parity chain and remain non-searchable. Execution simulator semantics (next-open entry, signal exit, time exit, initial brackets, combined precedence, pessimistic intrabar ambiguity, and gap-open behavior) have deterministic Rust fixtures only; they are not native reconciled.
 
+## Execution-canary local readiness
+
+The execution canary now has committed Rust scenario evidence, deterministic executable MQL5 source generation, and a local immutable batch. Native execution and native parity remain false; grammar and searchability are unchanged. The next native matrix is exactly compile evidence plus two GDAXI/M1 and two AUDCAD/M1 returned packages, four reconciliations, within-context repeatability, and cross-context neutrality.
+
 ## Binding gate matrix
 
 | Requirement | Status | Concrete reason | Smallest evidence tranche |
