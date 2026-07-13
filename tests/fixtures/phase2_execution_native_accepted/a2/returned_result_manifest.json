@@ -1,0 +1,26 @@
+﻿{
+    "schema_version":  "nora.execution_returned_package_v2",
+    "target_identifier":  "execution",
+    "batch_identity":  "66323ef3c96351a841cca814c699f44e50a74fe3db3a51ec75d6e3f7aa47405f",
+    "run_identifier":  "exec-0c13771-A2",
+    "host_symbol":  "GDAXI",
+    "timeframe":  "M1",
+    "execution_packet_identity":  "b9f7844c8edc9937e7207616839aa0dd918989c32b395ac674e28b4b92955ec0",
+    "compiler_output_identity":  "ded1a27503ae1390368b2d9cd6c8a526ebf8a7e90c6fe778da1ce1a339489bd4",
+    "ex5_sha256":  "937ad04804e18ddeeee058434191339ca4f5ab607e762a85aa75f2c87a319d27",
+    "completion_marker_present":  true,
+    "failure_marker_present":  false,
+    "returned_inventory_sha256":  "d28b6b294c229a43a750f0db8b4a90309d76d27b640fb01caaaa8d691db31d8a",
+    "files":  [
+                  "compile.json",
+                  "execution.json",
+                  "compile.log",
+                  "tester-journal.log",
+                  "tester.htm",
+                  "completion-marker.json",
+                  "failure-marker.json",
+                  "nora_phase2_execution_tester_v1.csv",
+                  "returned_inventory.json"
+              ],
+    "returned_package_identity":  "7937d0c2f1345453652ec82d414fd4467055ae08c97dc29bde54ffbec3f450a0"
+}

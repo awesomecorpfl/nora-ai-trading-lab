@@ -1,0 +1,42 @@
+﻿[
+    {
+        "path":  "compile.json",
+        "sha256":  "050affc527698549f2fa9452eaf07ecf13b7452d982f81fdf6d868c6265bb67b",
+        "size":  2082
+    },
+    {
+        "path":  "execution.json",
+        "sha256":  "1e36b362b68e88ef952921643471ea63e87583f3e54478e63f85bdc3f6f49827",
+        "size":  2066
+    },
+    {
+        "path":  "compile.log",
+        "sha256":  "44426b5c2d755433377dffd296eedd158f707db470edc47d74a70c1519e5cacf",
+        "size":  3810
+    },
+    {
+        "path":  "tester-journal.log",
+        "sha256":  "cdf6caaff6847222aa9d2d55978f167077ca47c02584902d8aaec759f326a32c",
+        "size":  3340
+    },
+    {
+        "path":  "tester.htm",
+        "sha256":  "a7afaefdde377ddcb90355d480372b74b2a51ef3693543f122612bf54c5848b5",
+        "size":  723
+    },
+    {
+        "path":  "completion-marker.json",
+        "sha256":  "f5db2e3dad1ec6d7a73444a0cbbacbdfee5507bc5c7a2b7ad671054174b35e41",
+        "size":  84
+    },
+    {
+        "path":  "failure-marker.json",
+        "sha256":  "6bb27cac16527808304d5e3d29051fa4a067215c004d7ef54183475f572eff98",
+        "size":  78
+    },
+    {
+        "path":  "nora_phase2_execution_tester_v1.csv",
+        "sha256":  "2d063df0435732a3400f7a91fb619c625a5dff66ec2a58206109af5437a76702",
+        "size":  1661
+    }
+]

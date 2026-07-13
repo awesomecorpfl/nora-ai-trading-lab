@@ -1,0 +1,42 @@
+﻿HF	0	15:20:31.530	Tester	Local network farm switched off
+HK	0	15:20:31.530	Tester	Cloud servers switched off
+CQ	0	15:20:34.131	Tester	"NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5" X64
+EP	0	15:20:34.445	Tester	GDAXI: history data begins from 2015.08.14 00:00
+HG	0	15:20:34.447	Core 1	agent process started on 127.0.0.1:3000
+QQ	0	15:20:34.447	Core 1	connecting to 127.0.0.1:3000
+EF	0	15:20:35.473	Core 1	connected
+CG	0	15:20:35.510	Core 1	authorized (agent build 5836)
+RS	0	15:20:35.520	Tester	GDAXI,M1 (Darwinex-Live): testing of Experts\NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+EH	0	15:20:35.524	Core 1	common synchronization completed
+RP	0	15:20:35.813	Tester	quality of analyzed history is 97%
+MG	0	15:20:40.819	Core 1	MetaTester 5 started on 127.0.0.1:3000
+IN	0	15:20:40.819	Core 1	cloud network mode is off
+HI	0	15:20:40.819	Core 1	initialization finished
+RD	0	15:20:40.819	Core 1	login (build 5836)
+CO	0	15:20:40.819	Core 1	50040 bytes of account info loaded
+LK	0	15:20:40.819	Core 1	1478 bytes of tester parameters loaded
+KO	0	15:20:40.819	Core 1	196 bytes of input parameters loaded
+MI	0	15:20:40.819	Core 1	2872 bytes of symbols list loaded (842 symbols)
+DN	0	15:20:40.819	Core 1	expert file added: Experts\NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5. 15575 bytes loaded
+JL	0	15:20:40.819	Core 1	8947 Mb available, 111 blocks set for ticks generating
+MJ	0	15:20:40.819	Core 1	initial deposit 5000.00 USD, leverage 1:20
+OG	0	15:20:40.819	Core 1	successfully initialized
+PI	0	15:20:40.819	Core 1	21 Kb of total initialization data received
+FN	0	15:20:40.819	Core 1	13th Gen Intel Core i5-13420H, 10239 MB
+QK	0	15:20:40.819	Core 1	GDAXI: symbol to be synchronized
+DO	0	15:20:40.819	Core 1	GDAXI: symbol synchronized, 3720 bytes of symbol info received
+KR	0	15:20:40.819	Core 1	GDAXI: load 25 bytes of history data to synchronize in 0:00:00.001
+LF	0	15:20:40.819	Core 1	GDAXI: history synchronized from 2019.01.02 to 2026.07.08
+JE	0	15:20:40.819	Core 1	GDAXI,M1: history cache allocated for 2646736 bars and contains 393092 bars from 2019.01.02 09:00 to 2020.06.30 22:58
+ME	0	15:20:40.819	Core 1	GDAXI,M1: history begins from 2019.01.02 09:00
+KO	0	15:20:40.819	Core 1	GDAXI,M1 (Darwinex-Live): every tick generating
+GF	0	15:20:40.819	Core 1	GDAXI,M1: testing of Experts\NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+KO	0	15:20:40.819	Core 1	2020.07.01 00:00:00   NORA_PHASE2_EXECUTION_COMPLETE_V1
+MD	0	15:20:40.819	Core 1	final balance 5000.00 USD
+ER	0	15:20:40.819	Core 1	GDAXI,M1: 78361385 ticks, 1766796 bars generated. Environment synchronized in 0:00:00.027. Test passed in 0:00:05.294 (including ticks preprocessing 0:00:01.610).
+MF	0	15:20:40.819	Core 1	GDAXI,M1: total time from login to stop testing 0:00:05.321 (including 0:00:00.027 for history data synchronization)
+HK	0	15:20:40.819	Core 1	1605 Mb memory used including 151 Mb of history data, 1472 Mb of tick data
+HJ	0	15:20:40.819	Core 1	log file "C:\Users\Gasper\AppData\Roaming\MetaQuotes\Tester\6C3C6A11D1C3791DD4DBF45421BF8028\Agent-127.0.0.1-3000\logs\20260713.log" written
+DF	0	15:20:40.861	Tester	automatical testing finished
+KR	0	15:20:40.861	Core 1	connection closed
+

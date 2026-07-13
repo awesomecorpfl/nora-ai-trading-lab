@@ -1,0 +1,13 @@
+scenario_id	ledger_row_index	entry_bar_index	entry_price	exit_bar_index	exit_price	direction	stop_price	target_price	exit_reason	expected_state	pass
+completed_next_open	0	1	11.0000000000000000	2	12.0000000000000000	long	10.0000000000000000	13.0000000000000000	signal	trade	true
+entry_row_excluded_terminal	1	NULL	NULL	NULL	NULL	long	NULL	NULL	no_trade	no_trade	true
+gap_stop_over_signal_time	2	0	10.0000000000000000	1	8.5000000000000000	long	9.0000000000000000	12.0000000000000000	initial_stop_gap	trade	true
+gap_target	3	0	10.0000000000000000	1	12.5000000000000000	long	9.0000000000000000	12.0000000000000000	initial_target_gap	trade	true
+signal_over_time_intrabar	4	0	10.0000000000000000	1	10.0000000000000000	long	9.0000000000000000	12.0000000000000000	signal	trade	true
+time_over_intrabar	5	0	10.0000000000000000	1	10.5000000000000000	long	9.0000000000000000	12.0000000000000000	max_bars_held	trade	true
+pessimistic_dual_touch	6	0	10.0000000000000000	1	9.0000000000000000	long	9.0000000000000000	12.0000000000000000	initial_stop_pessimistic	trade	true
+nonambiguous_stop	7	0	10.0000000000000000	1	9.0000000000000000	long	9.0000000000000000	12.0000000000000000	initial_stop	trade	true
+nonambiguous_target	8	0	10.0000000000000000	1	12.0000000000000000	long	9.0000000000000000	12.0000000000000000	initial_target	trade	true
+signal_exit	9	0	10.0000000000000000	1	10.5000000000000000	long	9.0000000000000000	12.0000000000000000	signal	trade	true
+time_exit	10	0	10.0000000000000000	1	10.5000000000000000	long	9.0000000000000000	12.0000000000000000	max_bars_held	trade	true
+terminal_no_trade	11	NULL	NULL	NULL	NULL	long	NULL	NULL	no_trade	no_trade	true

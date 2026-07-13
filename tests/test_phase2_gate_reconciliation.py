@@ -19,7 +19,7 @@ class Phase2GateReconciliationTests(unittest.TestCase):
         cls.items = {item["id"]: item for item in cls.inventory["items"]}
 
     def test_matrix_resolves_every_phase2_item_and_has_required_fields(self):
-        self.assertEqual(len(self.matrix["records"]), 50)
+        self.assertEqual(len(self.matrix["records"]), 51)
         self.assertEqual(set(self.matrix["records"]), set(self.items))
         self.assertEqual(len(self.matrix["record_schema"]), 18)
         for identifier in self.matrix["records"]:
@@ -33,7 +33,7 @@ class Phase2GateReconciliationTests(unittest.TestCase):
     def test_native_acceptance_does_not_admit_grammar_or_search(self):
         self.assertFalse(self.matrix["grammar_admitted"])
         self.assertFalse(self.matrix["searchable"])
-        for identifier in ("layer1.macd", "transform.percentile"):
+        for identifier in ("layer1.macd", "transform.percentile", "canary.execution_model_native"):
             item = self.items[identifier]
             self.assertTrue(item["native"]["parity_accepted"])
             self.assertFalse(item.get("grammar_admitted", False))
@@ -66,7 +66,7 @@ class Phase2GateReconciliationTests(unittest.TestCase):
         self.assertEqual(self.matrix["closed_boundaries"], ["search", "phase_3", "new_grammar_admission", "searchability_enablement", "deployment"])
 
     def test_binding_status_vocabulary_is_exact(self):
-        self.assertEqual(set(self.matrix["binding_requirements"].values()), {"PARTIAL", "IMPLEMENTED_UNPROVED", "ABSENT", "BLOCKED"})
+        self.assertEqual(set(self.matrix["binding_requirements"].values()), {"ACCEPTED", "PARTIAL", "IMPLEMENTED_UNPROVED", "ABSENT", "BLOCKED"})
         self.assertEqual(set(self.matrix["status_values"]), {"ACCEPTED", "PARTIAL", "IMPLEMENTED_UNPROVED", "ABSENT", "DEFERRED", "BLOCKED"})
 
 

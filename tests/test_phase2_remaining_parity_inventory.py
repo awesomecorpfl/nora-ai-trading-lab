@@ -30,6 +30,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             "canary.sma_cross_native": "legacy_committed_summary",
             "canary.slope_native": "self_contained_raw_native",
             "canary.atr_distance_native": "self_contained_raw_native",
+            "canary.execution_model_native": "self_contained_raw_native_returned_contract_v2",
         })
         canonical_a = json.dumps(value, sort_keys=True, separators=(",", ":"))
         canonical_b = json.dumps(json.loads(canonical_a), sort_keys=True, separators=(",", ":"))
@@ -39,7 +40,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
     def test_items_are_unique_and_complete(self):
         required = {"id", "category", "name", "status", "rust", "mql5", "native", "parity_result_identity", "evidence_paths", "commits", "searchable", "missing_gate"}
         items = self.value["items"]
-        self.assertEqual(len(items), 50)
+        self.assertEqual(len(items), 51)
         self.assertEqual(len({item["id"] for item in items}), len(items))
         for item in items:
             self.assertTrue(set(item) in (required, required | {"grammar_admitted"}))
@@ -114,7 +115,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertEqual(item["mql5"]["generation"], "generated")
             self.assertTrue(item["native"]["execution_evidence_paths"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["task_id"], "transform.percentile_local_mql5_canary")
+        self.assertEqual(next_task["task_id"], "time_broker_clock_native_fixtures")
         self.assertNotIn(next_task["task_id"], items)
         self.assertNotIn(next_task["phase_label"].lower(), {item["status"] for item in items.values()})
         self.assertFalse(next_task["search_authorized"])
@@ -123,15 +124,15 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
     def test_acceptance_requirement_schema_and_next_task(self):
         requirements = self.value["acceptance_requirements"]
         self.assertEqual(len(requirements), 6)
-        self.assertEqual({entry["status"] for entry in requirements}, {"partial", "blocked"})
+        self.assertEqual({entry["status"] for entry in requirements}, {"accepted", "partial", "blocked"})
         for entry in requirements:
-            self.assertTrue(entry["blocks_phase2"])
+            self.assertEqual(entry["blocks_phase2"], entry["status"] != "accepted")
             self.assertTrue(entry["smallest_next_task"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["phase_label"], "Phase 2W")
-        self.assertEqual(next_task["execution_boundary"], "local-only")
+        self.assertEqual(next_task["phase_label"], "Phase 2")
+        self.assertEqual(next_task["execution_boundary"], "native canary preparation and validation")
         self.assertIn("search", next_task["scope"].lower())
-        self.assertIn("percentile", next_task["why_next"])
+        self.assertIn("clock", next_task["why_next"])
 
     def test_inventory_summary_matches_items(self):
         from collections import Counter
@@ -140,7 +141,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         summary = self.value["inventory_summary"]
         self.assertEqual(summary["item_count"], len(self.value["items"]))
         self.assertEqual(summary["status_counts"], dict(counts))
-        self.assertEqual(summary["accepted_native_canary_count"], 4)
+        self.assertEqual(summary["accepted_native_canary_count"], 5)
         self.assertEqual(summary["grammar_admitted_node_count"], 2)
         self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
 

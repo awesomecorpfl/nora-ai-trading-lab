@@ -200,19 +200,39 @@
       "mql5": {
         "generation": "generated",
         "source_identity": "893820984f8ad8291c5ae1a8de2b3a654c2fca21aaf7d4f64dda5490d7172b6b",
-        "historical_scaffold_identities": {"runtime": "5b78e5c7e4f8f0e7ce72e5aff72d930139e0e6f9050d8900cfa1564be9c136ee", "tester": "4b2a22a94539d6c989e93173c581ae71963a0ad7896cdca36b00e6abba957ffc", "package": "52d53fc3300eca2db3646eaab52ddaa2d0ae862632f60e6dac42c3ad5e6ac7ca"},
+        "historical_scaffold_identities": {
+          "runtime": "5b78e5c7e4f8f0e7ce72e5aff72d930139e0e6f9050d8900cfa1564be9c136ee",
+          "tester": "4b2a22a94539d6c989e93173c581ae71963a0ad7896cdca36b00e6abba957ffc",
+          "package": "52d53fc3300eca2db3646eaab52ddaa2d0ae862632f60e6dac42c3ad5e6ac7ca"
+        },
         "executable_translation_generated": true
       },
       "native": {
-        "compile_evidence_paths": ["tests/fixtures/phase2u_macd_native/compile/compile.json", "tests/fixtures/phase2u_macd_native/compile/compile.log"],
-        "execution_evidence_paths": ["tests/fixtures/phase2u_macd_native/gdaxi_m1_1/execution.json", "tests/fixtures/phase2u_macd_native/gdaxi_m1_2/execution.json", "tests/fixtures/phase2u_macd_native/audcad_m1_1/execution.json", "tests/fixtures/phase2u_macd_native/audcad_m1_2/execution.json"], "handoff_ready": true, "execution_attempted": true, "result_returned": true, "reconciliation_passed": true, "parity_evidence_available": true, "parity_accepted": true
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2u_macd_native/compile/compile.json",
+          "tests/fixtures/phase2u_macd_native/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2u_macd_native/gdaxi_m1_1/execution.json",
+          "tests/fixtures/phase2u_macd_native/gdaxi_m1_2/execution.json",
+          "tests/fixtures/phase2u_macd_native/audcad_m1_1/execution.json",
+          "tests/fixtures/phase2u_macd_native/audcad_m1_2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
       "parity_result_identity": "353c0406e4c62c256cc6525e2fdc429bb740f075e3badde9f0c19b14da0d0df7",
       "evidence_paths": [
         "engine/labengine/tests/fixtures/phase2_macd_slope_task.json"
       ],
       "commits": [
-        "58e29e51a27edf37c62a9734034c9e7864f976a9", "c3d3048cd4105422d34902e7b4668ac98a141300", "23ddd31d47c2d24e27da73249d20a94760fed91e"
+        "58e29e51a27edf37c62a9734034c9e7864f976a9",
+        "c3d3048cd4105422d34902e7b4668ac98a141300",
+        "23ddd31d47c2d24e27da73249d20a94760fed91e"
       ],
       "searchable": false,
       "missing_gate": "complete Phase-2 gate; accepted parity is restricted to close/EMA2/EMA4/signal3 arithmetic-seed committed-recurrence compact-signal CSV V3 contracts on GDAXI/M1 and AUDCAD/M1"
@@ -774,12 +794,30 @@
       "mql5": {
         "generation": "generated",
         "source_identity": "d727c93b192979af6cf44b978d487a2bcef923eb801d14372d17651ab6b0d840",
-        "historical_scaffold_identities": {"runtime": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644", "tester": "d1410d4c3789f7fd8753a564debc272ca215ffd332e5ed4c278d3ec9f4cb4f39", "package": "9872eb22d8647546a0253d706454453847ad7e87489dbede3a0a3c51117f9fcd"},
+        "historical_scaffold_identities": {
+          "runtime": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644",
+          "tester": "d1410d4c3789f7fd8753a564debc272ca215ffd332e5ed4c278d3ec9f4cb4f39",
+          "package": "9872eb22d8647546a0253d706454453847ad7e87489dbede3a0a3c51117f9fcd"
+        },
         "executable_translation_generated": true
       },
       "native": {
-        "compile_evidence_paths": ["tests/fixtures/phase2w_percentile_native/compile/compile.json", "tests/fixtures/phase2w_percentile_native/compile/compile.log"],
-        "execution_evidence_paths": ["tests/fixtures/phase2w_percentile_native/gdaxi_m1_1/execution.json", "tests/fixtures/phase2w_percentile_native/gdaxi_m1_2/execution.json", "tests/fixtures/phase2w_percentile_native/audcad_m1_1/execution.json", "tests/fixtures/phase2w_percentile_native/audcad_m1_2/execution.json"], "handoff_ready": true, "execution_attempted": true, "result_returned": true, "reconciliation_passed": true, "parity_evidence_available": true, "parity_accepted": true
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2w_percentile_native/compile/compile.json",
+          "tests/fixtures/phase2w_percentile_native/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2w_percentile_native/gdaxi_m1_1/execution.json",
+          "tests/fixtures/phase2w_percentile_native/gdaxi_m1_2/execution.json",
+          "tests/fixtures/phase2w_percentile_native/audcad_m1_1/execution.json",
+          "tests/fixtures/phase2w_percentile_native/audcad_m1_2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
       "parity_result_identity": "5ba578e6f15e3e627c7640e261ed6341d9bebf6cdb2a580b87fa36389b88c34c",
       "evidence_paths": [
@@ -1059,7 +1097,7 @@
       "id": "execution.next_open_entry",
       "category": "execution_simulator",
       "name": "next-open entry and typed intents",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -1073,29 +1111,46 @@
       },
       "mql5": {
         "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534"
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
       },
       "native": {
-        "compile_evidence_paths": ["phase-0a-h/windows/compile-execution-tester-canary.ps1"],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
       "evidence_paths": [
         "tests/fixtures/phase2_execution_rust_evidence.json",
-        "tests/fixtures/phase2x_native_batch_v4.json"
+        "tests/fixtures/phase2x_native_batch_v4.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
       ],
       "commits": [
         "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
-        "ef32a87e3bf89c9e0ce7f8206607cdd72fd20f85"
+        "ef32a87e3bf89c9e0ce7f8206607cdd72fd20f85",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
       ],
       "searchable": false,
-      "missing_gate": "four native execution returns (GDAXI/M1 twice and AUDCAD/M1 twice), compile evidence, exact reconciliation, and repeatability/neutrality acceptance"
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
     },
     {
       "id": "execution.initial_brackets",
       "category": "execution_simulator",
       "name": "initial SL/TP brackets",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -1107,28 +1162,45 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_initial_bracket_long_task.json"
+        "engine/labengine/tests/fixtures/phase2_initial_bracket_long_task.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
       ],
       "commits": [
-        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414"
+        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
       ],
       "searchable": false,
-      "missing_gate": "native order-free fill-model parity fixture"
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
     },
     {
       "id": "execution.pessimistic_ambiguity",
       "category": "execution_simulator",
       "name": "pessimistic intrabar ambiguity",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -1140,28 +1212,45 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_initial_bracket_collision_task.json"
+        "engine/labengine/tests/fixtures/phase2_initial_bracket_collision_task.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
       ],
       "commits": [
-        "d3859319a732d3f45f45b1ce0e2967bef2089606"
+        "d3859319a732d3f45f45b1ce0e2967bef2089606",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
       ],
       "searchable": false,
-      "missing_gate": "native fill-model reconciliation"
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
     },
     {
       "id": "execution.gap_open_brackets",
       "category": "execution_simulator",
       "name": "gap-open bracket fills",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -1173,26 +1262,44 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "evidence_paths": [
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
       "commits": [
-        "d3859319a732d3f45f45b1ce0e2967bef2089606"
+        "d3859319a732d3f45f45b1ce0e2967bef2089606",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
       ],
       "searchable": false,
-      "missing_gate": "native gap-open reconciliation"
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
     },
     {
       "id": "execution.maximum_bars_exit",
       "category": "execution_simulator",
       "name": "maximum-bars time exit",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -1204,22 +1311,39 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_time_exit_long_task.json"
+        "engine/labengine/tests/fixtures/phase2_time_exit_long_task.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
       ],
       "commits": [
-        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414"
+        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
       ],
       "searchable": false,
-      "missing_gate": "native strategy execution and precedence reconciliation"
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
     },
     {
       "id": "metrics.closed_trade_baseline",
@@ -1552,6 +1676,56 @@
       "missing_gate": "complete Phase-2 admission gate"
     },
     {
+      "id": "canary.execution_model_native",
+      "category": "fixed_data_native_canary",
+      "name": "frozen execution-model tester",
+      "status": "accepted",
+      "rust": {
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/simulator.rs",
+          "lab/phase2_execution.py"
+        ],
+        "identity": "597e997b0a7af9cf6feba56766cc48b52d7a42df67c2cd0226ed178f039b60a5",
+        "tests": [
+          "tests/test_phase2_execution_returned.py"
+        ]
+      },
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
+      },
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
+      },
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "evidence_paths": [
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "commits": [
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "grammar_admitted": false,
+      "searchable": false,
+      "missing_gate": "fixed embedded execution semantics only; complete Phase-2 gate remains false"
+    },
+    {
       "id": "time.trading_clock",
       "category": "time_session_dst_rule",
       "name": "declared strategy and trading-day clocks",
@@ -1767,16 +1941,16 @@
     }
   ],
   "inventory_summary": {
-    "item_count": 50,
+    "item_count": 51,
     "status_counts": {
-      "accepted": 15,
+      "accepted": 21,
       "partially_proven": 9,
-      "implemented_but_unproved": 22,
+      "implemented_but_unproved": 17,
       "absent": 3,
       "deferred": 1,
       "out_of_scope": 0
     },
-    "accepted_native_canary_count": 4,
+    "accepted_native_canary_count": 5,
     "grammar_admitted_node_count": 2,
     "phase2_acceptance_gate": "blocked"
   },
@@ -1795,14 +1969,13 @@
   "acceptance_requirements": [
     {
       "id": "synthetic_execution_fixtures",
-      "status": "partial",
+      "status": "accepted",
       "accepted_evidence": [
-        "tests/test_phase1.py",
-        "engine/labengine/tests/fixtures/phase2_market_simulator_task.json"
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
       ],
-      "missing_evidence": "native execution-model reconciliation",
-      "blocks_phase2": true,
-      "smallest_next_task": "freeze a local execution-parity contract for next-open plus one exit model"
+      "missing_evidence": "none for the frozen twelve-scenario execution contract",
+      "blocks_phase2": false,
+      "smallest_next_task": "none; preserve narrow contract while advancing broker-clock fixtures"
     },
     {
       "id": "layer1_indicator_parity",
@@ -1866,23 +2039,11 @@
     "2V complete Phase-2 gate audit before any Phase-3 authorization"
   ],
   "next_task": {
-    "task_id": "transform.percentile_local_mql5_canary",
-    "phase_label": "Phase 2W",
-    "scope": "Local-only deterministic MQL5 rolling percentile lookback-4 generation from the committed percentile Rust fixture; isolate percentile from bundled SMA and slope outputs; no native compilation, MT5 execution, search, or Phase 3.",
-    "why_next": "Rolling percentile is the simplest remaining isolated transform with committed Rust implementation and real deterministic fixture output, no accepted MQL5 generation, no native parity, and fixed warmup behavior. SMA and slope remain preserved and excluded.",
-    "prerequisites": {
-      "rust_fixture": "engine/labengine/tests/fixtures/phase2_percentile_task.json",
-      "rust_implementation": "engine/labengine/src/indicators.rs::transform_percentile",
-      "rust_semantics": "inclusive average-zero-based rank over complete lookback-4 nullable windows"
-    },
-    "required_outputs": [
-      "frozen MACD Rust evidence and vectors",
-      "deterministic MQL5 runtime and fixed-data tester source/manifests",
-      "separate Rust, runtime, tester, and package identities",
-      "two-directory repeatability and mutation/atomic-publication tests",
-      "native validation explicitly deferred"
-    ],
-    "execution_boundary": "local-only",
+    "task_id": "time_broker_clock_native_fixtures",
+    "phase_label": "Phase 2",
+    "scope": "Paired deterministic broker-clock and strategy-session fixtures covering DST transitions, Friday close, rollover, Monday open, ORB windows, and derived-timeframe anchoring; before strategy reconciliation, search, or Phase 3.",
+    "why_next": "The frozen execution model is now native-reconciled, leaving broker-clock semantics as the highest-dependency unproved execution prerequisite.",
+    "execution_boundary": "native canary preparation and validation",
     "search_authorized": false,
     "phase3_authorized": false
   },
@@ -1890,6 +2051,7 @@
     "canary.condition_native": "legacy_committed_summary",
     "canary.sma_cross_native": "legacy_committed_summary",
     "canary.slope_native": "self_contained_raw_native",
-    "canary.atr_distance_native": "self_contained_raw_native"
+    "canary.atr_distance_native": "self_contained_raw_native",
+    "canary.execution_model_native": "self_contained_raw_native_returned_contract_v2"
   }
 }

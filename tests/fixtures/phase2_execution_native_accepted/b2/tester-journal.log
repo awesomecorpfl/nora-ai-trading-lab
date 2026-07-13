@@ -1,0 +1,47 @@
+﻿JK	0	15:22:13.615	Tester	Local network farm switched off
+RP	0	15:22:13.615	Tester	Cloud servers switched off
+LD	0	15:22:15.807	Tester	"NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5" X64
+LQ	0	15:22:16.172	Tester	AUDCAD: preliminary downloading of M1 history started
+CM	0	15:22:16.286	Tester	AUDCAD: preliminary downloading of M1 history completed in 0:00:00.235
+MI	0	15:22:16.501	Tester	AUDUSD: history check started
+QO	0	15:22:27.228	Tester	AUDUSD: history check timeout
+KD	0	15:22:28.228	Tester	USDCAD: preliminary downloading of M1 history started
+OP	0	15:22:28.338	Tester	USDCAD: preliminary downloading of M1 history completed in 0:00:01.110
+PM	0	15:22:28.341	Core 1	agent process started on 127.0.0.1:3000
+QJ	0	15:22:28.341	Core 1	connecting to 127.0.0.1:3000
+RK	0	15:22:28.845	Core 1	connected
+RM	0	15:22:28.906	Core 1	authorized (agent build 5836)
+EI	0	15:22:28.920	Tester	AUDCAD,M1 (Darwinex-Live): testing of Experts\NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+GR	0	15:22:28.924	Core 1	common synchronization completed
+IJ	0	15:22:29.305	Tester	quality of analyzed history is 99%
+NI	0	15:22:35.306	Core 1	MetaTester 5 started on 127.0.0.1:3000
+RS	0	15:22:35.306	Core 1	cloud network mode is off
+OG	0	15:22:35.306	Core 1	initialization finished
+QN	0	15:22:35.306	Core 1	login (build 5836)
+DI	0	15:22:35.306	Core 1	50040 bytes of account info loaded
+CN	0	15:22:35.306	Core 1	1478 bytes of tester parameters loaded
+DJ	0	15:22:35.306	Core 1	196 bytes of input parameters loaded
+FL	0	15:22:35.306	Core 1	2872 bytes of symbols list loaded (842 symbols)
+CH	0	15:22:35.306	Core 1	expert file added: Experts\NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5. 15575 bytes loaded
+NJ	0	15:22:35.306	Core 1	8935 Mb available, 111 blocks set for ticks generating
+NP	0	15:22:35.306	Core 1	initial deposit 5000.00 USD, leverage 1:20
+PI	0	15:22:35.306	Core 1	successfully initialized
+OS	0	15:22:35.306	Core 1	21 Kb of total initialization data received
+MD	0	15:22:35.306	Core 1	13th Gen Intel Core i5-13420H, 10239 MB
+MM	0	15:22:35.306	Core 1	AUDCAD: symbol to be synchronized
+FI	0	15:22:35.306	Core 1	AUDCAD: symbol synchronized, 3720 bytes of symbol info received
+MD	0	15:22:35.306	Core 1	AUDCAD: load 27 bytes of history data to synchronize in 0:00:00.111
+JS	0	15:22:35.306	Core 1	AUDCAD: history synchronized from 2019.01.02 to 2026.07.08
+NG	0	15:22:35.306	Core 1	AUDCAD,M1: history cache allocated for 2808837 bars and contains 555237 bars from 2019.01.02 00:02 to 2020.06.30 23:59
+NS	0	15:22:35.306	Core 1	AUDCAD,M1: history begins from 2019.01.02 00:02
+CJ	0	15:22:35.306	Core 1	AUDCAD,M1 (Darwinex-Live): every tick generating
+QM	0	15:22:35.306	Core 1	AUDCAD,M1: testing of Experts\NoraPhase2Execution\NoraPhase2ExecutionTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+DQ	0	15:22:35.306	Core 1	2020.07.01 00:00:00   NORA_PHASE2_EXECUTION_COMPLETE_V1
+OM	0	15:22:41.320	Core 1	final balance 5000.00 USD
+ND	0	15:22:41.320	Core 1	AUDCAD,M1: 189892571 ticks, 2223367 bars generated. Environment synchronized in 0:00:00.141. Test passed in 0:00:12.287 (including ticks preprocessing 0:00:03.750).
+GS	0	15:22:41.320	Core 1	AUDCAD,M1: total time from login to stop testing 0:00:12.428 (including 0:00:00.141 for history data synchronization)
+RR	0	15:22:41.320	Core 1	3816 Mb memory used including 160 Mb of history data, 3584 Mb of tick data
+HE	0	15:22:41.320	Core 1	log file "C:\Users\Gasper\AppData\Roaming\MetaQuotes\Tester\6C3C6A11D1C3791DD4DBF45421BF8028\Agent-127.0.0.1-3000\logs\20260713.log" written
+FN	0	15:22:41.365	Tester	automatical testing finished
+HK	0	15:22:41.366	Core 1	connection closed
+
