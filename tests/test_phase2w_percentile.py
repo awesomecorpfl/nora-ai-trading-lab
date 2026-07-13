@@ -9,7 +9,7 @@ class TestPercentile(unittest.TestCase):
    for n in (RUNTIME,TESTER,EVIDENCE,PACKAGE):self.assertEqual((p/'a'/n).read_bytes(),(p/'b'/n).read_bytes())
    runtime=(p/'a'/RUNTIME).read_text();tester=(p/'a'/TESTER).read_text()
    self.assertIn('NoraPhase2Percentile',runtime);self.assertIn('(equal-1.0)/2.0',runtime);self.assertIn('MathIsValidNumber',runtime)
-   self.assertIn('int OnInit()',tester);self.assertIn('FileWrite',tester);self.assertIn('NORA_PHASE2W_PERCENTILE_COMPLETE_V2',tester)
+   self.assertIn('int OnInit()',tester);self.assertIn('FileWrite',tester);self.assertIn('NORA_PHASE2W_PERCENTILE_COMPLETE_V3',tester);self.assertIn('return "NULL"',tester)
    (p/'c').mkdir();(p/'c'/RUNTIME).write_text('x')
    with self.assertRaises(GenerationError):generate(p/'c')
    self.assertFalse((p/'c'/EVIDENCE).exists())

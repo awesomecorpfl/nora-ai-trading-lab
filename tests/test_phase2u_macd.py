@@ -12,8 +12,9 @@ class TestMacd(unittest.TestCase):
    self.assertEqual(e['rust_macd_component_identity'],'fef4a9583d0a12d5f067be9d977015a4f6d441e20232d2e8241b6a5539eee6f9')
    runtime=(x/RUNTIME).read_text();tester=(x/TESTER).read_text()
    self.assertIn('NoraPhase2MacdCompute',runtime);self.assertIn('NoraMacdEma',runtime);self.assertIn('MathIsValidNumber',runtime)
-   self.assertIn('int OnInit()',tester);self.assertIn('FileWrite',tester);self.assertIn('NORA_PHASE2U_MACD_COMPLETE_V2',tester)
-   self.assertEqual(e['csv_schema'],['row','close','macd_null','macd','signal_null','signal','histogram_null','histogram','pass'])
+   self.assertIn('int OnInit()',tester);self.assertIn('FileWrite',tester);self.assertIn('NORA_PHASE2U_MACD_COMPLETE_V3',tester);self.assertIn('return "NULL"',tester)
+   self.assertEqual(e['csv_schema'],['row','close','macd','signal','histogram','pass'])
+   self.assertEqual(e['csv_null_token'],'NULL')
  def test_atomic_existing_target(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);(p/RUNTIME).write_text('x')

@@ -1,0 +1,8 @@
+#property strict
+#include "NoraPhase2PercentileRuntimeV3.mqh"
+#define NORA_PERCENTILE_ROWS 12
+const string NORA_PERCENTILE_CSV="nora_phase2w_percentile_tester_v3.csv";
+double source[NORA_PERCENTILE_ROWS]={0.0,0.0,1.1006,1.1009333333333335,1.1009666666666666,1.1013333333333335,1.1013666666666666,1.1017333333333335,1.1017666666666666,1.1021333333333334,1.1021666666666665,1.1025333333333334};bool source_null[NORA_PERCENTILE_ROWS]={true,true,false,false,false,false,false,false,false,false,false,false};double expected[NORA_PERCENTILE_ROWS]={0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};bool expected_null[NORA_PERCENTILE_ROWS]={true,true,true,true,true,false,false,false,false,false,false,false};
+string NoraPercentileCsv(const double value,const bool is_null){if(is_null)return "NULL";return DoubleToString(value,17);}
+int OnInit(){double actual[];bool actual_null[];ArrayResize(actual,NORA_PERCENTILE_ROWS);ArrayResize(actual_null,NORA_PERCENTILE_ROWS);if(!NoraPhase2Percentile(source,source_null,NORA_PERCENTILE_ROWS,4,actual,actual_null)){Print("NORA_PHASE2W_PERCENTILE_FAIL");return INIT_FAILED;}int f=FileOpen(NORA_PERCENTILE_CSV,FILE_WRITE|FILE_CSV|FILE_ANSI);if(f==INVALID_HANDLE)return INIT_FAILED;FileWrite(f,"row","source","percentile","pass");for(int i=0;i<NORA_PERCENTILE_ROWS;i++){bool ok=actual_null[i]==expected_null[i]&&(actual_null[i]||MathAbs(actual[i]-expected[i])<=1e-12);FileWrite(f,i,NoraPercentileCsv(source[i],source_null[i]),NoraPercentileCsv(actual[i],actual_null[i]),ok?"true":"false");if(!ok){FileClose(f);Print("NORA_PHASE2W_PERCENTILE_FAIL");return INIT_FAILED;}}FileClose(f);Print("NORA_PHASE2W_PERCENTILE_COMPLETE_V3");return INIT_SUCCEEDED;}
+void OnDeinit(const int reason){}
