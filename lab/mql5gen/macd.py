@@ -21,12 +21,12 @@ def _mask(values): return ','.join('true' if v is None else 'false' for v in val
 def _runtime(): return b'''#ifndef NORA_PHASE2_MACD_RUNTIME_V3_MQH
 #define NORA_PHASE2_MACD_RUNTIME_V3_MQH
 bool NoraMacdFinite(const double value){return MathIsValidNumber(value);}
-bool NoraMacdEma(const double &input[],const bool &input_null[],const int count,const int period,double &output[],bool &output_null[]){
+bool NoraMacdEma(const double &values[],const bool &values_null[],const int count,const int period,double &output[],bool &output_null[]){
   if(period<1 || count<0) return false;
   for(int i=0;i<count;i++){output_null[i]=true;output[i]=0.0;}
   for(int end=period-1;end<count;end++){
-    if(end==period-1){double sum=0.0;for(int j=0;j<period;j++){if(input_null[j]||!NoraMacdFinite(input[j])) return false;sum+=input[j];}output[end]=sum/period;output_null[end]=false;}
-    else {if(input_null[end]||output_null[end-1]||!NoraMacdFinite(input[end])) return false;output[end]=output[end-1]+(2.0/(period+1.0))*(input[end]-output[end-1]);output_null[end]=false;}
+    if(end==period-1){double sum=0.0;for(int j=0;j<period;j++){if(values_null[j]||!NoraMacdFinite(values[j])) return false;sum+=values[j];}output[end]=sum/period;output_null[end]=false;}
+    else {if(values_null[end]||output_null[end-1]||!NoraMacdFinite(values[end])) return false;output[end]=output[end-1]+(2.0/(period+1.0))*(values[end]-output[end-1]);output_null[end]=false;}
   } return true;
 }
 bool NoraPhase2MacdCompute(const double &close[],const bool &close_null[],const int count,double &macd[],bool &macd_null[],double &signal[],bool &signal_null[],double &hist[],bool &hist_null[]){
