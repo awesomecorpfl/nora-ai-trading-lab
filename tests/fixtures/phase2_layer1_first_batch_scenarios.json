@@ -1,0 +1,16 @@
+{
+  "schema_version": "nora.layer1_scenarios_v1",
+  "scenarios": [
+    {"id":"ema_ordinary_p3","node":"EMA","output":"value","period":3,"timestamps":["t0","t1","t2","t3","t4","t5"],"values":[1,2,4,3,5,6]},
+    {"id":"ema_flat_p3","node":"EMA","output":"value","period":3,"timestamps":["t0","t1","t2","t3","t4"],"values":[7,7,7,7,7]},
+    {"id":"ema_null_reset_p2","node":"EMA","output":"value","period":2,"timestamps":["t0","t1","t2","t3","t4","t5"],"values":[1,2,null,4,6,8]},
+    {"id":"ema_minimum_p1","node":"EMA","output":"value","period":1,"timestamps":["t0","t1","t2"],"values":[3,2,1]},
+    {"id":"highest_repeated_p3","node":"Highest","output":"value","period":3,"timestamps":["t0","t1","t2","t3","t4","t5"],"values":[2,2,2,1,3,3]},
+    {"id":"highest_null_window_p2","node":"Highest","output":"value","period":2,"timestamps":["t0","t1","t2","t3","t4"],"values":[1,null,4,3,5]},
+    {"id":"lowest_decreasing_p3","node":"Lowest","output":"value","period":3,"timestamps":["t0","t1","t2","t3","t4","t5"],"values":[6,5,4,3,2,1]},
+    {"id":"lowest_zero_range_p2","node":"Lowest","output":"value","period":2,"timestamps":["t0","t1","t2","t3"],"values":[0,0,0,0]},
+    {"id":"ema_invalid_period","node":"EMA","output":"value","period":0,"timestamps":["t0"],"values":[1]},
+    {"id":"highest_invalid_period","node":"Highest","output":"value","period":0,"timestamps":["t0"],"values":[1]},
+    {"id":"lowest_invalid_period","node":"Lowest","output":"value","period":0,"timestamps":["t0"],"values":[1]}
+  ]
+}
