@@ -22,6 +22,13 @@ reconciliation. This is a filesystem contract and synthetic local-readiness
 facility only; it is not MetaEditor compilation, MT5 execution, or parity
 acceptance.
 
+Host context neutrality: `GDAXI`/`M1` is launcher context only. A second host
+symbol/timeframe must be discovered read-only by the native agent, as specified
+in `tests/fixtures/phase2x_host_contexts_v1.json`. Both contexts must return
+identical vectors, schema, and completion markers. The generated canaries do
+not read market prices/volumes/spreads/time series, indicators, trade/account
+state, clocks, randomness, chart objects, or mutable global state.
+
 Only a returned package with exact batch/target identities, successful compile
 and runtime records, expected CSV row/null alignment, and a passing
 reconciliation review may be considered for native-parity acceptance.
