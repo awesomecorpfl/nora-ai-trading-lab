@@ -53,6 +53,9 @@ pub enum Node {
         reference: Reference,
         atr: Box<Node>,
     },
+    Ema { input: Reference, period: usize },
+    Highest { input: Reference, period: usize },
+    Lowest { input: Reference, period: usize },
     Compare {
         op: Compare,
         left: Box<Node>,
@@ -281,6 +284,12 @@ fn parse_node(value: &Value) -> Result<Node> {
                     atr: Box::new(atr),
                 })
             }
+            "ema" | "highest" | "lowest" => {
+                only(o, &["type", "input", "period"], "layer1 node")?;
+                let period = required(o, "period", "layer1 node")?.as_u64().and_then(|v| usize::try_from(v).ok()).filter(|v| *v > 0).ok_or("layer1 period must be positive")?;
+                let input = feature_reference(required(o, "input", "layer1 node")?)?;
+                Ok(match feature_type { "ema" => Node::Ema { input, period }, "highest" => Node::Highest { input, period }, _ => Node::Lowest { input, period } })
+            }
             _ => Err(format!("unknown feature AST node type {feature_type:?}")),
         };
     }
@@ -374,7 +383,10 @@ impl Node {
             Self::NumericSeries(_)
             | Self::Number(_)
             | Self::Atr { .. }
-            | Self::DistanceAtr { .. } => Type::Numeric,
+            | Self::DistanceAtr { .. }
+            | Self::Ema { .. }
+            | Self::Highest { .. }
+            | Self::Lowest { .. } => Type::Numeric,
             Self::BooleanSeries(_)
             | Self::Compare { .. }
             | Self::And(_)
@@ -409,6 +421,9 @@ fn node_json(node: &Node) -> Value {
         } => {
             json!({"type":"distance_atr","value":feature_reference_json(value),"reference":feature_reference_json(reference),"atr":node_json(atr)})
         }
+        Node::Ema { input, period } => json!({"type":"ema","input":feature_reference_json(input),"period":period}),
+        Node::Highest { input, period } => json!({"type":"highest","input":feature_reference_json(input),"period":period}),
+        Node::Lowest { input, period } => json!({"type":"lowest","input":feature_reference_json(input),"period":period}),
         Node::Compare { op, left, right } => {
             json!({"kind":"compare","op":match op{Compare::Gt=>"gt",Compare::Gte=>"gte",Compare::Lt=>"lt",Compare::Lte=>"lte"},"left":node_json(left),"right":node_json(right)})
         }
@@ -653,7 +668,7 @@ fn feature_identity(node: &Node) -> String {
 pub fn feature_plan(document: &Document) -> Vec<String> {
     fn visit(node: &Node, out: &mut BTreeMap<String, ()>) {
         match node {
-            Node::Atr { .. } | Node::DistanceAtr { .. } => {
+            Node::Atr { .. } | Node::DistanceAtr { .. } | Node::Ema { .. } | Node::Highest { .. } | Node::Lowest { .. } => {
                 if let Node::DistanceAtr { atr, .. } = node {
                     visit(atr, out)
                 }
@@ -743,6 +758,15 @@ fn numeric_cached(
                 })?;
             let denominator = numeric_cached(atr, input, cache)?;
             crate::indicators::transform_distance_atr(&left, &right, &denominator)?
+        }
+        Node::Ema { input: reference, period } => {
+            let source=input.numeric.get(&reference.series).ok_or_else(||format!("unknown or non-numeric runtime series {:?}",reference.series))?;
+            let mut out=vec![None;source.len()];let mut seed=Vec::new();let mut state:Option<f64>=None;let alpha=2.0/(*period as f64+1.0);
+            for(i,value)in source.iter().enumerate(){match value{None=>{seed.clear();state=None},Some(v)=>if let Some(e)=state{let next=e+alpha*(*v-e);state=Some(next);out[i]=Some(next)}else{seed.push(*v);if seed.len()==*period{let e=seed.iter().sum::<f64>()/(*period as f64);state=Some(e);out[i]=Some(e)}}}}out
+        }
+        Node::Highest { input: reference, period } | Node::Lowest { input: reference, period } => {
+            let source=input.numeric.get(&reference.series).ok_or_else(||format!("unknown or non-numeric runtime series {:?}",reference.series))?;
+            (0..source.len()).map(|i|if i+1<*period{None}else{let window=&source[i+1-*period..=i];if window.iter().any(Option::is_none){None}else if matches!(node,Node::Highest{..}){Some(window.iter().map(|x|x.unwrap()).fold(f64::NEG_INFINITY,f64::max))}else{Some(window.iter().map(|x|x.unwrap()).fold(f64::INFINITY,f64::min))}}).collect()
         }
         _ => return Err("AST numeric runtime type mismatch".into()),
     };

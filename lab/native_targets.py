@@ -32,3 +32,18 @@ TIME_RULE_TARGET=NativeTargetDescriptor(
  "NORA_PHASE2_TIME_RULE_COMPLETE_V1","NORA_PHASE2_TIME_RULE_FAIL_V1",
  "nora.time_rule_native_reconciliation_v1",
  ("GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"),MEMBERS)
+
+LAYER1_BATCH_TARGET=NativeTargetDescriptor(
+ "nora.native_target_descriptor_v1","layer1_first_batch","nora.layer1_compile_input_v1",
+ "nora.layer1_compiler_output_v1","nora.layer1_compile_evidence_manifest_v1",
+ "nora.layer1_native_packet_v1","nora.layer1_precompile_batch_v1",
+ "nora.layer1_final_native_batch_v1","nora.layer1_returned_package_v1",
+ "NoraPhase2Layer1BatchRuntimeV1.mqh","NoraPhase2Layer1BatchTesterCanaryV1.mq5",
+ "phase2_layer1_batch_executable_package.json","NoraPhase2Layer1BatchTesterCanaryV1.ex5",
+ "layer1_compile_input_v1.json","nora_phase2_layer1_batch_v1.csv",
+ "scripts/phase2-layer1-build-compile-input",
+ "scripts/phase2-layer1-ingest-returned",
+ "scripts/phase2-layer1-build-synthetic-package",
+ "NORA_PHASE2_LAYER1_BATCH_COMPLETE_V1","NORA_PHASE2_LAYER1_BATCH_FAIL_V1",
+ "nora.layer1_numeric_reconciliation_v1",
+ ("GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"),MEMBERS)

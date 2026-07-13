@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+"""Validate a returned package locally; does not execute MT5 or external tools."""
+import argparse
+from pathlib import Path
+from lab.phase2_execution import canon
+from lab.phase2_layer1_native import ingest,load
+p=argparse.ArgumentParser();p.add_argument('--package',required=True);p.add_argument('--final',required=True);p.add_argument('--run',required=True);p.add_argument('--symbol',required=True);a=p.parse_args()
+root=Path(a.final);print(canon(ingest(Path(a.package),load(root/'execution_packet.json'),load(root/'final_batch.json'),a.run,a.symbol)))
