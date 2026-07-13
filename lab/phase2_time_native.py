@@ -81,10 +81,16 @@ def import_evidence(evidence_dir,destination,inject_failure=False):
  for x in declared:
   if not safe_relative(x['path']) or file_sha(evidence_dir/x['path'])!=x['sha256']:raise ValueError('inventory binding')
  packet=build_packet(record,file_sha(evidence_dir/'compiler_record.json'))
- items=[{"path":"compile/"+x['path'],"role":x['role'],"sha256":x['sha256']} for x in declared]+[{"path":"execution_packet.json","role":"execution_packet","sha256":"generated"}]
+ precompile=build_precompile()
+ items=precompile['files']+[{"path":"compile/"+x['path'],"role":x['role'],"sha256":x['sha256']} for x in declared]+[{"path":"execution_packet.json","role":"execution_packet","sha256":"generated"}]
  batch=build_final_batch(packet,record,items)
+ _,generated=generated_sources();generated[TARGET.compile_input_filename]=(canon(build_compile_input())+'\n').encode()
  def write(tmp):
   shutil.copytree(evidence_dir,tmp/'compile');(tmp/'compile_input.json').write_text(canon(build_compile_input())+'\n');(tmp/'execution_packet.json').write_text(canon(packet)+'\n');(tmp/'final_batch.json').write_text(canon(batch)+'\n')
+  for item in precompile['files']:
+   destination=tmp/item['path'];destination.parent.mkdir(parents=True,exist_ok=True)
+   if item['path'].startswith('generated/phase2_time_rules/'):destination.write_bytes(generated[destination.name])
+   else:shutil.copy2(ROOT/item['path'],destination)
   return {"compile_input_identity":build_compile_input()['compile_input_identity'],"compiler_output_identity":record['compiler_output_identity'],"execution_packet_identity":packet['execution_packet_identity'],"final_batch_identity":batch['final_batch_identity'],"staged_inventory_identity":batch['staged_inventory_identity']}
  return atomic_publish(destination,'.time-rule-import-',write,inject_failure=inject_failure)
 
@@ -114,6 +120,22 @@ def stage(destination):
   dst=tmp/MANIFEST.relative_to(ROOT);dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(MANIFEST,dst)
   return {"precompile_batch_identity":value['precompile_batch_identity'],"staged_inventory_identity":value['staged_inventory_identity']}
  return atomic_publish(destination,'.time-rule-stage-',write)
+
+def stage_final(final_dir,destination):
+ final_dir=Path(final_dir);batch=load_json(final_dir/'final_batch.json');packet=load_json(final_dir/'execution_packet.json')
+ if batch.get('target_identifier')!='time_rules' or packet.get('target_descriptor_identity')!=TARGET.identity or batch.get('execution_packet_identity')!=packet.get('execution_packet_identity'):raise ValueError('final preflight')
+ _,generated=generated_sources();generated[TARGET.compile_input_filename]=(canon(build_compile_input())+'\n').encode()
+ def write(tmp):
+  for item in batch['staged_files']:
+   target=tmp/item['path'];target.parent.mkdir(parents=True,exist_ok=True)
+   if item['path'].startswith('compile/'):shutil.copy2(final_dir/item['path'],target)
+   elif item['path']=='execution_packet.json':target.write_text(canon(packet)+'\n')
+   elif item['path'].startswith('generated/phase2_time_rules/'):target.write_bytes(generated[target.name])
+   else:shutil.copy2(ROOT/item['path'],target)
+   if item['sha256']!='generated' and file_sha(target)!=item['sha256']:raise ValueError('final staging hash')
+  for name in ('compile_input.json','final_batch.json'):(tmp/name).write_bytes((final_dir/name).read_bytes())
+  return {"final_batch_identity":batch['final_batch_identity'],"execution_packet_identity":packet['execution_packet_identity'],"staged_inventory_identity":batch['staged_inventory_identity']}
+ return atomic_publish(Path(destination),'.time-rule-final-stage-',write)
 
 def actual_rows(path):
  with Path(path).open(encoding='utf-8-sig',newline='') as f:raw=list(csv.DictReader(f,delimiter='\t'))
@@ -180,13 +202,14 @@ def build_synthetic_returned(destination,final_dir,run_identifier,symbol):
 def classify_failure(name):return name if name in FAILURES else 'exact_success'
 
 def main():
- p=argparse.ArgumentParser();s=p.add_subparsers(dest='command',required=True);s.add_parser('preflight');s.add_parser('write-precompile');s.add_parser('write-readiness');st=s.add_parser('stage');st.add_argument('--destination',required=True);im=s.add_parser('import');im.add_argument('--evidence-dir',required=True);im.add_argument('--destination',required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();s=p.add_subparsers(dest='command',required=True);s.add_parser('preflight');s.add_parser('write-precompile');s.add_parser('write-readiness');st=s.add_parser('stage');st.add_argument('--destination',required=True);fs=s.add_parser('stage-final');fs.add_argument('--final-dir',required=True);fs.add_argument('--destination',required=True);im=s.add_parser('import');im.add_argument('--evidence-dir',required=True);im.add_argument('--destination',required=True);a=p.parse_args()
  if a.command=='preflight':result=preflight()
  elif a.command=='write-precompile':
   value=build_precompile();temporary=MANIFEST.with_suffix('.json.tmp');temporary.write_text(canon(value)+'\n');temporary.replace(MANIFEST);result={"precompile_batch_identity":value['precompile_batch_identity'],"compile_input_identity":value['compile_input_identity'],"staged_inventory_identity":value['staged_inventory_identity']}
  elif a.command=='write-readiness':
   target=ROOT/'tests/fixtures/phase2_time_rule_local_readiness.json';result=local_readiness_evidence();temporary=target.with_suffix('.json.tmp');temporary.write_text(canon(result)+'\n');temporary.replace(target)
  elif a.command=='stage':result=stage(Path(a.destination))
+ elif a.command=='stage-final':result=stage_final(Path(a.final_dir),Path(a.destination))
  else:result=import_evidence(Path(a.evidence_dir),Path(a.destination))
  print(canon(result))
 if __name__=='__main__':main()

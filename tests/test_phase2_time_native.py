@@ -34,6 +34,8 @@ def test_synthetic_import_is_typed_atomic_and_deterministic(tmp_path):
  assert len({x['execution_record_identity'] for x in packets})==4
  assert len({x['journal_identity'] for x in packets})==4
  assert len({x['semantic_time_rule_identity'] for x in packets})==1
+ x=stage_final(tmp_path/'a',tmp_path/'final-a');y=stage_final(tmp_path/'b',tmp_path/'final-b');assert x==y
+ assert (tmp_path/'final-a'/TARGET.execution_script).is_file()
 
 def test_import_rejects_cross_target_warnings_stale_hash_and_paths(tmp_path):
  for name,mutate in [('target',lambda r:r.update(target_identifier='execution')),('warning',lambda r:r.update(warning_count=1,warnings=['w'])),('fresh',lambda r:r.update(freshness_proof={})),('hash',lambda r:r.update(ex5_sha256='0'*64)),('path',lambda r:r.update(log_path='../x'))]:
