@@ -103,7 +103,7 @@ fn parse_clock_reference(value: &str, dataset: &DeclaredClock) -> Result<Declare
     match value { "UTC" => Ok(DeclaredClock::Utc), "broker" if *dataset == DeclaredClock::NewYorkPlusSeven => Ok(DeclaredClock::NewYorkPlusSeven), "dataset" => Ok(dataset.clone()), value if value == clock_identity(dataset) => Ok(dataset.clone()), value => value.parse::<Tz>().map(DeclaredClock::Iana).map_err(|_| format!("unsupported or ambiguous declared clock {value:?}")), }
 }
 fn clock_identity(clock: &DeclaredClock) -> &str { match clock { DeclaredClock::Utc => "UTC", DeclaredClock::Iana(zone) => zone.name(), DeclaredClock::NewYorkPlusSeven => "america_new_york_plus_7_v1", } }
-fn parse_time(value: &str) -> Result<NaiveTime> { NaiveTime::parse_from_str(value, "%H:%M").or_else(|_| NaiveTime::parse_from_str(value, "%H:%M:%S")).map_err(|_| format!("invalid clock time {value:?}; expected HH:MM or HH:MM:SS")) }
+pub fn parse_time(value: &str) -> Result<NaiveTime> { NaiveTime::parse_from_str(value, "%H:%M").or_else(|_| NaiveTime::parse_from_str(value, "%H:%M:%S")).map_err(|_| format!("invalid clock time {value:?}; expected HH:MM or HH:MM:SS")) }
 fn parse_conversion_step(value: &Value) -> Result<ConversionStep> { let target = value.as_object().and_then(|o| o.get("target")).and_then(Value::as_str).filter(|v| !v.is_empty()).ok_or("invalid conversion history entry")?; Ok(ConversionStep { target: target.into() }) }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)] pub struct TimeWindow { pub start: NaiveTime, pub end: NaiveTime }

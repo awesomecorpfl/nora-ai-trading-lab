@@ -45,6 +45,7 @@ pub fn cross(a:&[f64],b:&[f64],i:usize)->bool{i>0&&a[i-1]<=b[i-1]&&a[i]>b[i]}
 pub fn slope(a:&[f64],i:usize,n:usize)->Option<f64>{if i<n{None}else{Some((a[i]-a[i-n])/n as f64)}}
 pub fn percentile(a:&[f64],x:f64)->f64{let mut v=a.to_vec();v.sort_by(|a,b|a.total_cmp(b));v.iter().filter(|q|**q<=x).count()as f64/v.len()as f64}
 pub fn seed(parts:&[&str])->u64{let mut h=DefaultHasher::new();parts.hash(&mut h);h.finish()}
+pub fn time_rules_identity(rows:&[Value])->String{let mut h=Sha256::new();h.update(b"nora.time_rules_v1");for row in rows{h.update(serde_json::to_string(row).unwrap().as_bytes());}format!("{:x}",h.finalize())}
 #[derive(Clone,Copy)] pub enum Side{Long,Short} #[derive(Clone,Copy)] pub struct Trade{pub side:Side,pub entry:f64,pub exit:f64,pub costs:f64,pub bars:usize}
 pub fn pnl(t:Trade)->f64{match t.side{Side::Long=>t.exit-t.entry-t.costs,Side::Short=>t.entry-t.exit-t.costs}}
 pub fn pessimistic(side:Side,b:Bar,sl:f64,tp:f64)->Option<f64>{match side{Side::Long=>if b.l<=sl{Some(sl)}else if b.h>=tp{Some(tp)}else{None},Side::Short=>if b.h>=sl{Some(sl)}else if b.l<=tp{Some(tp)}else{None}}}
