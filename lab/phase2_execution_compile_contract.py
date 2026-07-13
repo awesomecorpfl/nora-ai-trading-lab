@@ -10,6 +10,8 @@ from pathlib import Path, PurePosixPath
 
 from lab.mql5gen.execution import PACKAGE, RUNTIME, TESTER, generate
 from lab.phase2_execution import canon, sha
+from lab.native_target import (raw_sha, identified, compiler_output_identity,
+                               validate_dependency_graph)
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "tests/fixtures/phase2_execution_rust_evidence.json"
@@ -23,18 +25,8 @@ EDITOR = r"C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe"
 BUILD = "5.0.0.5836"
 
 
-def raw_sha(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
 def file_sha(path: Path) -> str:
     return raw_sha(path.read_bytes())
-
-
-def identified(value: dict, field: str) -> dict:
-    result = dict(value)
-    result[field] = sha(value)
-    return result
 
 
 def generated_sources() -> tuple[dict, dict[str, bytes]]:
@@ -76,12 +68,6 @@ def _safe_relative(value: str) -> bool:
     return bool(value) and not p.is_absolute() and ".." not in p.parts and "\\" not in value
 
 
-def compiler_output_identity(record: dict) -> str:
-    value = dict(record)
-    value.pop("compiler_output_identity", None)
-    return sha(value)
-
-
 def validate_compiler_output(record: dict, compile_input: dict, evidence_dir: Path) -> list[str]:
     errors: list[str] = []
     if record.get("schema_version") != COMPILER_OUTPUT_VERSION: errors.append("schema")
@@ -107,19 +93,7 @@ def validate_compiler_output(record: dict, compile_input: dict, evidence_dir: Pa
 
 
 def validate_graph(nodes: dict) -> list[str]:
-    allowed = {"source": [], "compile_input": ["source"], "compiler_output": ["compile_input"], "execution_packet": ["compiler_output"], "final_batch": ["execution_packet"]}
-    errors=[]
-    for node, deps in nodes.items():
-        if node not in allowed or node in deps or any(x not in allowed[node] for x in deps): errors.append("dependency direction")
-    visiting=set();done=set()
-    def visit(node):
-        if node in visiting: errors.append("cycle"); return
-        if node in done:return
-        visiting.add(node)
-        for dep in nodes.get(node,[]):visit(dep)
-        visiting.remove(node);done.add(node)
-    for node in nodes:visit(node)
-    return errors
+    return validate_dependency_graph(nodes)
 
 
 def build_packet(record: dict, compile_input: dict, compiler_record_sha256: str) -> dict:
