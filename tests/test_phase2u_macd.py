@@ -69,3 +69,13 @@ class TestMacd(unittest.TestCase):
     self.assertNotEqual(mut['tester_identity'],base['tester_identity']);self.assertNotEqual(mut['package_identity'],base['package_identity'])
     self.assertFalse(mut['native_parity']);self.assertFalse(mut['grammar_admitted']);self.assertFalse(mut['searchable'])
    finally: subject.MACD=original
+ def test_verify_package_binding_detects_mismatches(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d);generate(p)
+   pkg=json.loads((p/PACKAGE).read_text());ev=json.loads((p/EVIDENCE).read_text())
+   rt=(p/RUNTIME).read_bytes();ts=(p/TESTER).read_bytes()
+   self.assertEqual(verify_package_binding(pkg,rt,ts,ev['executable_contract_identity'],ev['periods']),[])
+   forged=dict(pkg);forged['runtime_sha256']='0'*64
+   self.assertIn('runtime_sha256',verify_package_binding(forged,rt,ts,ev['executable_contract_identity'],ev['periods']))
+   forged2=dict(pkg);forged2['package_identity']='0'*64
+   self.assertIn('package_identity',verify_package_binding(forged2,rt,ts,ev['executable_contract_identity'],ev['periods']))

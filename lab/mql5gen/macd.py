@@ -5,6 +5,7 @@ from pathlib import Path
 from . import GenerationError,_publish
 
 VERSION="nora.phase2u.macd_executable_v3"; RUNTIME="NoraPhase2MacdRuntimeV3.mqh"; TESTER="NoraPhase2MacdTesterCanaryV3.mq5"; EVIDENCE="phase2u_macd_executable_rust_evidence.json"; PACKAGE="phase2u_macd_executable_package.json"; COMPLETION="NORA_PHASE2U_MACD_COMPLETE_V3"; CSV="nora_phase2u_macd_tester_v3.csv"; NULL_TOKEN="NULL"
+CONTRACT_DOMAIN="nora.phase2u.macd.executable_contract"; RUNTIME_DOMAIN="nora.phase2u.macd.runtime.v3"; TESTER_DOMAIN="nora.phase2u.macd.tester.v3"; PACKAGE_DOMAIN="nora.phase2u.macd.package.v3"
 TASK_ID="c1d1d4a1003a3c0bc8f6b8b3d3ec736349db90082647a349cebf89b6dd07cb1e"; INPUT_ID="5d10e5722faaf64f1b243bb27feb8a4f84940d46c4acb1697d6514cd4da94383"
 RUST_COMPONENT_ID="fef4a9583d0a12d5f067be9d977015a4f6d441e20232d2e8241b6a5539eee6f9"
 CLOSE=[1.1003,1.1009,1.1006,1.1013,1.101,1.1017,1.1014,1.1021,1.1018,1.1025,1.1022,1.1029]
@@ -62,10 +63,10 @@ def generate(output_dir):
  out=Path(output_dir);names=[RUNTIME,TESTER,EVIDENCE,PACKAGE]
  if not out.is_dir() or any((out/n).exists() for n in names):raise GenerationError('MACD output target already exists')
  if any(not math.isfinite(x) for x in CLOSE):raise GenerationError('MACD close values must be finite')
- evidence={'version':VERSION,'task_semantic_identity':TASK_ID,'input_fixture_identity':INPUT_ID,'source_series':'close','periods':{'fast':2,'slow':4,'signal':3},'ema_seed':'arithmetic_mean','ema_recurrence':'previous + 2/(period+1)*(input-previous)','signal_input':'compact ordered non-null MACD sequence realigned to original rows','histogram':'macd-signal','close':CLOSE,'macd':MACD,'signal':SIGNAL,'histogram_vector':HIST,'row_count':12,'csv_schema':['row','close','macd','signal','histogram','pass'],'csv_null_token':NULL_TOKEN,'completion_marker':COMPLETION,'rust_macd_component_identity':RUST_COMPONENT_ID};evidence['executable_contract_identity']=_id('nora.phase2u.macd.executable_contract',evidence)
- runtime=_runtime();rsha=hashlib.sha256(runtime).hexdigest();rid=_id('nora.phase2u.macd.runtime.v3',VERSION,rsha,evidence['periods'],evidence['executable_contract_identity'])
- tester=_tester();tsha=hashlib.sha256(tester).hexdigest();tid=_id('nora.phase2u.macd.tester.v3',rid,evidence['executable_contract_identity'],tsha)
- package={'version':VERSION,'historical_scaffold_identities':{'runtime':'f5f42c451cb493efcf3e8f413cd826376bbfebd6fe942c3a2a7114dceadfa5a8','tester':'1ea30611274082036079bc9233eb30473bed8d2a763bb003220b774e549d55c9','package':'412ee2fae1bea47f4ffeca225d2fcbd68a4fd34480e8ebe4e64034ded8446cd'},'rust_macd_component_identity':evidence['rust_macd_component_identity'],'runtime_identity':rid,'tester_identity':tid,'runtime_sha256':rsha,'tester_sha256':tsha,'csv_filename':CSV,'csv_null_token':NULL_TOKEN,'completion_marker':evidence['completion_marker'],'native_parity':False,'grammar_admitted':False,'searchable':False};package['package_identity']=_id('nora.phase2u.macd.package.v3',package)
+ evidence={'version':VERSION,'task_semantic_identity':TASK_ID,'input_fixture_identity':INPUT_ID,'source_series':'close','periods':{'fast':2,'slow':4,'signal':3},'ema_seed':'arithmetic_mean','ema_recurrence':'previous + 2/(period+1)*(input-previous)','signal_input':'compact ordered non-null MACD sequence realigned to original rows','histogram':'macd-signal','close':CLOSE,'macd':MACD,'signal':SIGNAL,'histogram_vector':HIST,'row_count':12,'csv_schema':['row','close','macd','signal','histogram','pass'],'csv_null_token':NULL_TOKEN,'completion_marker':COMPLETION,'rust_macd_component_identity':RUST_COMPONENT_ID};evidence['executable_contract_identity']=_id(CONTRACT_DOMAIN,evidence)
+ runtime=_runtime();rsha=hashlib.sha256(runtime).hexdigest();rid=_id(RUNTIME_DOMAIN,VERSION,rsha,evidence['periods'],evidence['executable_contract_identity'])
+ tester=_tester();tsha=hashlib.sha256(tester).hexdigest();tid=_id(TESTER_DOMAIN,rid,evidence['executable_contract_identity'],tsha)
+ package={'version':VERSION,'historical_scaffold_identities':{'runtime':'f5f42c451cb493efcf3e8f413cd826376bbfebd6fe942c3a2a7114dceadfa5a8','tester':'1ea30611274082036079bc9233eb30473bed8d2a763bb003220b774e549d55c9','package':'412ee2fae1bea47f4ffeca225d2fcbd68a4fd34480e8ebe4e64034ded8446cd'},'rust_macd_component_identity':evidence['rust_macd_component_identity'],'runtime_identity':rid,'tester_identity':tid,'runtime_sha256':rsha,'tester_sha256':tsha,'csv_filename':CSV,'csv_null_token':NULL_TOKEN,'completion_marker':evidence['completion_marker'],'native_parity':False,'grammar_admitted':False,'searchable':False};package['package_identity']=_id(PACKAGE_DOMAIN,package)
  payload={EVIDENCE:json.dumps(evidence,sort_keys=True,separators=(',',':')).encode()+b'\n',RUNTIME:runtime,TESTER:tester,PACKAGE:json.dumps(package,sort_keys=True,separators=(',',':')).encode()+b'\n'};written=[]
  try:
   for n in names:_publish(out,n,payload[n]);written.append(n)
@@ -73,3 +74,14 @@ def generate(output_dir):
   for n in written:(out/n).unlink(missing_ok=True)
   raise
  return {'ok':True,'executable_contract_identity':evidence['executable_contract_identity'],**package}
+def verify_package_binding(package,runtime_bytes,tester_bytes,contract_identity,periods):
+ errors=[];rs=hashlib.sha256(runtime_bytes).hexdigest();ts=hashlib.sha256(tester_bytes).hexdigest()
+ if package.get('runtime_sha256')!=rs:errors.append('runtime_sha256')
+ if package.get('tester_sha256')!=ts:errors.append('tester_sha256')
+ rid=_id(RUNTIME_DOMAIN,VERSION,rs,periods,contract_identity)
+ if package.get('runtime_identity')!=rid:errors.append('runtime_identity')
+ tid=_id(TESTER_DOMAIN,rid,contract_identity,ts)
+ if package.get('tester_identity')!=tid:errors.append('tester_identity')
+ pkg=dict(package);stored=pkg.pop('package_identity',None)
+ if stored!=_id(PACKAGE_DOMAIN,pkg):errors.append('package_identity')
+ return errors

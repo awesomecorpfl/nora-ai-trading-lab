@@ -1,4 +1,4 @@
-import math,tempfile,unittest
+import json,math,tempfile,unittest
 from pathlib import Path
 from lab.mql5gen.percentile import *
 import lab.mql5gen.percentile as subject
@@ -51,3 +51,30 @@ class TestPercentile(unittest.TestCase):
      with self.assertRaisesRegex(GenerationError,'finite or null'):generate(d)
      for name in (RUNTIME,TESTER,EVIDENCE,PACKAGE):self.assertFalse((Path(d)/name).exists())
   finally: subject.INPUT=original
+ def test_content_byte_change_necessarily_changes_package_identity(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d);(p/'a').mkdir();base=generate(p/'a')
+   original_runtime=subject._runtime
+   try:
+    subject._runtime=lambda:original_runtime().replace(b'data_null',b'dat_null')
+    (p/'b').mkdir();mut=generate(p/'b')
+    self.assertNotEqual(mut['runtime_sha256'],base['runtime_sha256'])
+    self.assertNotEqual(mut['runtime_identity'],base['runtime_identity'])
+    self.assertNotEqual(mut['package_identity'],base['package_identity'])
+   finally: subject._runtime=original_runtime
+ def test_stale_identities_preserved_and_verify_binding(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d);generate(p)
+   pkg=json.loads((p/PACKAGE).read_text())
+   self.assertIn('stale_content_binding_identities',pkg)
+   stale=pkg['stale_content_binding_identities']
+   self.assertEqual(stale['runtime_identity_claim'],'44ec82c7c8173fd6fee6db7c538794ef6f9c3e2d9d928962af2dded8ac1e05be')
+   self.assertEqual(stale['tester_identity_claim'],'75c340fa4ca6555dc5b1f4e89f4afacaef18107eb0013095b09c1892d11299cf')
+   self.assertEqual(stale['package_identity'],'cd14eae8e51d73da1300a6743ccdb62f09dfccf75a74d2c7109b52f03eb96bc9')
+   ev=json.loads((p/EVIDENCE).read_text())
+   rt=(p/RUNTIME).read_bytes();ts=(p/TESTER).read_bytes()
+   self.assertEqual(verify_package_binding(pkg,rt,ts,ev['executable_contract_identity']),[])
+   forged=dict(pkg);forged['runtime_sha256']='0'*64
+   self.assertIn('runtime_sha256',verify_package_binding(forged,rt,ts,ev['executable_contract_identity']))
+   forged2=dict(pkg);forged2['package_identity']='0'*64
+   self.assertIn('package_identity',verify_package_binding(forged2,rt,ts,ev['executable_contract_identity']))
