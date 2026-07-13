@@ -144,4 +144,4 @@ def inventory_identity(items: list[dict]) -> str:
 
 def manifest_identity(value: dict, field: str) -> str:
     normalized = dict(value); normalized.pop(field, None)
-    return raw_sha(json.dumps(normalized, separators=(",", ":"), ensure_ascii=False).encode())
+    return sha(normalized)
