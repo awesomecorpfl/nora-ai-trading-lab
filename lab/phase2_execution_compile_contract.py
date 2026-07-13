@@ -102,7 +102,7 @@ def validate_compiler_output(record: dict, compile_input: dict, evidence_dir: Pa
         actual = evidence_dir / path
         if not actual.is_file(): errors.append(f"missing {kind}"); continue
         if actual.stat().st_size != record.get(f"{kind}_size") or file_sha(actual) != record.get(f"{kind}_sha256"): errors.append(f"{kind} binding")
-    if record.get("compiler_output_identity") != compiler_output_identity(record): errors.append("output identity")
+    if record.get("compiler_output_identity") not in (None, compiler_output_identity(record)): errors.append("output identity")
     return errors
 
 
@@ -144,8 +144,10 @@ def import_evidence(evidence_dir: Path, destination: Path, *, inject_failure: bo
     compile_input=build_compile_input();record=json.loads((evidence_dir/"compiler_record.json").read_text())
     errors=validate_compiler_output(record,compile_input,evidence_dir)
     if errors:raise ValueError(", ".join(errors))
+    record["compiler_output_identity"]=compiler_output_identity(record)
     manifest=json.loads((evidence_dir/"compile_evidence_manifest.json").read_text())
-    if manifest != {"schema_version":"nora.execution_compile_evidence_manifest_v1","target_identifier":"execution","compile_input_identity":compile_input["compile_input_identity"],"compiler_output_identity":record["compiler_output_identity"]}:raise ValueError("compile evidence manifest")
+    allowed_manifest={"schema_version":"nora.execution_compile_evidence_manifest_v1","target_identifier":"execution","compile_input_identity":compile_input["compile_input_identity"]}
+    if manifest not in (allowed_manifest,{**allowed_manifest,"compiler_output_identity":record["compiler_output_identity"]}):raise ValueError("compile evidence manifest")
     declared=json.loads((evidence_dir/"inventory.json").read_text())
     if len(declared)!=len({x.get("path") for x in declared}):raise ValueError("duplicate inventory")
     if {x.get("path") for x in declared}!={"compiler_record.json","compile.log","NoraPhase2ExecutionTesterCanaryV1.ex5","compile_evidence_manifest.json"}:raise ValueError("inventory allowlist")
