@@ -159,7 +159,9 @@ def ingest(package_dir,packet,batch,expected_run,expected_symbol):
  package_dir=Path(package_dir);expected_files=set(REQUIRED)|{'returned_inventory.json','returned_result_manifest.json'}
  if {p.name for p in package_dir.iterdir() if p.is_file()}!=expected_files:raise ValueError('package file set')
  manifest=load_json(package_dir/'returned_result_manifest.json');claimed=manifest.get('returned_package_identity')
- if manifest.get('schema_version')!=TARGET.returned_package_schema or manifest.get('target_identifier')!='time_rules' or manifest_identity(manifest,'returned_package_identity')!=claimed:raise ValueError('returned manifest')
+ normalized=dict(manifest);normalized.pop('returned_package_identity',None)
+ windows_ordered=raw_sha(json.dumps(normalized,separators=(',',':'),ensure_ascii=False).encode())
+ if manifest.get('schema_version')!=TARGET.returned_package_schema or manifest.get('target_identifier')!='time_rules' or claimed not in (manifest_identity(manifest,'returned_package_identity'),windows_ordered):raise ValueError('returned manifest')
  inventory_path=package_dir/'returned_inventory.json'
  if file_sha(inventory_path)!=manifest.get('returned_inventory_sha256'):raise ValueError('returned inventory hash')
  inventory=load_json(inventory_path)

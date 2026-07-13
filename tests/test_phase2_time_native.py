@@ -37,6 +37,13 @@ def test_synthetic_import_is_typed_atomic_and_deterministic(tmp_path):
  x=stage_final(tmp_path/'a',tmp_path/'final-a');y=stage_final(tmp_path/'b',tmp_path/'final-b');assert x==y
  assert (tmp_path/'final-a'/TARGET.execution_script).is_file()
 
+def test_importer_accepts_only_the_declared_windows_ordered_manifest_form(tmp_path):
+ e=tmp_path/'e';create_synthetic_compiler_evidence(e);import_evidence(e,tmp_path/'final')
+ build_synthetic_returned(tmp_path/'run',tmp_path/'final','A1','GDAXI')
+ packet=load_json(tmp_path/'final/execution_packet.json');batch=load_json(tmp_path/'final/final_batch.json')
+ manifest=load_json(tmp_path/'run/returned_result_manifest.json');value=dict(manifest);value.pop('returned_package_identity');manifest['returned_package_identity']=raw_sha(json.dumps(value,separators=(',',':'),ensure_ascii=False).encode());(tmp_path/'run/returned_result_manifest.json').write_text(json.dumps(manifest,separators=(',',':')))
+ assert ingest(tmp_path/'run',packet,batch,'A1','GDAXI')['classification']=='PASS_EXACT'
+
 def test_import_rejects_cross_target_warnings_stale_hash_and_paths(tmp_path):
  for name,mutate in [('target',lambda r:r.update(target_identifier='execution')),('warning',lambda r:r.update(warning_count=1,warnings=['w'])),('fresh',lambda r:r.update(freshness_proof={})),('hash',lambda r:r.update(ex5_sha256='0'*64)),('path',lambda r:r.update(log_path='../x'))]:
   e=tmp_path/name;e.mkdir();r=synthetic(e);mutate(r);r['compiler_output_identity']=compiler_output_identity(r);(e/'compiler_record.json').write_text(canon(r)+'\n')
