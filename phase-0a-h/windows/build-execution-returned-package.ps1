@@ -1,0 +1,4 @@
+param([string]$RunDirectory,[string]$Destination,[string]$BatchIdentity,[string]$RunIdentifier)
+$target='execution';$csv='nora_phase2_execution_tester_v1.csv';$required=@('compile.json','execution.json','compile.log','tester-journal.log','tester.htm',$csv)
+if(Test-Path $Destination){throw 'existing destination'};$tmp=$Destination+'.tmp-'+[guid]::NewGuid().ToString('N')
+try{New-Item -ItemType Directory $tmp|Out-Null;foreach($n in $required){if(!(Test-Path (Join-Path $RunDirectory $n) -PathType Leaf)){throw "missing collected file: $n"};Copy-Item (Join-Path $RunDirectory $n) (Join-Path $tmp $n)};@{schema_version='nora.phase2y.returned_package_v1';target_identifier=$target;batch_identity=$BatchIdentity;run_identifier=$RunIdentifier;expected_result_filename=$csv;files=@($required)}|ConvertTo-Json|Set-Content (Join-Path $tmp 'returned_result_manifest.json');Move-Item $tmp $Destination}catch{Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue;throw}
