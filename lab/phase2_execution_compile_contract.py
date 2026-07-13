@@ -141,14 +141,14 @@ def import_evidence(evidence_dir: Path, destination: Path, *, inject_failure: bo
     if destination.exists():raise ValueError("occupied destination")
     allowed={"compiler_record.json","compile.log","NoraPhase2ExecutionTesterCanaryV1.ex5","compile_evidence_manifest.json","inventory.json"}
     if {p.name for p in evidence_dir.iterdir()} != allowed:raise ValueError("unexpected or missing file")
-    compile_input=build_compile_input();record=json.loads((evidence_dir/"compiler_record.json").read_text())
+    compile_input=build_compile_input();record=json.loads((evidence_dir/"compiler_record.json").read_text(encoding="utf-8-sig"))
     errors=validate_compiler_output(record,compile_input,evidence_dir)
     if errors:raise ValueError(", ".join(errors))
     record["compiler_output_identity"]=compiler_output_identity(record)
-    manifest=json.loads((evidence_dir/"compile_evidence_manifest.json").read_text())
+    manifest=json.loads((evidence_dir/"compile_evidence_manifest.json").read_text(encoding="utf-8-sig"))
     allowed_manifest={"schema_version":"nora.execution_compile_evidence_manifest_v1","target_identifier":"execution","compile_input_identity":compile_input["compile_input_identity"]}
     if manifest not in (allowed_manifest,{**allowed_manifest,"compiler_output_identity":record["compiler_output_identity"]}):raise ValueError("compile evidence manifest")
-    declared=json.loads((evidence_dir/"inventory.json").read_text())
+    declared=json.loads((evidence_dir/"inventory.json").read_text(encoding="utf-8-sig"))
     if len(declared)!=len({x.get("path") for x in declared}):raise ValueError("duplicate inventory")
     if {x.get("path") for x in declared}!={"compiler_record.json","compile.log","NoraPhase2ExecutionTesterCanaryV1.ex5","compile_evidence_manifest.json"}:raise ValueError("inventory allowlist")
     for item in declared:
