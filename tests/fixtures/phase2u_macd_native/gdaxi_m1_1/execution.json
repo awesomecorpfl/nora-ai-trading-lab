@@ -1,0 +1,157 @@
+﻿{
+    "status":  "completed",
+    "run_id":  "stage3-macd-a1",
+    "terminal_path":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe",
+    "terminal_version":  "5.0.0.5836",
+    "result_filename":  "nora_phase2u_macd_tester_v3.csv",
+    "result_fresh":  true,
+    "stages":  {
+                   "tester_configuration_loaded":  true,
+                   "testing_agent_started":  true,
+                   "ea_loaded":  true,
+                   "ea_initialized":  true,
+                   "fixture_execution_started":  true,
+                   "result_csv_written":  true,
+                   "fixture_execution_completed":  true,
+                   "tester_completed":  true,
+                   "terminal_shutdown":  true
+               },
+    "events":  [
+                   {
+                       "event":  "tester_configuration_loaded",
+                       "utc":  "2026-07-13T06:14:01.9077730Z",
+                       "evidence":  "tester.ini written; normalized copy retained",
+                       "path":  "C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\tester.ini"
+                   },
+                   {
+                       "event":  "terminal_process_started",
+                       "utc":  "2026-07-13T06:14:01.9704698Z",
+                       "evidence":  "native terminal process created",
+                       "path":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe"
+                   },
+                   {
+                       "event":  "tester_completed",
+                       "utc":  "2026-07-13T06:14:18.7201296Z",
+                       "evidence":  "terminal process exited",
+                       "path":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe"
+                   },
+                   {
+                       "event":  "terminal_shutdown",
+                       "utc":  "2026-07-13T06:14:18.7201296Z",
+                       "evidence":  "ShutdownTerminal=1 and process exited",
+                       "path":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe"
+                   },
+                   {
+                       "event":  "result_csv_written",
+                       "utc":  "2026-07-13T06:14:18.8138569Z",
+                       "evidence":  "fresh common CSV observed",
+                       "path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Tester\\6C3C6A11D1C3791DD4DBF45421BF8028\\Agent-127.0.0.1-3000\\MQL5\\Files\\nora_phase2u_macd_tester_v3.csv"
+                   },
+                   {
+                       "event":  "fixture_execution_started",
+                       "utc":  "2026-07-13T06:14:18.8295069Z",
+                       "evidence":  "fresh CSV and completed terminal run establish fixture invocation",
+                       "path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Tester\\6C3C6A11D1C3791DD4DBF45421BF8028\\Agent-127.0.0.1-3000\\MQL5\\Files\\nora_phase2u_macd_tester_v3.csv"
+                   },
+                   {
+                       "event":  "fixture_execution_completed",
+                       "utc":  "2026-07-13T06:14:18.8295069Z",
+                       "evidence":  "fresh CSV accepted after native process completion",
+                       "path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Tester\\6C3C6A11D1C3791DD4DBF45421BF8028\\Agent-127.0.0.1-3000\\MQL5\\Files\\nora_phase2u_macd_tester_v3.csv"
+                   },
+                   {
+                       "event":  "testing_agent_started",
+                       "utc":  "2026-07-13T06:14:19.0327903Z",
+                       "evidence":  "wrapper-bound native journal delta and exited tester",
+                       "path":  ""
+                   },
+                   {
+                       "event":  "ea_loaded",
+                       "utc":  "2026-07-13T06:14:19.0327903Z",
+                       "evidence":  "configured Phase-2N expert installed before native launch",
+                       "path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\MQL5\\Experts\\NoraPhase2U\\NoraPhase2MacdTesterCanaryV3.ex5"
+                   },
+                   {
+                       "event":  "ea_initialized",
+                       "utc":  "2026-07-13T06:14:19.0327903Z",
+                       "evidence":  "configured Phase-2N expert completed native run",
+                       "path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\MQL5\\Experts\\NoraPhase2U\\NoraPhase2MacdTesterCanaryV3.ex5"
+                   }
+               ],
+    "run_start_utc":  "2026-07-13T06:14:01.9391636Z",
+    "run_completion_utc":  "2026-07-13T06:14:18.7201296Z",
+    "native_process_exit_status":  0,
+    "terminal_argument_array":  [
+                                    "/config:\"C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\tester.ini\""
+                                ],
+    "terminal_rendered_command":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe /config:\"C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\tester.ini\"",
+    "tester_ini_path":  "C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\tester.ini",
+    "tester_ini_content_normalized":  "[Common]\nEnvironment=F008C6283604CACC1F767BF85BF1745DD9F1EF511FEDD7D9146B72EF5DF3735CD8F0EE5003D18A8CAD049411CA60FDE6\nLogin=\u003credacted\u003e\nServer=\u003credacted\u003e\nProxyEnable=0\nProxyType=0\nProxyAddress=\nEnableOpenCL=7\nProxyAuth=\nCertInstall=0\nNewsEnable=1\nServices=4294967295\nNewsLanguages=\nSource=download.mql5.com\n\n[Tester]\nExpert=NoraPhase2U\\NoraPhase2MacdTesterCanaryV3\nSymbol=GDAXI\nPeriod=M1\nDeposit=5000\nCurrency=USD\nLeverage=20\nModel=0\nExecutionMode=0\nOptimization=0\nOptimizationCriterion=0\nFromDate=2020.07.01\nToDate=2026.07.01\nForwardMode=0\nReport=C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\tester.htm\nReplaceReport=1\nShutdownTerminal=1\nUseLocal=1\nUseRemote=0\nUseCloud=0\nVisual=0",
+    "csv_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Tester\\6C3C6A11D1C3791DD4DBF45421BF8028\\Agent-127.0.0.1-3000\\MQL5\\Files\\nora_phase2u_macd_tester_v3.csv",
+    "csv_existed_before":  null,
+    "csv_existed_immediately_before":  null,
+    "csv_last_write_time_utc":  "2026-07-13T06:14:09.3319364Z",
+    "csv_size_bytes":  869,
+    "csv_sha256":  "39dfb4ef0ee3e3a754d1baa2d59ef29f79c3a42736a5547b6e4d3cda5fe0fbc3",
+    "csv_after_run_start":  true,
+    "native_journal_boundaries":  {
+                                      "starting_files":  {
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Tester\\logs\\20260710.log":  {
+                                                                                                                                                                                             "length":  15318714,
+                                                                                                                                                                                             "last_write_time_utc":  "2026-07-11T03:33:37.8621108Z"
+                                                                                                                                                                                         },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\logs\\20260712.log":  {
+                                                                                                                                                                                     "length":  391604,
+                                                                                                                                                                                     "last_write_time_utc":  "2026-07-13T06:13:47.1420377Z"
+                                                                                                                                                                                 },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\logs\\20260711.log":  {
+                                                                                                                                                                                     "length":  27204,
+                                                                                                                                                                                     "last_write_time_utc":  "2026-07-11T20:37:14.1121895Z"
+                                                                                                                                                                                 },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\logs\\20260710.log":  {
+                                                                                                                                                                                     "length":  37036,
+                                                                                                                                                                                     "last_write_time_utc":  "2026-07-11T03:33:40.6083305Z"
+                                                                                                                                                                                 },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\logs\\20260709.log":  {
+                                                                                                                                                                                     "length":  163120,
+                                                                                                                                                                                     "last_write_time_utc":  "2026-07-10T02:17:07.4732379Z"
+                                                                                                                                                                                 },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Tester\\logs\\20260709.log":  {
+                                                                                                                                                                                             "length":  123056718,
+                                                                                                                                                                                             "last_write_time_utc":  "2026-07-10T01:49:19.1913482Z"
+                                                                                                                                                                                         },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\logs\\metaeditor.log":  {
+                                                                                                                                                                                       "length":  138680,
+                                                                                                                                                                                       "last_write_time_utc":  "2026-07-13T06:04:05.1326857Z"
+                                                                                                                                                                                   },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Tester\\logs\\20260711.log":  {
+                                                                                                                                                                                             "length":  141132484,
+                                                                                                                                                                                             "last_write_time_utc":  "2026-07-11T20:37:12.6896185Z"
+                                                                                                                                                                                         },
+                                                             "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Tester\\logs\\20260712.log":  {
+                                                                                                                                                                                             "length":  186276,
+                                                                                                                                                                                             "last_write_time_utc":  "2026-07-13T06:13:45.8598485Z"
+                                                                                                                                                                                         }
+                                                         },
+                                      "ending_files":  [
+                                                           {
+                                                               "source_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\logs\\20260712.log",
+                                                               "start_offset_bytes":  391604,
+                                                               "end_offset_bytes":  404856,
+                                                               "segment_path":  "C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\journal-503363254.bin",
+                                                               "source_last_write_time_utc":  "2026-07-13T06:14:18.7044852Z"
+                                                           },
+                                                           {
+                                                               "source_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Tester\\logs\\20260712.log",
+                                                               "start_offset_bytes":  186276,
+                                                               "end_offset_bytes":  192834,
+                                                               "segment_path":  "C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\journal-719462823.bin",
+                                                               "source_last_write_time_utc":  "2026-07-13T06:14:15.9393946Z"
+                                                           }
+                                                       ]
+                                  },
+    "journal_segment_paths":  [
+                                  "C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\tester-journal.log",
+                                  "C:\\Users\\Gasper\\NoraPhase2U\\stage3-macd-a1\\lifecycle.jsonl"
+                              ]
+}
