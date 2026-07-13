@@ -1,0 +1,41 @@
+﻿{
+    "schema_version":  "nora.time_rule_compiler_output_v1",
+    "target_identifier":  "time_rules",
+    "target_descriptor_identity":  "9fe11e4687e8fe63043bc443725c1f82cb3d2aec2a87ce530688339b8176379b",
+    "compile_input_identity":  "95072b4e9a3d4004d072e9d5e9faeeca41d76ef236165cea0951bc5cb043b3ec",
+    "runtime_sha256":  "e87fd716ac369a4dbf45f30a6a8502ae07e4298e18ba3bb4579d247dbbc5f228",
+    "tester_sha256":  "215e6682f4967144f3fd914f29a8b8bfa462a9b687adbc5d3a7f6b66f26659ad",
+    "package_identity":  "ecf7b41d964ce48306f0170547cff136d9815a11dbd326d71a00a8ef8139063a",
+    "metaeditor_executable":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe",
+    "observed_metaeditor_build":  "5.0.0.5836",
+    "exact_command":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe /compile:\"C:\\Users\\Gasper\\NoraPhase2TimeRuleValidation\\compile-v1\\time-rule-compile-8e72c60\\compile\\NoraPhase2TimeRuleTesterCanaryV1.mq5\" /log:\"C:\\Users\\Gasper\\NoraPhase2TimeRuleValidation\\compile-v1\\time-rule-compile-8e72c60\\compile\\compile.log\"",
+    "invocation_start_utc":  "2026-07-13T23:38:06.6147796Z",
+    "invocation_completion_utc":  "2026-07-13T23:38:07.3799883Z",
+    "raw_process_exit":  1,
+    "normalized_result":  "success",
+    "compiler_policy":  "nora.metaeditor_cli_success_v1",
+    "policy_decision":  "accepted_metaeditor_5836_one",
+    "log_path":  "compile.log",
+    "log_size":  3818,
+    "log_sha256":  "38a544f6f4646f0cc3ec7df32c801bf31dbf6926e83260eca0bbf9a2012f43eb",
+    "warning_count":  0,
+    "warnings":  [
+
+                 ],
+    "error_count":  0,
+    "errors":  [
+
+               ],
+    "ex5_path":  "NoraPhase2TimeRuleTesterCanaryV1.ex5",
+    "ex5_size":  12824,
+    "ex5_modification_utc":  "2026-07-13T23:38:07.3175849Z",
+    "ex5_sha256":  "8ba17aa5efc98036ad62bd462aef833efad4b814d73606e377126d6ea0c394a6",
+    "stale_ex5_disposition":  "preexisting_target_removed_or_absent",
+    "freshness_proof":  {
+                            "single_unambiguous_ex5":  true,
+                            "produced_after_invocation_start":  true,
+                            "preexisting_ex5_removed_or_isolated":  true
+                        },
+    "completion_state":  "completed",
+    "failure_reason":  null
+}

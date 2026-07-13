@@ -1,0 +1,6 @@
+﻿{
+    "schema_version":  "nora.time_rule_compile_evidence_manifest_v1",
+    "target_descriptor_identity":  "9fe11e4687e8fe63043bc443725c1f82cb3d2aec2a87ce530688339b8176379b",
+    "target_identifier":  "time_rules",
+    "compile_input_identity":  "95072b4e9a3d4004d072e9d5e9faeeca41d76ef236165cea0951bc5cb043b3ec"
+}

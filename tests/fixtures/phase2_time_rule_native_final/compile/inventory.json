@@ -1,0 +1,26 @@
+﻿[
+    {
+        "path":  "compiler_record.json",
+        "sha256":  "ee24310135ada3ce48dd531aa09ceb8bc98cce66bf7f9471b1e3a2cf3b5ce94c",
+        "size":  2307,
+        "role":  "compiler_record"
+    },
+    {
+        "path":  "compile.log",
+        "sha256":  "38a544f6f4646f0cc3ec7df32c801bf31dbf6926e83260eca0bbf9a2012f43eb",
+        "size":  3818,
+        "role":  "compiler_log"
+    },
+    {
+        "path":  "NoraPhase2TimeRuleTesterCanaryV1.ex5",
+        "sha256":  "8ba17aa5efc98036ad62bd462aef833efad4b814d73606e377126d6ea0c394a6",
+        "size":  12824,
+        "role":  "ex5"
+    },
+    {
+        "path":  "compile_evidence_manifest.json",
+        "sha256":  "10c7fe0646083f1e6ec689f6f025e55091a640e5f03cffd9311b6879421a5511",
+        "size":  324,
+        "role":  "compile_evidence_manifest"
+    }
+]
