@@ -1,0 +1,39 @@
+﻿{
+    "schema_version":  "nora.execution_compiler_output_v1",
+    "target_identifier":  "execution",
+    "compile_input_identity":  "065d1e113aa04d68976ea0c363399197c7126f7873817cbd5829f8f69bfbf859",
+    "runtime_sha256":  "8a9eb2926115069c1e130581d6fa4a6c49cb95158eaa61d44c4b64b5b1a4c1c8",
+    "tester_sha256":  "a33d0007f082427385dadfecd72690129e897facfd4dedbad70c91eed7d31602",
+    "metaeditor_executable":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe",
+    "observed_metaeditor_build":  "5.0.0.5836",
+    "exact_command":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe /compile:\"C:\\Users\\Gasper\\NoraPhase2ExecutionValidation\\compile-v1\\native-compile-1321ffd\\compile\\NoraPhase2ExecutionTesterCanaryV1.mq5\" /log:\"C:\\Users\\Gasper\\NoraPhase2ExecutionValidation\\compile-v1\\native-compile-1321ffd\\compile\\compile.log\"",
+    "invocation_start_utc":  "2026-07-13T22:06:33.3437781Z",
+    "invocation_completion_utc":  "2026-07-13T22:06:34.1722357Z",
+    "raw_process_exit":  1,
+    "normalized_result":  "success",
+    "compiler_policy":  "nora.metaeditor_cli_success_v1",
+    "policy_decision":  "accepted_metaeditor_5836_one",
+    "log_path":  "compile.log",
+    "log_size":  3810,
+    "log_sha256":  "44426b5c2d755433377dffd296eedd158f707db470edc47d74a70c1519e5cacf",
+    "warning_count":  0,
+    "warnings":  [
+
+                 ],
+    "error_count":  0,
+    "errors":  [
+
+               ],
+    "ex5_path":  "NoraPhase2ExecutionTesterCanaryV1.ex5",
+    "ex5_size":  15506,
+    "ex5_modification_utc":  "2026-07-13T22:06:34.1565147Z",
+    "ex5_sha256":  "937ad04804e18ddeeee058434191339ca4f5ab607e762a85aa75f2c87a319d27",
+    "stale_ex5_disposition":  "none_present",
+    "freshness_proof":  {
+                            "preexisting_ex5_removed_or_isolated":  true,
+                            "produced_after_invocation_start":  true,
+                            "single_unambiguous_ex5":  true
+                        },
+    "completion_state":  "completed",
+    "failure_reason":  null
+}

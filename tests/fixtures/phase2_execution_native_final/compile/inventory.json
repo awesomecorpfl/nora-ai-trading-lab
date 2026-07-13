@@ -1,0 +1,26 @@
+﻿[
+    {
+        "path":  "compiler_record.json",
+        "sha256":  "050affc527698549f2fa9452eaf07ecf13b7452d982f81fdf6d868c6265bb67b",
+        "size":  2082,
+        "role":  "compiler_record"
+    },
+    {
+        "path":  "compile.log",
+        "sha256":  "44426b5c2d755433377dffd296eedd158f707db470edc47d74a70c1519e5cacf",
+        "size":  3810,
+        "role":  "compiler_log"
+    },
+    {
+        "path":  "NoraPhase2ExecutionTesterCanaryV1.ex5",
+        "sha256":  "937ad04804e18ddeeee058434191339ca4f5ab607e762a85aa75f2c87a319d27",
+        "size":  15506,
+        "role":  "ex5"
+    },
+    {
+        "path":  "compile_evidence_manifest.json",
+        "sha256":  "544f729a74113598ff2cdfb88dbc66bdd4101700d54330964d867ca01c21755f",
+        "size":  219,
+        "role":  "compile_evidence_manifest"
+    }
+]
