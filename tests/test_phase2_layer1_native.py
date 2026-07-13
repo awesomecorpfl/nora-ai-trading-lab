@@ -24,6 +24,12 @@ def test_two_directory_staging_is_deterministic(tmp_path):
  for left in (tmp_path/'a').rglob('*'):
   if left.is_file():assert left.read_bytes()==(tmp_path/'b'/left.relative_to(tmp_path/'a')).read_bytes()
 
+def test_two_directory_final_staging_is_deterministic(tmp_path):
+ create_synthetic_compiler_evidence(tmp_path/'e');import_evidence(tmp_path/'e',tmp_path/'final')
+ assert stage_final(tmp_path/'final',tmp_path/'a')==stage_final(tmp_path/'final',tmp_path/'b')
+ for left in (tmp_path/'a').rglob('*'):
+  if left.is_file():assert left.read_bytes()==(tmp_path/'b'/left.relative_to(tmp_path/'a')).read_bytes()
+
 def test_synthetic_compiler_import_atomic_chain_and_cross_target_rejection(tmp_path):
  create_synthetic_compiler_evidence(tmp_path/'e');a=import_evidence(tmp_path/'e',tmp_path/'a');b=import_evidence(tmp_path/'e',tmp_path/'b');assert a==b
  with pytest.raises(ValueError):import_evidence(tmp_path/'e',tmp_path/'a')

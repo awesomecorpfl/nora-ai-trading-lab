@@ -15,6 +15,7 @@ from lab.phase2_execution import canon,sha
 ROOT=Path(__file__).resolve().parents[1];FIX=ROOT/'tests/fixtures/phase2_layer1_first_batch'
 FILES={x:FIX/x for x in ('authoritative_matrix.json','dependency_map.json','batch_plan.json','numeric_protocol.json','failure_vocabulary.json','rust_evidence.json')}
 MQL=FIX/'generated';MANIFEST=FIX/'precompile_batch.json';READINESS=FIX/'local_readiness.json'
+FINAL=FIX/'native_final'
 SCRIPTS=tuple(ROOT/x for x in (TARGET.compiler_script,TARGET.execution_script,TARGET.collection_script))
 REQUIRED=('compile.json','execution.json','compile.log','tester-journal.log','tester.htm','completion-marker.json','failure-marker.json',CSV)
 
@@ -71,6 +72,22 @@ def stage(destination):
   dst=tmp/MANIFEST.relative_to(ROOT);dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(MANIFEST,dst)
   return {'precompile_batch_identity':value['precompile_batch_identity'],'staged_inventory_identity':value['staged_inventory_identity']}
  return atomic_publish(Path(destination),'.layer1-stage-',write)
+
+def stage_final(final_dir,destination):
+ final_dir=Path(final_dir);packet=load(final_dir/'execution_packet.json');batch=load(final_dir/'final_batch.json')
+ if batch.get('target_identifier')!=TARGET.target_identifier or packet.get('target_descriptor_identity')!=TARGET.identity or batch.get('execution_packet_identity')!=packet.get('execution_packet_identity'):raise ValueError('final preflight')
+ _,data=generated();data[TARGET.compile_input_filename]=(canon(build_compile_input())+'\n').encode()
+ def write(tmp):
+  for item in batch['staged_files']:
+   target=tmp/item['path'];target.parent.mkdir(parents=True,exist_ok=True)
+   if item['path'].startswith('compile/'):shutil.copy2(final_dir/item['path'],target)
+   elif item['path']=='execution_packet.json':target.write_text(canon(packet)+'\n')
+   elif item['path'].startswith('generated/'):target.write_bytes(data[target.name])
+   else:shutil.copy2(ROOT/item['path'],target)
+   if item['sha256']!='generated' and file_sha(target)!=item['sha256']:raise ValueError('final staging hash')
+  for name in ('compile_input.json','final_batch.json'):shutil.copy2(final_dir/name,tmp/name)
+  return {'final_batch_identity':batch['final_batch_identity'],'execution_packet_identity':packet['execution_packet_identity'],'staged_inventory_identity':batch['staged_inventory_identity']}
+ return atomic_publish(Path(destination),'.layer1-final-stage-',write)
 
 def create_synthetic_compiler_evidence(destination, *, failure=False):
  ci=build_compile_input();log=b'synthetic layer1 compile\nResult: 0 errors, 0 warnings\n';ex5=b'synthetic-layer1-ex5-not-native'

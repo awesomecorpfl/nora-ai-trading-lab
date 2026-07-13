@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+"""Build a clearly synthetic protocol fixture; never marks it native."""
+import argparse
+from pathlib import Path
+from lab.phase2_execution import canon
+from lab.phase2_layer1_native import build_synthetic_returned
+p=argparse.ArgumentParser();p.add_argument('--destination',required=True);p.add_argument('--final',required=True);p.add_argument('--run',default='A1');p.add_argument('--symbol',default='GDAXI');a=p.parse_args()
+print(canon(build_synthetic_returned(Path(a.destination),Path(a.final),a.run,a.symbol)))
