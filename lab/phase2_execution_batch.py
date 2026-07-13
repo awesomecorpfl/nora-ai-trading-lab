@@ -9,6 +9,7 @@ from pathlib import Path
 
 from lab.mql5gen.execution import PACKAGE, RUNTIME, TESTER, generate
 from lab.phase2_execution import canon, sha
+from lab.phase2_execution_compile_contract import build_compile_input
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "tests/fixtures/phase2x_native_batch_v4.json"
@@ -23,6 +24,7 @@ SCRIPT_PATHS = (
     "phase-0a-h/windows/build-execution-returned-package.ps1",
 )
 GENERATED_ROOT = "generated/phase2_execution"
+COMPILE_INPUT = "execution_compile_input_v1.json"
 FAILURES = [
     "wrong_entry_bar", "wrong_entry_price", "wrong_exit_bar", "wrong_exit_price",
     "wrong_exit_reason", "precedence_failure", "ambiguous_bar_optimism",
@@ -47,7 +49,9 @@ def _generated() -> tuple[dict, dict[str, bytes]]:
         out = Path(tmp) / "generated"
         out.mkdir()
         package = generate(ROOT / EVIDENCE, out)
-        return package, {name: (out / name).read_bytes() for name in (RUNTIME, TESTER, PACKAGE)}
+        files = {name: (out / name).read_bytes() for name in (RUNTIME, TESTER, PACKAGE)}
+        files[COMPILE_INPUT] = (canon(build_compile_input()) + "\n").encode()
+        return package, files
 
 
 def build() -> dict:
@@ -62,6 +66,7 @@ def build() -> dict:
                 (RUNTIME, generated[RUNTIME], "mql5_runtime"),
                 (TESTER, generated[TESTER], "mql5_tester"),
                 (PACKAGE, generated[PACKAGE], "executable_package"),
+                (COMPILE_INPUT, generated[COMPILE_INPUT], "compile_input_manifest"),
             )
         ],
         *[
@@ -87,6 +92,11 @@ def build() -> dict:
         "precedence_contract": package["precedence_contract"],
         "host_contexts": ["GDAXI/M1", "AUDCAD/M1"],
         "required_native_matrix": ["compile", "gdaxi_m1_1", "gdaxi_m1_2", "audcad_m1_1", "audcad_m1_2"],
+        "compile_input_identity": build_compile_input()["compile_input_identity"],
+        "precompile_ready": True,
+        "compile_evidence_pending": True,
+        "compile_evidence_imported": False,
+        "final_packet_ready": False,
         "files": files,
         "native_execution_attempted": False,
         "native_result_returned": False,

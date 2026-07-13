@@ -13,6 +13,13 @@ class ExecutionBatch(unittest.TestCase):
         self.assertEqual(preflight_batch(current), "ok")
         self.assertEqual(preflight()["status"], "PASS")
         self.assertEqual(current["staged_inventory_definition"], "nora.phase2x.execution_roles_paths_v1")
+        execution=current["execution"]
+        self.assertTrue(execution["precompile_ready"])
+        self.assertTrue(execution["compile_evidence_pending"])
+        self.assertFalse(execution["compile_evidence_imported"])
+        self.assertFalse(execution["final_packet_ready"])
+        self.assertFalse(execution["native_execution_attempted"])
+        self.assertFalse(execution["native_parity_accepted"])
 
     def test_old_mixed_and_stale_chains_fail_closed(self):
         for mutate in (
