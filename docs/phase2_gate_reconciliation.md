@@ -27,7 +27,7 @@ The execution canary has genuine compiler evidence, a sealed final packet, and f
 |---|---|---|---|
 | Synthetic execution fixtures: next-open, signal exit, time exit, combined precedence, determinism | ACCEPTED | Frozen Rust and native fixed-path ledgers reconcile exactly in four independent host-context runs | None for this restricted contract |
 | Layer-1 indicator/transform coverage | PARTIAL | MACD and Percentile are now accepted narrowly; ATR/Distance-ATR, slope, SMA/cross, and condition evidence do not complete the all-Layer-1 gate | Reconcile remaining Layer-1 contracts and typed AST admission boundaries |
-| Declared strategy/session/broker clock; broker fixtures; DST spring/fall; Friday close; rollover; Monday open; ORB; derived timeframe anchoring | BLOCKED | No paired native time/session canary exists | Freeze one broker-time fixture inventory and matched native canary |
+| Declared strategy/session/broker clock; broker fixtures; DST spring/fall; Friday close; parameterized rollover/Monday/ORB; derived timeframe anchoring | ACCEPTED | Exact 18-scenario time-rule canary, four independent host-neutral packages | Holiday calendars and universal production window defaults remain unsupported |
 | Ten hand-designed strategies, initial-v1 grammar coverage, trade-by-trade reconciliation, parity budget | BLOCKED | Zero completed durable strategy reconciliations | One strategy canary after execution semantics are native-reconciled |
 | Repeated Linux experiment replay: trades, metrics, simulator outcomes, canonical hashes | PARTIAL | Component-level deterministic tests exist; no complete experiment replay bundle | One repeated experiment artifact binding all outputs and hashes |
 | Placebo/scrambled-data edge destruction | BLOCKED | No known-edge scramble fixture or destruction statistic | Define one deterministic scramble and expected edge-destruction measure |
@@ -44,4 +44,4 @@ Superseded identities cannot be selected as current: current package/source bind
 
 ## Next critical path
 
-Select paired time/broker-clock native fixtures. The execution model is now fixed and native-reconciled, so broker/session clock behavior is the highest-dependency remaining prerequisite for the ten hand-designed strategy reconciliations. This remains before search and Phase 3.
+Continue remaining Layer-1 native parity and the ten hand-designed trade-by-trade strategy reconciliations. Deterministic Linux replay, placebo/scrambled-data edge destruction, and parity-budget decisions remain open. This remains before search and Phase 3.

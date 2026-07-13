@@ -115,7 +115,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertEqual(item["mql5"]["generation"], "generated")
             self.assertTrue(item["native"]["execution_evidence_paths"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["task_id"], "time_broker_clock_native_fixtures")
+        self.assertEqual(next_task["task_id"], "remaining_layer1_native_parity")
         self.assertNotIn(next_task["task_id"], items)
         self.assertNotIn(next_task["phase_label"].lower(), {item["status"] for item in items.values()})
         self.assertFalse(next_task["search_authorized"])
@@ -130,9 +130,9 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertTrue(entry["smallest_next_task"])
         next_task = self.value["next_task"]
         self.assertEqual(next_task["phase_label"], "Phase 2")
-        self.assertEqual(next_task["execution_boundary"], "native canary preparation and validation")
+        self.assertEqual(next_task["execution_boundary"], "local native parity preparation and validation")
         self.assertIn("search", next_task["scope"].lower())
-        self.assertIn("clock", next_task["why_next"])
+        self.assertIn("Layer-1", next_task["why_next"])
 
     def test_inventory_summary_matches_items(self):
         from collections import Counter
@@ -141,7 +141,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         summary = self.value["inventory_summary"]
         self.assertEqual(summary["item_count"], len(self.value["items"]))
         self.assertEqual(summary["status_counts"], dict(counts))
-        self.assertEqual(summary["accepted_native_canary_count"], 5)
+        self.assertEqual(summary["accepted_native_canary_count"], 6)
         self.assertEqual(summary["grammar_admitted_node_count"], 2)
         self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
 

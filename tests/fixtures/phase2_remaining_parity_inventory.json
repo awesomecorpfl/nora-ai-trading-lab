@@ -1729,92 +1729,144 @@
       "id": "time.trading_clock",
       "category": "time_session_dst_rule",
       "name": "declared strategy and trading-day clocks",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/time.rs",
           "engine/labengine/src/aggregation.rs"
         ],
-        "identity": null,
+        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
         "tests": [
           "engine/labengine/src/time.rs"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
+        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
+        ],
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
+      "evidence_paths": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
       "commits": [
-        "5b0ddf6a93e21a823c136111fa0193bb2093dff2"
+        "1e5c7f610503287b9557b8046dff50404d30eaf3"
       ],
       "searchable": false,
-      "missing_gate": "matched MT5 time/session fixture"
+      "missing_gate": "frozen 18-scenario contract only; holiday calendars and universal production defaults remain unsupported"
     },
     {
       "id": "time.dst_gap_fold",
       "category": "time_session_dst_rule",
       "name": "DST gap and fold failure behavior",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/time.rs"
         ],
-        "identity": null,
+        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
         "tests": [
           "engine/labengine/src/time.rs"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
+        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
+        ],
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
+      "evidence_paths": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
       "commits": [
-        "5b0ddf6a93e21a823c136111fa0193bb2093dff2"
+        "1e5c7f610503287b9557b8046dff50404d30eaf3"
       ],
       "searchable": false,
-      "missing_gate": "matched MT5 DST canary"
+      "missing_gate": "frozen spring-gap and autumn-fold scenarios only; no holiday calendar semantics"
     },
     {
       "id": "time.strategy_session_rules",
       "category": "time_session_dst_rule",
       "name": "Friday close, ORB, rollover, daily reset, Monday open",
-      "status": "absent",
+      "status": "accepted",
       "rust": {
-        "implementation": "planned",
-        "source_paths": [],
-        "identity": null,
-        "tests": []
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/time.rs",
+          "engine/labengine/src/aggregation.rs"
+        ],
+        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
+        "tests": [
+          "engine/labengine/src/time.rs"
+        ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
+        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
+        ],
+        "execution_attempted": true,
+        "result_returned": true,
+        "reconciliation_passed": true,
+        "parity_evidence_available": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
       "evidence_paths": [
-        "architecture-lock/BUILD_ROADMAP.md",
-        "architecture-lock/RISKS_AND_FAILURE_MODES.md"
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
       ],
-      "commits": [],
+      "commits": [
+        "1e5c7f610503287b9557b8046dff50404d30eaf3"
+      ],
       "searchable": false,
-      "missing_gate": "implement frozen rule contracts and paired Rust/MT5 canaries"
+      "missing_gate": "Friday cutoff, rollover, Monday delay, ORB, and resets are fixture parameters; no global production or holiday-calendar defaults are accepted"
     },
     {
       "id": "determinism.linux_replay",
@@ -1943,14 +1995,14 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-      "accepted": 21,
+      "accepted": 24,
       "partially_proven": 9,
-      "implemented_but_unproved": 17,
-      "absent": 3,
+      "implemented_but_unproved": 15,
+      "absent": 2,
       "deferred": 1,
       "out_of_scope": 0
     },
-    "accepted_native_canary_count": 5,
+    "accepted_native_canary_count": 6,
     "grammar_admitted_node_count": 2,
     "phase2_acceptance_gate": "blocked"
   },
@@ -1992,11 +2044,13 @@
     },
     {
       "id": "strategy_session_time_dst_parity",
-      "status": "blocked",
-      "accepted_evidence": [],
-      "missing_evidence": "no paired session, Friday-close, ORB, rollover, daily-reset, Monday-open, or DST native case",
-      "blocks_phase2": true,
-      "smallest_next_task": "freeze a local time/session rule contract and fixture inventory"
+      "status": "accepted",
+      "accepted_evidence": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
+      "missing_evidence": "parameterized frozen canary only; holiday calendars and universal production window defaults remain unsupported",
+      "blocks_phase2": false,
+      "smallest_next_task": "preserve the narrow accepted clock contract while advancing remaining Layer-1 and strategy reconciliation gates"
     },
     {
       "id": "ten_hand_designed_strategies",
@@ -2039,11 +2093,11 @@
     "2V complete Phase-2 gate audit before any Phase-3 authorization"
   ],
   "next_task": {
-    "task_id": "time_broker_clock_native_fixtures",
+    "task_id": "remaining_layer1_native_parity",
     "phase_label": "Phase 2",
-    "scope": "Paired deterministic broker-clock and strategy-session fixtures covering DST transitions, Friday close, rollover, Monday open, ORB windows, and derived-timeframe anchoring; before strategy reconciliation, search, or Phase 3.",
-    "why_next": "The frozen execution model is now native-reconciled, leaving broker-clock semantics as the highest-dependency unproved execution prerequisite.",
-    "execution_boundary": "native canary preparation and validation",
+    "scope": "Complete the remaining Layer-1 native-parity chains without grammar admission, search, or Phase 3.",
+    "why_next": "The execution and narrow time-rule canaries are native-reconciled; remaining Layer-1 parity is now the highest-dependency unproved implementation gate.",
+    "execution_boundary": "local native parity preparation and validation",
     "search_authorized": false,
     "phase3_authorized": false
   },

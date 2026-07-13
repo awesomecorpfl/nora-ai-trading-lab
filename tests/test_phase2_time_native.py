@@ -69,3 +69,12 @@ def test_precompile_generation_staging_and_scripts_are_safe(tmp_path):
   for left in (tmp_path/'a').rglob('*'):
    if left.is_file():assert left.read_bytes()==(tmp_path/'b'/left.relative_to(tmp_path/'a')).read_bytes()
  readiness=local_readiness_evidence();assert readiness['synthetic_protocol_fixture_only'] and not readiness['genuine_native_compiler_evidence'] and not readiness['native_parity_accepted']
+
+def test_native_acceptance_stays_narrow_when_raw_evidence_is_committed():
+ p=Path(__file__).resolve().parents[1]/'tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json'
+ assert p.is_file()
+ value=json.loads(p.read_text())
+ assert value['native_parity_accepted']
+ assert not value['grammar_admitted']
+ assert not value['searchable']
+ assert not value['complete_phase2_gate']
