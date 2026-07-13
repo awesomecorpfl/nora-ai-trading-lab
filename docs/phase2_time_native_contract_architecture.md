@@ -21,3 +21,16 @@ The dependency graph remains strictly forward-only:
 A descriptor owns immutable names and roles. It contains neither expected rows nor
 native results. Target-specific code owns semantic rows and reconciliation. Existing
 execution artifacts and identities are not rewritten by this architecture.
+
+## Local readiness
+
+The committed precompile batch contains source, clock and Rust evidence, generated
+MQL5 sources, the compile-input manifest, and target-specific scripts. It contains no
+EX5 or compiler output. Synthetic identities in local-readiness evidence are protocol
+fixtures only and cannot satisfy native acceptance.
+
+The next genuine workflow is: stage the precompile allowlist; compile on the Windows
+validation VM; return compiler evidence; import it atomically to create the final
+packet and batch; commit that packet; stage it; execute A1/A2 under GDAXI/M1 and
+B1/B2 under AUDCAD/M1; return four independent packages; reconcile every time field
+exactly; then commit narrowly scoped parity evidence.
