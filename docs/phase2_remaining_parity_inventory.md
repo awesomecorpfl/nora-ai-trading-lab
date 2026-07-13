@@ -1,6 +1,6 @@
 # Phase 2R: Remaining Parity Inventory and Acceptance
 
-The machine-readable source of truth is `tests/fixtures/phase2_remaining_parity_inventory.json`. It records 51 Phase-2 items and deliberately separates Rust implementation, MQL5 generation, compilation evidence, native execution evidence, and semantic parity. No item is searchable and Phase 3 is not authorized.
+The broad Phase-2 gate inventory remains `tests/fixtures/phase2_remaining_parity_inventory.json`. The reconciled Layer-1 authority is now `tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json`; it deliberately separates Rust implementation, typed AST, outputs, null/warmup semantics, MQL5 generation, compilation evidence, native execution, reconciliation, grammar admission, and searchability for all 22 locked families. No Layer-1 item is searchable and Phase 3 is not authorized.
 
 ## Executable-source correction
 
