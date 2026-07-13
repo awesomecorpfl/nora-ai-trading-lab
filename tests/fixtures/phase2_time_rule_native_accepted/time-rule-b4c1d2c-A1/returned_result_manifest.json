@@ -1,0 +1,15 @@
+﻿{
+    "batch_identity":  "c93edc56c8ecbea987c16af8ee86e6b6021cf819f585dc7fe57d2634f4010e70",
+    "completion_marker_present":  true,
+    "compiler_output_identity":  "adabe4ea44bda8f962427fb2dddb430e9e56d00b6f0446214bfdcac9ed273e37",
+    "ex5_sha256":  "8ba17aa5efc98036ad62bd462aef833efad4b814d73606e377126d6ea0c394a6",
+    "execution_packet_identity":  "27b3815f776ae295ed16f5ef9d7054e122c40433f2659e0bbde849df31159de8",
+    "failure_marker_present":  false,
+    "host_symbol":  "GDAXI",
+    "returned_inventory_sha256":  "9459ec6fcb6c89ac0df170b801f3bf7d84f352d71b9f457961b87da9e6784945",
+    "run_identifier":  "time-rule-b4c1d2c-A1",
+    "schema_version":  "nora.time_rule_returned_package_v1",
+    "target_identifier":  "time_rules",
+    "timeframe":  "M1",
+    "returned_package_identity":  "1c4f023c561a69df538a008d067ec52ca3aea1d0494696e4d59e3901e1b3e4e8"
+}

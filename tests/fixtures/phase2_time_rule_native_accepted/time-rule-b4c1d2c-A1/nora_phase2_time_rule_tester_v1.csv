@@ -1,0 +1,19 @@
+scenario_id	source_epoch	source_clock	new_york	broker	utc_offset_seconds	dst	session_member	friday_close	rollover	monday_delay	orb	m5_anchor_epoch	h1_anchor_epoch	conversion_state	reason_code	pass
+winter_utc	1736942400	UTC	2025-01-15 07:00	2025-01-15 14:00	7200	false	true	false	false	false	false	1736942400	1736942400	declared_not_converted	session_member	true
+summer_utc	1748957400	UTC	2025-06-03 09:30	2025-06-03 16:30	10800	true	false	false	false	false	false	1748957400	1748955600	declared_not_converted	outside_session	true
+spring_before	1741503540	UTC	2025-03-09 01:59	2025-03-09 08:59	7200	false	false	false	false	false	false	1741503300	1741500000	declared_not_converted	outside_session	true
+spring_after	1741503600	UTC	2025-03-09 03:00	2025-03-09 10:00	10800	true	false	false	false	false	false	1741503600	1741503600	declared_not_converted	outside_session	true
+fall_first_hour	1762061400	UTC	2025-11-02 01:30	2025-11-02 08:30	10800	true	false	false	false	false	false	1762061400	1762059600	declared_not_converted	outside_session	true
+fall_second_hour	1762065000	UTC	2025-11-02 01:30	2025-11-02 08:30	7200	false	false	false	false	false	false	1762065000	1762063200	declared_not_converted	outside_session	true
+friday_pre	1749241440	UTC	2025-06-06 16:24	2025-06-06 23:24	10800	true	false	false	false	false	false	1749241200	1749240000	declared_not_converted	outside_session	true
+friday_exact	1749241500	UTC	2025-06-06 16:25	2025-06-06 23:25	10800	true	false	true	false	false	false	1749241500	1749240000	declared_not_converted	friday_close	true
+friday_post	1749241560	UTC	2025-06-06 16:26	2025-06-06 23:26	10800	true	false	true	false	false	false	1749241500	1749240000	declared_not_converted	friday_close	true
+friday_winter	1733520300	UTC	2024-12-06 16:25	2024-12-06 23:25	7200	false	false	true	false	false	false	1733520300	1733518800	declared_not_converted	friday_close	true
+rollover_before	1736286540	broker	2025-01-07 16:49	2025-01-07 23:49	7200	false	false	false	false	false	false	1736286300	1736283600	broker_declared	outside_session	true
+rollover_start	1736286600	broker	2025-01-07 16:50	2025-01-07 23:50	7200	false	false	false	true	false	false	1736286600	1736283600	broker_declared	rollover	true
+rollover_end	1736287800	broker	2025-01-07 17:10	2025-01-08 00:10	7200	false	false	false	false	false	false	1736287800	1736287200	broker_declared	outside_session	true
+monday_delay	1736114700	broker	2025-01-05 17:05	2025-01-06 00:05	7200	false	false	false	true	true	false	1736114700	1736114400	broker_declared	rollover	true
+monday_permitted	1736115300	broker	2025-01-05 17:15	2025-01-06 00:15	7200	false	false	false	false	false	false	1736115300	1736114400	broker_declared	outside_session	true
+orb_open	1748932200	broker	2025-06-03 02:30	2025-06-03 09:30	10800	true	true	false	false	false	true	1748932200	1748930400	broker_declared	orb_active	true
+orb_end	1748934000	broker	2025-06-03 03:00	2025-06-03 10:00	10800	true	true	false	false	false	false	1748934000	1748934000	broker_declared	session_member	true
+already_converted_rejected	1748957400	UTC	2025-06-03 09:30	2025-06-03 16:30	10800	true	false	false	false	false	false	1748957400	1748955600	already_converted	conversion_rejected	true

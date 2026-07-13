@@ -1,0 +1,15 @@
+﻿{
+    "batch_identity":  "c93edc56c8ecbea987c16af8ee86e6b6021cf819f585dc7fe57d2634f4010e70",
+    "completion_marker_present":  true,
+    "compiler_output_identity":  "adabe4ea44bda8f962427fb2dddb430e9e56d00b6f0446214bfdcac9ed273e37",
+    "ex5_sha256":  "8ba17aa5efc98036ad62bd462aef833efad4b814d73606e377126d6ea0c394a6",
+    "execution_packet_identity":  "27b3815f776ae295ed16f5ef9d7054e122c40433f2659e0bbde849df31159de8",
+    "failure_marker_present":  false,
+    "host_symbol":  "AUDCAD",
+    "returned_inventory_sha256":  "2de8cfe2d59e6f2fbc297b3673c39721e7eb22f069ceea6dce1d471a63498bea",
+    "run_identifier":  "time-rule-b4c1d2c-B1",
+    "schema_version":  "nora.time_rule_returned_package_v1",
+    "target_identifier":  "time_rules",
+    "timeframe":  "M1",
+    "returned_package_identity":  "5ec258f5bc90bdce631d35a21f9446c1af170f9fdaf0046b68151d61edf782fc"
+}
