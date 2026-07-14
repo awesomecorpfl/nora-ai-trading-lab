@@ -1,6 +1,6 @@
 import copy
 from lab.phase2_execution import sha
-from lab.phase2_ten_strategy import coverage_matrix, fixture_suite, strategy_suite
+from lab.phase2_ten_strategy import coverage_matrix, fixture_suite, strategy_suite, rust_task_spec
 
 
 def test_suite_is_exactly_the_committed_two_families_and_nonsearchable():
@@ -38,3 +38,18 @@ def test_fixture_and_coverage_contracts_are_complete_and_deterministic():
     assert one==two and len(one["segments"])==10
     assert set(one["required_coverage"])==set(one["coverage_owners"])
     assert coverage["input_fixture_identity"]==one["input_fixture_identity"]
+
+
+def test_task_identity_mutates_for_signal_parameter_order_rules_and_expected_ledger():
+    task=rust_task_spec();base=task["rust_suite_task_identity"]
+    for mutate in ("signal","parameter","order","entry","exit","time","execution","fixture"):
+        changed=copy.deepcopy(task);changed.pop("rust_suite_task_identity")
+        if mutate=="signal":changed["suite"]["strategies"][0]["entry_ast"]["root"]={"kind":"boolean_series","ref":{"series":"changed","type":"boolean"}}
+        elif mutate=="parameter":changed["suite"]["strategies"][0]["parameters"]["period"]=99
+        elif mutate=="order":changed["suite"]["strategies"].reverse()
+        elif mutate=="entry":changed["suite"]["strategies"][0]["entry_rule"]["timing"]="changed"
+        elif mutate=="exit":changed["suite"]["strategies"][0]["exit_rule"]["kind"]="changed"
+        elif mutate=="time":changed["suite"]["strategies"][0]["time_session_rule"]["declared_contract"]="changed"
+        elif mutate=="execution":changed["suite"]["strategies"][0]["execution"]["contract"]="changed"
+        else:changed["fixtures"]["segments"][0]["bars"][0]["close"]+=1
+        assert sha(changed)!=base

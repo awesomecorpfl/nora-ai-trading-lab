@@ -24,6 +24,7 @@ pub mod exit_condition;
 pub mod simulator;
 pub mod closed_trade_metrics;
 pub mod rng_stream;
+pub mod strategy_suite;
 
 /// Stable public boundary for the Phase-1 canonical reader.
 pub mod data {

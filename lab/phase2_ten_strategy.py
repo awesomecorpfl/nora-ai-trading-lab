@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import copy
+import json
+import subprocess
+import tempfile
 from pathlib import Path
 
 from lab.phase2_execution import sha
@@ -95,14 +98,14 @@ def fixture_suite() -> dict:
     for index, strategy in enumerate(strategy_suite()["strategies"]):
         base = 100.0 + index * 20.0
         side = strategy["direction_support"][0]
-        closes = ([base,base-1,base-2,base-1,base+1,base+3,base+2,base+4,base+1,base+2,base+5,base+4]
-                  if side == "long" else [base,base+1,base+2,base+1,base-1,base-3,base-2,base-4,base-1,base-2,base-5,base-4])
+        offsets=[0,-1,-2,-1,2,4,3,6,2,1,8,10,5,3,9,4]
+        closes=[base+x if side=="long" else base-x for x in offsets]
         bars=[]
         for row, close in enumerate(closes):
             open_=close + (-0.5 if side == "long" else 0.5)
             span=2.0 if row in (6,8) else 1.0
             bars.append({"timestamp":f"2040-01-{index+1:02d} {row:02d}:00","open":open_,"high":max(open_,close)+span,"low":min(open_,close)-span,"close":close,
-                         "session_member": row not in (0,9), "friday_close": row==10 and index in (2,7), "rollover":row==4 and strategy["time_session_rule"]["rollover_filter"],
+                         "session_member": row!=0 and not (index==1 and row==4), "friday_close": row==12 and index in (2,7), "rollover":row==4 and strategy["time_session_rule"]["rollover_filter"],
                          "monday_delay":row==4 and strategy["time_session_rule"]["monday_delay"]})
         segment={"fixture_identifier":f"fixture_{strategy['strategy_identifier']}","strategy_identity":strategy["strategy_identity"],"bars":bars,
                  "coverage_tags":["long_entry" if side=="long" else "short_entry","null_warmup_suppression","next_open_entry","session_filtering","terminal_source_not_executed","no_overlap"]}
@@ -110,7 +113,17 @@ def fixture_suite() -> dict:
     required=["long_entry","short_entry","no_trade_result","repeated_true_signals","null_warmup_suppression","next_open_entry","gap_entry","signal_exit","time_exit","friday_close_exit","stop_exit","target_exit","pessimistic_dual_touch","terminal_source_not_executed","session_filtering","rollover_filtering","monday_delay_filtering","completed_level_shift","multiple_sequential_trades","no_overlap"]
     # Coverage ownership is frozen here and verified against Rust outcomes later.
     owners={name:[segments[i % 10]["fixture_identifier"]] for i,name in enumerate(required)}
-    value={"schema_version":"nora.phase2_ten_strategy_fixture_suite_v1","segments":segments,"required_coverage":required,"coverage_owners":owners}
+    accepted_execution_coverage={
+        "next_open_entry":"completed_next_open","gap_entry":"gap_target","signal_exit":"signal_exit",
+        "time_exit":"time_exit","stop_exit":"nonambiguous_stop","target_exit":"nonambiguous_target",
+        "pessimistic_dual_touch":"pessimistic_dual_touch","terminal_source_not_executed":"entry_row_excluded_terminal",
+        "no_overlap":"completed_next_open"
+    }
+    value={"schema_version":"nora.phase2_ten_strategy_fixture_suite_v1","segments":segments,"required_coverage":required,"coverage_owners":owners,
+           "accepted_execution_fixture":"tests/fixtures/phase2_execution_native_accepted/native_acceptance.json",
+           "accepted_execution_coverage":accepted_execution_coverage,
+           "accepted_time_fixture":"tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json",
+           "coverage_contract":"strategy segments plus immutable accepted execution/time fixtures; expected ledgers are never resolver inputs"}
     value=identified(value,"input_fixture_identity")
     value["coverage_plan_identity"]=sha({"required":required,"owners":owners})
     value["per_fixture_identities"]={x["fixture_identifier"]:x["fixture_identity"] for x in segments}
@@ -123,3 +136,62 @@ def coverage_matrix() -> dict:
            "input_fixture_identity":fixtures["input_fixture_identity"],"required":fixtures["required_coverage"],
            "owners":fixtures["coverage_owners"],"status":"planned_then_rust_verified"}
     return identified(value,"coverage_matrix_identity")
+
+
+def rng_contract() -> dict:
+    return identified({"schema_version":"nora.deterministic_rng_no_draw_v1","seed":0,"draws":0,"purpose":"strategy-suite ordering only"},"rng_identity")
+
+
+def rust_task_spec() -> dict:
+    value={"task_version":1,"task_type":"phase2_ten_strategy_suite_v1","suite":strategy_suite(),
+           "fixtures":fixture_suite(),"rng_identity":rng_contract()["rng_identity"]}
+    return identified(value,"rust_suite_task_identity")
+
+
+def run_rust_task() -> dict:
+    task=rust_task_spec();wire={k:v for k,v in task.items() if k!="rust_suite_task_identity"}
+    binary=ROOT/"engine/target/debug/labengine"
+    if not binary.is_file():raise ValueError("build engine/target/debug/labengine first")
+    with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+        path=Path(directory)/"task.json";path.write_text(json.dumps(wire,separators=(",",":"),sort_keys=True)+"\n")
+        result=subprocess.run([str(binary),str(path)],cwd=ROOT,text=True,capture_output=True,check=False)
+    if result.returncode or result.stderr.strip():raise ValueError(f"Rust strategy task failed: {result.stderr.strip()}")
+    value=json.loads(result.stdout);assert value["ok"] and value["suite_identity"]==strategy_suite()["suite_identity"]
+    return value
+
+
+def rust_evidence(output: dict | None=None) -> dict:
+    output=output or run_rust_task();strategies=output["strategy_outputs"]
+    ledgers={x["strategy_identifier"]:x["ledger_vector_identity"] for x in strategies}
+    no_trade=[x["strategy_identifier"] for x in strategies if x["trades"][0]["trade_ordinal"] is None]
+    counts={x["strategy_identifier"]:sum(t["trade_ordinal"] is not None for t in x["trades"]) for x in strategies}
+    value={"schema_version":"nora.phase2_ten_strategy_rust_evidence_v1","suite_identity":strategy_suite()["suite_identity"],
+           "rust_suite_task_identity":rust_task_spec()["rust_suite_task_identity"],"rust_output":output,
+           "evaluated_ast_identities":{x["strategy_identifier"]:x["evaluated_ast_identity"] for x in strategies},
+           "intent_identities":{x["strategy_identifier"]:x["intent_identity"] for x in strategies},
+           "simulator_output_identities":{x["strategy_identifier"]:x["simulator_output_identity"] for x in strategies},
+           "expected_ledger_vector_identities":ledgers,"expected_trade_count_identity":sha(counts),
+           "expected_no_trade_identity":sha(no_trade),"expected_trade_counts":counts,"expected_no_trade":no_trade,
+           "coverage_classification":"strategy-suite replay evidence contributing to the whole-experiment gate"}
+    return identified(value,"combined_rust_evidence_identity")
+
+
+def experiment_bundle(evidence: dict) -> dict:
+    value={"schema_version":"nora.phase2_ten_strategy_linux_experiment_v1","suite":strategy_suite(),
+           "fixtures":fixture_suite(),"coverage":coverage_matrix(),"task":rust_task_spec(),"rng":rng_contract(),
+           "time_rule_contract_identity":TIME_IDENTITY,"execution_contract_identity":EXECUTION_IDENTITY,
+           "indicator_identities":sorted({v for x in strategy_suite()["strategies"] for v in x["indicator_node_identities"].values()}),
+           "output_schema_identity":strategy_suite()["ledger_schema"]["strategy_ledger_schema_identity"],
+           "expected_rust_evidence_identity":evidence["combined_rust_evidence_identity"]}
+    return identified(value,"experiment_bundle_identity")
+
+
+def replay_record(outputs: list[dict], evidence: dict) -> dict:
+    if len(outputs)!=3:raise ValueError("three replay outputs required")
+    semantic=[sha(x) for x in outputs];equal=len(set(semantic))==1
+    value={"schema_version":"nora.phase2_ten_strategy_replay_record_v1","experiment_bundle_identity":experiment_bundle(evidence)["experiment_bundle_identity"],
+           "run_identities":[sha({"run":i+1,"semantic":semantic[i]}) for i in range(3)],"artifact_hashes":semantic,
+           "semantic_equal":equal,"destination_inert":equal,"first_divergence":None if equal else "output",
+           "classification":"PASS_STRATEGY_SUITE_REPLAY" if equal else "FAIL_DIVERGENCE",
+           "gate_scope":"strategy-suite replay evidence contributing to the authoritative whole-experiment gate"}
+    return identified(value,"replay_record_identity")
