@@ -1,0 +1,2 @@
+#!/usr/bin/env python3
+raise SystemExit("use lab.phase2_ten_strategy_native.build_synthetic_returned from a fresh destination")

@@ -67,7 +67,7 @@ def strategy_suite() -> dict:
             "exit_rule": exit_rule,
             "time_session_rule": {"declared_contract": TIME_IDENTITY, "session": "fixture_declared_session", "rollover_filter": order in (2, 7), "monday_delay": order in (5, 10)},
             "friday_close": {"enabled": True, "precedence": "signal_before_friday_time"},
-            "brackets": {"stop_atr_multiple": 1.0, "target_atr_multiple": 1.5},
+            "brackets": {"construction": "fixed_embedded_price_offset", "stop_price_offset": 4.0, "target_price_offset": 6.0},
             "execution": {"contract": EXECUTION_IDENTITY, "precedence": ["gap","signal","time","intrabar"], "gap": "fill_trigger_at_open", "dual_touch": "pessimistic_stop", "same_bar_entry_exit": False},
             "null_warmup": "any unavailable dependency suppresses signal",
             "trade_ledger_schema": "nora.phase2_strategy_trade_ledger_v1",

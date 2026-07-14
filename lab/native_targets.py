@@ -47,3 +47,15 @@ LAYER1_BATCH_TARGET=NativeTargetDescriptor(
  "NORA_PHASE2_LAYER1_BATCH_COMPLETE_V1","NORA_PHASE2_LAYER1_BATCH_FAIL_V1",
  "nora.layer1_numeric_reconciliation_v1",
  ("GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"),MEMBERS)
+
+TEN_STRATEGY_TARGET=NativeTargetDescriptor(
+ "nora.native_target_descriptor_v1","phase2_ten_strategy_suite","nora.ten_strategy_compile_input_v1",
+ "nora.ten_strategy_compiler_output_v1","nora.ten_strategy_compile_evidence_manifest_v1",
+ "nora.ten_strategy_native_packet_v1","nora.ten_strategy_precompile_batch_v1",
+ "nora.ten_strategy_final_native_batch_v1","nora.ten_strategy_returned_package_v1",
+ "NoraPhase2TenStrategyRuntimeV1.mqh","NoraPhase2TenStrategyTesterCanaryV1.mq5",
+ "phase2_ten_strategy_executable_package.json","NoraPhase2TenStrategyTesterCanaryV1.ex5",
+ "ten_strategy_compile_input_v1.json","nora_phase2_ten_strategy_v1.csv",
+ "scripts/phase2-ten-strategy-build-compile-input","scripts/phase2-ten-strategy-ingest-returned","scripts/phase2-ten-strategy-build-synthetic-package",
+ "NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1","NORA_PHASE2_TEN_STRATEGY_FAIL_V1","nora.ten_strategy_trade_reconciliation_v1",
+ ("GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"),MEMBERS)
