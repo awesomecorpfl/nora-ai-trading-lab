@@ -124,3 +124,19 @@ def test_compiler_log_redaction_rejects_diagnostic_removal_or_extra_redaction(tm
 def test_compiler_log_redaction_rejects_missing_raw_log(tmp_path):
  record,_,_=_redaction_fixture(tmp_path)
  assert 'missing raw log' in validate_compiler_log_redaction(record,tmp_path,tmp_path/'missing.log')
+
+def test_corrected_genuine_compiler_packet_is_raw_bound_and_sealed():
+ final=FIX/'native_corrected_final';record=load(final/'compile/compiler_record.json')
+ packet=load(final/'execution_packet.json');batch=load(final/'final_batch.json')
+ assert record['synthetic_protocol_fixture'] is False
+ assert record['raw_log_sha256']=='f2f5a3be43c66736db98e3a161ac74849a301a9ecd4bfc818dc9137a3dbbe62f'
+ assert record['raw_log_size']==3698 and record['redaction_policy_identity']==COMPILER_LOG_REDACTION_POLICY_IDENTITY
+ assert record['compiler_output_identity']==compiler_output_identity(record)=='87a48eb8bf0297b46e438f7f5f692dde7b918a66eeca530f384bd6fc6fabfe26'
+ assert packet['execution_packet_identity']=='1cb34d101d83bf1811d8b78a116740e6d2586cb7f598b50cb90b56a3833549c4'
+ assert batch['final_batch_identity']=='cf9e9fd19c9fb19ea50be7094bd5eaa706288486186e7bf1ca7fb6c04f1b3018'
+ assert packet['raw_compiler_log_sha256']==batch['raw_compiler_log_sha256']==record['raw_log_sha256']
+ assert file_sha(final/'compile'/T.ex5_filename)==record['ex5_sha256']=='fd736e5b7a4984e1fd703f881cbe0fed5baaec9b98a7cc4abcecbfb875cd116d'
+ text=(final/'compile/compile.redacted.log').read_bytes().decode('utf-16')
+ assert '<WINDOWS_USER_PATH>' in text and ("C:"+"\\Users\\") not in text
+ assert 'Result: 0 errors, 0 warnings' in text
+ assert not batch['native_execution_attempted'] and not batch['native_parity_accepted'] and not batch['searchable']
