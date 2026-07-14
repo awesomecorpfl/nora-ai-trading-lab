@@ -70,6 +70,75 @@ class NativeTargetDescriptor:
         return sha(self.value())
 
 
+@dataclass(frozen=True)
+class CompilerSemanticDescriptor:
+    """Compilation-only identity boundary for genuine compiler evidence."""
+    schema_version: str
+    target_identifier: str
+    runtime_source: dict
+    tester_source: dict
+    include_sources: tuple[dict, ...]
+    compiler_product_identity: str
+    compiler_executable: str
+    required_build: str
+    invocation_schema: str
+    invocation_template: str
+    success_policy: str
+    compiler_output_schema: str
+    compiler_evidence_schema: str
+    compiler_log_evidence_schema: str
+    redaction_policy_identity: str
+    output_ex5_contract: dict
+    source_schema_version: str
+    package_schema_version: str
+    compile_allowlist: tuple[str, ...]
+
+    def value(self) -> dict:
+        value = asdict(self)
+        value["include_sources"] = list(self.include_sources)
+        value["compile_allowlist"] = list(self.compile_allowlist)
+        return value
+
+    @property
+    def identity(self) -> str:
+        return sha(self.value())
+
+
+NATIVE_EXECUTION_REQUIRED_ROLES = (
+    "compiled_ex5",
+    "windows_packet_launcher",
+    "tester_configuration_builder",
+    "environmental_forensic_collector",
+    "journal_environmental_acceptance_evaluator",
+    "completion_failure_marker_contract",
+    "native_csv_ledger_producer",
+    "atomic_genuine_returned_package_builder",
+    "fedora_transfer_retrieval_orchestrator",
+    "genuine_returned_package_importer",
+    "exact_reconciliation_implementation",
+)
+
+
+def validate_typed_roles(roles: list[dict], *, require_compiled_ex5: bool = True) -> list[str]:
+    """Validate complete genuine role materialization; synthetic roles never substitute."""
+    errors: list[str] = []
+    names = [role.get("role") for role in roles]
+    if len(names) != len(set(names)): errors.append("duplicate role")
+    required = set(NATIVE_EXECUTION_REQUIRED_ROLES)
+    if not require_compiled_ex5: required.remove("compiled_ex5")
+    for missing in sorted(required - set(names)): errors.append("missing role:" + missing)
+    for role in roles:
+        name = role.get("role")
+        if name in required or name == "compiled_ex5":
+            if role.get("native_acceptance_eligible") is not True: errors.append("ineligible genuine role:" + str(name))
+            if role.get("type") != "genuine_native_role": errors.append("synthetic substitution:" + str(name))
+        if not safe_relative(role.get("path", "")): errors.append("role path:" + str(name))
+        digest = role.get("sha256", "")
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest): errors.append("role hash:" + str(name))
+        if not role.get("schema_version_identity"): errors.append("role schema:" + str(name))
+    return errors
+
+
 def raw_sha(data: bytes) -> str: return hashlib.sha256(data).hexdigest()
 def file_sha(path: Path) -> str: return raw_sha(Path(path).read_bytes())
 

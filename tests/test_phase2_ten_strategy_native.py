@@ -7,13 +7,14 @@ from lab.native_target import (COMPILER_LOG_REDACTION_POLICY,
  validate_compiler_log_redaction)
 from lab.phase2_ten_strategy import FIX,strategy_suite
 from lab.phase2_ten_strategy_native import *
+import lab.phase2_ten_strategy_v2 as v2
 
-def test_frozen_target_compile_precompile_and_readiness_are_current():
+def test_frozen_v1_target_is_preserved_historical_and_v2_is_current():
  assert load(FIX/'target_descriptor.json')['target_descriptor_identity']==T.identity
- assert load(FIX/'compile_input.json')==build_compile_input()
- assert load(MANIFEST)==build_precompile() and preflight()['status']=='PASS'
- state=load(READINESS);assert state==local_readiness()
- assert state['precompile_ready'] and state['compile_evidence_pending'] and not state['compile_evidence_imported']
+ assert load(FIX/'compile_input.json')['compile_input_identity']=='57b8da184f4a0aeb590cfb7a613b6058ce24b0bcea1cbc1b494c9295c7556ff9'
+ assert load(FIX/'precompile_batch.json')['precompile_batch_identity']=='18bd4a7fe7e797a4ea47ebb64d2d8ff837caa6bb60cb81386c643df87a157858'
+ state=v2.load(v2.READINESS_FILE);assert state==v2.local_readiness()
+ assert state['genuine_v2_recompilation_required'] and state['compile_evidence_pending']
  assert not state['final_packet_ready'] and not state['native_execution_attempted'] and not state['native_parity_accepted']
  assert not state['grammar_admitted'] and not state['searchable'] and not state['complete_phase2_gate'] and not state['production_data_required']
 
@@ -23,7 +24,7 @@ def test_exact_ten_five_per_family_and_accepted_dependencies():
  assert all(not x['searchable'] and not x['grammar_admitted'] for x in suite['strategies'])
 
 def test_deterministic_generation_and_staging(tmp_path):
- a=tmp_path/'a';b=tmp_path/'b';assert stage(a)==stage(b)
+ a=tmp_path/'a';b=tmp_path/'b';assert v2.stage_precompile(a)==v2.stage_precompile(b)
  for p in a.rglob('*'):
   if p.is_file():assert p.read_bytes()==(b/p.relative_to(a)).read_bytes()
 

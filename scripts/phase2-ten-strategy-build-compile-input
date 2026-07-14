@@ -1,3 +1,3 @@
 #!/usr/bin/env python3
-from lab.phase2_ten_strategy_native import freeze
-print(freeze()["compile_input.json"]["compile_input_identity"])
+from lab.phase2_ten_strategy_v2 import freeze
+print(freeze()["compile_input_v2.json"]["compile_input_identity"])

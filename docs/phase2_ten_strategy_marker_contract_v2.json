@@ -1,0 +1,1 @@
+{"completion_marker":"NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1","failure_marker":"NORA_PHASE2_TEN_STRATEGY_FAIL_V1","failure_marker_must_be_absent":true,"schema_version":"nora.ten_strategy_completion_failure_marker_contract_v2"}
