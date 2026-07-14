@@ -1,0 +1,20 @@
+﻿RR	0	18:30:36.978	Tester	GDAXI,M1 (Darwinex-Live): testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+FD	0	18:30:37.228	Tester	quality of analyzed history is 97%
+CS	0	18:30:42.114	Core 1	MetaTester 5 started on 127.0.0.1:3000
+FG	0	18:30:42.114	Core 1	1478 bytes of tester parameters loaded
+PO	0	18:30:42.114	Core 1	expert file added: Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5. 17582 bytes loaded
+GG	0	18:30:42.114	Core 1	GDAXI,M1: testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+PN	0	18:30:42.114	Core 1	log file "C:\Users\Gasper\AppData\Roaming\MetaQuotes\Tester\6C3C6A11D1C3791DD4DBF45421BF8028\Agent-127.0.0.1-3000\logs\20260713.log" written
+FK	0	18:30:42.159	Tester	automatical testing finished
+IS	0	18:32:55.832	Tester	Local network farm switched off
+IH	0	18:32:55.832	Tester	Cloud servers switched off
+DQ	0	18:32:58.138	Tester	"NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5" X64
+QG	0	18:32:58.470	Tester	GDAXI: history data begins from 2015.08.14 00:00
+RQ	0	18:32:59.551	Tester	GDAXI,M1 (Darwinex-Live): testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+OE	0	18:32:59.687	Tester	quality of analyzed history is 97%
+LP	0	18:33:04.558	Core 1	MetaTester 5 started on 127.0.0.1:3000
+EG	0	18:33:04.558	Core 1	1478 bytes of tester parameters loaded
+GL	0	18:33:04.558	Core 1	expert file added: Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5. 17582 bytes loaded
+HF	0	18:33:04.558	Core 1	GDAXI,M1: testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+ON	0	18:33:04.558	Core 1	log file "C:\Users\Gasper\AppData\Roaming\MetaQuotes\Tester\6C3C6A11D1C3791DD4DBF45421BF8028\Agent-127.0.0.1-3000\logs\20260713.log" written
+JK	0	18:33:04.598	Tester	automatical testing finished

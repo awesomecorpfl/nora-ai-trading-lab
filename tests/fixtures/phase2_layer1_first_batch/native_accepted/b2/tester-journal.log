@@ -1,0 +1,20 @@
+﻿GG	0	18:33:48.705	Core 1	AUDCAD,M1: testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+HJ	0	18:33:54.857	Core 1	log file "C:\Users\Gasper\AppData\Roaming\MetaQuotes\Tester\6C3C6A11D1C3791DD4DBF45421BF8028\Agent-127.0.0.1-3000\logs\20260713.log" written
+PF	0	18:33:54.898	Tester	automatical testing finished
+FG	0	18:34:42.970	Tester	Local network farm switched off
+FL	0	18:34:42.970	Tester	Cloud servers switched off
+HM	0	18:34:45.244	Tester	"NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5" X64
+HM	0	18:34:45.664	Tester	AUDCAD: preliminary downloading of M1 history started
+RI	0	18:34:45.771	Tester	AUDCAD: preliminary downloading of M1 history completed in 0:00:00.219
+IE	0	18:34:46.007	Tester	AUDUSD: history check started
+PK	0	18:34:57.633	Tester	AUDUSD: history check timeout
+EP	0	18:34:57.743	Tester	USDCAD: preliminary downloading of M1 history started
+QL	0	18:34:57.863	Tester	USDCAD: preliminary downloading of M1 history completed in 0:00:00.235
+CP	0	18:34:58.932	Tester	AUDCAD,M1 (Darwinex-Live): testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+FQ	0	18:34:59.213	Tester	quality of analyzed history is 99%
+RE	0	18:35:05.209	Core 1	MetaTester 5 started on 127.0.0.1:3000
+CJ	0	18:35:05.209	Core 1	1478 bytes of tester parameters loaded
+QP	0	18:35:05.209	Core 1	expert file added: Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5. 17582 bytes loaded
+CD	0	18:35:05.209	Core 1	AUDCAD,M1: testing of Experts\NoraPhase2Layer1\NoraPhase2Layer1BatchTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+CI	0	18:35:11.569	Core 1	log file "C:\Users\Gasper\AppData\Roaming\MetaQuotes\Tester\6C3C6A11D1C3791DD4DBF45421BF8028\Agent-127.0.0.1-3000\logs\20260713.log" written
+ER	0	18:35:11.582	Tester	automatical testing finished

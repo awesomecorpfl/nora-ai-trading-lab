@@ -13,3 +13,8 @@ tests/fixtures/phase2q_mql5_atr_distance_native/run2/nora_phase2_atr_distance_te
 tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester-journal.log -diff -text
 tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.log -diff -text
 tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.ini -diff -text
+
+# Immutable Windows-generated Layer-1 batch-one native evidence is likewise
+# byte-preserved.  Its CSV and bounded journal are hash-bound package inputs.
+tests/fixtures/phase2_layer1_first_batch/native_accepted/**/nora_phase2_layer1_batch_v1.csv -diff -text
+tests/fixtures/phase2_layer1_first_batch/native_accepted/**/tester-journal.log -diff -text

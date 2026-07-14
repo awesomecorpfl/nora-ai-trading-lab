@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "layer1_authority": "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
-  "layer1_authority_identity": "682e4563a5460429860e1b7d0727c0288f99f7180948e0e49a32c8c63b06d104",
+  "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
   "phase": "2",
   "search_authorized": false,
   "status_values": [

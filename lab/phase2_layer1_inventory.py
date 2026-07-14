@@ -5,7 +5,7 @@ from lab.phase2_execution import sha
 
 PRIMITIVES = {
  "sma": ("SMA", ["value"], "ACCEPTED", "period-1; null window propagates", []),
- "ema": ("EMA", ["value"], "IMPLEMENTED_UNPROVED", "arithmetic seed at period-1; null resets seed", []),
+ "ema": ("EMA", ["value"], "ACCEPTED", "arithmetic seed at period-1; null resets seed", []),
  "adx": ("ADX", ["adx"], "IMPLEMENTED_UNPROVED", "Wilder DX then Wilder ADX; zero denominator unavailable", ["ATR-style true range"]),
  "er": ("ER", ["ratio"], "IMPLEMENTED_UNPROVED", "period warmup; flat volatility returns zero", []),
  "kama": ("KAMA", ["value"], "IMPLEMENTED_UNPROVED", "period warmup; ER-driven seed and recurrence", ["ER"]),
@@ -18,8 +18,8 @@ PRIMITIVES = {
  "atr": ("ATR", ["value"], "ACCEPTED", "period-1 Wilder warmup; null input unavailable", []),
  "bollinger": ("BollingerBands", ["middle","upper","lower","width"], "IMPLEMENTED_UNPROVED", "period-1 warmup; population deviation; zero middle width=0", ["SMA"]),
  "keltner": ("Keltner", ["middle","upper","lower"], "IMPLEMENTED_UNPROVED", "aligned EMA and ATR availability", ["EMA","ATR"]),
- "highest": ("Highest", ["value"], "IMPLEMENTED_UNPROVED", "period-1 warmup; any null window unavailable", []),
- "lowest": ("Lowest", ["value"], "IMPLEMENTED_UNPROVED", "period-1 warmup; any null window unavailable", []),
+ "highest": ("Highest", ["value"], "ACCEPTED", "period-1 warmup; any null window unavailable", []),
+ "lowest": ("Lowest", ["value"], "ACCEPTED", "period-1 warmup; any null window unavailable", []),
  "session_ohlc": ("SessionOHLC", ["open","high","low","close"], "IMPLEMENTED_UNPROVED", "available from first declared session row; reset at declared trading day", ["time rules"]),
  "vwap": ("VWAP", ["value"], "IMPLEMENTED_UNPROVED", "available from first declared session row; reset daily; volume required; zero volume=0", ["Session clock","volume"]),
 }
@@ -38,9 +38,9 @@ def _entry(prefix, key, spec):
     mql = accepted or selected
     identity=sha({"schema":"nora.layer1_node_v1","id":f"{prefix}.{key}","outputs":outputs,"null_semantics":nulls})
     native_result = "accepted_narrow" if accepted else "not_attempted"
-    gap = ("genuine native compilation, returned results, empirical budget proposal, and explicit acceptance" if selected
-           else "typed AST/MQL5/native evidence not required before the first ten strategies" if not accepted
-           else "complete Phase-2 gate; preserve narrow accepted evidence")
+    gap = ("complete Phase-2 gate; preserve narrow accepted evidence" if accepted
+           else "genuine native compilation, returned results, empirical budget proposal, and explicit acceptance" if selected
+           else "typed AST/MQL5/native evidence not required before the first ten strategies")
     return {"canonical_id":f"{prefix}.{key}","canonical_identity":identity,"name":name,
             "classification":status,"rust":{"status":"implemented","binding":"engine/labengine/src/indicators.rs"},
             "typed_ast":{"status":"implemented_nonsearchable" if typed else "absent","schema_version":1 if typed else None},
@@ -76,7 +76,7 @@ def dependency_map():
            "mandatory_nodes":["layer1.ema","layer1.highest","layer1.lowest","layer1.atr","transform.distance_atr","transform.slope","transform.cross"],
            "optional_diversity_nodes":["layer1.rsi","layer1.roc","layer1.bollinger","layer1.keltner"],
            "already_accepted":["layer1.atr","transform.distance_atr","transform.slope","transform.cross"],
-           "blocking_nodes":list(SELECTED),"not_needed_before_first_ten":[f"layer1.{x}" for x in ("adx","er","kama","linear_regression","rsi","cci","roc","stochastic","bollinger","keltner","session_ohlc","vwap")],
+           "blocking_nodes":[],"accepted_batch_nodes":list(SELECTED),"not_needed_before_first_ten":[f"layer1.{x}" for x in ("adx","er","kama","linear_regression","rsi","cci","roc","stochastic","bollinger","keltner","session_ohlc","vwap")],
            "multi_output_dependencies":[],"session_time_dependencies":["accepted time-rule 18-scenario contract"],
            "execution_dependencies":["accepted execution-model 12-scenario next-open contract"]}
     value["dependency_map_identity"]=sha(value);return value
