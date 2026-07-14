@@ -60,3 +60,19 @@ def test_preflight_rejects_suite_strategy_contract_and_state_mutations():
  base=build_precompile()
  for key,value in [('suite_identity','wrong'),('strategy_identities',[]),('target_descriptor_identity','wrong'),('native_execution_attempted',True),('native_parity_accepted',True),('searchable',True),('grammar_admitted',True)]:
   changed=copy.deepcopy(base);changed[key]=value;assert preflight(changed)['status']=='FAIL'
+
+def test_stale_historical_compiler_evidence_is_rejected_after_source_correction(tmp_path):
+ # native_final/compile is the preserved genuine evidence compiled from the
+ # defective EMA-ATR source. After the Wilder correction its compile input,
+ # runtime hash, and package identities are stale and the importer must reject
+ # it so the historical compilation can never be reused for acceptance.
+ historical=FIX/'native_final'/'compile'
+ if not historical.is_dir():return
+ with pytest.raises(ValueError):import_genuine_evidence(historical,tmp_path/'rejected')
+
+def test_compiler_envelope_rejects_runtime_hash_identity_mismatch(tmp_path):
+ # A compiler record whose runtime source hash disagrees with the frozen compile
+ # input must be rejected by the envelope validator (identity mismatch).
+ ci=build_compile_input();record={'schema_version':T.compiler_output_schema,'target_identifier':T.target_identifier,'target_descriptor_identity':T.identity,'compile_input_identity':ci['compile_input_identity'],'runtime_sha256':'deadbeef','tester_sha256':ci['tester_sha256'],'package_identity':ci['package_identity'],'metaeditor_executable':EDITOR,'observed_metaeditor_build':BUILD,'raw_process_exit':1,'normalized_result':'success','compiler_policy':POLICY,'policy_decision':'accepted_metaeditor_5836_one','log_path':'compile.log','log_size':0,'log_sha256':raw_sha(b''),'warning_count':0,'warnings':[],'error_count':0,'errors':[],'ex5_path':T.ex5_filename,'ex5_size':0,'ex5_sha256':raw_sha(b''),'freshness_proof':{'preexisting_ex5_removed_or_isolated':True,'produced_after_invocation_start':True,'single_unambiguous_ex5':True},'completion_state':'completed','failure_reason':None}
+ errors=validate_compiler_envelope(record,ci,tmp_path,T)
+ assert 'runtime hash' in errors

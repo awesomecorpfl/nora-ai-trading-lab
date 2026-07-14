@@ -145,3 +145,30 @@ def inventory_identity(items: list[dict]) -> str:
 def manifest_identity(value: dict, field: str) -> str:
     normalized = dict(value); normalized.pop(field, None)
     return sha(normalized)
+
+
+# Frozen market-history synchronization/download evidence vocabulary. An
+# embedded-fixture canary must never cause the MT5 tester to synchronize or
+# download broker history; the launcher scans the captured tester journal for
+# these markers and fails closed if any appear. Keep in lockstep with the
+# PowerShell launcher (phase-0a-h/windows/execute-*-packet.ps1).
+HISTORY_SYNCHRONIZATION_FORBIDDEN_MARKERS = (
+    "symbol to be synchronized",
+    "symbol synchronized",
+    "history synchronized",
+    "history data to synchronize",
+    "history cache allocated",
+    "history begins from",
+    "quality of analyzed history",
+    "common synchronization completed",
+)
+
+
+def detect_history_synchronization(journal_text: str) -> list[str]:
+    """Return the forbidden markers present in a tester journal segment.
+
+    A non-empty result proves market-history synchronization/download occurred
+    during the run and the run must not be accepted.
+    """
+    lowered = (journal_text or "").lower()
+    return [marker for marker in HISTORY_SYNCHRONIZATION_FORBIDDEN_MARKERS if marker in lowered]

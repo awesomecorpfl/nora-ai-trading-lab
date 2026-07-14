@@ -14,7 +14,7 @@ def _runtime()->str:
 struct NoraBar { string ts; double o; double h; double l; double c; bool session; bool friday; bool rollover; bool monday; };
 bool Available(double x){return x!=NORA_NULL;}
 void Ema(const double &x[],int n,double &out[]){int z=ArraySize(x);ArrayResize(out,z);double seed=0.0,e=0.0;for(int i=0;i<z;i++){out[i]=NORA_NULL;if(i<n)seed+=x[i];if(i==n-1){e=seed/n;out[i]=e;}else if(i>=n){e=e+2.0/(n+1.0)*(x[i]-e);out[i]=e;}}}
-void Atr(const NoraBar &b[],double &out[]){int z=ArraySize(b);ArrayResize(out,z);double tr[];ArrayResize(tr,z);for(int i=0;i<z;i++)tr[i]=(i==0?b[i].h-b[i].l:MathMax(b[i].h-b[i].l,MathMax(MathAbs(b[i].h-b[i-1].c),MathAbs(b[i].l-b[i-1].c))));Ema(tr,3,out);}
+void Atr(const NoraBar &b[],double &out[]){int z=ArraySize(b);ArrayResize(out,z);double tr[];ArrayResize(tr,z);for(int i=0;i<z;i++)tr[i]=(i==0?b[i].h-b[i].l:MathMax(b[i].h-b[i].l,MathMax(MathAbs(b[i].h-b[i-1].c),MathAbs(b[i].l-b[i-1].c))));double seed=0.0,v=0.0;for(int i=0;i<z;i++){out[i]=NORA_NULL;if(i<3)seed+=tr[i];if(i==2){v=seed/3.0;out[i]=v;}else if(i>=3){v=(v*2.0+tr[i])/3.0;out[i]=v;}}}
 void ShiftedLevel(const NoraBar &b[],int n,bool highest,double &out[]){int z=ArraySize(b);ArrayResize(out,z);for(int i=0;i<z;i++){out[i]=NORA_NULL;if(i<n)continue;double v=highest?-DBL_MAX:DBL_MAX;for(int j=i-n;j<i;j++)v=highest?MathMax(v,b[j].h):MathMin(v,b[j].l);out[i]=v;}}
 bool Cross(double x,double y,double px,double py,bool above){if(!Available(y)||!Available(py))return false;return above?(px<=py&&x>y):(px>=py&&x<y);}
 void WriteNoTrade(int f,string sid,string direction,string reason){FileWrite(f,sid,"NULL",direction,"NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL",reason,"none");}
