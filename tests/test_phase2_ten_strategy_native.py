@@ -2,6 +2,9 @@ import copy,json
 from pathlib import Path
 import pytest
 from lab.native_targets import TEN_STRATEGY_TARGET as T
+from lab.native_target import (COMPILER_LOG_REDACTION_POLICY,
+ COMPILER_LOG_REDACTION_POLICY_IDENTITY, redact_compiler_log,
+ validate_compiler_log_redaction)
 from lab.phase2_ten_strategy import FIX,strategy_suite
 from lab.phase2_ten_strategy_native import *
 
@@ -76,3 +79,48 @@ def test_compiler_envelope_rejects_runtime_hash_identity_mismatch(tmp_path):
  ci=build_compile_input();record={'schema_version':T.compiler_output_schema,'target_identifier':T.target_identifier,'target_descriptor_identity':T.identity,'compile_input_identity':ci['compile_input_identity'],'runtime_sha256':'deadbeef','tester_sha256':ci['tester_sha256'],'package_identity':ci['package_identity'],'metaeditor_executable':EDITOR,'observed_metaeditor_build':BUILD,'raw_process_exit':1,'normalized_result':'success','compiler_policy':POLICY,'policy_decision':'accepted_metaeditor_5836_one','log_path':'compile.log','log_size':0,'log_sha256':raw_sha(b''),'warning_count':0,'warnings':[],'error_count':0,'errors':[],'ex5_path':T.ex5_filename,'ex5_size':0,'ex5_sha256':raw_sha(b''),'freshness_proof':{'preexisting_ex5_removed_or_isolated':True,'produced_after_invocation_start':True,'single_unambiguous_ex5':True},'completion_state':'completed','failure_reason':None}
  errors=validate_compiler_envelope(record,ci,tmp_path,T)
  assert 'runtime hash' in errors
+
+def _redaction_fixture(tmp_path):
+ user_root="C:"+"\\Users\\"+"FixtureUser"
+ raw=((user_root+"\\Nora\\Tester.mq5 : information: compiling Tester.mq5\r\n")+
+      "Result: 0 errors, 0 warnings, 550 ms elapsed\r\n").encode('utf-16')
+ raw_path=tmp_path/'raw.log';raw_path.write_bytes(raw)
+ derivative,count=redact_compiler_log(raw);path=tmp_path/'compile.redacted.log';path.write_bytes(derivative)
+ record={'log_path':path.name,'log_size':len(derivative),'log_sha256':raw_sha(derivative),
+  'raw_log_size':len(raw),'raw_log_sha256':raw_sha(raw),'redacted_log_size':len(derivative),
+  'redacted_log_sha256':raw_sha(derivative),'redacted_path_occurrences':count,
+  'redaction_policy_version':COMPILER_LOG_REDACTION_POLICY['schema_version'],
+  'redaction_policy_identity':COMPILER_LOG_REDACTION_POLICY_IDENTITY,
+  'redaction_placeholder':COMPILER_LOG_REDACTION_POLICY['replacement'],
+  'raw_log_preservation':'external_isolated_windows_evidence'}
+ return record,raw_path,path
+
+def _rebind_derivative(record,path):
+ data=path.read_bytes();record['log_size']=record['redacted_log_size']=len(data);record['log_sha256']=record['redacted_log_sha256']=raw_sha(data)
+
+def test_valid_path_only_compiler_log_redaction_is_raw_bound(tmp_path):
+ record,raw,path=_redaction_fixture(tmp_path)
+ assert validate_compiler_log_redaction(record,tmp_path,raw)==[]
+ text=path.read_bytes().decode('utf-16')
+ assert '<WINDOWS_USER_PATH>\\Nora\\Tester.mq5' in text
+ assert ("C:"+"\\Users\\") not in text
+ assert record['raw_log_sha256']!=record['redacted_log_sha256']
+
+@pytest.mark.parametrize('field,reason', [('raw_log_sha256','raw log hash'),('raw_log_size','raw log size')])
+def test_compiler_log_redaction_rejects_raw_binding_mismatch(tmp_path,field,reason):
+ record,raw,_=_redaction_fixture(tmp_path);record[field]='0'*64 if 'sha' in field else record[field]+1
+ assert reason in validate_compiler_log_redaction(record,tmp_path,raw)
+
+def test_compiler_log_redaction_rejects_derivative_mismatch(tmp_path):
+ record,raw,path=_redaction_fixture(tmp_path);path.write_bytes(path.read_bytes()+b'x')
+ assert validate_compiler_log_redaction(record,tmp_path,raw)
+
+@pytest.mark.parametrize('old,new', [('0 errors','1 errors'),('0 warnings','notices'),('information','<REDACTED>')])
+def test_compiler_log_redaction_rejects_diagnostic_removal_or_extra_redaction(tmp_path,old,new):
+ record,raw,path=_redaction_fixture(tmp_path);text=path.read_bytes().decode('utf-16').replace(old,new);path.write_bytes(text.encode('utf-16'));_rebind_derivative(record,path)
+ errors=validate_compiler_log_redaction(record,tmp_path,raw)
+ assert 'redacted log regeneration' in errors
+
+def test_compiler_log_redaction_rejects_missing_raw_log(tmp_path):
+ record,_,_=_redaction_fixture(tmp_path)
+ assert 'missing raw log' in validate_compiler_log_redaction(record,tmp_path,tmp_path/'missing.log')

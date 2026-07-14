@@ -18,6 +18,15 @@ from lab.phase2_execution import canon, sha
 POLICY = "nora.metaeditor_cli_success_v1"
 EDITOR = r"C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe"
 BUILD = "5.0.0.5836"
+COMPILER_LOG_REDACTION_POLICY = {
+    "schema_version": "nora.compiler_log_path_redaction_v1",
+    "encoding": "utf-16-with-bom",
+    "recognized_token": r"<drive>:\Users\<user>",
+    "replacement": "<WINDOWS_USER_PATH>",
+    "non_path_changes_forbidden": True,
+}
+COMPILER_LOG_REDACTION_POLICY_IDENTITY = sha(COMPILER_LOG_REDACTION_POLICY)
+WINDOWS_USER_PATH = re.compile(r"(?i)(?<![A-Za-z0-9_<>])([A-Z]):\\Users\\([^\\\r\n]+)")
 DEPENDENCY_GRAPH = {"source": [], "compile_input": ["source"],
                     "compiler_output": ["compile_input"],
                     "execution_packet": ["compiler_output"],
@@ -92,6 +101,62 @@ def validate_dependency_graph(nodes: dict) -> list[str]:
 
 def compiler_output_identity(record: dict) -> str:
     value = dict(record); value.pop("compiler_output_identity", None); return sha(value)
+
+
+def redact_compiler_log(raw: bytes) -> tuple[bytes, int]:
+    """Replace only absolute Windows user-root tokens in a UTF-16 compiler log."""
+    if not raw.startswith((b"\xff\xfe", b"\xfe\xff")):
+        raise ValueError("compiler log encoding")
+    text = raw.decode("utf-16")
+    redacted, count = WINDOWS_USER_PATH.subn(COMPILER_LOG_REDACTION_POLICY["replacement"], text)
+    if count == 0:
+        raise ValueError("no recognized compiler path")
+    return redacted.encode("utf-16"), count
+
+
+def validate_compiler_log_redaction(record: dict, evidence_dir: Path,
+                                     raw_log_path: Path | None) -> list[str]:
+    """Bind a committed derivative to an externally retained unchanged raw log."""
+    errors: list[str] = []
+    required = {
+        "raw_log_sha256", "raw_log_size", "redacted_log_sha256", "redacted_log_size",
+        "redacted_path_occurrences", "redaction_policy_version", "redaction_policy_identity",
+        "redaction_placeholder", "raw_log_preservation",
+    }
+    if any(record.get(key) is None for key in required): errors.append("redaction fields")
+    if record.get("redaction_policy_version") != COMPILER_LOG_REDACTION_POLICY["schema_version"]: errors.append("redaction version")
+    if record.get("redaction_policy_identity") != COMPILER_LOG_REDACTION_POLICY_IDENTITY: errors.append("redaction policy")
+    if record.get("redaction_placeholder") != COMPILER_LOG_REDACTION_POLICY["replacement"]: errors.append("redaction placeholder")
+    if record.get("raw_log_preservation") != "external_isolated_windows_evidence": errors.append("raw preservation")
+    derivative_path = Path(evidence_dir) / record.get("log_path", "")
+    if not derivative_path.is_file(): errors.append("missing redacted log")
+    if raw_log_path is None or not Path(raw_log_path).is_file():
+        errors.append("missing raw log"); return errors
+    raw = Path(raw_log_path).read_bytes()
+    if len(raw) != record.get("raw_log_size"): errors.append("raw log size")
+    if raw_sha(raw) != record.get("raw_log_sha256"): errors.append("raw log hash")
+    if not derivative_path.is_file(): return errors
+    derivative = derivative_path.read_bytes()
+    if len(derivative) != record.get("redacted_log_size") or len(derivative) != record.get("log_size"):
+        errors.append("redacted log size")
+    if raw_sha(derivative) != record.get("redacted_log_sha256") or raw_sha(derivative) != record.get("log_sha256"):
+        errors.append("redacted log hash")
+    try: regenerated, count = redact_compiler_log(raw)
+    except (UnicodeError, ValueError):
+        errors.append("raw log redaction"); return errors
+    if regenerated != derivative: errors.append("redacted log regeneration")
+    if count != record.get("redacted_path_occurrences"): errors.append("redacted path count")
+    try: text = derivative.decode("utf-16")
+    except UnicodeError:
+        errors.append("redacted log encoding"); return errors
+    if WINDOWS_USER_PATH.search(text): errors.append("absolute user path retained")
+    # Exact regeneration proves every non-path byte, including diagnostics and
+    # the Result summary, is unchanged. These explicit checks keep that safety
+    # property visible in the typed failure vocabulary.
+    raw_lines = [line for line in raw.decode("utf-16").splitlines() if "Result:" in line or "error" in line.lower() or "warning" in line.lower()]
+    derived_lines = [line for line in text.splitlines() if "Result:" in line or "error" in line.lower() or "warning" in line.lower()]
+    if raw_lines != derived_lines: errors.append("compiler diagnostics changed")
+    return errors
 
 
 def validate_compiler_envelope(record: dict, compile_input: dict, evidence_dir: Path,

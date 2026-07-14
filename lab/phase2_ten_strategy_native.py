@@ -4,7 +4,7 @@ import copy,csv,json,shutil,tempfile
 from datetime import datetime
 from pathlib import Path
 from lab.mql5gen.ten_strategy import CSV,PACKAGE,RUNTIME,TESTER,generate
-from lab.native_target import BUILD,EDITOR,POLICY,DEPENDENCY_GRAPH,atomic_publish,compiler_output_identity,file_sha,identified,inventory_identity,manifest_identity,raw_sha,safe_relative,validate_compiler_envelope,validate_dependency_graph
+from lab.native_target import BUILD,EDITOR,POLICY,DEPENDENCY_GRAPH,atomic_publish,compiler_output_identity,file_sha,identified,inventory_identity,manifest_identity,raw_sha,safe_relative,validate_compiler_envelope,validate_compiler_log_redaction,validate_dependency_graph
 from lab.native_targets import TEN_STRATEGY_TARGET as TARGET
 from lab.phase2_execution import canon,sha
 from lab.phase2_ten_strategy import FIX,EXECUTION_IDENTITY,TIME_IDENTITY,strategy_suite
@@ -88,22 +88,22 @@ def build_packet(record,record_sha):
  ci=build_compile_input(); p,_=generated(); scripts={x.name:{'path':str(x.relative_to(ROOT)),'sha256':file_sha(x)} for x in SCRIPTS[1:]}
  value={'schema_version':TARGET.packet_schema,'target_identifier':TARGET.target_identifier,'target_descriptor_identity':TARGET.identity,
   'compile_input_identity':ci['compile_input_identity'],'compiler_output_identity':record['compiler_output_identity'],'compiler_output_record_sha256':record_sha,
-  'compiler_log_sha256':record['log_sha256'],'ex5_path':record['ex5_path'],'ex5_size':record['ex5_size'],'ex5_sha256':record['ex5_sha256'],
+  'compiler_log_sha256':record['log_sha256'],'raw_compiler_log_sha256':record['raw_log_sha256'],'raw_compiler_log_size':record['raw_log_size'],'redaction_policy_identity':record['redaction_policy_identity'],'ex5_path':record['ex5_path'],'ex5_size':record['ex5_size'],'ex5_sha256':record['ex5_sha256'],
   **{k:ci[k] for k in ('suite_identity','strategy_identities','fixture_identity','coverage_matrix_identity','rust_evidence_identity','expected_ledger_vector_identities','execution_contract_identity','time_rule_contract_identity','reconciliation_protocol_identity','budget_map_identity','runtime_identity','runtime_sha256','tester_identity','tester_sha256','package_identity')},
   'scripts':scripts,'host_context_matrix':list(TARGET.host_contexts),'completion_marker':TARGET.completion_marker,'failure_marker':TARGET.failure_marker,'result_filename':CSV,'reconciliation_implementation':TARGET.reconciliation_implementation}
  return identified(value,'execution_packet_identity')
 
-def import_genuine_evidence(evidence_dir,destination,inject_failure=False):
- evidence_dir=Path(evidence_dir); allowed={'compiler_record.json','compile.log',TARGET.ex5_filename,'compile_evidence_manifest.json','inventory.json'}
+def import_genuine_evidence(evidence_dir,destination,raw_log_path=None,inject_failure=False):
+ evidence_dir=Path(evidence_dir); allowed={'compiler_record.json','compile.redacted.log',TARGET.ex5_filename,'compile_evidence_manifest.json','inventory.json'}
  if not evidence_dir.is_dir() or {x.name for x in evidence_dir.iterdir()}!=allowed: raise ValueError('compiler evidence file set')
  record=load(evidence_dir/'compiler_record.json')
  if record.get('synthetic_protocol_fixture') is True: raise ValueError('synthetic compiler evidence')
- errors=validate_compiler_envelope(record,build_compile_input(),evidence_dir,TARGET)
+ errors=validate_compiler_envelope(record,build_compile_input(),evidence_dir,TARGET)+validate_compiler_log_redaction(record,evidence_dir,raw_log_path)
  if errors: raise ValueError(', '.join(errors))
  manifest=load(evidence_dir/'compile_evidence_manifest.json'); expected={'schema_version':TARGET.compile_evidence_schema,'target_identifier':TARGET.target_identifier,'target_descriptor_identity':TARGET.identity,'compile_input_identity':build_compile_input()['compile_input_identity']}
  if manifest!=expected: raise ValueError('compile evidence manifest')
  declared=load(evidence_dir/'inventory.json')
- if len(declared)!=4 or {x.get('path') for x in declared}!={'compiler_record.json','compile.log',TARGET.ex5_filename,'compile_evidence_manifest.json'}: raise ValueError('inventory allowlist')
+ if len(declared)!=4 or {x.get('path') for x in declared}!={'compiler_record.json','compile.redacted.log',TARGET.ex5_filename,'compile_evidence_manifest.json'}: raise ValueError('inventory allowlist')
  for x in declared:
   if not safe_relative(x['path']) or file_sha(evidence_dir/x['path'])!=x['sha256']: raise ValueError('inventory binding')
  packet=build_packet(record,file_sha(evidence_dir/'compiler_record.json')); pre=build_precompile()
@@ -111,7 +111,7 @@ def import_genuine_evidence(evidence_dir,destination,inject_failure=False):
  batch={'schema_version':TARGET.final_batch_schema,'target_identifier':TARGET.target_identifier,'dependency_graph':DEPENDENCY_GRAPH,'target_descriptor_identity':TARGET.identity,
   'compile_input_identity':packet['compile_input_identity'],'compiler_output_identity':record['compiler_output_identity'],'execution_packet_identity':packet['execution_packet_identity'],
   'frozen_identities':{k:packet[k] for k in ('suite_identity','strategy_identities','fixture_identity','coverage_matrix_identity','rust_evidence_identity','expected_ledger_vector_identities','execution_contract_identity','time_rule_contract_identity','reconciliation_protocol_identity','budget_map_identity','runtime_identity','tester_identity','package_identity')},
-  'ex5_sha256':record['ex5_sha256'],'compiler_log_sha256':record['log_sha256'],'staged_files':items,'staged_inventory_identity':inventory_identity(items),
+  'ex5_sha256':record['ex5_sha256'],'compiler_log_sha256':record['log_sha256'],'raw_compiler_log_sha256':record['raw_log_sha256'],'raw_compiler_log_size':record['raw_log_size'],'redaction_policy_identity':record['redaction_policy_identity'],'staged_files':items,'staged_inventory_identity':inventory_identity(items),
   'precompile_ready':True,'compile_evidence_pending':False,'compile_evidence_imported':True,'final_packet_ready':True,'native_execution_attempted':False,'native_parity_accepted':False,'grammar_admitted':False,'searchable':False,'complete_phase2_gate':False}
  if validate_dependency_graph(batch['dependency_graph']): raise ValueError('dependency graph')
  batch=identified(batch,'final_batch_identity'); _,data=generated(); data[TARGET.compile_input_filename]=(canon(build_compile_input())+'\n').encode()
