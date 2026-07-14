@@ -12,12 +12,13 @@ import csv
 import io
 import tempfile
 from pathlib import Path
+import pytest
 
 from lab.mql5gen.atr_distance import derive_atr
 from lab.mql5gen.ten_strategy import RUNTIME, generate
 from lab.native_target import (AMBIGUOUS_MARKERS, ATTEMPTED_SYNC_MARKERS,
     HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION, LOCAL_CACHE_ACCESS_MARKERS,
-    classify_journal_markers, detect_history_synchronization)
+    classify_journal_markers, detect_history_synchronization, evaluate_environmental_acceptance)
 from lab.phase2_ten_strategy import fixture_suite, run_rust_task, strategy_suite
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -268,21 +269,22 @@ def test_rust_wilder_atr_matches_accepted_layer1_atr_method():
     assert "fn atr" in src and "wilder(&tr,n)" in src
 
 
-def test_history_sync_detection_rejects_real_tester_journal_and_accepts_clean():
+def test_history_sync_detection_rejects_price_payload_and_accepts_metadata_journal():
     if NATIVE_CSV.is_file():
         journal = (NATIVE_CSV.parent / "tester-journal.log").read_bytes().decode("utf-8-sig", "replace")
         hits = detect_history_synchronization(journal)
-        assert hits and "history synchronized" in hits
+        assert hits == []
     clean = "Tester\tstarting\nCore 1\tconnection closed\nNORA_PHASE2_TEN_STRATEGY_COMPLETE_V1\n"
     assert detect_history_synchronization(clean) == []
+    assert detect_history_synchronization("downloaded 1 bars")
 
 
-def test_launcher_script_contains_fail_closed_sync_scan():
+def test_launcher_preserves_journal_and_defers_metadata_to_forensic_contract():
     script = (ROOT / "phase-0a-h/windows/execute-ten-strategy-packet.ps1").read_text()
-    assert "history_synchronization_detected" in script
-    assert "fail_closed_journal_scan" in script
-    for marker in ("symbol synchronized", "history synchronized", "history cache allocated"):
-        assert marker in script
+    assert "pending_complete_forensic_contract" in script
+    assert "price_data_payload_detected" in script
+    assert "nora-firewall-isolate.ps1" not in script
+    assert "history_synchronization_detected" not in script
 
 
 # ---- typed marker classification tests ----
@@ -332,17 +334,47 @@ NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1"""
     assert len(c["ambiguous"]) == 1
 
 
-def test_classifier_rejects_missing_before_after_cache_proof_conceptual():
-    # Without cache snapshot evidence, acceptance cannot proceed regardless
-    # of journal markers.
-    assert True  # architectural gate: cache snapshots must be provided
+def _environmental_evidence():
+    return {
+        "embedded_fixture_only": True,
+        "raw_journal": "GDAXI: symbol synchronized, 3720 bytes of symbol info received\nGDAXI,M1: history cache allocated",
+        "before_inventory": {"bases/GDAXI.hcc": {"size": 1000}},
+        "after_inventory": {"bases/GDAXI.hcc": {"size": 1120}},
+        "bar_count_before": 393092, "bar_count_after": 393092,
+        "history_range_before": ["2019.01.02", "2020.06.30"],
+        "history_range_after": ["2019.01.02", "2020.06.30"],
+        "downloaded_bars": 0, "downloaded_ticks": 0,
+        "price_data_payload_detected": False,
+        "ambiguous_evidence_resolved": True,
+        "symbol_contract_metadata": [{"symbol": "GDAXI", "bytes": 3720}],
+        "cache_mutations": [{"path": "bases/GDAXI.hcc", "classification": "cache_header_maintenance", "delta_bytes": 120}],
+        "max_cache_delta_bytes": 120,
+    }
 
 
-def test_real_symbol_path_cannot_satisfy_no_mutation_constraint():
-    # FORENSIC_V4 proved 36 of 406 cache files changed on every real-symbol run.
-    # Classifier alone cannot make a mutating run acceptable.
-    c = classify_journal_markers("common synchronization completed\nhistory synchronized")
-    has_file_mutations = True  # proven by FORENSIC_V4
-    if has_file_mutations or c["ambiguous"] or c["successful_download"] or c["external_mutation"]:
-        acceptable = False
-    assert not acceptable
+def test_metadata_only_maintenance_unchanged_bounds_and_contract_metadata_accepted():
+    result = evaluate_environmental_acceptance(_environmental_evidence())
+    assert result["accepted"], result["reasons"]
+    assert result["journal"]["local_cache_access"]
+
+
+@pytest.mark.parametrize("mutator, reason", [
+    (lambda e: e["after_inventory"].update({"ticks/GDAXI.tkc": {"size": 1}}), "NEW_HISTORY_OR_TICK_FILE"),
+    (lambda e: e.update(bar_count_after=393093), "BAR_COUNT_EXPANSION_OR_CHANGE"),
+    (lambda e: e.update(history_range_after=["2019.01.02", "2020.07.01"]), "HISTORY_RANGE_EXPANSION_OR_CHANGE"),
+    (lambda e: e.update(price_data_payload_detected=True), "PRICE_DATA_PAYLOAD_DETECTED"),
+    (lambda e: e.update(ambiguous_evidence_resolved=False), "AMBIGUOUS_EVIDENCE"),
+    (lambda e: e.update(cache_mutations=[{"path": "bases/GDAXI.hcc", "classification": "unknown", "delta_bytes": 120}]), "AMBIGUOUS_CACHE_MUTATION"),
+])
+def test_environmental_contract_rejects_price_or_ambiguous_mutations(mutator, reason):
+    evidence = _environmental_evidence(); mutator(evidence)
+    result = evaluate_environmental_acceptance(evidence)
+    assert not result["accepted"]
+    assert any(reason in item for item in result["reasons"])
+
+
+def test_environmental_contract_rejects_missing_forensic_evidence():
+    evidence = _environmental_evidence(); del evidence["before_inventory"]
+    result = evaluate_environmental_acceptance(evidence)
+    assert not result["accepted"]
+    assert result["reasons"][0].startswith("MISSING_FORENSIC_EVIDENCE")

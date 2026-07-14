@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 import tempfile
 from dataclasses import asdict, dataclass
@@ -164,17 +165,24 @@ HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION = {
     "common synchronization completed":    "ambiguous",
 }
 
-# Categories whose presence in a journal independently fail acceptance.
-FORBIDDEN_SUCCESSFUL_DOWNLOAD_MARKERS = ()          # no marker alone proves price-data download
+# Categories whose presence in a journal independently fail acceptance. A
+# synchronization attempt or local cache access is resolved only by the full
+# forensic bundle below.
+FORBIDDEN_SUCCESSFUL_DOWNLOAD_MARKERS = (
+    "downloaded bars", "downloaded ticks", "ticks downloaded", "bars downloaded",
+)
 FORBIDDEN_EXTERNAL_MUTATION_MARKERS = ()            # file-hash diff required in addition
 ATTEMPTED_SYNC_MARKERS = tuple(k for k, v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items() if v == "attempted_sync")
 LOCAL_CACHE_ACCESS_MARKERS = tuple(k for k, v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items() if v == "local_cache_access")
 AMBIGUOUS_MARKERS = tuple(k for k, v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items() if v == "ambiguous")
 
-# Backward-compatible frozen flat list for the existing fail-closed launcher scan.
-# The launcher still rejects all of these until the classifier is deployed.
-HISTORY_SYNCHRONIZATION_FORBIDDEN_MARKERS = tuple(sorted(
-    m for m in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION))
+# Explicit price-payload reports are fatal. These patterns intentionally do not
+# match the proven 25-byte handshake or 3,720-byte symbol-contract metadata.
+PRICE_DATA_PAYLOAD_PATTERNS = (
+    r"\b(?:downloaded|received|loaded)\s+\d+\s+(?:bars?|ticks?)\b",
+    r"\b(?:bars?|ticks?)\s+(?:downloaded|received)\b",
+    r"\bprice[- ]data payload\b",
+)
 
 
 def classify_journal_markers(journal_text: str) -> dict[str, list[str]]:
@@ -190,14 +198,62 @@ def classify_journal_markers(journal_text: str) -> dict[str, list[str]]:
     for marker, category in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items():
         if marker in lowered:
             result[category].append(marker)
+    result["successful_download"].extend(detect_history_synchronization(lowered))
     return result
 
 
 def detect_history_synchronization(journal_text: str) -> list[str]:
-    """Return the forbidden markers present in a tester journal segment.
-
-    A non-empty result proves market-history synchronization/download occurred
-    during the run and the run must not be accepted.
-    """
+    """Return journal evidence that independently proves price acquisition."""
     lowered = (journal_text or "").lower()
-    return [marker for marker in HISTORY_SYNCHRONIZATION_FORBIDDEN_MARKERS if marker in lowered]
+    hits = [marker for marker in FORBIDDEN_SUCCESSFUL_DOWNLOAD_MARKERS if marker in lowered]
+    hits.extend(pattern for pattern in PRICE_DATA_PAYLOAD_PATTERNS if re.search(pattern, lowered))
+    return hits
+
+
+def evaluate_environmental_acceptance(evidence: dict) -> dict:
+    """Fail closed on incomplete or price-affecting native-run evidence.
+
+    This contract accepts only embedded-fixture calculations and bounded,
+    explicitly classified metadata/header/index maintenance. It never infers
+    safety from journal wording or byte-identical cache files alone.
+    """
+    required = ("embedded_fixture_only", "raw_journal", "before_inventory", "after_inventory",
+                "bar_count_before", "bar_count_after", "history_range_before", "history_range_after",
+                "downloaded_bars", "downloaded_ticks", "price_data_payload_detected",
+                "symbol_contract_metadata", "cache_mutations", "max_cache_delta_bytes",
+                "ambiguous_evidence_resolved")
+    missing = [key for key in required if key not in evidence or evidence[key] is None]
+    if missing:
+        return {"accepted": False, "reasons": ["MISSING_FORENSIC_EVIDENCE:" + ",".join(missing)],
+                "journal": classify_journal_markers("")}
+    reasons = []
+    journal = evidence["raw_journal"]
+    if not isinstance(journal, str) or not journal.strip(): reasons.append("MISSING_RAW_JOURNAL")
+    before, after = evidence["before_inventory"], evidence["after_inventory"]
+    if not isinstance(before, dict) or not isinstance(after, dict): reasons.append("INVALID_CACHE_INVENTORY")
+    else:
+        added, deleted = sorted(set(after) - set(before)), sorted(set(before) - set(after))
+        if added: reasons.append("NEW_HISTORY_OR_TICK_FILE:" + ",".join(added))
+        if deleted: reasons.append("DELETED_CACHE_FILE:" + ",".join(deleted))
+    if evidence["embedded_fixture_only"] is not True: reasons.append("NON_EMBEDDED_CALCULATION_INPUT")
+    if evidence["bar_count_before"] != evidence["bar_count_after"]: reasons.append("BAR_COUNT_EXPANSION_OR_CHANGE")
+    if evidence["history_range_before"] != evidence["history_range_after"]: reasons.append("HISTORY_RANGE_EXPANSION_OR_CHANGE")
+    if evidence["downloaded_bars"] != 0 or evidence["downloaded_ticks"] != 0: reasons.append("REPORTED_BAR_OR_TICK_DOWNLOAD")
+    if evidence["price_data_payload_detected"] is not False: reasons.append("PRICE_DATA_PAYLOAD_DETECTED")
+    classified = classify_journal_markers(journal)
+    if detect_history_synchronization(journal): reasons.append("JOURNAL_PRICE_DATA_PAYLOAD")
+    # A generic journal phrase can be ambiguous in isolation. It may be
+    # resolved only by the complete retained forensic record; otherwise fail.
+    if evidence["ambiguous_evidence_resolved"] is not True: reasons.append("AMBIGUOUS_EVIDENCE")
+    allowed = {"symbol_contract_metadata", "cache_header_maintenance", "cache_index_maintenance", "in_memory_cache_allocation"}
+    mutations = evidence["cache_mutations"]
+    if not isinstance(mutations, list): reasons.append("INVALID_CACHE_MUTATION_RECORD")
+    else:
+        for mutation in mutations:
+            if not isinstance(mutation, dict) or mutation.get("classification") not in allowed:
+                reasons.append("AMBIGUOUS_CACHE_MUTATION"); continue
+            delta = mutation.get("delta_bytes")
+            if not isinstance(delta, int) or abs(delta) > evidence["max_cache_delta_bytes"]:
+                reasons.append("UNBOUNDED_CACHE_MUTATION")
+    if not isinstance(evidence["symbol_contract_metadata"], list): reasons.append("MISSING_SYMBOL_CONTRACT_METADATA_RECORD")
+    return {"accepted": not reasons, "reasons": reasons, "journal": classified}
