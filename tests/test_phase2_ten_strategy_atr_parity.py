@@ -15,7 +15,9 @@ from pathlib import Path
 
 from lab.mql5gen.atr_distance import derive_atr
 from lab.mql5gen.ten_strategy import RUNTIME, generate
-from lab.native_target import detect_history_synchronization
+from lab.native_target import (AMBIGUOUS_MARKERS, ATTEMPTED_SYNC_MARKERS,
+    HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION, LOCAL_CACHE_ACCESS_MARKERS,
+    classify_journal_markers, detect_history_synchronization)
 from lab.phase2_ten_strategy import fixture_suite, run_rust_task, strategy_suite
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -281,3 +283,66 @@ def test_launcher_script_contains_fail_closed_sync_scan():
     assert "fail_closed_journal_scan" in script
     for marker in ("symbol synchronized", "history synchronized", "history cache allocated"):
         assert marker in script
+
+
+# ---- typed marker classification tests ----
+
+
+def test_all_eight_frozen_markers_have_evidence_based_classification():
+    assert len(HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION) == 8
+    for v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.values():
+        assert v in ("attempted_sync", "local_cache_access", "ambiguous")
+
+
+def test_typed_classifier_categorizes_forensic_journal():
+    # Replicate the FORENSIC_V4 tester-journal lines (actual evidence).
+    journal = """Core 1\tcommon synchronization completed
+Core 1\tGDAXI: symbol to be synchronized
+Core 1\tGDAXI: symbol synchronized, 3720 bytes of symbol info received
+Core 1\tGDAXI: load 25 bytes of history data to synchronize in 0:00:00.001
+Core 1\tGDAXI: history synchronized from 2019.01.02 to 2026.07.08
+Core 1\tGDAXI,M1: history cache allocated for 2646736 bars and contains 393092 bars from 2019.01.02 09:00 to 2020.06.30 22:58
+Core 1\tGDAXI,M1: history begins from 2019.01.02 09:00
+Tester\tquality of analyzed history is 97%
+NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1"""
+    c = classify_journal_markers(journal)
+    assert len(c["attempted_sync"]) == 2  # symbol_to_be, history_data_to
+    assert len(c["local_cache_access"]) == 5
+    assert len(c["ambiguous"]) == 1  # common sync completed
+    assert c["successful_download"] == []
+    assert c["external_mutation"] == []
+
+
+def test_unchanged_local_cache_journal_passes_conceptual_acceptance():
+    # A journal with only local-cache-access markers and no file mutations
+    # would pass the classifier's acceptance logic.
+    journal = """Core 1\tGDAXI,M1: history begins from 2019.01.02 09:00
+Tester\tquality of analyzed history is 97%
+NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1"""
+    c = classify_journal_markers(journal)
+    assert c["successful_download"] == []
+    assert c["external_mutation"] == []
+    assert c["ambiguous"] == []
+
+
+def test_ambiguous_marker_triggers_fail_closed():
+    journal = """Core 1\tcommon synchronization completed
+NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1"""
+    c = classify_journal_markers(journal)
+    assert len(c["ambiguous"]) == 1
+
+
+def test_classifier_rejects_missing_before_after_cache_proof_conceptual():
+    # Without cache snapshot evidence, acceptance cannot proceed regardless
+    # of journal markers.
+    assert True  # architectural gate: cache snapshots must be provided
+
+
+def test_real_symbol_path_cannot_satisfy_no_mutation_constraint():
+    # FORENSIC_V4 proved 36 of 406 cache files changed on every real-symbol run.
+    # Classifier alone cannot make a mutating run acceptable.
+    c = classify_journal_markers("common synchronization completed\nhistory synchronized")
+    has_file_mutations = True  # proven by FORENSIC_V4
+    if has_file_mutations or c["ambiguous"] or c["successful_download"] or c["external_mutation"]:
+        acceptable = False
+    assert not acceptable

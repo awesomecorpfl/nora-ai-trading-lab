@@ -147,21 +147,50 @@ def manifest_identity(value: dict, field: str) -> str:
     return sha(normalized)
 
 
-# Frozen market-history synchronization/download evidence vocabulary. An
-# embedded-fixture canary must never cause the MT5 tester to synchronize or
-# download broker history; the launcher scans the captured tester journal for
-# these markers and fails closed if any appear. Keep in lockstep with the
-# PowerShell launcher (phase-0a-h/windows/execute-*-packet.ps1).
-HISTORY_SYNCHRONIZATION_FORBIDDEN_MARKERS = (
-    "symbol to be synchronized",
-    "symbol synchronized",
-    "history synchronized",
-    "history data to synchronize",
-    "history cache allocated",
-    "history begins from",
-    "quality of analyzed history",
-    "common synchronization completed",
-)
+# Typed market-history synchronization/download evidence vocabulary.
+# Forensic evidence (FORENSIC_V4) proves the MT5 terminal always mutates cache
+# files on every startup (metadata-scale header/index updates, not price-data
+# downloads). The categories below classify each frozen marker by what forensic
+# evidence proved — not by the marker's wording alone.  See the machine-readable
+# classification artifact at docs/phase2_history_sync_marker_classification.json.
+HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION = {
+    "symbol to be synchronized":           "attempted_sync",
+    "symbol synchronized":                 "local_cache_access",
+    "history synchronized":                "local_cache_access",
+    "history data to synchronize":         "attempted_sync",
+    "history cache allocated":             "local_cache_access",
+    "history begins from":                 "local_cache_access",
+    "quality of analyzed history":         "local_cache_access",
+    "common synchronization completed":    "ambiguous",
+}
+
+# Categories whose presence in a journal independently fail acceptance.
+FORBIDDEN_SUCCESSFUL_DOWNLOAD_MARKERS = ()          # no marker alone proves price-data download
+FORBIDDEN_EXTERNAL_MUTATION_MARKERS = ()            # file-hash diff required in addition
+ATTEMPTED_SYNC_MARKERS = tuple(k for k, v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items() if v == "attempted_sync")
+LOCAL_CACHE_ACCESS_MARKERS = tuple(k for k, v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items() if v == "local_cache_access")
+AMBIGUOUS_MARKERS = tuple(k for k, v in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items() if v == "ambiguous")
+
+# Backward-compatible frozen flat list for the existing fail-closed launcher scan.
+# The launcher still rejects all of these until the classifier is deployed.
+HISTORY_SYNCHRONIZATION_FORBIDDEN_MARKERS = tuple(sorted(
+    m for m in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION))
+
+
+def classify_journal_markers(journal_text: str) -> dict[str, list[str]]:
+    """Classify each journal marker into its forensic-evidence-based category."""
+    lowered = (journal_text or "").lower()
+    result = {
+        "successful_download": [],
+        "external_mutation": [],
+        "attempted_sync": [],
+        "local_cache_access": [],
+        "ambiguous": [],
+    }
+    for marker, category in HISTORY_SYNCHRONIZATION_MARKER_CLASSIFICATION.items():
+        if marker in lowered:
+            result[category].append(marker)
+    return result
 
 
 def detect_history_synchronization(journal_text: str) -> list[str]:
