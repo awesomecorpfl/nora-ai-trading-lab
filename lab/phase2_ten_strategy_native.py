@@ -1,9 +1,10 @@
 """Typed-target local readiness for the frozen ten-strategy parity suite."""
 from __future__ import annotations
 import copy,csv,json,shutil,tempfile
+from datetime import datetime
 from pathlib import Path
 from lab.mql5gen.ten_strategy import CSV,PACKAGE,RUNTIME,TESTER,generate
-from lab.native_target import BUILD,EDITOR,POLICY,DEPENDENCY_GRAPH,atomic_publish,compiler_output_identity,file_sha,identified,inventory_identity,manifest_identity,raw_sha,safe_relative,validate_compiler_envelope
+from lab.native_target import BUILD,EDITOR,POLICY,DEPENDENCY_GRAPH,atomic_publish,compiler_output_identity,file_sha,identified,inventory_identity,manifest_identity,raw_sha,safe_relative,validate_compiler_envelope,validate_dependency_graph
 from lab.native_targets import TEN_STRATEGY_TARGET as TARGET
 from lab.phase2_execution import canon,sha
 from lab.phase2_ten_strategy import FIX,EXECUTION_IDENTITY,TIME_IDENTITY,strategy_suite
@@ -78,6 +79,66 @@ def import_evidence(evidence,destination,inject_failure=False):
  batch=identified({'schema_version':TARGET.final_batch_schema,'target_identifier':TARGET.target_identifier,'dependency_graph':DEPENDENCY_GRAPH,'compile_input_identity':ci['compile_input_identity'],'compiler_output_identity':record['compiler_output_identity'],'execution_packet_identity':packet['execution_packet_identity'],'staged_inventory_identity':build_precompile()['staged_inventory_identity'],'synthetic_protocol_fixture':True},'final_batch_identity')
  def write(tmp):(tmp/'execution_packet.json').write_text(canon(packet)+'\n');(tmp/'final_batch.json').write_text(canon(batch)+'\n');return {'synthetic_compiler_output_identity':record['compiler_output_identity'],'synthetic_execution_packet_identity':packet['execution_packet_identity'],'synthetic_final_batch_identity':batch['final_batch_identity']}
  return atomic_publish(Path(destination),'.ten-strategy-final-',write,inject_failure=inject_failure)
+
+# Genuine compiler evidence uses the same non-circular target chain as the
+# accepted Layer-1 target.  It intentionally lives beside the synthetic
+# helpers above: those helpers remain protocol fixtures and are never accepted
+# by this importer.
+def build_packet(record,record_sha):
+ ci=build_compile_input(); p,_=generated(); scripts={x.name:{'path':str(x.relative_to(ROOT)),'sha256':file_sha(x)} for x in SCRIPTS[1:]}
+ value={'schema_version':TARGET.packet_schema,'target_identifier':TARGET.target_identifier,'target_descriptor_identity':TARGET.identity,
+  'compile_input_identity':ci['compile_input_identity'],'compiler_output_identity':record['compiler_output_identity'],'compiler_output_record_sha256':record_sha,
+  'compiler_log_sha256':record['log_sha256'],'ex5_path':record['ex5_path'],'ex5_size':record['ex5_size'],'ex5_sha256':record['ex5_sha256'],
+  **{k:ci[k] for k in ('suite_identity','strategy_identities','fixture_identity','coverage_matrix_identity','rust_evidence_identity','expected_ledger_vector_identities','execution_contract_identity','time_rule_contract_identity','reconciliation_protocol_identity','budget_map_identity','runtime_identity','runtime_sha256','tester_identity','tester_sha256','package_identity')},
+  'scripts':scripts,'host_context_matrix':list(TARGET.host_contexts),'completion_marker':TARGET.completion_marker,'failure_marker':TARGET.failure_marker,'result_filename':CSV,'reconciliation_implementation':TARGET.reconciliation_implementation}
+ return identified(value,'execution_packet_identity')
+
+def import_genuine_evidence(evidence_dir,destination,inject_failure=False):
+ evidence_dir=Path(evidence_dir); allowed={'compiler_record.json','compile.log',TARGET.ex5_filename,'compile_evidence_manifest.json','inventory.json'}
+ if not evidence_dir.is_dir() or {x.name for x in evidence_dir.iterdir()}!=allowed: raise ValueError('compiler evidence file set')
+ record=load(evidence_dir/'compiler_record.json')
+ if record.get('synthetic_protocol_fixture') is True: raise ValueError('synthetic compiler evidence')
+ errors=validate_compiler_envelope(record,build_compile_input(),evidence_dir,TARGET)
+ if errors: raise ValueError(', '.join(errors))
+ manifest=load(evidence_dir/'compile_evidence_manifest.json'); expected={'schema_version':TARGET.compile_evidence_schema,'target_identifier':TARGET.target_identifier,'target_descriptor_identity':TARGET.identity,'compile_input_identity':build_compile_input()['compile_input_identity']}
+ if manifest!=expected: raise ValueError('compile evidence manifest')
+ declared=load(evidence_dir/'inventory.json')
+ if len(declared)!=4 or {x.get('path') for x in declared}!={'compiler_record.json','compile.log',TARGET.ex5_filename,'compile_evidence_manifest.json'}: raise ValueError('inventory allowlist')
+ for x in declared:
+  if not safe_relative(x['path']) or file_sha(evidence_dir/x['path'])!=x['sha256']: raise ValueError('inventory binding')
+ packet=build_packet(record,file_sha(evidence_dir/'compiler_record.json')); pre=build_precompile()
+ items=pre['files']+[{'path':'compile/'+x['path'],'role':x['role'],'sha256':x['sha256']} for x in declared]+[{'path':'execution_packet.json','role':'execution_packet','sha256':'generated'}]
+ batch={'schema_version':TARGET.final_batch_schema,'target_identifier':TARGET.target_identifier,'dependency_graph':DEPENDENCY_GRAPH,'target_descriptor_identity':TARGET.identity,
+  'compile_input_identity':packet['compile_input_identity'],'compiler_output_identity':record['compiler_output_identity'],'execution_packet_identity':packet['execution_packet_identity'],
+  'frozen_identities':{k:packet[k] for k in ('suite_identity','strategy_identities','fixture_identity','coverage_matrix_identity','rust_evidence_identity','expected_ledger_vector_identities','execution_contract_identity','time_rule_contract_identity','reconciliation_protocol_identity','budget_map_identity','runtime_identity','tester_identity','package_identity')},
+  'ex5_sha256':record['ex5_sha256'],'compiler_log_sha256':record['log_sha256'],'staged_files':items,'staged_inventory_identity':inventory_identity(items),
+  'precompile_ready':True,'compile_evidence_pending':False,'compile_evidence_imported':True,'final_packet_ready':True,'native_execution_attempted':False,'native_parity_accepted':False,'grammar_admitted':False,'searchable':False,'complete_phase2_gate':False}
+ if validate_dependency_graph(batch['dependency_graph']): raise ValueError('dependency graph')
+ batch=identified(batch,'final_batch_identity'); _,data=generated(); data[TARGET.compile_input_filename]=(canon(build_compile_input())+'\n').encode()
+ def write(tmp):
+  shutil.copytree(evidence_dir,tmp/'compile'); (tmp/'compile_input.json').write_text(canon(build_compile_input())+'\n'); (tmp/'execution_packet.json').write_text(canon(packet)+'\n'); (tmp/'final_batch.json').write_text(canon(batch)+'\n')
+  for item in pre['files']:
+   target=tmp/item['path']; target.parent.mkdir(parents=True,exist_ok=True)
+   if item['path'].startswith('generated/'): target.write_bytes(data[target.name])
+   else: shutil.copy2(ROOT/item['path'],target)
+  return {'compiler_output_identity':record['compiler_output_identity'],'execution_packet_identity':packet['execution_packet_identity'],'final_batch_identity':batch['final_batch_identity'],'staged_inventory_identity':batch['staged_inventory_identity']}
+ return atomic_publish(Path(destination),'.ten-strategy-import-',write,inject_failure=inject_failure)
+
+def stage_final(final_dir,destination):
+ final_dir=Path(final_dir); packet=load(final_dir/'execution_packet.json'); batch=load(final_dir/'final_batch.json')
+ if batch.get('target_identifier')!=TARGET.target_identifier or packet.get('target_descriptor_identity')!=TARGET.identity or batch.get('execution_packet_identity')!=packet.get('execution_packet_identity'): raise ValueError('final preflight')
+ _,data=generated(); data[TARGET.compile_input_filename]=(canon(build_compile_input())+'\n').encode()
+ def write(tmp):
+  for item in batch['staged_files']:
+   target=tmp/item['path']; target.parent.mkdir(parents=True,exist_ok=True)
+   if item['path'].startswith('compile/'): shutil.copy2(final_dir/item['path'],target)
+   elif item['path']=='execution_packet.json': target.write_text(canon(packet)+'\n')
+   elif item['path'].startswith('generated/'): target.write_bytes(data[target.name])
+   else: shutil.copy2(ROOT/item['path'],target)
+   if item['sha256']!='generated' and file_sha(target)!=item['sha256']: raise ValueError('final staging hash')
+  for name in ('compile_input.json','final_batch.json'): shutil.copy2(final_dir/name,tmp/name)
+  return {'final_batch_identity':batch['final_batch_identity'],'execution_packet_identity':packet['execution_packet_identity'],'staged_inventory_identity':batch['staged_inventory_identity']}
+ return atomic_publish(Path(destination),'.ten-strategy-final-stage-',write)
 def build_synthetic_returned(destination,mutate=None):
  rows=copy.deepcopy(expected_rows());mutate=mutate or (lambda x:None);mutate(rows)
  def write(tmp):
