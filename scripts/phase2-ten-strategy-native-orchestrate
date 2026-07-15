@@ -30,6 +30,20 @@ elif [[ $mode == recover-acl && $# -eq 4 ]]; then
   ssh nora-win10 "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '$tool_root'|Out-Null\""
   scp "$local_staged/phase-0a-h/windows/phase2-evidence-runner.ps1" "nora-win10:$runner"
   ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode recover-acl -AuditId \"$audit_id\" -ExpectedToolSha256 \"$tool_sha256\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == cache-preflight-prepare && $# -eq 7 ]]; then
+  run_id=$2; symbol=$3; remote_root=$4; remote_incoming=$5; local_staged=$6; audit_id=$7
+  require_run_id "$run_id"; [[ $symbol == GDAXI || $symbol == AUDCAD ]] || die 'invalid symbol'; require_root "$remote_root"; require_remote_path "$remote_incoming"; require_staged_runner "$local_staged"
+  runner=$(bound_runner "$local_staged" "$remote_root" "$audit_id"); install_bound_runner "$local_staged" "$remote_root" "$audit_id" "$runner"
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-prepare -RunId \"$run_id\" -EvidenceRoot \"$remote_root\"" >/dev/null
+  scp -r "$local_staged/." "nora-win10:$remote_incoming/"
+elif [[ $mode == cache-preflight-contain && $# -eq 5 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5
+  require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-contain -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == cache-preflight-launch && $# -eq 6 ]]; then
+  staged=$2; run_id=$3; symbol=$4; remote_root=$5; audit_id=$6
+  require_run_id "$run_id"; [[ $symbol == GDAXI || $symbol == AUDCAD ]] || die 'invalid symbol'; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-launch -RunId \"$run_id\" -Symbol \"$symbol\" -EvidenceRoot \"$remote_root\""
 elif [[ $mode == prepare && $# -eq 6 ]]; then
   run_id=$2; remote_root=$3; remote_incoming=$4; local_staged=$5; audit_id=$6
   require_run_id "$run_id"; require_root "$remote_root"; require_remote_path "$remote_incoming"; require_staged_runner "$local_staged"
@@ -70,6 +84,9 @@ elif [[ $mode == record-import && $# -eq 8 ]]; then
 else
   echo "usage: $0 harden-acl LOCAL_STAGED REMOTE_ROOT" >&2
   echo "   or: $0 recover-acl LOCAL_STAGED REMOTE_ROOT AUDIT_ID" >&2
+  echo "   or: $0 cache-preflight-prepare RUN_ID SYMBOL REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
+  echo "   or: $0 cache-preflight-contain STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 cache-preflight-launch STAGED RUN_ID SYMBOL REMOTE_ROOT ACL_AUDIT_ID" >&2
   echo "usage: $0 prepare RUN_ID REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
   echo "   or: $0 launch STAGED RUN_ID SYMBOL REMOTE_ROOT BEFORE_COUNT AFTER_COUNT BEFORE_EARLIEST BEFORE_LATEST AFTER_EARLIEST AFTER_LATEST ACL_AUDIT_ID" >&2
   echo "   or: $0 status STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2

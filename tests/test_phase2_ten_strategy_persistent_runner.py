@@ -5,6 +5,10 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNNER = (ROOT / "phase-0a-h/windows/phase2-evidence-runner.ps1").read_text()
 WORKER = (ROOT / "phase-0a-h/windows/execute-ten-strategy-packet.ps1").read_text()
 ORCHESTRATOR = (ROOT / "scripts/phase2-ten-strategy-native-orchestrate").read_text()
+CONTAINMENT = (ROOT / "phase-0a-h/windows/phase2-network-containment.ps1").read_text()
+CACHE_INVENTORY = (ROOT / "phase-0a-h/windows/phase2-cache-inventory.ps1").read_text()
+CACHE_WORKER = (ROOT / "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1").read_text()
+CACHE_PROBE = (ROOT / "phase-0a-h/windows/NoraPhase2OfflineCacheProbeV1.mq5").read_text()
 
 
 def test_runner_uses_the_persistent_evidence_root_and_sid_acl_contract():
@@ -61,3 +65,30 @@ def test_execution_policy_bypass_is_process_scoped_and_arguments_are_constrained
     assert "Set-ExecutionPolicy" not in RUNNER
     for guard in ("require_root", "require_run_id", "require_audit_id", "require_remote_path"):
         assert guard in ORCHESTRATOR
+
+
+def test_offline_preflight_requires_containment_before_detached_probe_launch():
+    for mode in ("cache-preflight-prepare", "cache-preflight-contain", "cache-preflight-launch"):
+        assert mode in RUNNER and mode in ORCHESTRATOR
+    assert "-Action enable" in RUNNER and "-Action status" in RUNNER
+    assert "preflight_kind='offline_cache'" in RUNNER
+    assert "Start-Process -FilePath powershell.exe" in RUNNER
+
+
+def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
+    for token in ("terminal64.exe", "metatester64.exe", "-Direction Outbound", "-Action Block", "-Profile Any", "Get-NetFirewallApplicationFilter", "Get-NetTCPConnection", "stale containment rules exist"):
+        assert token in CONTAINMENT
+    assert "Remove-NetFirewallRule" in CONTAINMENT
+    assert "cleanup" in CONTAINMENT
+    assert "sshd" not in CONTAINMENT.lower()
+    assert "Set-ExecutionPolicy" not in CONTAINMENT
+
+
+def test_cache_probe_is_nontrading_exact_range_and_rejects_history_changes():
+    for token in ("2020.07.01", "2026.07.01", "PERIOD_M1", "CopyRates", "duplicate_timestamps", "nonmonotonic_timestamps", "TesterStop"):
+        assert token in CACHE_PROBE
+    for forbidden in ("OrderSend", "CTrade", "PositionOpen", "OrderClose"):
+        assert forbidden not in CACHE_PROBE
+    for token in ("CompareCache", "strict_no_history_mutation_subset", "successful_connection_observed", "blocked_attempt_observed", "offline-cache-preflight.json"):
+        assert token in CACHE_WORKER
+    assert "history\\GDAXI" in CACHE_INVENTORY and "history\\AUDCAD" in CACHE_INVENTORY
