@@ -1,0 +1,48 @@
+{
+  "schema_version": "nora.phase2_containment_collection_rebind_audit_v1",
+  "before_commit": "d1977aacaae756517869bc8a71b7d0a57c6ba605",
+  "after_state": "sixth-containment-checkpoint-pending-commit",
+  "verdict": "PASS_EXECUTION_ONLY_REBIND",
+  "allowed_changes": {
+    "containment_transaction_schema": {
+      "before": "nora.phase2_mt5_network_containment_transaction_v2",
+      "after": "nora.phase2_mt5_network_containment_transaction_v3"
+    },
+    "mt5_network_containment_sha256": {
+      "before": "c2fd671be89884f260a3ffc38f2a90de45937e86a72a37b21ff018343731f99a",
+      "after": "4c7f4fb9639782dd173f02afe4a1da8dd69b3dcb121117fb21b32ae0f2eebb6b"
+    },
+    "runtime_smoke_harness_sha256": {
+      "before": "898947745bb37325cc6c709ad839d2ca6bb8e20bd81488818fa5c0942693d794",
+      "after": "d875061eed35c7d91e93a86e2933f9cf531a3e9eca5c523238835e6e8f63153b"
+    },
+    "native_execution_contract_identity": {
+      "before": "98d73f57a6e35cb2da255af8a4efb50e44fe12e12a5454dd7a906e15b0ad84a8",
+      "after": "11899da27f10dc0f013af3bd5caaf5f0521488825163792219ac5b20d684b757"
+    },
+    "execution_packet_identity": {
+      "before": "70f5109f52f452746c10e2ffa3abba3c0042989945a24ab155483989c003643b",
+      "after": "990ee92e03c0c7a7a253299c8cce962b9f8c1e0457237823ca1366338cb66c0a"
+    },
+    "final_batch_identity": {
+      "before": "df35b88ef283813706a27508d4e2e72940bf1072922f126405027957830cc466",
+      "after": "418a84f3b32a7cbd28e5f72739bb583ca27c737a7cb298289b66a870cbd9ce80"
+    }
+  },
+  "unchanged_byte_invariants": {
+    "engine/labengine/src/strategy_suite.rs": "e6d05a868c261c97266c23531681c59ab6877ef1de31105abaf204dff48a05ef",
+    "tests/fixtures/phase2_ten_strategy_suite/generated/NoraPhase2TenStrategyTesterCanaryV1.mq5": "b6424f27757d1213ad9d935bf6fcec9a71a09ebe68f698f2e9f7402d4eb14d9f",
+    "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/NoraPhase2TenStrategyTesterCanaryV1.ex5": "d359eca5297a14688fc6e79a98e7542c89b00ab92a6a5461aad580146a096ebd",
+    "tests/fixtures/phase2_ten_strategy_suite/strategy_suite.json": "32648ced707d90344bd93cf2c6ce378ce9dd61c9e7c37bf35f152fc43a41dedf",
+    "tests/fixtures/phase2_ten_strategy_suite/budget_map.json": "9ff37b0bf17aaf96976749201f8c890167101ef9a2e3e1ca6becf3655ea30491",
+    "tests/fixtures/phase2_ten_strategy_suite/reconciliation_protocol.json": "716afdcec02c4274c06a738c834c8174ab61f62b3631fa915a83fd536d40ab0e"
+  },
+  "frozen_tester_contract": {
+    "symbols": ["GDAXI", "AUDCAD"],
+    "timeframe": "M1",
+    "tester_model": 0,
+    "requested_start": "2020.07.01",
+    "requested_end": "2026.07.01"
+  },
+  "semantic_changes": false
+}

@@ -174,6 +174,18 @@ def test_containment_path_walk_uses_typed_filesystem_objects_and_runtime_smoke_h
     assert "-Action smoke" in smoke and "mutation_cmdlets_invoked=$false" in smoke
 
 
+def test_containment_rule_queries_are_named_and_normalized_at_every_boundary():
+    for token in (
+        "function Get-NoraContainmentRules", "function Get-NoraContainmentRuleViews",
+        "[object[]]$existingRules=@(Get-NoraContainmentRules", "[object[]]$ruleObjects=@(Get-NoraContainmentRules",
+        "[object[]]$actualRules=@(Get-NoraContainmentRules", "[object[]]$rules=@(Get-NoraContainmentRules",
+        "rules=@($ruleViews)", "remaining_rules=@($remaining)",
+    ):
+        assert token in CONTAINMENT
+    for forbidden in ("function Rules", "(Rules).Count", "function RuleView", "@(Rules).Count"):
+        assert forbidden not in CONTAINMENT
+
+
 def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():
     assert "reconcile-no-containment" in RUNNER
     for token in (
