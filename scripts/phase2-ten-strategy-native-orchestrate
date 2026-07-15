@@ -93,6 +93,11 @@ elif [[ $mode == status && $# -eq 5 ]]; then
   staged=$2; run_id=$3; remote_root=$4; audit_id=$5
   require_run_id "$run_id"; require_root "$remote_root"
   runner=$(bound_runner "$staged" "$remote_root" "$audit_id"); ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode status -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == package-containment && $# -eq 10 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; remote_source=$5; remote_summary=$6; remote_destination=$7; remote_publisher=$8; publisher_sha256=$9; audit_id=${10}
+  require_run_id "$run_id"; require_root "$remote_root"; require_remote_path "$remote_source"; require_remote_path "$remote_summary"; require_remote_path "$remote_destination"; require_remote_path "$remote_publisher"; require_audit_id "$audit_id"; [[ $publisher_sha256 =~ ^[0-9a-f]{64}$ ]] || die 'invalid publisher hash'
+  runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode package-containment -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -ContainmentSourceRoot \"$remote_source\" -ContainmentSummaryPath \"$remote_summary\" -ContainmentDestinationPath \"$remote_destination\" -PublisherPath \"$remote_publisher\" -PublisherSha256 \"$publisher_sha256\""
 elif [[ $mode == retrieve && $# -eq 7 ]]; then
   staged=$2; run_id=$3; remote_root=$4; remote_complete=$5; local_raw=$6; audit_id=$7
   require_run_id "$run_id"; require_root "$remote_root"; require_remote_path "$remote_complete"
@@ -133,6 +138,7 @@ else
   echo "usage: $0 prepare RUN_ID REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
   echo "   or: $0 launch STAGED RUN_ID SYMBOL REMOTE_ROOT BEFORE_COUNT AFTER_COUNT BEFORE_EARLIEST BEFORE_LATEST AFTER_EARLIEST AFTER_LATEST ACL_AUDIT_ID" >&2
   echo "   or: $0 status STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 package-containment STAGED RUN_ID REMOTE_ROOT REMOTE_SOURCE REMOTE_SUMMARY REMOTE_DESTINATION REMOTE_PUBLISHER PUBLISHER_SHA256 ACL_AUDIT_ID" >&2
   echo "   or: $0 retrieve STAGED RUN_ID REMOTE_ROOT REMOTE_COMPLETE LOCAL_RAW ACL_AUDIT_ID" >&2
   echo "   or: $0 package-persistent STAGED RUN_ID REMOTE_ROOT REMOTE_EVALUATION LOCAL_EVALUATION REMOTE_RETURNED LOCAL_RETURN ACL_AUDIT_ID" >&2
   echo "   or: $0 record-import STAGED RUN_ID REMOTE_ROOT REMOTE_RECORD LOCAL_RECORD REMOTE_RETURNED ACL_AUDIT_ID" >&2
