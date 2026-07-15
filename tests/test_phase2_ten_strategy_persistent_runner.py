@@ -50,6 +50,7 @@ def test_acl_recovery_is_hash_bound_atomic_and_fails_closed():
     assert "ExpectedToolSha256" in ORCHESTRATOR
     assert "TrimEnd(':','\\')" in RUNNER
     assert "TrimStart('\\').Replace('\\','/')" in RUNNER
+    assert "TrimStart([char]0xFEFF)" in RUNNER
 
 
 def test_execution_policy_bypass_is_process_scoped_and_arguments_are_constrained():
