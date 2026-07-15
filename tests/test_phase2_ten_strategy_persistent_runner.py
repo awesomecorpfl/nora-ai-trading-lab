@@ -149,6 +149,21 @@ def test_containment_group_binding_is_explicit_validated_and_recorded():
     assert "-Group (Group)" not in CONTAINMENT
 
 
+def test_containment_executable_paths_are_normalized_before_collection_operations():
+    for token in (
+        "Normalize-NoraExecutablePaths",
+        "[string[]]$normalizedExecutablePaths",
+        "-WasBound $PSBoundParameters.ContainsKey('ExecutablePath')",
+        "At least one executable path is required.",
+        "duplicate containment executable",
+        "reparse point containment executable path",
+        "foreach($p in $normalizedExecutablePaths)",
+    ):
+        assert token in CONTAINMENT
+    assert "$ExecutablePath.Count" not in CONTAINMENT
+    assert "foreach($p in @($ExecutablePath))" not in CONTAINMENT
+
+
 def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():
     assert "reconcile-no-containment" in RUNNER
     for token in (

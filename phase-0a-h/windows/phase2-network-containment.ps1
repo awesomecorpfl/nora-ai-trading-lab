@@ -15,6 +15,18 @@ if(!(Test-Path -LiteralPath $EvidenceRoot -PathType Container)){throw 'missing e
 function Hash([string]$Path){(Get-FileHash -Algorithm SHA256 -LiteralPath $Path -ErrorAction Stop).Hash.ToLowerInvariant()}
 function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 20 -Compress),[Text.UTF8Encoding]::new($false));if(Test-Path -LiteralPath $Path){$backup=$Path+'.replace-backup.'+[guid]::NewGuid().ToString('N');[IO.File]::Replace($tmp,$Path,$backup);Remove-Item -LiteralPath $backup -Force}else{[IO.File]::Move($tmp,$Path)}}
 function Identity(){ $i=[Security.Principal.WindowsIdentity]::GetCurrent();[ordered]@{name=$i.Name;sid=$i.User.Value} }
+function Normalize-NoraExecutablePaths {
+ param([Parameter(Mandatory=$true)][bool]$WasBound,[object]$RawPaths,[Parameter(Mandatory=$true)][string]$Root)
+ [object[]]$items=if($WasBound){@($RawPaths)}else{@((Join-Path $Root 'terminal64.exe'))+@(Get-ChildItem -LiteralPath $Root -Filter metatester64.exe -File -Recurse -ErrorAction Stop|Sort-Object FullName|ForEach-Object{$_.FullName})}
+ if($items.Count -lt 1){throw 'At least one executable path is required.'}
+ [string[]]$normalized=@()
+ foreach($item in $items){
+  if($null -eq $item -or $item -is [Array] -or $item -isnot [string] -or [string]::IsNullOrWhiteSpace([string]$item)){throw 'invalid executable path collection item'}
+  $normalized += [string]$item
+ }
+ return @($normalized)
+}
+[string[]]$normalizedExecutablePaths=@(Normalize-NoraExecutablePaths -WasBound $PSBoundParameters.ContainsKey('ExecutablePath') -RawPaths $ExecutablePath -Root $InstallRoot)
 function Get-NoraContainmentGroup {
  param([Parameter(Mandatory=$true)][string]$RunId)
  $value='NoraPhase2Containment-'+$RunId
@@ -30,11 +42,20 @@ function FinalPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.json'
 function AcceptedPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-accepted.json')}
 function FailurePath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-failure.json')}
 function RecoveryPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-recovery.json')}
+function Assert-NoraExecutablePath([string]$Path){
+ if($Path -match '[\x00]' -or $Path -match '^(\\\\|//|\\\\\?\\)' -or $Path -notmatch '^[A-Za-z]:[\\/]'){throw 'unsafe containment executable path'}
+ if($Path.Length -gt 2 -and $Path.Substring(2).Contains(':')){throw 'alternate data stream in containment executable path'}
+ $canonical=[IO.Path]::GetFullPath($Path)
+ if(!(Test-Path -LiteralPath $canonical -PathType Leaf)){throw 'missing containment executable'}
+ $cursor=Get-Item -LiteralPath $canonical -Force
+ while($null -ne $cursor){if(($cursor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw 'reparse point containment executable path'};$parent=Split-Path -LiteralPath $cursor.FullName -Parent;if([string]::IsNullOrWhiteSpace($parent) -or $parent-eq$cursor.FullName){break};$cursor=Get-Item -LiteralPath $parent -Force}
+ return $canonical
+}
 function Bindings(){
- $paths=if($ExecutablePath -and $ExecutablePath.Count){@($ExecutablePath)}else{@((Join-Path $InstallRoot 'terminal64.exe'))+@(Get-ChildItem -LiteralPath $InstallRoot -Filter metatester64.exe -File -Recurse -ErrorAction Stop|Sort-Object FullName|ForEach-Object{$_.FullName})}
- if(!$paths.Count){throw 'missing containment executables'}
- $seen=@{};$result=@();foreach($path in $paths){if([string]::IsNullOrWhiteSpace($path) -or !(Test-Path -LiteralPath $path -PathType Leaf)){throw 'missing containment executable'};$canonical=[IO.Path]::GetFullPath($path);if($seen.ContainsKey($canonical.ToLowerInvariant())){throw 'duplicate containment executable'};$seen[$canonical.ToLowerInvariant()]=$true;$result+=[ordered]@{path=$canonical;sha256=Hash $canonical}}
- return @($result)
+ [string[]]$paths=@($normalizedExecutablePaths)
+ if($paths.Count -lt 1){throw 'At least one executable path is required.'}
+ $seen=@{};$result=@();foreach($path in $paths){$canonical=Assert-NoraExecutablePath $path;if($seen.ContainsKey($canonical.ToLowerInvariant())){throw 'duplicate containment executable'};$seen[$canonical.ToLowerInvariant()]=$true;$result+=[ordered]@{path=$canonical;sha256=Hash $canonical}}
+ return @($result|Sort-Object{$_.path.ToUpperInvariant()})
 }
 function Rules(){@(Get-NetFirewallRule -Group $firewallGroup -ErrorAction SilentlyContinue|Sort-Object Name)}
 function RuleView(){@((Rules)|ForEach-Object{$rule=$_;$apps=@(Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction Stop);if($apps.Count-ne1){throw 'ambiguous firewall application filter'};[ordered]@{name=$rule.Name;instance_id=[string]$rule.InstanceID;display_name=$rule.DisplayName;group=$rule.Group;enabled=[string]$rule.Enabled;direction=[string]$rule.Direction;action=[string]$rule.Action;profile=[string]$rule.Profile;program=$apps[0].Program}})}
@@ -49,12 +70,12 @@ function VerifyState($state){
  return $true
 }
 function Failure([string]$Reason,[string]$Message){$bindings=$null;try{$bindings=Bindings}catch{};$ruleCount=@(Rules).Count;$classification=if($ruleCount-eq0){'NO_RULES_TRANSACTION_FAILED'}else{'RULES_PRESENT_RECORD_INCOMPLETE'};$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;classification=$classification;accepted=$false;reason=$Reason;message=$Message;intent_path=IntentPath;final_record_path=FinalPath;active_rule_count=$ruleCount;executables=$bindings;captured_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity};AtomicJson (FailurePath) $v;return $v}
-function FreshVerify(){ $args=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$PSCommandPath,'-Action','verify','-CampaignId',$CampaignId,'-EvidenceRoot',$EvidenceRoot,'-InstallRoot',$InstallRoot);foreach($p in @($ExecutablePath)){$args+=@('-ExecutablePath',$p)};$output=@(& powershell.exe @args 2>&1);if($LASTEXITCODE-ne0){throw ('fresh record validation failed: '+($output -join "`n"))};return ($output -join "`n")}
+function FreshVerify(){ $args=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$PSCommandPath,'-Action','verify','-CampaignId',$CampaignId,'-EvidenceRoot',$EvidenceRoot,'-InstallRoot',$InstallRoot);foreach($p in $normalizedExecutablePaths){$args+=@('-ExecutablePath',$p)};$output=@(& powershell.exe @args 2>&1);if($LASTEXITCODE-ne0){throw ('fresh record validation failed: '+($output -join "`n"))};return ($output -join "`n")}
 try {
  switch($Action){
   'stage' {
    $bindings=Bindings;$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;repository_commit=$env:NORA_REPOSITORY_COMMIT;creator=Identity;executables=$bindings;group=$firewallGroup;intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
-   if(Test-Path -LiteralPath (AcceptedPath)){& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $ExecutablePath;break}
+   if(Test-Path -LiteralPath (AcceptedPath)){& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $normalizedExecutablePaths;break}
    if(((Rules).Count -ne 0) -or (Test-Path -LiteralPath (IntentPath))){throw 'stale or incomplete containment transaction requires recovery'}
    AtomicJson (IntentPath) $intent
    $pre=[ordered]@{phase='pre_state_captured';unrelated_firewall_population_identity=AllRuleIdentity;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
@@ -69,7 +90,7 @@ try {
    $accepted|ConvertTo-Json -Depth 20 -Compress
   }
   'verify' {if(!(Test-Path -LiteralPath (FinalPath)) -or !(Test-Path -LiteralPath (AcceptedPath))){throw 'missing accepted containment records'};$state=Get-Content -LiteralPath (FinalPath) -Raw|ConvertFrom-Json;VerifyState $state|Out-Null;$accepted=Get-Content -LiteralPath (AcceptedPath) -Raw|ConvertFrom-Json;if($accepted.phase-ne'transaction_accepted' -or $accepted.final_record_sha256-ne(Hash (FinalPath))){throw 'accepted transaction binding mismatch'};$state|ConvertTo-Json -Depth 20 -Compress}
-  'status' {& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $ExecutablePath}
+  'status' {& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $normalizedExecutablePaths}
   'recover' {$count=@(Rules).Count;$classification=if($count-eq0 -and !(Test-Path -LiteralPath (IntentPath))){'NO_RULES_NO_RECORD'}elseif($count-eq0){'NO_RULES_TRANSACTION_FAILED'}elseif(!(Test-Path -LiteralPath (FinalPath))){'RULES_PRESENT_RECORD_INCOMPLETE'}else{'RECORD_PRESENT_REQUIRES_VERIFY'};$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;classification=$classification;active_rule_count=$count;intent_present=(Test-Path -LiteralPath (IntentPath));final_record_present=(Test-Path -LiteralPath (FinalPath));accepted_record_present=(Test-Path -LiteralPath (AcceptedPath));recovered_utc=(Get-Date).ToUniversalTime().ToString('o')};AtomicJson (RecoveryPath) $v;$v|ConvertTo-Json -Depth 20 -Compress}
   'cleanup' {$before=State (Bindings);$rules=@(Rules);foreach($rule in $rules){Remove-NetFirewallRule -Name $rule.Name -ErrorAction Stop};if(@(Rules).Count-ne0){throw 'containment cleanup incomplete'};$after=AllRuleIdentity;$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;cleanup='pass';removed_rule_count=$rules.Count;unrelated_rules_before_sha256=$before.unrelated_firewall_population_identity;unrelated_rules_after_sha256=$after;unrelated_rules_unchanged=($before.unrelated_firewall_population_identity-eq$after);completed_utc=(Get-Date).ToUniversalTime().ToString('o')};if(!$v.unrelated_rules_unchanged){throw 'unrelated firewall rules changed during cleanup'};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $v;$v|ConvertTo-Json -Depth 20 -Compress}
  }
