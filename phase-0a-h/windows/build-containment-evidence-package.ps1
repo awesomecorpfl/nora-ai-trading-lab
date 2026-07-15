@@ -7,6 +7,8 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 $schema = 'nora.phase2_containment_atomic_evidence_v1'
 $required = @('stdout.txt','stderr.txt','pre_state.json','post_state.json','firewall_pre.json','firewall_post.json','processes.json','recovery.json','cleanup.json')
 $sep = [char]0x5c
