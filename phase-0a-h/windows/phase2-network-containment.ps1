@@ -15,8 +15,16 @@ if(!(Test-Path -LiteralPath $EvidenceRoot -PathType Container)){throw 'missing e
 function Hash([string]$Path){(Get-FileHash -Algorithm SHA256 -LiteralPath $Path -ErrorAction Stop).Hash.ToLowerInvariant()}
 function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 20 -Compress),[Text.UTF8Encoding]::new($false));if(Test-Path -LiteralPath $Path){$backup=$Path+'.replace-backup.'+[guid]::NewGuid().ToString('N');[IO.File]::Replace($tmp,$Path,$backup);Remove-Item -LiteralPath $backup -Force}else{[IO.File]::Move($tmp,$Path)}}
 function Identity(){ $i=[Security.Principal.WindowsIdentity]::GetCurrent();[ordered]@{name=$i.Name;sid=$i.User.Value} }
-function Group(){'NoraPhase2Containment-'+$CampaignId}
-function RuleName([int]$Index){(Group)+'-'+$Index}
+function Get-NoraContainmentGroup {
+ param([Parameter(Mandatory=$true)][string]$RunId)
+ $value='NoraPhase2Containment-'+$RunId
+ if($value -isnot [string] -or [string]::IsNullOrWhiteSpace($value)){throw 'Containment firewall group resolved to null or empty.'}
+ if($value -notmatch '^NoraPhase2Containment-[A-Za-z0-9][A-Za-z0-9._-]{2,127}$' -or $value.Length -gt 255 -or $value -match '[\x00-\x1f;&|]'){throw 'Containment firewall group resolved to invalid value.'}
+ return [string]$value
+}
+$firewallGroup=Get-NoraContainmentGroup -RunId $CampaignId
+if([string]::IsNullOrWhiteSpace($firewallGroup)){throw 'Containment firewall group resolved to null or empty.'}
+function RuleName([int]$Index){$firewallGroup+'-'+$Index}
 function IntentPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.intent.json')}
 function FinalPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.json')}
 function AcceptedPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-accepted.json')}
@@ -28,13 +36,13 @@ function Bindings(){
  $seen=@{};$result=@();foreach($path in $paths){if([string]::IsNullOrWhiteSpace($path) -or !(Test-Path -LiteralPath $path -PathType Leaf)){throw 'missing containment executable'};$canonical=[IO.Path]::GetFullPath($path);if($seen.ContainsKey($canonical.ToLowerInvariant())){throw 'duplicate containment executable'};$seen[$canonical.ToLowerInvariant()]=$true;$result+=[ordered]@{path=$canonical;sha256=Hash $canonical}}
  return @($result)
 }
-function Rules(){@(Get-NetFirewallRule -Group (Group) -ErrorAction SilentlyContinue|Sort-Object Name)}
+function Rules(){@(Get-NetFirewallRule -Group $firewallGroup -ErrorAction SilentlyContinue|Sort-Object Name)}
 function RuleView(){@((Rules)|ForEach-Object{$rule=$_;$apps=@(Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction Stop);if($apps.Count-ne1){throw 'ambiguous firewall application filter'};[ordered]@{name=$rule.Name;instance_id=[string]$rule.InstanceID;display_name=$rule.DisplayName;group=$rule.Group;enabled=[string]$rule.Enabled;direction=[string]$rule.Direction;action=[string]$rule.Action;profile=[string]$rule.Profile;program=$apps[0].Program}})}
 function AllRuleIdentity(){ $v=@(Get-NetFirewallRule -ErrorAction Stop|Sort-Object Name|ForEach-Object{[ordered]@{name=$_.Name;enabled=[string]$_.Enabled;direction=[string]$_.Direction;action=[string]$_.Action;profile=[string]$_.Profile;group=$_.Group}});$b=[Text.Encoding]::UTF8.GetBytes(($v|ConvertTo-Json -Depth 10 -Compress));([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($b))).Replace('-','').ToLowerInvariant() }
 function AssertNoContradictoryAllow($bindings){$allows=@(Get-NetFirewallRule -Direction Outbound -Enabled True -Action Allow -ErrorAction Stop|ForEach-Object{$r=$_;Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $r -ErrorAction SilentlyContinue|ForEach-Object{[string]$_.Program}});foreach($binding in $bindings){if($allows -contains $binding.path){throw 'contradictory MT5 outbound allow rule'}}}
-function State($bindings){$connections=@();foreach($process in @(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue)){$connections+=@(Get-NetTCPConnection -OwningProcess $process.Id -ErrorAction SilentlyContinue|Where-Object{$_.RemoteAddress-notin@('127.0.0.1','::1','0.0.0.0','::')}|ForEach-Object{[ordered]@{pid=$process.Id;process=$process.ProcessName;remote_address=$_.RemoteAddress;remote_port=$_.RemotePort;state=[string]$_.State}})};[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(Group);captured_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity;executables=$bindings;rules=@(RuleView);active_rule_count=@(Rules).Count;observed_mt5_connections=$connections;unrelated_firewall_population_identity=AllRuleIdentity}}
+function State($bindings){$connections=@();foreach($process in @(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue)){$connections+=@(Get-NetTCPConnection -OwningProcess $process.Id -ErrorAction SilentlyContinue|Where-Object{$_.RemoteAddress-notin@('127.0.0.1','::1','0.0.0.0','::')}|ForEach-Object{[ordered]@{pid=$process.Id;process=$process.ProcessName;remote_address=$_.RemoteAddress;remote_port=$_.RemotePort;state=[string]$_.State}})};[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=$firewallGroup;captured_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity;executables=$bindings;rules=@(RuleView);active_rule_count=@(Rules).Count;observed_mt5_connections=$connections;unrelated_firewall_population_identity=AllRuleIdentity}}
 function VerifyState($state){
- if($state.schema_version-ne$schema -or $state.campaign_identity-ne$CampaignId -or $state.group-ne(Group)){throw 'containment record identity mismatch'}
+ if($state.schema_version-ne$schema -or $state.campaign_identity-ne$CampaignId -or $state.group-ne$firewallGroup){throw 'containment record identity mismatch'}
  $bindings=@(Bindings);if(@($state.executables).Count-ne$bindings.Count -or @($state.rules).Count-ne$bindings.Count){throw 'containment cardinality mismatch'}
  AssertNoContradictoryAllow $bindings
  for($i=0;$i-lt$bindings.Count;$i++){ $binding=$bindings[$i];$rule=@($state.rules|Where-Object{$_.name-eq(RuleName ($i+1))});if($rule.Count-ne1){throw 'missing or duplicate rule GUID binding'};if($rule[0].instance_id-ne(@(RuleView|Where-Object{$_.name-eq$rule[0].name})[0].instance_id)){throw 'rule GUID mismatch'};if($rule[0].program-ne$binding.path -or $state.executables[$i].path-ne$binding.path -or $state.executables[$i].sha256-ne$binding.sha256){throw 'rule application path or hash mismatch'};if($rule[0].enabled-ne'True' -or $rule[0].direction-ne'Outbound' -or $rule[0].action-ne'Block' -or $rule[0].profile-ne'Any'){throw 'containment rule not active'} }
@@ -45,13 +53,13 @@ function FreshVerify(){ $args=@('-NoProfile','-NonInteractive','-ExecutionPolicy
 try {
  switch($Action){
   'stage' {
-   $bindings=Bindings;$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;repository_commit=$env:NORA_REPOSITORY_COMMIT;creator=Identity;executables=$bindings;group=(Group);intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
+   $bindings=Bindings;$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;repository_commit=$env:NORA_REPOSITORY_COMMIT;creator=Identity;executables=$bindings;group=$firewallGroup;intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
    if(Test-Path -LiteralPath (AcceptedPath)){& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $ExecutablePath;break}
    if(((Rules).Count -ne 0) -or (Test-Path -LiteralPath (IntentPath))){throw 'stale or incomplete containment transaction requires recovery'}
    AtomicJson (IntentPath) $intent
    $pre=[ordered]@{phase='pre_state_captured';unrelated_firewall_population_identity=AllRuleIdentity;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
    if($Fault-eq'before_rules'){throw 'forced failure before rules'}
-   AssertNoContradictoryAllow $bindings;$i=0;foreach($binding in $bindings){$i++;New-NetFirewallRule -Name (RuleName $i) -DisplayName (RuleName $i) -Group (Group) -Direction Outbound -Action Block -Program $binding.path -RemoteAddress Any -Profile Any -Enabled True -ErrorAction Stop|Out-Null;if($Fault-eq'after_first_rule' -and $i-eq1){throw 'forced failure after first rule'}}
+   AssertNoContradictoryAllow $bindings;$i=0;foreach($binding in $bindings){$i++;New-NetFirewallRule -Name (RuleName $i) -DisplayName (RuleName $i) -Group $firewallGroup -Direction Outbound -Action Block -Program $binding.path -RemoteAddress Any -Profile Any -Enabled True -ErrorAction Stop|Out-Null;if($Fault-eq'after_first_rule' -and $i-eq1){throw 'forced failure after first rule'}}
    $state=State $bindings;$state.phase='rules_verified';$state.rules_created_utc=(Get-Date).ToUniversalTime().ToString('o');$state.pre_state=$pre;VerifyState $state|Out-Null
    if($Fault-eq'after_all_rules_before_final'){throw 'forced failure after all rules before final publication'}
    $state.phase='final_record_published';AtomicJson (FinalPath) $state

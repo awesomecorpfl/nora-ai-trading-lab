@@ -115,7 +115,9 @@ def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
     for token in ("terminal64.exe", "metatester64.exe", "-Direction Outbound", "-Action Block", "-Profile Any", "Get-NetFirewallApplicationFilter", "Get-NetTCPConnection", "stale or incomplete containment transaction requires recovery"):
         assert token in CONTAINMENT
     assert "Remove-NetFirewallRule" in CONTAINMENT
-    assert "function Group" in CONTAINMENT
+    assert "function Get-NoraContainmentGroup" in CONTAINMENT
+    assert "-Group (Group)" not in CONTAINMENT
+    assert "-Group $firewallGroup" in CONTAINMENT
     assert "cleanup" in CONTAINMENT
     assert "sshd" not in CONTAINMENT.lower()
     assert "Set-ExecutionPolicy" not in CONTAINMENT
@@ -132,6 +134,19 @@ def test_containment_transaction_is_durable_reopen_verified_and_recoverable():
         assert token in CONTAINMENT
     assert "-Action','verify" in CONTAINMENT
     assert "exit 1" in CONTAINMENT
+
+
+def test_containment_group_binding_is_explicit_validated_and_recorded():
+    for token in (
+        "Get-NoraContainmentGroup -RunId $CampaignId",
+        "[string]::IsNullOrWhiteSpace($firewallGroup)",
+        "NoraPhase2Containment-[A-Za-z0-9]",
+        "group=$firewallGroup",
+        "-Group $firewallGroup",
+    ):
+        assert token in CONTAINMENT
+    assert "function Group" not in CONTAINMENT
+    assert "-Group (Group)" not in CONTAINMENT
 
 
 def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():
