@@ -7,6 +7,7 @@ WORKER = (ROOT / "phase-0a-h/windows/execute-ten-strategy-packet.ps1").read_text
 ORCHESTRATOR = (ROOT / "scripts/phase2-ten-strategy-native-orchestrate").read_text()
 CONTAINMENT = (ROOT / "phase-0a-h/windows/phase2-network-containment.ps1").read_text()
 CACHE_INVENTORY = (ROOT / "phase-0a-h/windows/phase2-cache-inventory.ps1").read_text()
+CACHE_SCOPE = (ROOT / "phase-0a-h/windows/resolve-phase2-mt5-server-scope.ps1").read_text()
 CACHE_WORKER = (ROOT / "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1").read_text()
 CACHE_PROBE = (ROOT / "phase-0a-h/windows/NoraPhase2OfflineCacheProbeV1.mq5").read_text()
 DETACHED_CANARY = (ROOT / "phase-0a-h/windows/phase2-detached-canary.ps1").read_text()
@@ -137,4 +138,16 @@ def test_cache_probe_is_nontrading_exact_range_and_rejects_history_changes():
         assert forbidden not in CACHE_PROBE
     for token in ("CompareCache", "strict_no_history_mutation_subset", "successful_connection_observed", "blocked_attempt_observed", "offline-cache-preflight.json"):
         assert token in CACHE_WORKER
-    assert "history\\GDAXI" in CACHE_INVENTORY and "history\\AUDCAD" in CACHE_INVENTORY
+    assert "server_scope" in CACHE_INVENTORY and "empty_relevant_inventory" in CACHE_INVENTORY
+    assert "server_binding_identity" in CACHE_WORKER and "renamed" in CACHE_WORKER
+
+
+def test_server_scoped_inventory_is_template_bound_and_fails_closed_on_path_ambiguity():
+    for token in ("origin.txt", "Server=", "ambiguous or missing tester server identity",
+                  "ambiguous or missing server namespace", "unsafe tester server identity",
+                  "server namespace escapes terminal Bases", "reparse point rejected",
+                  "OrdinalIgnoreCase", "terminal_instance_id", "configuration_sha256"):
+        assert token in CACHE_SCOPE
+    for token in ("creation_utc", "acl", "object_type", "absolute_canonical_path",
+                  "missing_directory", "filename_year_candidate_only", "relevant_file_count"):
+        assert token in CACHE_INVENTORY

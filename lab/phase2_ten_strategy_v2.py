@@ -152,12 +152,13 @@ def native_execution_contract() -> dict:
         _role("windows_packet_launcher", "phase-0a-h/windows/execute-ten-strategy-packet.ps1", "nora.ten_strategy_windows_launcher_v2"),
         _role("persistent_windows_evidence_runner", "phase-0a-h/windows/phase2-evidence-runner.ps1", "nora.phase2_persistent_evidence_runner_v1"),
         _role("mt5_network_containment", "phase-0a-h/windows/phase2-network-containment.ps1", "nora.phase2_mt5_network_containment_v1"),
-        _role("mt5_cache_inventory", "phase-0a-h/windows/phase2-cache-inventory.ps1", "nora.phase2_mt5_cache_inventory_v1"),
-        _role("mt5_cache_probe_worker", "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1", "nora.phase2_offline_cache_preflight_v1"),
+        _role("mt5_cache_inventory", "phase-0a-h/windows/phase2-cache-inventory.ps1", "nora.phase2_mt5_cache_inventory_v2"),
+        _role("mt5_server_scope_resolver", "phase-0a-h/windows/resolve-phase2-mt5-server-scope.ps1", "nora.phase2_mt5_server_scoped_cache_v2"),
+        _role("mt5_cache_probe_worker", "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1", "nora.phase2_offline_cache_preflight_v2"),
         _role("mt5_cache_probe_compiler", "phase-0a-h/windows/compile-phase2-offline-cache-probe.ps1", "nora.phase2_mt5_cache_probe_compiler_v1"),
         _role("mt5_cache_probe_source", "phase-0a-h/windows/NoraPhase2OfflineCacheProbeV1.mq5", "nora.phase2_mt5_cache_probe_source_v1"),
         _role("tester_configuration_builder", "phase-0a-h/windows/build-ten-strategy-tester-config.ps1", "nora.ten_strategy_tester_configuration_v2"),
-        _role("environmental_forensic_collector", "phase-0a-h/windows/collect-ten-strategy-environment.ps1", "nora.ten_strategy_environment_inventory_v2"),
+        _role("environmental_forensic_collector", "phase-0a-h/windows/collect-ten-strategy-environment.ps1", "nora.ten_strategy_environment_inventory_v3"),
         _role("journal_environmental_acceptance_evaluator", "lab/native_target.py", "nora.environmental_acceptance_option_b_v2"),
         _role("completion_failure_marker_contract", "docs/phase2_ten_strategy_marker_contract_v2.json", "nora.ten_strategy_completion_failure_marker_contract_v2"),
         _role("native_csv_ledger_producer", "tests/fixtures/phase2_ten_strategy_suite/generated/" + TESTER, "nora.ten_strategy_csv_ledger_v1", digest=raw_sha(data[TESTER])),
@@ -486,6 +487,15 @@ def import_genuine_returned_package(package_dir: Path, execution_packet: dict) -
     environmental = load(package_dir / "environmental-evaluation.json")
     evidence = environmental.get("evidence", {})
     before, after = load(package_dir / "environment-before.json"), load(package_dir / "environment-after.json")
+    if before.get("schema_version") != "nora.ten_strategy_environment_inventory_v3" or after.get("schema_version") != "nora.ten_strategy_environment_inventory_v3":
+        raise ValueError("unscoped or stale environment inventory schema")
+    for value in (before, after):
+        scope = value.get("server_scope", {})
+        required_scope = {"terminal_data_directory", "terminal_instance_id", "terminal_origin_path", "terminal_path", "terminal_sha256", "configuration_sha256", "broker_server_identity", "server_namespace_observed", "server_namespace_path", "bases_path", "server_binding_identity", "server_scope_identity"}
+        if not required_scope <= set(scope) or value.get("objects") is None or not value.get("files"):
+            raise ValueError("incomplete server-scoped environment inventory")
+    if before["server_scope"]["server_binding_identity"] != after["server_scope"]["server_binding_identity"]:
+        raise ValueError("server binding changed during run")
     def indexed(inventory):
         return {item["path"]: {"size": item["size"], "last_write_utc": item["last_write_utc"], "sha256": item["sha256"]}
                 for item in inventory.get("files", [])}

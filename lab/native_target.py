@@ -110,6 +110,7 @@ NATIVE_EXECUTION_REQUIRED_ROLES = (
     "persistent_windows_evidence_runner",
     "mt5_network_containment",
     "mt5_cache_inventory",
+    "mt5_server_scope_resolver",
     "mt5_cache_probe_worker",
     "mt5_cache_probe_compiler",
     "mt5_cache_probe_source",

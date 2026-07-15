@@ -1,0 +1,44 @@
+{
+  "schema_version": "nora.phase2_server_scoped_cache_rebind_audit_v1",
+  "verdict": "PASS",
+  "base_commit": "a7c3e2499f7d34123c240aa36c9bbdb0956b2a5f",
+  "classification": "single_prelaunch_execution_only_rebinding",
+  "root_cause": "the v1 cache inventory received Terminal\\Bases and searched unscoped history/ticks paths, while Darwinex history is server-scoped beneath Bases\\<Server>",
+  "old": {
+    "cache_inventory_schema": "nora.phase2_mt5_cache_inventory_v1",
+    "execution_packet_identity": "90b6628ab489b10998554671d6dba1fd70c3b80bf8fdfa43626e4895881cc75a",
+    "final_batch_identity": "48a527673fa01c7efc49f446e0506d105c5988735daaf2fce16e63d0592d711a"
+  },
+  "new": {
+    "cache_inventory_schema": "nora.phase2_mt5_cache_inventory_v2",
+    "server_scope_schema": "nora.phase2_mt5_server_scoped_cache_v2",
+    "offline_probe_schema": "nora.phase2_offline_cache_preflight_v2",
+    "execution_packet_identity": "08ae3623e4861c76671e2d70c66917fbf159bb6910a75880a9d539cfc7f0dcc2",
+    "final_batch_identity": "f6ced6c018f54dc5b54ae22b294b7ab578476cd4ec8f140f854167910b7935c2"
+  },
+  "permitted_changed_roles": [
+    "windows_packet_launcher",
+    "persistent_windows_evidence_runner",
+    "mt5_cache_inventory",
+    "mt5_server_scope_resolver",
+    "mt5_cache_probe_worker",
+    "environmental_forensic_collector",
+    "journal_environmental_acceptance_evaluator",
+    "exact_reconciliation_implementation"
+  ],
+  "unchanged": {
+    "corrected_wilder_atr_node_identity": "5cf693feb61e09c58727207929cf9e237f5fdbfe559e1a5bb81e9c257c6ebeea",
+    "ex5_sha256": "d359eca5297a14688fc6e79a98e7542c89b00ab92a6a5461aad580146a096ebd",
+    "compiler_output_identity": "199c2e0de35e2e5869cdc470b86bb09c9a914b407e63ca20efcd75f82203f710",
+    "suite_identity": "1a13fc46bbc8fd305bd7e3adff8d334de742578307ade2799ddc4379f6751368",
+    "reconciliation_protocol_identity": "ca9d25db4c7b8eccc214c4aba34248dd1ed6509fb861a79e0dd7637e81b62c77",
+    "budget_map_identity": "6e5dfab2126d4d477418b109824c7c9e2025921d4ec01553ae10d3b5aee24119",
+    "symbols": ["GDAXI", "AUDCAD"],
+    "timeframe": "M1",
+    "tester_model": "0",
+    "requested_start": "2020.07.01",
+    "requested_end": "2026.07.01",
+    "phase2_complete": false,
+    "searchable": false
+  }
+}
