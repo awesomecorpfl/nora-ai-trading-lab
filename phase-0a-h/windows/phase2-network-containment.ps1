@@ -91,7 +91,7 @@ try {
  switch($Action){
   'stage' {
    [object[]]$bindings=@(Bindings);[object[]]$existingRules=@(Get-NoraContainmentRules -CampaignId $CampaignId);$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;repository_commit=$env:NORA_REPOSITORY_COMMIT;creator=Identity;executables=@($bindings);rules=@($existingRules);group=$firewallGroup;intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
-   if(Test-Path -LiteralPath (AcceptedPath)){& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $normalizedExecutablePaths;break}
+   if(Test-Path -LiteralPath (AcceptedPath)){throw 'accepted containment identity cannot be restaged'}
    if($existingRules.Count -ne 0 -or (Test-Path -LiteralPath (IntentPath))){throw 'stale or incomplete containment transaction requires recovery'}
    AtomicJson (IntentPath) $intent
    $pre=[ordered]@{phase='pre_state_captured';unrelated_firewall_population_identity=AllRuleIdentity;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
