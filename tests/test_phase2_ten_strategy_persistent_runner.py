@@ -89,6 +89,8 @@ def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
 
 def test_runner_replaces_durable_job_json_and_recovers_only_verified_containment():
     assert "[IO.File]::Replace" in RUNNER
+    assert ".replace-backup." in RUNNER
+    assert "Remove-Item -LiteralPath $backup -Force" in RUNNER
     assert "[IO.File]::Move" in RUNNER
     assert "untrusted interrupted containment evidence" in RUNNER
     assert "containment_recovered_from_interrupted_job" in RUNNER

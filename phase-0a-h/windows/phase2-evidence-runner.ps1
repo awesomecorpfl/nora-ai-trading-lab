@@ -22,7 +22,7 @@ $required=@('SYSTEM','BA','')
 
 function Hash([string]$Path){(Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()}
 function BytesHash([byte[]]$Bytes){([Security.Cryptography.SHA256]::Create().ComputeHash($Bytes)|ForEach-Object {$_.ToString('x2')}) -join ''}
-function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');$Value|ConvertTo-Json -Depth 12 -Compress|Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline;if(Test-Path -LiteralPath $Path){[IO.File]::Replace($tmp,$Path,$null)}else{[IO.File]::Move($tmp,$Path)}}
+function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');$Value|ConvertTo-Json -Depth 12 -Compress|Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline;if(Test-Path -LiteralPath $Path){$backup=$Path+'.replace-backup.'+[guid]::NewGuid().ToString('N');[IO.File]::Replace($tmp,$Path,$backup);Remove-Item -LiteralPath $backup -Force}else{[IO.File]::Move($tmp,$Path)}}
 function NormalizePath([string]$Path){$Path.TrimStart('\').Replace('\','/')}
 function NeedRunId(){if(!$RunId -or $RunId -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$'){throw 'invalid run identity'}}
 function Paths(){NeedRunId;return [ordered]@{incoming=(Join-Path $EvidenceRoot ('incoming\'+$RunId));running=(Join-Path $EvidenceRoot ('runs\'+$RunId+'.running'));complete=(Join-Path $EvidenceRoot ('runs\'+$RunId+'.complete'));returned=(Join-Path $EvidenceRoot ('returned\'+$RunId+'.published'));job=(Join-Path $EvidenceRoot ('jobs\'+$RunId+'.json'));stdout=(Join-Path $EvidenceRoot ('logs\'+$RunId+'.stdout.log'));stderr=(Join-Path $EvidenceRoot ('logs\'+$RunId+'.stderr.log'))}}
