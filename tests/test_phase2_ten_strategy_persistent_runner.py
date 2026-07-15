@@ -42,6 +42,7 @@ def test_persistent_orchestrator_uses_only_the_repository_runner_commands():
     assert "jobs\\\\'+$RunId+'.linux-ingestion.json" in RUNNER
     assert "campaign-tool" in ORCHESTRATOR
     assert "bound runner hash mismatch" in ORCHESTRATOR
+    assert "tr -d '\\r\\n'" in ORCHESTRATOR
 
 
 def test_acl_recovery_is_hash_bound_atomic_and_fails_closed():
