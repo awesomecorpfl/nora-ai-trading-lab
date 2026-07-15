@@ -1,24 +1,52 @@
 #!/usr/bin/env bash
 set -euo pipefail
 mode=${1:-}
-if [[ $mode == run && $# -eq 12 ]]; then
-  staged=$2; run_id=$3; symbol=$4; remote_incoming=$5; local_raw=$6
-  [[ -d $staged && ! -e $local_raw ]] || { echo 'invalid or occupied path' >&2; exit 2; }
-  ssh nora-win10 "powershell -NoProfile -Command \"if(Test-Path -LiteralPath '$remote_incoming'){throw 'occupied remote incoming'};New-Item -ItemType Directory -Path '$remote_incoming'|Out-Null\""
-  scp -r "$staged/." "nora-win10:$remote_incoming/"
-  remote_run=$(ssh nora-win10 "powershell -NoProfile -File '$remote_incoming/phase-0a-h/windows/execute-ten-strategy-packet.ps1' -IncomingRoot '$remote_incoming' -RunId '$run_id' -Symbol '$symbol' -BeforeBarCount '$7' -AfterBarCount '$8' -BeforeEarliest '$9' -BeforeLatest '${10}' -AfterEarliest '${11}' -AfterLatest '${12}'")
-  partial="$local_raw.partial"; [[ ! -e $partial ]] || { echo 'occupied local partial path' >&2; exit 2; }
-  scp -r "nora-win10:$remote_run" "$partial"; mv "$partial" "$local_raw"
-  printf '%s\n' "$remote_run"
-elif [[ $mode == package && $# -eq 5 ]]; then
-  remote_run=$2; evaluation=$3; local_return=$4; remote_incoming=$5
-  [[ -f $evaluation && ! -e $local_return ]] || { echo 'missing evaluation or occupied result' >&2; exit 2; }
-  scp "$evaluation" "nora-win10:$remote_run/environmental-evaluation.json"
-  ssh nora-win10 "powershell -NoProfile -File '$remote_incoming/phase-0a-h/windows/build-ten-strategy-returned-package.ps1' -RunDirectory '$remote_run' -Destination '$remote_run.returned'"
-  partial="$local_return.partial"; [[ ! -e $partial ]] || { echo 'occupied local partial path' >&2; exit 2; }
-  scp -r "nora-win10:$remote_run.returned" "$partial"; mv "$partial" "$local_return"
+if [[ $mode == harden-acl && $# -eq 3 ]]; then
+  local_staged=$2; remote_root=$3
+  runner="$remote_root\\runner\\phase2-evidence-runner.ps1"
+  [[ -f $local_staged/phase-0a-h/windows/phase2-evidence-runner.ps1 ]] || { echo 'missing staged runner' >&2; exit 2; }
+  ssh nora-win10 "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '$remote_root\\runner'|Out-Null\""
+  scp "$local_staged/phase-0a-h/windows/phase2-evidence-runner.ps1" "nora-win10:$runner"
+  ssh nora-win10 "powershell -NoProfile -File '$runner' -Mode harden-acl -EvidenceRoot '$remote_root'"
+elif [[ $mode == prepare && $# -eq 5 ]]; then
+  run_id=$2; remote_root=$3; remote_incoming=$4; local_staged=$5
+  runner="$remote_root\\runner\\phase2-evidence-runner.ps1"
+  [[ -d $local_staged ]] || { echo 'missing staged packet' >&2; exit 2; }
+  ssh nora-win10 "powershell -NoProfile -File '$runner' -Mode prepare -RunId '$run_id' -EvidenceRoot '$remote_root'" >/dev/null
+  scp -r "$local_staged/." "nora-win10:$remote_incoming/"
+elif [[ $mode == launch && $# -eq 11 ]]; then
+  staged=$2; run_id=$3; symbol=$4; remote_root=$5
+  ssh nora-win10 "powershell -NoProfile -File '$remote_root\\runner\\phase2-evidence-runner.ps1' -Mode launch -RunId '$run_id' -Symbol '$symbol' -EvidenceRoot '$remote_root' -BeforeBarCount '$6' -AfterBarCount '$7' -BeforeEarliest '$8' -BeforeLatest '$9' -AfterEarliest '${10}' -AfterLatest '${11}'"
+elif [[ $mode == status && $# -eq 4 ]]; then
+  staged=$2; run_id=$3; remote_root=$4
+  ssh nora-win10 "powershell -NoProfile -File '$remote_root\\runner\\phase2-evidence-runner.ps1' -Mode status -RunId '$run_id' -EvidenceRoot '$remote_root'"
+elif [[ $mode == retrieve && $# -eq 6 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; remote_complete=$5; local_raw=$6
+  [[ ! -e $local_raw && ! -e $local_raw.partial ]] || { echo 'occupied local raw destination' >&2; exit 2; }
+  state=$("$0" status "$staged" "$run_id" "$remote_root")
+  [[ $state == *'"state":"terminal-completed"'* ]] || { echo 'run is not durably terminal-completed' >&2; exit 2; }
+  scp -r "nora-win10:$remote_complete" "$local_raw.partial"
+  mv "$local_raw.partial" "$local_raw"
+elif [[ $mode == package-persistent && $# -eq 8 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; remote_evaluation=$5; local_evaluation=$6; remote_returned=$7; local_return=$8
+  [[ -f $local_evaluation && ! -e $local_return && ! -e $local_return.partial ]] || { echo 'invalid persistent package paths' >&2; exit 2; }
+  scp "$local_evaluation" "nora-win10:$remote_evaluation"
+  ssh nora-win10 "powershell -NoProfile -File '$remote_root\\runner\\phase2-evidence-runner.ps1' -Mode package -RunId '$run_id' -EvidenceRoot '$remote_root' -EvaluationPath '$remote_evaluation'" >/dev/null
+  scp -r "nora-win10:$remote_returned" "$local_return.partial"
+  mv "$local_return.partial" "$local_return"
+elif [[ $mode == record-import && $# -eq 7 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; remote_record=$5; local_record=$6; remote_returned=$7
+  [[ -f $local_record ]] || { echo 'missing ingestion record' >&2; exit 2; }
+  scp "$local_record" "nora-win10:$remote_record"
+  ssh nora-win10 "powershell -NoProfile -File '$remote_root\\runner\\phase2-evidence-runner.ps1' -Mode record-import -RunId '$run_id' -EvidenceRoot '$remote_root' -ImportRecordPath '$remote_record'" >/dev/null
+  ssh nora-win10 "powershell -NoProfile -File '$remote_root\\runner\\phase2-evidence-runner.ps1' -Mode status -RunId '$run_id' -EvidenceRoot '$remote_root'"
 else
-  echo "usage: $0 run STAGED RUN_ID SYMBOL REMOTE_INCOMING LOCAL_RAW BEFORE_COUNT AFTER_COUNT BEFORE_EARLIEST BEFORE_LATEST AFTER_EARLIEST AFTER_LATEST" >&2
-  echo "   or: $0 package REMOTE_RUN ENVIRONMENTAL_EVALUATION LOCAL_RETURN REMOTE_INCOMING" >&2
+  echo "usage: $0 harden-acl LOCAL_STAGED REMOTE_ROOT" >&2
+  echo "usage: $0 prepare RUN_ID REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED" >&2
+  echo "   or: $0 launch STAGED RUN_ID SYMBOL REMOTE_ROOT BEFORE_COUNT AFTER_COUNT BEFORE_EARLIEST BEFORE_LATEST AFTER_EARLIEST AFTER_LATEST" >&2
+  echo "   or: $0 status STAGED RUN_ID REMOTE_ROOT" >&2
+  echo "   or: $0 retrieve STAGED RUN_ID REMOTE_ROOT REMOTE_COMPLETE LOCAL_RAW" >&2
+  echo "   or: $0 package-persistent STAGED RUN_ID REMOTE_ROOT REMOTE_EVALUATION LOCAL_EVALUATION REMOTE_RETURNED LOCAL_RETURN" >&2
+  echo "   or: $0 record-import STAGED RUN_ID REMOTE_ROOT REMOTE_RECORD LOCAL_RECORD REMOTE_RETURNED" >&2
   exit 2
 fi

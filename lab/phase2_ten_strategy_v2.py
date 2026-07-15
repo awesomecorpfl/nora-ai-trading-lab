@@ -150,6 +150,7 @@ def native_execution_contract() -> dict:
         _role("compiled_ex5", "compile/" + EX5, output_contract["schema_version"],
               digest=sha(output_contract), hash_kind="compiler_output_contract_identity"),
         _role("windows_packet_launcher", "phase-0a-h/windows/execute-ten-strategy-packet.ps1", "nora.ten_strategy_windows_launcher_v2"),
+        _role("persistent_windows_evidence_runner", "phase-0a-h/windows/phase2-evidence-runner.ps1", "nora.phase2_persistent_evidence_runner_v1"),
         _role("tester_configuration_builder", "phase-0a-h/windows/build-ten-strategy-tester-config.ps1", "nora.ten_strategy_tester_configuration_v2"),
         _role("environmental_forensic_collector", "phase-0a-h/windows/collect-ten-strategy-environment.ps1", "nora.ten_strategy_environment_inventory_v2"),
         _role("journal_environmental_acceptance_evaluator", "lab/native_target.py", "nora.environmental_acceptance_option_b_v2"),
@@ -384,6 +385,31 @@ def import_genuine_compiler_evidence(evidence_dir: Path, destination: Path, raw_
                 "execution_packet_identity": packet["execution_packet_identity"],
                 "final_batch_identity": batch["final_batch_identity"]}
     return atomic_publish(Path(destination), ".ten-strategy-v2-compiler-import-", write)
+
+
+def reissue_final_from_sealed_compiler(sealed_dir: Path, destination: Path) -> dict:
+    """Rebind a valid V2 compiler record to changed execution-only roles.
+
+    This never recompiles, regenerates, or substitutes the EX5.  It is valid
+    only before the first native launch and keeps compiler evidence immutable.
+    """
+    sealed_dir = Path(sealed_dir)
+    record = load(sealed_dir / "compile" / "compiler_record.json")
+    errors = validate_v2_compiler_record(record, sealed_dir / "compile")
+    if errors:
+        raise ValueError("sealed compiler record: " + ", ".join(errors))
+    packet, batch = build_execution_packet(record), build_final_batch(record)
+    def write(tmp):
+        shutil.copytree(sealed_dir / "compile", tmp / "compile")
+        (tmp / "compiler_descriptor_v2.json").write_text(canon(identified(compiler_descriptor().value(), "compiler_descriptor_identity")) + "\n")
+        (tmp / "compile_input_v2.json").write_text(canon(build_compile_input()) + "\n")
+        (tmp / "native_execution_contract_v2.json").write_text(canon(packet["native_execution_contract"]) + "\n")
+        (tmp / "execution_packet.json").write_text(canon(packet) + "\n")
+        (tmp / "final_batch.json").write_text(canon(batch) + "\n")
+        return {"compiler_output_identity": record["compiler_output_identity"],
+                "execution_packet_identity": packet["execution_packet_identity"],
+                "final_batch_identity": batch["final_batch_identity"]}
+    return atomic_publish(Path(destination), ".ten-strategy-v2-execution-rebind-", write)
 
 
 def local_readiness() -> dict:

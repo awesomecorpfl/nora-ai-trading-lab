@@ -107,6 +107,7 @@ class CompilerSemanticDescriptor:
 NATIVE_EXECUTION_REQUIRED_ROLES = (
     "compiled_ex5",
     "windows_packet_launcher",
+    "persistent_windows_evidence_runner",
     "tester_configuration_builder",
     "environmental_forensic_collector",
     "journal_environmental_acceptance_evaluator",

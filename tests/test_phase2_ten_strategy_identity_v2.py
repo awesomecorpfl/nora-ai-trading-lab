@@ -111,3 +111,14 @@ def test_frozen_v2_descriptors_and_readiness_are_current():
     state=v2.load(v2.READINESS_FILE);assert state==v2.local_readiness()
     assert state["genuine_v2_recompilation_required"] and not state["final_packet_ready"]
     assert not state["native_execution_attempted"] and not state["searchable"]
+
+
+def test_execution_only_runner_rebind_preserves_the_sealed_compiler_and_ex5(tmp_path):
+    source=FIX/"native_v2_compiler_final"
+    result=v2.reissue_final_from_sealed_compiler(source,tmp_path/"reissued")
+    record=v2.load(source/"compile/compiler_record.json")
+    packet=v2.load(tmp_path/"reissued"/"execution_packet.json")
+    assert result["compiler_output_identity"]==record["compiler_output_identity"]
+    assert packet["ex5_sha256"]==record["ex5_sha256"]
+    assert packet==v2.build_execution_packet(record)
+    assert v2.load(tmp_path/"reissued"/"final_batch.json")==v2.build_final_batch(record)
