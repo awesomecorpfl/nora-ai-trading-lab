@@ -1,229 +1,117 @@
-# ARCHITECTURE_DECISIONS.md
-Nora AI Trading Lab — Decision Register
-
----
-
-## LOCK NOW
-
-### L1. Linux-first research platform
-All strategy generation, research backtesting, robustness, Monte Carlo, clustering, portfolio construction, and experiment orchestration run on Fedora.
-
-MT5 is excluded from the bulk research loop.
-
-### L2. Rust engine + Python control plane **[disputed]**
-Keep the split.
-
-Rust owns compute-heavy deterministic simulation and batch work. Python owns orchestration, state, reporting, clustering, MQL5 generation, and MT5 validation control.
-
-Spike 0B calibrates throughput and worker economics; the split itself is locked.
-
-### L3. Process boundary: subprocess + files **[disputed]**
-Use JSON task specifications in and Parquet/JSON outputs out.
-
-Do not use PyO3, RPC, or sockets in v1.
-
-Reason: crash isolation, replayability, checkpointing, and independent lifecycles matter more than microsecond call overhead at task-scale granularity.
-
-### L4. SQLite + Parquet + DuckDB **[disputed]**
-- SQLite: mutable operational state.
-- Parquet: immutable artifacts and canonical market data.
-- DuckDB: stateless analytics over Parquet.
-
-No persistent DuckDB source of truth and no Postgres requirement for v1.
-
-### L5. Single typed AST with canonicalization, stable hashing, and versioned schema
-Core enabler for deduplication, lineage, provenance, deterministic search, and MQL5 generation.
-
-### L6. MQL5-translatability is a grammar admission rule
-No searchable AST node or indicator exists without:
-
-- Rust implementation;
-- MQL5 translation;
-- parity fixture.
-
-Permanent rule.
-
-### L7. Narrow v1 execution semantics
-- completed-bar signals;
-- next-open market entries;
-- M1 intrabar SL/TP path;
-- pessimistic ambiguity;
-- simple exits/trailing only.
-
-Pending entries, partial exits, and complex trailing are deferred.
-
-### L8. Pessimistic ambiguity resolution
-Always resolve ambiguous bars pessimistically.
-
-### L9. MT5 parity is a small Phase-2 gate, not a research loop
-Before search, simple canary strategies and indicators must reconcile between Rust and MT5.
-
-This does not mean research populations are run through MT5.
-
-### L10. Existing Windows VM is the MT5 validation boundary
-The existing dedicated Windows 10 LTSC VM remains the validation target.
-
-Known working access path: `ssh nora-win10`.
-
-Do not create a new VM or second terminal unless later evidence shows the existing dedicated VM cannot support the narrow validation contract.
-
-### L11. Robustness funnel ordering
-Cheap, high-rejection tests run first.
-
-Order principle:
-
-cost stress
-→ IS/OOS and temporal segments
-→ cheap parameter neighborhood
-→ Trade MC
-→ contextual generalization
-→ clustering
-→ Parameter MC
-→ WFV/WFO
-→ portfolio stress
-→ finalist tick/MT5 validation.
-
-### L12. Universal gates vs contextual evidence
-Family-specific protocols distinguish universal hard gates from contextual generalization evidence.
-
-### L13. Multiple-testing control
-Use:
-
-- permanent lockbox;
-- matched best-of-N random-search baseline;
-- tracked trial counts;
-- placebo/permutation-style integrity tests;
-- DSR diagnostic only.
-
-The matched baseline is not a formal statistical null.
-
-### L14. Portfolio construction
-Use:
-
-- greedy forward selection;
-- marginal stressed dollar-DD contribution;
-- drawdown-based risk budgets;
-- concentration caps;
-- dropout stress.
-
-No covariance/mean-variance optimization.
-
-### L15. Dollar drawdown is first-class
-Portfolio DD target flows into strategy risk budgets and lot sizing.
-
-### L16. Nora governance
-- event-driven wakeups;
-- CLI-only;
-- closed decision packets;
-- protocol immutability enforced by control plane;
-- human gate for lockbox and deployment.
-
-### L17. Determinism is a tested semantic invariant
-Same canonical inputs must reproduce trades, metrics, simulation outcomes, and canonical content hashes.
-
-### L18. Layer-1 indicator set + minimal typed transforms
-Start with the locked primitive set and only expand by evidence.
-
-### L19. Lab integrity suite
-Synthetic fixtures, canaries, and placebo tests are permanent CI requirements.
-
-### L20. Data contract direction
-- canonical M1 Parquet with an explicit, versioned trading-timezone contract, not UTC-only storage;
-- production research may evaluate directly in the declared target MT5 broker clock; the current intended-broker preference is New York +7 (UTC+02/UTC+03 with the relevant New York DST schedule);
-- provenance includes timezone identity, DST regime/rule version, source/bar timestamp semantics, session clock, strategy clock, optional UTC reference instant, and every conversion;
-- conversion is deterministic and guarded against accidental double conversion; future timezone contracts remain supported;
-- one primary M1 provider selected in Phase 0C;
-- internally derived higher TFs;
-- tick data only where justified.
-
-### L21. QDM runs on Fedora as acquisition/staging/export tooling
-QDM is not the provider identity, canonical store, or runtime source of truth.
-
-Files crossing into the lab are hashed and provenance-recorded before ingestion.
-
-### L22. Finalist deployment remains manual in v1
-After Linux research and Darwinex MT5 confirmation, moving an EA to the demo VPS is a manual human action.
-
-Automated live deployment is not part of v1.
-
----
-
-## PROTOTYPE BEFORE LOCKING
-
-### P1. Repository-owned MT5 validation harness over the existing known-working path
-Nora already has working SSH access and has run MT5 backtests through the CLI.
-
-The prototype task is to audit and codify that actual workflow into a reproducible repository-owned harness for:
-
-- pinned test configuration;
-- launch;
-- completion detection;
-- artifact return;
-- parseable results;
-- two-run semantic comparison;
-- interruption classification.
-
-This is a narrow validation harness, not a platform-selection spike.
-
-### P2. Engine throughput and worker count
-Benchmark 4/6/8/10/12 workers and determine sustained thermal throughput.
-
-### P3. Exact AST node inventory
-Approach is locked; concrete v1 node inventory is frozen through Phase-2 co-design with MQL5 generation.
-
-### P4. Numeric parity budget
-Freeze empirically after early Phase-2 reconciliation.
-
-### P5. Behavioral descriptor definitions and grid resolution
-Tune on a real population, then freeze per protocol version.
-
-### P6. Clustering features and thresholds
-Start with trade-time overlap, daily P&L correlation, and canonical-structure distance.
-
-### P7. Cost models per symbol
-Validate spread/slippage/swap model shapes against broker reference data and MT5 reports.
-
-### P8. WFV vs WFO policy per family
-WFV default. WFO only where protocol requires reoptimization.
-
-### P9. Scheduler runtime-learning model
-Start simple with historical medians by task type and candidate count.
-
-### P10. Phase-2 parity data path
-Determine the cleanest parity reference route:
-
-- broker reference data extracted to Linux for matched canary comparison; or
-- pinned canonical fixture imported to MT5 if necessary.
-
-Do not make custom-symbol import a prerequisite for Phase 1.
-
----
-
-## DEFER
-
-### D1. Evolutionary machinery
-Only after stratified sampling + refinement plateaus.
-
-### D2. Pending orders, partial exits, advanced trailing
-Execution v2 after stable parity.
-
-### D3. Condition-mask caching and micro-optimization
-Benchmark first.
-
-### D4. Layer-2–4 indicators and advanced volume/profile families
-Evidence-driven expansion.
-
-### D5. ML survival predictors and surrogate allocation
-Requires accumulated lab history.
-
-### D6. Regime/HMM/Markov risk layers
-Future work only.
-
-### D7. Remote/distributed workers
-File task boundary leaves room later.
-
-### D8. GUI and MCP
-Out of v1 scope.
-
-### D9. Automated live/demo deployment
-Manual human deployment remains the v1 boundary.
+# Nora AI Trading Lab — Architecture Decision Register v2
+
+No decision in this file self-executes. Human approval and repository evidence remain required.
+
+
+## Package adoption
+
+| ID | Decision | Status |
+|---|---|---|
+| A1 | Replace the earlier seven-document architecture package with this final package while preserving the earlier version in Git history | LOCKED |
+| A2 | Treat D1–D8 as future gate decisions, not prerequisites to adopting the architecture package | LOCKED |
+| A3 | Keep the SQX findings, New Plan, and Fable Review folders as supporting evidence outside the architecture-lock directory | LOCKED |
+
+## Retained locks
+
+| ID | Decision | Status |
+|---|---|---|
+| L1 | Fedora/Linux owns strategy generation, research backtesting, robustness, Monte Carlo, clustering, portfolio research, and orchestration | LOCKED |
+| L2 | Rust compute engine and Python control plane | LOCKED |
+| L3 | Subprocess JSON/Parquet file boundary; no PyO3/RPC/socket protocol in v1 | LOCKED |
+| L4 | SQLite mutable state, Parquet immutable artifacts, DuckDB stateless analytics | LOCKED |
+| L5 | Explicit versioned dataset timezone, DST, session, strategy-clock, anchoring, and conversion-history contract | LOCKED |
+| L6 | Gasper manually prepares final production datasets; the lab validates rather than silently converts them | LOCKED |
+| L7 | Typed canonical AST with stable semantic identities | LOCKED |
+| L8 | Completed-bar decisions, next-open entries, narrow v1 execution, pessimistic ambiguity | LOCKED |
+| L9 | MT5 is a narrow parity/finalist authority, not a research loop | LOCKED |
+| L10 | Existing `nora-win10` VM remains the validation environment | LOCKED |
+| L11 | Cheap robustness filters before expensive Parameter MC/WFV/WFO | LOCKED |
+| L12 | Hard rejection gates and contextual evidence remain distinct | LOCKED |
+| L13 | Permanent lockbox, logged access, trial counts, matched random baseline, placebo integrity tests | LOCKED |
+| L14 | Portfolio selection uses stressed drawdown, greedy addition, caps, and dropout stress | LOCKED |
+| L15 | Event-driven Nora governance with immutable protocols and human gates | LOCKED |
+| L16 | Large market-data acquisition requires advance notice to Gasper | LOCKED |
+| L17 | Manual deployment remains outside automated v1 | LOCKED |
+
+## Approved revisions to the earlier plan
+
+| ID | Decision | Status | Resolution |
+|---|---|---|---|
+| R1 | Native evidence required before searchability | LOCKED | Extend grammar admission: Rust + translation + fixture + compiler + accepted native evidence |
+| R2 | Registry shape | APPROVED_WITH_REVISION | One typed store; static operator tables; evidence derived from sealed manifests; broker profiles as data documents |
+| R3 | Initial families | APPROVED_WITH_REVISION | Trend-pullback v1.0 and close-confirmed breakout v1.0; no optional third trend filter; exact execution-policy identity required |
+| R4 | Candidate generation | APPROVED | Stratified family/template quotas, constrained sampling, canonical dedup before simulation, immutable seeds |
+| R5 | Local refinement | APPROVED_WITH_REVISION | Deterministic, bounded, IS-only, constraint-preserving, predeclared improvement/plateau rules |
+| R6 | Behavioral archive | PROTOTYPE_FIRST | 3–4 coarse descriptors only; tune on an authorized population before freezing |
+| R7 | Ranking | APPROVED_WITH_REVISION | Lexicographic; DD gate-only; metric/unit choice predeclared; zero-DD behavior explicit |
+| R8 | Metric ownership | APPROVED_WITH_REVISION | Nora-owned semantics; cost/money metrics only after cost and sizing contracts |
+| R9 | Robustness stages | APPROVED_WITH_REVISION | Add per-stage data-access map and immutable shard protocol |
+| R10 | Immutable per-shard RNG | APPROVED | No shared mutable cursor |
+| R11 | Family-specific WFV/WFO | DEFERRED | Nora-owned protocol and fixtures only; never copy unresolved SQX mechanics |
+| R12 | Evolution | DEFERRED | Activate only after two-family plateau, resume, dedup, archive, and matched-budget proof |
+
+## Prototype before locking
+
+| ID | Item | Required proof |
+|---|---|---|
+| P1 | Complete identity hierarchy | Demonstrate each proposed identity has a consumer and validator using the 22-node matrix and ten-strategy suite |
+| P2 | Registry implementation | Reconcile a single-store prototype 100% against authoritative sealed manifests |
+| P3 | Broker-profile schema | Validate against one real Darwinex Zero export when Gasper authorizes it |
+| P4 | Archive grid and replacement comparator | Population coverage and sensitivity study |
+| P5 | Metric unit/cost approximation | Small deterministic fixtures and explicit protocol |
+| P6 | Worker-pool sizing | Approved-dataset workload calibration after Phase-3 authorization |
+| P7 | WFV/WFO family protocol | Deterministic small fixture and demonstrated family need |
+| P8 | Portfolio rules | Real survivor pool and Gasper-approved capital/risk inputs |
+
+## Decisions required before Phase 3
+
+| ID | Decision | Recommendation |
+|---|---|---|
+| D1 | Layer-1 gate scope | Narrow to initial grammar-dependency closure |
+| D2 | Parity budgets | Field/fixture-specific and versioned; no global tolerance |
+| D3 | Execution-policy convention | Use bar-open signal/time exits for initial grammars |
+| D4 | Family ranking metric | Pre-register net result or average trade per family |
+| D5 | Trade floors and drawdown ceilings | Pre-register per family and timeframe |
+| D6 | Metric unit and cost basis | Per-unit/R-multiple with versioned cost approximation, or gross plus mandatory cost stress |
+| D7 | Initial data, splits, lockbox, and trial ledger | Gasper-prepared contracts and sealed lockbox before first search |
+| D8 | Phase-3 authorization | Separate signed approval after the gate closes |
+
+## Additional explicit decisions
+
+| ID | Decision | Status |
+|---|---|---|
+| M1 | Keep lockbox and trial-count governance as a first-class manifest requirement | LOCKED |
+| M2 | Treat bar-open and decision-bar-close exits as different execution-policy identities | LOCKED; Phase-3 selection pending D3 |
+| M3 | Do not claim account-currency money metrics until cost and sizing contracts exist | LOCKED |
+| M4 | Right-size native parity to active grammar dependency closure | RECOMMENDED; pending D1 |
+| M5 | Historical untracked Phase-0A directories require explicit archive/commit/delete decision | OPEN |
+
+## Deferred
+
+- pending orders, partial exits, advanced trailing;
+- Layer-2–4 indicators and volume/profile families;
+- broad broker expansion;
+- remote/distributed workers;
+- GUI/MCP;
+- ML, HMM, Markov, and surrogate allocation;
+- automated demo/live deployment.
+
+## Rejected approaches
+
+- MT5 bulk research;
+- PyO3/RPC rewrite without measured need;
+- XML-only strategy identity;
+- universal unrestricted grammar;
+- mutable global RNG;
+- hidden candidate repair;
+- unrestricted tree growth;
+- opaque weighted fitness;
+- copying unresolved SQX ranking, WFO, WFV, SPP, or profit-factor sentinel behavior;
+- evolutionary search in initial Phase 3;
+- immediate multi-broker scope.
+
+## Authorization state
+
+- Phase 2 complete: no.
+- Phase 3 authorized: no.
+- Searchable components: none.

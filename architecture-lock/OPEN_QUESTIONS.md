@@ -1,141 +1,125 @@
-# OPEN_QUESTIONS.md
-Nora AI Trading Lab — Genuine Open Questions
+# Nora AI Trading Lab — Genuine Open Questions v2
 
-Only questions requiring empirical evidence remain here.
+Only unresolved evidence or human decisions remain here.
 
----
+## Required before Phase 3 can be authorized
 
-## Q1. Can Nora's known-working MT5 CLI workflow be codified into a repository-owned validation harness?
+### Q-P2-01 — Will the corrected ten-strategy suite pass four native runs and exact reconciliation?
 
-**Known starting point**
+Requires FR-T1 evidence. No human judgment substitutes for accepted packages and ledgers.
 
-- dedicated Windows 10 LTSC VM already exists;
-- SSH alias is `nora-win10`;
-- SSH key access already works;
-- VM is not used for live trading;
-- one fresh Darwinex MT5 terminal is installed;
-- investor/read-only broker login is used;
-- Nora has already run MT5 backtests through the CLI path.
+### Q-P2-02 — Should Layer-1 parity be right-sized to initial grammar dependencies?
 
-**Why it matters**
+Recommended: yes. Full admission for initial dependencies; remaining components post-Phase-3.
 
-The project needs a reproducible narrow validation boundary, not a new Windows platform.
+### Q-P2-03 — What field-specific parity budgets apply?
 
-The unresolved question is whether the working method can be packaged with:
+Use fixture-specific, versioned budgets. No global tolerance.
 
-- pinned config;
-- completion detection;
-- artifact return;
-- parsing;
-- semantic two-run comparison;
-- interruption classification.
+### Q-P2-04 — Which exit-price convention will the initial grammars use?
 
-**Answer by**: Phase 0A.
+Recommended: natively accepted bar-open signal/time exits. Preserve suite close-exit behavior as a distinct regression policy.
 
-**Decision it unblocks**: repository-owned MT5 validation harness interface.
+### Q-P2-05 — What is the Phase-3 metric unit and cost basis?
 
----
+Options:
 
-## Q2. What is the numeric parity budget?
+1. per-unit/R-multiple screening with versioned cost approximation;
+2. gross screening with mandatory cost-stress gate.
 
-Need hard tolerances for:
+Do not freeze ranking until chosen.
 
-- indicator values;
-- trade-match percentage;
-- P&L divergence;
-- timing/price tolerances where exact identity is not mechanically possible.
+### Q-P2-06 — What family ranking metric, trade floor, and drawdown ceiling apply?
 
-**Answer by**: empirical Phase-2 canary runs.
+Pre-register values separately for trend-pullback and breakout before results exist.
 
----
+### Q-P2-07 — What symbols, periods, splits, and lockbox are authorized?
 
-## Q3. What is the exact Phase-2 parity data path?
+Requires Gasper-prepared data contracts and advance notice for any large acquisition. Seal the lockbox and trial-count protocol before the first run.
 
-Candidate routes:
+### Q-P2-08 — Is Phase 3 authorized after the gate closes?
 
-1. extract broker-reference data to Linux and compare Rust against MT5 over the matched broker period;
-2. import a pinned canonical fixture into MT5 if required for stricter identical-data tests;
-3. use both for different parity questions.
+This is a separate signed decision. Gate closure does not automatically authorize search.
 
-Custom-symbol import is not assumed and is not a Phase-1 prerequisite.
+## Required during early Phase 3
 
-**Answer by**: Phase 2.
+### Q-P3-01 — What worker count, batch size, memory, thermal, and wall-time budget should be used?
 
-**Decision it unblocks**: final parity-harness data contract.
+Phase-0B is complete; this is production-workload calibration on approved datasets and grammars.
 
----
+### Q-P3-02 — What archive grid provides useful diversity?
 
-## Q5. What are the account parameters for v1 portfolio research?
+Start with 3–4 coarse dimensions. Freeze only after coverage and sensitivity analysis.
 
-Needs:
+### Q-P3-03 — What improvement and plateau rules govern local refinement?
 
-- account currency;
-- intended capital;
-- maximum acceptable dollar DD;
-- leverage/margin rules;
-- broker lot constraints.
+Must be declared before the matched-budget experiment.
 
-**Answer by**: before Phase 6.
+### Q-P3-04 — Does guided sampling/refinement beat a matched random baseline?
 
----
+Required empirical justification for continuing beyond Phase 3.
 
-## Q6. What is the exact Hermes wake mechanism and token budget per experiment?
+## Required before expensive robustness
 
-The event log can be built first, but dispatch and budget need numeric decisions before Nora workshop integration.
+### Q-R-01 — Which Trade MC variants and thresholds are hard gates?
 
-**Answer by**: before Phase 8.
+Requires Nora-owned formulas, deterministic fixtures, and family-specific policy.
 
----
+### Q-R-02 — Which markets, timeframes, sessions, and regimes are context only?
 
-## Q7. Which two symbols/families anchor the first end-to-end experiment?
+Requires approved data and a context-code protocol; not every failure is a rejection.
 
-Phase 2–4 need concrete instruments and families for:
+### Q-R-03 — Does either family require Parameter MC, WFV, or WFO?
 
-- data;
-- costs;
-- parity;
-- grammar;
-- contextual tests.
+Decide from survivor behavior. Any protocol is Nora-owned and fixture-tested.
 
-**Answer by**: start of Phase 2.
+### Q-R-04 — What broker cost-stress distributions are justified?
 
----
+Requires Darwinex Zero profile evidence and an approved research policy.
 
-## Q8. What exact final Darwinex native validation protocol applies to finalists?
+## Required before portfolio work
 
-Expected direction:
+### Q-PF-01 — What account capital, maximum dollar drawdown, leverage, margin, and concentration limits apply?
 
-- production MQL5;
-- Darwinex native tester;
-- approximately six-year confirmation window where protocol/data permit;
-- explicit tester mode;
-- fixed cost/account settings;
-- returned report and trade list;
-- comparison against Linux results.
+Gasper decision before Phase 6.
 
-The precise window and pass criteria must be frozen before Phase 7.
+### Q-PF-02 — What synchronized portfolio metric and allocation protocol is frozen?
 
-**Answer by**: before Phase 7.
+Requires fixtures for currency conversion, simultaneous exposure, contribution, and dropout stress.
 
----
+### Q-PF-03 — Which additional broker profiles are actually needed?
 
-## Not open questions
+Do not broaden broker scope until a real portfolio consumer exists.
 
-Already decided:
+## Required before finalist validation
 
-- Linux-first research platform;
-- Rust/Python split;
-- subprocess + file boundary;
-- SQLite/Parquet/DuckDB roles;
-- QDM on Fedora only as acquisition/staging/export tooling;
-- typed AST;
-- v1 narrow execution semantics;
-- pessimistic ambiguity;
-- funnel order;
-- v1 search mechanism;
-- behavioral archive;
-- portfolio method class;
-- lockbox policy;
-- Nora governance model;
-- existing Windows VM as MT5 validation environment;
-- manual demo-VPS deployment boundary.
+### Q-F-01 — What exact Darwinex Zero finalist protocol applies?
+
+Freeze tester mode, symbol/date range, tick requirement, costs, profile, environment, reconciliation fields, and budgets before Phase 7.
+
+### Q-F-02 — What divergence is acceptable under real broker tick sequencing?
+
+Derive empirically from small finalist canaries and freeze before candidates are evaluated.
+
+### Q-F-03 — How are broker-side rejects, filling modes, stop/freeze levels, and costs classified?
+
+Requires broker-bound native fixtures.
+
+## Later optional questions
+
+- Has deterministic sampling/local refinement plateaued on at least two families?
+- Can typed mutation/crossover improve results at equal compute without harming determinism or diversity?
+- Can any ML or regime layer add value without leakage against the frozen non-ML baseline?
+
+## Resolved questions
+
+- Linux-first platform: resolved.
+- Rust/Python split and subprocess boundary: resolved and vindicated by implementation.
+- Phase-0B throughput proof: passed.
+- NY+7 DST and double-conversion protection: implemented and accepted narrowly.
+- M5/H1 contract-aware aggregation: implemented.
+- Completed-bar, next-open, pessimistic simulator semantics: implemented narrowly.
+- Initial proposed families: trend-pullback and close-confirmed breakout.
+- Universal SQX grammar, XML identity, opaque fitness, PF sentinel, and unresolved WFO/SPP copying: rejected.
+- Searchability: false.
+- Phase 3: unauthorized.

@@ -1,184 +1,213 @@
-# RISKS_AND_FAILURE_MODES.md
-Nora AI Trading Lab — Top Risks and Mitigations
+# Nora AI Trading Lab — Risks and Failure Modes v2
 
-Ordered roughly by expected damage × likelihood.
+Ordered by likely damage and probability.
 
----
+## 1. Evidence and parity
 
-## 1. Research/MT5 boundary risks
+### R1 — Compiler evidence mistaken for semantic parity
 
-### R1. Treating MT5 as the research platform
-Running generation, broad robustness, or Monte Carlo through MT5 would make the lab slow, brittle, and hard to resume.
+A generated EA can compile cleanly and still implement the wrong formula.
 
-**Mitigation**: Linux-first boundary is locked. MT5 is used only for Phase-2 canary parity and Phase-7 finalist validation.
+**Mitigation:** full identity chain and accepted native reconciliation before parity-verified or searchable state. Preserve failed evidence.
 
-### R2. Engine/MT5 divergence discovered after large-scale search
-A fast Rust engine is dangerous if mechanically wrong.
+### R2 — Corrected ten-strategy campaign remains incomplete
 
-**Mitigation**: small Phase-2 go/no-go parity gate before search; MQL5-translatability grammar rule; canary reconciliation after engine changes.
+Without four fresh corrected runs, the suite cannot prove corrected parity.
 
-### R3. Validation harness fragility
-The existing VM path works in practice, but undocumented launch/config/report assumptions could fail later.
+**Mitigation:** FR-T1 is the immediate hard blocker; fail closed on any environmental or ledger mismatch.
 
-**Mitigation**: codify the known-working `ssh nora-win10` workflow into a repository-owned harness; explicit completion state; atomic result return; semantic two-run comparison; interruption classification.
+### R3 — Tolerance creep
 
-### R4. Subtle semantic mismatch
-Warmup, incomplete-bar indexing, session resets, DST, spread, swap timing, and fill semantics can look “close enough” while invalidating research.
+Budgets may be widened after observing differences.
 
-**Mitigation**: focused parity fixtures, DST/weekend canaries, trade-by-trade reconciliation, frozen parity budget.
+**Mitigation:** fixture-specific versioned budgets frozen before execution; no global tolerance; any mismatch becomes diagnosis.
 
-### R5. Broker/source mismatch
-Canonical research data and Darwinex broker history may differ.
+### R4 — Three execution implementations drift
 
-**Mitigation**: Phase 0C comparison; preserve provider identity and broker-reference identity separately; use matched reference extracts for parity analysis; record all transformation provenance.
+Simulator, ten-strategy suite, and generated MQL5 overlap.
 
----
+**Mitigation:** explicit execution-policy identities and a post-acceptance suite-to-simulator equivalence fixture.
 
-## 2. Data risks
+### R5 — Exit-price convention ambiguity
 
-### R6. Confusing QDM with the data provider
-QDM is a tool, not the provider or canonical database.
+Bar-open and decision-bar-close signal/time exits coexist.
 
-**Mitigation**: provider identity stored separately; QDM version and export settings recorded; staged input hash before ingestion.
+**Mitigation:** human D3 decision; every grammar binds one policy identity.
 
-### R7. Opaque timezone/DST conversion
-A timezone-converted CSV can silently become an untraceable research source.
+## 2. Search and model risk
 
-**Mitigation**: versioned trading-timezone contract; record timezone identity, DST regime, source/bar timestamp semantics, session and strategy clocks, optional UTC reference instant, and every conversion. Preserve intentionally prepared broker-time production data directly where declared.
+### R6 — Grammars cannot be expressed in the AST
 
-### R7a. Research/MT5 clock mismatch
-Silent conversion, an incorrect DST regime, double conversion, session-rule drift, or an incorrect Friday-close time can make a strategy trade on a different clock from its target MT5 broker.
+Cross and Slope transforms exist but typed AST nodes do not.
 
-**Mitigation**: deterministic conversion rules with a conversion ledger and double-conversion guard; named/versioned broker-time contract; DST/weekend/session canaries; parity fixtures for Friday close, ORB, rollover, daily reset and Monday open; compare declared research clock to the target MT5 broker clock before parity/finalist runs.
+**Mitigation:** FR-T4 admission work before grammar materialization; no bypass through hard-coded strategy paths.
 
-### R8. Data leakage between discovery and validation
-Repeated reuse of recent data or broker validation windows creates hidden selection.
+### R7 — Registry overengineering
 
-**Mitigation**: versioned data splits, lockbox policy, logged access, no threshold changes mid-experiment.
+Too many independently governed registries create drift and process burden.
 
----
+**Mitigation:** one typed store, static schema tables, evidence derived from manifests.
 
-## 3. Quant/research-validity risks
+### R8 — Behavioral archive degenerates
 
-### R9. Optimistic simulation bias
-Ambiguous fills inflate whole candidate populations.
+Too many descriptor dimensions create one-candidate-per-cell behavior.
 
-**Mitigation**: pessimistic ambiguity rule, synthetic fixtures, narrow v1 semantics, early cost stress.
+**Mitigation:** 3–4 coarse dimensions in v1; population study before locking.
 
-### R10. Look-ahead and session leakage
-Incomplete bars, future session statistics, or hindsight regime labels create fake edge.
+### R9 — Local refinement becomes hidden optimization
 
-**Mitigation**: completed-bar signals, forward-valid features, canary and placebo tests.
+Repeated neighborhoods may overfit or consume OOS information.
 
-### R11. Cost-model self-deception
-Thin modeled costs create fragile M1 strategies.
+**Mitigation:** IS-only scope, fixed budget, declared improvement/plateau rules, lineage and trial counts.
 
-**Mitigation**: broker-reference symbol specs, variable-cost analysis where available, Tier-1 cost stress, Darwinex native finalist confirmation.
+### R10 — Opaque ranking
 
----
+Weighted composites or post-hoc metric changes hide researcher degrees of freedom.
 
-## 4. Overfitting and selection-bias risks
+**Mitigation:** lexicographic protocol, family metric pre-registration, deterministic tie handling, DD as gate only.
 
-### R12. Industrial-scale multiple testing
-Large search populations inevitably produce impressive noise.
+## 3. Metric and cost risk
 
-**Mitigation**: matched random-search baseline, permanent lockbox, tracked trial counts, placebo/permutation-style integrity tests, DSR diagnostic only.
+### R11 — Money metrics without a cost/sizing producer
 
-### R13. Threshold drift
-Changing gates after seeing results recreates researcher degrees of freedom.
+Current ledgers are per-unit gross and cannot support full account-currency claims.
 
-**Mitigation**: protocol immutability enforced in control plane.
+**Mitigation:** choose D6 before Phase 3; use per-unit/R-multiple with versioned approximation or gross screening plus mandatory cost stress. Do not claim money drawdown early.
 
-### R14. Lockbox erosion
-Repeated “just one look” destroys the lockbox.
+### R12 — Invalid ratios presented as favorable values
 
-**Mitigation**: human gate and permanent access log.
+Zero denominators can inflate PF or return/DD.
 
-### R15. Survivorship-biased research memory
-If only winners are remembered, Nora learns false priors.
+**Mitigation:** explicit null policy; no sentinel; positive-peak requirement; declared zero-drawdown ordering.
 
-**Mitigation**: failures and rejection reasons are first-class records.
+### R13 — Broker/source mismatch
 
----
+Research prices, sessions, spread, and native broker behavior may differ.
 
-## 5. Portfolio risks
+**Mitigation:** separate data, broker-profile, and execution-policy identities; contextual evidence and finalist native checks.
 
-### R16. Correlation underestimation
-Calm-period correlation understates crisis dependence.
+## 4. Data and leakage
 
-**Mitigation**: downside/tail correlation, DD overlap, correlated cost shocks, loss-clustering bootstrap, concentration caps.
+### R14 — Silent timezone or DST conversion
 
-### R17. Hero-strategy dependence
-A portfolio can look diversified while one EA dominates.
+Time-dependent rules can be wrong while prices look valid.
 
-**Mitigation**: mandatory dropout stress.
+**Mitigation:** versioned time contracts, conversion history, double-conversion rejection, gap/fold tests.
 
-### R18. Sizing from realized historical DD
-Historical max DD is a poor risk budget.
+### R15 — Lockbox erosion
 
-**Mitigation**: stressed 95th/99th percentile portfolio DD plus reserve.
+Repeated access or undocumented trial counts destroys validation value.
 
-### R19. Optimizer instability
-Mean-variance optimization is unstable and targets the wrong risk measure.
+**Mitigation:** lockbox sealed at first production ingestion, logged human-gated access, SQLite trial ledger.
 
-**Mitigation**: locked exclusion; greedy selection + drawdown budgets + caps.
+### R16 — Data leakage across funnel stages
 
----
+Local refinement, contextual tests, or ranking may consume validation data improperly.
 
-## 6. Technical/operational risks
+**Mitigation:** per-stage data-access map embedded in the robustness protocol identity.
 
-### R20. Crash recovery that almost works
-Lost or duplicated tasks silently corrupt results.
+### R17 — Production-data acquisition becomes automated or uncontrolled
 
-**Mitigation**: immutable task outputs, task ledger, kill/reboot acceptance tests, idempotent commands.
+Large downloads can consume time and create unreviewed contracts.
 
-### R21. Laptop thermal and memory limits
-Sustained 12-thread work may throttle; careless buffering can consume 40 GB RAM.
+**Mitigation:** advance notice; Gasper manually prepares final broker-time datasets; hashes and provenance recorded.
 
-**Mitigation**: Phase 0B worker benchmark, per-task memory estimates, streaming writes.
+## 5. Determinism and operations
 
-### R22. SQLite contention
-Multiple writers undermine reliability.
+### R18 — Sequential control plane becomes a bottleneck
 
-**Mitigation**: WAL mode, one control-plane writer, engine workers only write files.
+No worker pool currently exists.
 
-### R23. Nondeterminism creep
-Parallel reduction order or unseeded randomness breaks reproducibility.
+**Mitigation:** bounded process pool before large search; one SQLite writer; workers publish immutable files.
 
-**Mitigation**: fixed reduction rules, named seeded RNG streams, semantic determinism CI.
+### R19 — Concurrency corrupts task state
 
-### R24. Premature infrastructure detours
-Building new VMs, terminals, import systems, or Windows automation unrelated to the narrow validation contract wastes time.
+Retries or crashes may duplicate accepted work.
 
-**Mitigation**: preserve the known-working existing VM path; infrastructure work must be justified by a failed acceptance criterion, not by theoretical cleanliness.
+**Mitigation:** guarded transitions, idempotent registration, atomic outputs, concurrent kill/resume acceptance.
 
----
+### R20 — Global RNG cursor makes resume schedule-dependent
 
-## 7. Ways this project wastes months
+Worker order may alter results.
 
-| Failure pattern | Guard |
-|---|---|
-| Running the research funnel through MT5 | Linux-first boundary |
-| Building search on an unvalidated simulator | Phase-2 parity gate |
-| Rebuilding a working VM path unnecessarily | Existing validation boundary lock |
-| Gold-plating AST nodes MT5 cannot translate | Grammar admission rule |
-| Adding evolutionary machinery before sampling plateaus | Search sequencing rule |
-| Running Parameter MC/WFO on thousands of doomed candidates | Funnel ordering |
-| Porting every indicator before the pipeline works | Layer-1 limit |
-| Wiring Nora early as a workaround for missing automation | Phase-8 sequencing |
-| Trusting recovered state that duplicated work | Phase-1 task-ledger acceptance |
-| Believing survivors that do not beat matched random search | Required baseline |
-| Automating deployment before research is trustworthy | Manual deployment boundary |
+**Mitigation:** immutable domain-separated per-task/per-shard seeds.
 
----
+### R21 — Laptop thermal or memory limits invalidate estimates
 
-## 8. False-confidence checklist
+Phase-0B synthetic speed is not production capacity.
 
-1. Would the result survive pessimistic-fill assumptions?
-2. Did survivors beat the matched random-search baseline?
-3. Was any threshold changed after the experiment started?
-4. Has the lockbox been touched?
-5. Do current canaries still reconcile between Rust and MT5?
-6. Is the candidate relying on a data-source/broker mismatch?
-7. Does the portfolio survive removal of its best contributor?
-8. Has MT5 accidentally crept into work Linux should own?
+**Mitigation:** bounded Phase-3 workload calibration on approved data and grammars before setting batch budgets.
+
+### R22 — Windows runner ambiguity
+
+SSH disconnect or launcher existence may be mistaken for success.
+
+**Mitigation:** detached observable jobs, persistent evidence root, atomic completion markers, importer validation.
+
+### R23 — Historical untracked directories cause evidence confusion
+
+Old partial outputs may be mistaken for current evidence.
+
+**Mitigation:** explicit Gasper decision to archive/commit/delete; never infer acceptance from directory names.
+
+## 6. Robustness and scientific validity
+
+### R24 — Cheap and expensive stages are ordered poorly
+
+Parameter MC/WFO may run on thousands of weak candidates.
+
+**Mitigation:** mechanical, IS/OOS, cost, neighborhood, Trade MC, context, and clustering first.
+
+### R25 — Contextual evidence becomes a universal rejection gate
+
+A strategy may be incorrectly rejected for family-irrelevant behavior.
+
+**Mitigation:** separate context evidence codes; promotion to gate requires a frozen family protocol.
+
+### R26 — Trade MC confused with re-backtest perturbation
+
+Different uncertainty questions become mixed.
+
+**Mitigation:** separate registry/test families, inputs, seeds, and outputs.
+
+### R27 — SQX internals copied without verified semantics
+
+Unresolved fitness, WFO, WFV, SPP, selector, and precision behavior may enter Nora.
+
+**Mitigation:** Nora-owned protocols and fixtures; SQX findings remain a closed reference corpus.
+
+### R28 — Multiple testing produces impressive noise
+
+Large populations inevitably generate false winners.
+
+**Mitigation:** trial counts, matched random baseline, lockbox, placebo tests, immutable protocols, failures retained.
+
+## 7. Portfolio and deployment
+
+### R29 — Portfolio dominated by one strategy or family
+
+**Mitigation:** concentration caps, marginal stressed drawdown, top-strategy/family/symbol dropout tests.
+
+### R30 — Historical max drawdown used as a sizing guarantee
+
+**Mitigation:** stressed drawdown distributions and explicit reserve.
+
+### R31 — Native finalist validation becomes part of discovery
+
+**Mitigation:** MT5 only after Linux funnel survival; no MT5 feedback loop into search thresholds.
+
+### R32 — Automated deployment outruns governance
+
+**Mitigation:** approved EA deployment remains manual in v1.
+
+## 8. Project waste guards
+
+Do not:
+
+- build search on an unaccepted simulator;
+- rebuild the working VM without a failed requirement;
+- port every SQX indicator;
+- build full evolutionary infrastructure early;
+- build broad tick infrastructure before finalists;
+- treat recommendations as binding gates without evidence;
+- let documentation override machine-readable status.

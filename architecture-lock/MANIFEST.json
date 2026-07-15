@@ -1,0 +1,78 @@
+{
+  "package": "Nora AI Trading Lab Final Architecture and Project Plan",
+  "version": "2.1-final",
+  "prepared": "2026-07-14",
+  "repository_snapshot": {
+    "branch": "main",
+    "commit": "ab989628390f027ebc32ef749b8ffb8b6bfcb319"
+  },
+  "status": {
+    "phase2_complete": false,
+    "phase3_authorized": false,
+    "search_authorized": false,
+    "searchable_components": 0
+  },
+  "sources": [
+    "Original architecture lock",
+    "Implemented repository evidence",
+    "SQX_Findings",
+    "New Plan synthesis",
+    "Fable Review"
+  ],
+  "files": [
+    {
+      "name": "ARCHITECTURE_DECISIONS.md",
+      "sha256": "09608c6e3e8081a65dad7b0ab06190579f3c166ec3ce2d9719afccc5a05c21ef",
+      "bytes": 7161,
+      "lines": 117
+    },
+    {
+      "name": "BUILD_ROADMAP.md",
+      "sha256": "e0d62f4473b1809600310a2ae288fa40626b8d6ba975f5d1e76b10efd116dab9",
+      "bytes": 7491,
+      "lines": 275
+    },
+    {
+      "name": "FINAL_ARCHITECTURE.md",
+      "sha256": "d674aede956d0406b77918855121cb3e54050d6b4d7cccece6c020b5c94e6934",
+      "bytes": 15259,
+      "lines": 506
+    },
+    {
+      "name": "IMPLEMENTATION_STATUS.md",
+      "sha256": "f3a4951cfc8c8c0932c0538fbfbbedbe97d0e65bc4afc9999530b171bb8d0e75",
+      "bytes": 6911,
+      "lines": 179
+    },
+    {
+      "name": "INDEX.md",
+      "sha256": "014aea0596b276ce867e8814d7a28619886c41733b5e17985e353b4cd75ec0fa",
+      "bytes": 4792,
+      "lines": 89
+    },
+    {
+      "name": "OPEN_QUESTIONS.md",
+      "sha256": "2b8cfa21b1cac1aa4c40ee5adbc65ca39b7895eef4b6d5387b5a1fb595724c57",
+      "bytes": 4974,
+      "lines": 125
+    },
+    {
+      "name": "PHASE2_COMPLETION_GATE.md",
+      "sha256": "b6c8e13083ac13adbffe1a783e4537ce63b2e75e022497147f91c1844ee72c62",
+      "bytes": 4780,
+      "lines": 134
+    },
+    {
+      "name": "RECONCILIATION_NOTES.md",
+      "sha256": "afa99f5450935c30bd4c9b91e51f0e2df027f7ae51b4515b76519b2a4b108ee1",
+      "bytes": 4551,
+      "lines": 127
+    },
+    {
+      "name": "RISKS_AND_FAILURE_MODES.md",
+      "sha256": "986e070adfc39d4b56ea0aaa264c7552017d76df6a42290118e3d4d2aeead6c6",
+      "bytes": 7587,
+      "lines": 213
+    }
+  ]
+}

@@ -1,322 +1,275 @@
-# BUILD_ROADMAP.md
-Nora AI Trading Lab — Implementation Roadmap
+# Nora AI Trading Lab — Evidence-Based Build Roadmap v2
 
-Phases are in dependency order. Acceptance gates are binding.
+Phases and tranches are dependency ordered. Completed work is not restated as future implementation.
 
-The roadmap is explicitly Linux-first: research compute remains on Fedora. MT5 appears only in a narrow early parity gate and late finalist validation.
+## Completed and conditional foundation
 
----
+### Phase 0A — MT5 harness
 
-## Phase 0 — Risk and calibration spikes
+**Status:** conditional pass.
 
-### 0A — Codify the existing MT5 validation harness
+Completed:
 
-The existing Windows 10 LTSC VM is already a dedicated MT5 research/validation machine.
+- repository-owned access through `ssh nora-win10`;
+- repeatable pinned runs and result return;
+- semantic two-run comparison;
+- interruption classification.
 
-Known environment:
+Later hardening:
 
-- Fedora host;
-- SSH alias `nora-win10`;
-- SSH key already configured;
-- one fresh Darwinex MT5 terminal;
-- investor/read-only broker login;
-- no live-trading use of the VM;
-- Nora has already run MT5 backtests through CLI orchestration.
+- tester-kill/VM-restart recovery;
+- finalist-scale reliability;
+- richer aggregate extraction.
 
-Task:
+### Phase 0B — Throughput proof
 
-Audit the actual known-working workflow and turn it into a small repository-owned validation harness.
+**Status:** pass.
 
-Prove:
+- 5,256,000 synthetic M1 bars;
+- 1,000 candidates;
+- 168.53 candidate-backtests/sec at four workers;
+- about 290 MiB peak RSS.
 
-- Fedora can launch a pinned MT5 backtest through the existing SSH path;
-- EA/config placement is repeatable;
-- the run completes;
-- result/report artifacts return to Fedora;
-- output can be parsed into machine-readable metrics and a semantic trade list;
-- the exact pinned test can be run twice with semantically identical results;
-- interrupted or incomplete runs are not accepted as success;
-- restart/interruption behavior is documented.
+Production workload calibration is a future Phase-3 planning task, not missing Phase-0 evidence.
 
-Broker history synchronization is treated as normal tester state preparation, not as proof that the environment is invalid.
+### Phase 0C — Data characterization
 
-Phase 0A does **not** require:
+**Status:** conditional pass.
 
-- a new VM;
-- a new Windows install;
-- a second MT5 terminal;
-- QDM installation;
-- custom-symbol import;
-- a permanent parity dataset strategy.
+- QDM remains acquisition/staging tooling;
+- Dukascopy M1 is the initial research-source recommendation;
+- explicit time-contract direction validated;
+- production and Darwinex broker-reference data remain future manual inputs.
 
-**Acceptance**: one repository-owned Fedora command or script launches the same pinned broker-native MT5 test twice through `ssh nora-win10`, retrieves the outputs, and produces a semantic comparison verdict.
+### Phase 1 — Lab foundation
 
-### 0B — Engine throughput prototype
+**Status:** conditional pass.
 
-Build a crude Rust prototype:
+Implemented:
 
-- load 10 years of M1 for one symbol;
-- compute 3 indicators;
-- evaluate roughly 1,000 dummy AST strategies;
-- use next-open entry and intrabar SL/TP logic.
+- SQLite WAL state;
+- deterministic task and artifact identities;
+- guarded lifecycle transitions;
+- checkpoints and resume;
+- idempotent registration;
+- dummy multi-stage workflow;
+- provenance and event foundation.
 
-Benchmark sustained throughput with 4/6/8/10/12 workers.
+Not a Phase-2 blocker:
 
-**Acceptance**: measured throughput and wall-time extrapolation for a 25k-candidate Tier-1 pass, with a target of hours rather than days.
+- service enable/reboot proof;
+- backup and repair procedure.
 
-### 0C — Data provider and broker-reference check
+Required before bulk search:
 
-Install/evaluate QDM on Fedora as acquisition/staging tooling.
+- bounded worker pool and concurrent kill/resume proof.
 
-Use QDM and existing broker extraction utilities to compare candidate source and broker reference data for 2–3 symbols:
+## Phase 2 — Engine proof and native parity
 
-- gaps;
-- timestamp conventions;
-- DST;
-- session boundaries;
-- M1 alignment;
-- sample tick behavior;
-- broker symbol specifications.
+### Completed local/narrow work
 
-Record provider identity separately from QDM version/tool identity.
+- strict canonical ingestion;
+- time and DST contracts;
+- NY+7 support;
+- M5/H1 aggregation;
+- Layer-1 kernels and typed transforms;
+- typed AST and identities;
+- entry/exit intents;
+- narrow simulator and precedence;
+- deterministic RNG;
+- narrow metrics;
+- MQL5 generation;
+- accepted component/time/execution canaries;
+- corrected ten-strategy v2 compiler evidence;
+- persistent Windows evidence runner.
 
-Hash staged exports and record timezone/DST/export settings.
+### FR-T1 — Corrected ten-strategy native campaign
 
-**Acceptance**: written data-contract draft validated against real files and broker extracts.
+**Model:** Terra.  
+**Status:** immediate hard blocker.
 
-0B and 0C may proceed in parallel after the 0A harness direction is clear.
+- execute GDAXI/M1 A1+A2 and AUDCAD/M1 B1+B2;
+- enforce frozen environmental policy;
+- return atomic packages;
+- import and reconcile all ten ledgers;
+- prove repeatability;
+- create formal acceptance record;
+- never widen budgets or change semantics.
 
----
+No market data required.
 
-## Phase 1 — Lab foundation
+### FR-T2 — Replay and placebo fixtures
 
-Build:
+**Model:** Luna.  
+**May run in parallel with FR-T1.**
 
-- canonical data contract;
-- QDM-independent staged-file ingestion;
-- canonical M1 Parquet store with explicit, versioned trading-timezone contract;
-- symbol/timezone/DST/session model, source and bar timestamp semantics, strategy evaluation clock, optional UTC reference instant, and conversion provenance/double-conversion guard;
-- preserve directly prepared broker-time datasets rather than silently normalizing every input to UTC; support broker-time Friday close, ORB, rollover, daily-reset and other session rules;
-- SQLite state schema;
-- Parquet artifact conventions;
-- hash registry;
-- task/checkpoint framework;
-- systemd supervisor;
-- idempotent CLI skeleton;
-- event log;
-- protocol versioning;
-- dummy resumable workflow.
+- whole-experiment deterministic replay bundle;
+- deterministic planted-edge/scramble destruction fixture;
+- permanent CI evidence;
+- no production data.
 
-**Acceptance**
-1. Dummy multi-stage experiment runs through `lab experiment launch`.
-2. Kill/reboot tests resume with zero lost completed tasks and zero duplicated tasks.
-3. Repeating a CLI command is idempotent.
-4. Every artifact is reproducible from provenance.
+### FR-T3 — Gate-closure decision packet
 
----
+**Model:** Sol for consequential drafting; Luna for mechanical matrix updates; Gasper decides.
 
-## Phase 2 — Engine proof + narrow MT5 parity gate
+- close D1–D7;
+- add lockbox/trial-count and execution-policy decisions;
+- update machine-readable gate matrix;
+- set `phase2_complete` true only if every binding row closes;
+- keep Phase-3 authorization separate.
 
-Build:
+### FR-T4 — Cross/Slope AST admission and registry prototype
 
-- Layer-1 indicators;
-- minimal typed transforms;
-- AST schema/canonicalization/hashing;
-- v1 execution simulator;
-- synthetic execution fixtures;
-- deterministic RNG streams;
-- baseline metrics;
-- minimal MQL5 generator for the v1 canary node set;
-- small MT5 parity harness using the existing Phase-0A VM path.
+**Model:** Luna, with architecture review of canonical encoding.
 
-MT5 work in this phase is deliberately small.
+- typed AST nodes for Cross and Slope;
+- strict typing and canonical identities;
+- deterministic MQL5 translation;
+- local parity fixtures;
+- single-store registry prototype derived from manifests;
+- remain non-searchable until native admission and authorization.
 
-Do not run search populations in MT5.
+### FR-T5 — Worker pool
 
-**Acceptance**
-1. All synthetic execution fixtures pass.
-2. Layer-1 indicator implementations match MT5/reference behavior within documented tolerance on parity datasets.
-3. At least 10 simple hand-designed strategies spanning the initial v1 grammar generate to MQL5 and reconcile trade-by-trade within the provisional parity budget.
-4. Same Linux experiment run twice gives semantically identical trades, metrics, simulation outcomes, and canonical content hashes.
-5. Placebo/scrambled-data test destroys a known canary edge.
+**Model:** Terra.
 
-**Go/no-go gate**: if simple parity cannot be achieved, no search engine is built.
+- bounded process workers;
+- one SQLite writer;
+- immutable worker outputs;
+- retries and guarded transitions;
+- concurrent kill/resume proof;
+- runtime ledger.
 
----
+This is required before a large Phase-3 batch but is not evidence that Phase 2 passed.
 
-## Phase 3 — Search
+## Phase-3 authorization gate
 
-Build:
+Phase 3 may be considered only after `PHASE2_COMPLETION_GATE.md` is satisfied. It begins only after a separate signed D8 authorization.
 
-- first two family grammars;
-- stratified sampler;
-- canonical-hash dedup;
-- behavioral descriptors;
-- descriptor archive;
-- local refinement;
-- lineage tracking;
-- compute budgets.
+Before the first search run:
 
-Initial families:
+- active grammar dependencies are explicitly searchable;
+- execution policy is chosen;
+- metric unit/cost basis is frozen;
+- family ranking, floors, and ceilings are pre-registered;
+- approved data contracts and splits exist;
+- lockbox and trial-count ledger are sealed;
+- worker pool is accepted;
+- Phase-3 workload calibration is complete.
 
-- trend-pullback;
-- close-confirmed breakout.
+## Phase 3 — Initial search
 
-**Acceptance**
-1. 10k+ candidates sampled with zero canonical duplicates in repeated test.
-2. Descriptor archive shows meaningful coverage.
-3. Matched best-of-N random-search baseline produced.
-4. Sampling run is resumable at batch granularity.
+Build only:
 
-No mutation/crossover yet.
+- trend-pullback v1.0;
+- close-confirmed breakout v1.0;
+- deterministic stratified sampler;
+- canonical deduplication;
+- bounded local refinement;
+- 3–4-dimensional behavioral archive;
+- lineage and batch checkpoints;
+- matched best-of-N random-search baseline.
 
----
+Acceptance:
 
-## Phase 4 — Cheap robustness, Tiers 0–3.5
+- repeated sampling has zero canonical duplicates;
+- batches resume without duplication;
+- archive coverage is useful rather than one-candidate-per-cell;
+- sampling/refinement beats the matched random baseline at equal budget;
+- no lockbox access.
 
-Build:
+No evolution.
 
-- mechanical integrity;
-- IS/OOS;
-- temporal segments;
-- cost stress;
-- dollar-DD gates;
-- cheap parameter neighborhood;
-- Trade MC;
-- related market/TF contextual tests;
-- session/regime decomposition;
-- behavioral clustering;
-- representative selection;
-- machine-readable failure reasons.
+## Phase 4 — Cheap robustness
 
-**Acceptance**
-1. 10k candidates reduce to roughly 10–100 representatives in bounded laptop wall time.
-2. Every rejection stores a reason code.
-3. Survivors materially outperform the matched random-search baseline on validation data.
-4. Every tier supports interruption/resume.
+Order:
 
----
+1. mechanical/data-contract checks;
+2. frozen IS/OOS and temporal validation;
+3. cost stress;
+4. local parameter neighborhood;
+5. Trade MC;
+6. contextual market/timeframe/session/regime evidence;
+7. behavioral clustering and representatives.
 
-## Phase 5 — Expensive robustness, Tier 4
+Requirements:
 
-Build:
+- machine-readable failure/evidence codes;
+- per-stage data-access map;
+- immutable seeds and shard identities;
+- interruption/resume;
+- aggressive attrition before expensive testing.
 
-- Parameter Manipulation MC, sharded and resumable;
+## Phase 5 — Expensive robustness
+
+Only clustered representatives enter:
+
+- Parameter MC;
 - parameter-surface summaries;
-- WFV default;
-- WFO only for families whose protocol requires reoptimization;
-- runtime learning.
+- WFV by default where justified;
+- WFO only for families requiring reoptimization;
+- runtime estimation and shard reuse.
 
-**Acceptance**
-1. Expensive tests run only on clustered representatives.
-2. Scheduler predicts wall time within ±30%.
-3. Interrupted two-hour Parameter MC loses at most one shard.
-4. Explicit decision-gate approval required.
+Explicit human approval required.
 
----
+## Phase 6 — Portfolio lab
 
-## Phase 6 — Portfolio lab, Tiers 5 and 7
+After a real survivor pool exists:
 
-Build:
-
-- joint daily P&L replay;
-- downside/tail correlation;
-- DD overlap;
-- loss-streak and recovery analysis;
+- synchronized daily P&L;
+- tail/downside correlation;
+- drawdown overlap;
 - concentration caps;
-- greedy portfolio selection;
-- drawdown-based risk budgeting;
-- broker-compatible lot sizing;
-- portfolio MC;
-- correlated cost shocks;
-- dropout stress;
-- portfolio provenance.
+- greedy portfolio construction;
+- stressed drawdown allocation;
+- broker-compatible sizing;
+- portfolio MC and dropout/cost shocks.
 
-**Acceptance**
-1. Portfolio construction meets a stated dollar-DD constraint.
-2. Constructed hero-dependent portfolio is rejected by dropout stress.
-3. Portfolio artifacts are fully reproducible.
+Requires Gasper-approved capital, drawdown, leverage, and concentration limits.
 
----
+## Phase 7 — Finalist validation
 
-## Phase 7 — High-fidelity finalist validation
+Only Linux-pipeline finalists:
 
-Only Linux-pipeline finalists reach this stage.
+- tick retest where justified;
+- production-grade MQL5;
+- broker-profile binding;
+- native Darwinex MT5 run;
+- returned reports and ledgers;
+- reconciliation under frozen finalist budgets;
+- explicit distinction between Linux research and native confirmation.
 
-Build/harden:
-
-- finalist tick retest where required;
-- production-grade MQL5 generation;
-- magic-number handling;
-- contract/spec handling;
-- robust logging and error handling;
-- batch native MT5 validation through the existing Windows VM;
-- automatic result retrieval;
-- reconciliation reports;
-- parity-budget mismatch alerts.
-
-Native validation target: Darwinex MT5 in the existing dedicated VM.
-
-The expected final confirmation window is approximately six years where the selected protocol and data availability permit.
-
-**Acceptance**
-1. Finalists flow Linux strategy → MQL5 → native Darwinex MT5 validation without manual file handling.
-2. Results return and reconcile automatically.
-3. Any divergence outside the parity budget flags the candidate.
-4. A final validation report clearly distinguishes Linux research results from native broker-terminal confirmation.
-
-Manual deployment of approved EAs to the demo VPS is outside the automated lab workflow.
-
----
+Large/tick data requires advance notice.
 
 ## Phase 8 — Nora workshop
 
-Build:
-
+- manifest-driven progression;
 - decision packets;
-- enumerated choices;
-- Hermes wake dispatch;
-- Telegram status;
-- manifest-driven auto-advance;
-- challenge-mode queries;
-- research-memory CLI.
-
-**Acceptance**
-1. Full experiment runs end-to-end with Nora waking only at declared gates/exceptions.
-2. Token use measured and within budget.
-3. Nora cannot alter thresholds mid-experiment.
-4. Recovered state is accurately reflected after crash/restart.
-
----
+- event-driven Hermes wakeups;
+- Telegram milestone reporting;
+- research-memory queries;
+- immutable protocol enforcement.
 
 ## Phase 9 — Deferred intelligence
 
-Deferred until sufficient trustworthy experiment history exists:
+Only after trustworthy experiment history:
 
-- ML survival predictors;
-- surrogate compute allocation;
-- anomaly models;
-- regime models;
-- Markov/HMM risk scaling;
-- GA search.
-
----
+- typed evolutionary search;
+- ML survival/allocation models;
+- regime/HMM/Markov layers;
+- remote/distributed compute.
 
 ## Binding sequencing rules
 
-1. **Do not build search until Phase 2 simple parity passes.**
-2. **Do not put MT5 in the bulk research loop.**
-3. **Do not add a searchable AST node before Rust implementation + MQL5 translation + parity fixture exist.**
-4. **Do not add mutation/crossover until sampling + local refinement plateaus on at least two families.**
-5. **Do not build expensive Parameter MC/WFO infrastructure until cheap-tier attrition reduces populations to roughly ≤100 representatives.**
-6. **Do not build portfolio tooling before a real pool of funnel-validated strategies exists.**
-7. **Do not build broad tick infrastructure before M1 finalists exist.**
-8. **Do not connect Nora to the full funnel until a full experiment runs hands-free.**
-9. **Do not touch the permanent lockbox before a finalist portfolio exists and human approval is given.**
-10. **No ML/regime/Markov work before trustworthy lab history exists.**
-11. **Do not automate demo/live deployment in v1.**
-12. **Do not redesign the Windows validation environment while the existing dedicated VM and known-working SSH/backtest path can satisfy the narrow validation contract.**
-
-## Deliberately postponed
-
-GUI, MCP, cloud/distributed compute, pending-order execution semantics, partial exits, advanced trailing, Layer-3/4 indicators, volume/TPO profile families, speculative micro-optimization, HMM/Markov/ML layers, and automated deployment.
+1. No search before Phase-2 gate closure and signed Phase-3 authorization.
+2. No searchable component without full evidence and explicit promotion.
+3. No MT5 bulk research.
+4. No evolution before two-family plateau under matched budgets.
+5. No expensive robustness on large populations.
+6. No portfolio tooling before validated survivors.
+7. No broad tick infrastructure before finalists.
+8. No lockbox access before the approved gate.
+9. No threshold changes after an experiment begins.
+10. No large data acquisition without advance notice.
+11. No silent conversion of production broker-time data.
+12. No automated deployment in v1.

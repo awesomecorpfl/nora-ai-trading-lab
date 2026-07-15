@@ -1,49 +1,89 @@
-# INDEX.md
-Nora AI Trading Lab — Architecture Package (Final v1 Lock, Linux-First Research Boundary)
+# Nora AI Trading Lab — Final Architecture and Project Plan
 
-Produced from the Fable 5 architectural review and reconciled with the actual project environment.
+**Status:** Adopted replacement architecture package; Phase 2 incomplete; Phase 3 unauthorized  
+**Evidence snapshot:** repository `main` at `ab989628390f027ebc32ef749b8ffb8b6bfcb319`  
+**Prepared:** 2026-07-14
 
-This final v1 package incorporates six project-level corrections:
+This package replaces the earlier seven-document architecture-lock package as Nora's current full project plan. It incorporates:
 
-1. **Linux-first research boundary**: strategy generation, backtesting, robustness, Monte Carlo, clustering, portfolio research, and experiment orchestration run on Fedora through Python + Rust. MT5 is not part of the bulk research loop.
-2. **MT5 validation target**: MT5 validation uses the existing dedicated Windows 10 LTSC VM on the Fedora laptop, reached through the already-working `ssh nora-win10` path.
-3. **Random-search terminology**: the best-of-N comparison is a matched random-search baseline, not a formal statistical null.
-4. **Determinism scope**: determinism is defined at canonical research-content level rather than requiring byte-identical Parquet containers.
-5. **Breakout taxonomy**: v1 close-confirmed breakout strategies are explicitly distinct from future intrabar stop-entry breakout strategies.
-6. **Trading-timezone contract**: production research datasets may be prepared and evaluated directly in the declared target MT5 broker trading clock; UTC remains optional reference/provenance, not the mandatory strategy clock.
+- the original Linux-first architecture lock;
+- the actual implemented repository state;
+- the completed SQX forensic findings;
+- the corrected New Plan synthesis and architecture proposals;
+- the independent Fable implementation audit and recommended corrections.
 
-These documents supersede the original planning brief where they differ.
+Adopting this package does **not** resolve the remaining Phase-2 and Phase-3 gate decisions. Those decisions are intentionally preserved in `PHASE2_COMPLETION_GATE.md`, `ARCHITECTURE_DECISIONS.md`, and `OPEN_QUESTIONS.md` so the architecture can be final while operational gates remain evidence-dependent.
 
-## Linux-first operating boundary
+This package is the authoritative prose plan. Current code, tests, sealed evidence, and machine-readable gate matrices remain authoritative for implementation and acceptance status.
 
-The package now makes the research/validation split explicit:
+## Current binding state
 
-- Fedora is the research platform.
-- Python is the control plane.
-- Rust is the compute engine.
-- QDM is Fedora-side acquisition/staging/export tooling only.
-- Canonical market data is lab-owned M1 Parquet with a versioned trading-timezone contract.
-- Production research may use target-broker-time data directly. For Darwinex, Fusion and the intended IC Markets account, the current preferred convention is New York +7 (UTC+02/UTC+03 with the relevant New York DST schedule).
-- Higher timeframes are derived internally.
-- MT5 is used only at narrow validation boundaries:
-  - Phase 2: small parity/canary validation before search is trusted.
-  - Phase 7: native Darwinex MT5 confirmation of finalists after MQL5 generation.
-- Final demo-VPS deployment remains a manual human action outside the lab automation scope for v1.
+- `phase2_complete: false`
+- `search_authorized: false`
+- `searchable: false` for every component
+- Phase 3 is not authorized.
+- No production market-data acquisition is authorized.
+- The immediate blocker is the corrected ten-strategy native evidence campaign and exact reconciliation.
+- The whole-experiment replay, placebo fixture, machine-readable gate closure, and D1–D8 decisions remain required as specified by the gate document.
 
-## Recommended reading order
+## Core architecture
 
-1. **FINAL_ARCHITECTURE.md** — final system design and the Linux research / MT5 validation boundary.
-2. **ARCHITECTURE_DECISIONS.md** — locked decisions, prototype items, and deferrals.
-3. **BUILD_ROADMAP.md** — implementation sequence and acceptance gates.
-4. **RISKS_AND_FAILURE_MODES.md** — technical, research-validity, parity, and portfolio risks.
-5. **OPEN_QUESTIONS.md** — the remaining questions that genuinely require empirical answers.
-6. **FINAL_V1_RECONCILIATION_NOTES.md** — history of the project-level corrections and environment reconciliation.
+- Fedora/Linux owns research compute.
+- Rust owns deterministic compute-heavy kernels and simulation.
+- Python owns orchestration, state, evidence handling, MQL5 generation, and reporting.
+- The process boundary is subprocess JSON input with Parquet/JSON output.
+- SQLite stores mutable operational state.
+- Parquet stores immutable artifacts and canonical market data.
+- DuckDB is optional stateless analytics, not an authoritative database.
+- MT5 is a narrow execution-fidelity authority, not a bulk research platform.
+- Production data is manually prepared by Gasper under an explicit broker-time contract.
+- The first search release, once separately authorized, is family-constrained stratified sampling plus deterministic local refinement; no evolutionary search.
 
-## How to use this package
+## Package contents
 
-- Treat Fedora/Python/Rust as the default execution location for all research work.
-- Treat MT5 as an execution-fidelity authority, not a strategy-generation or robustness-compute platform.
-- Keep Phase 2 parity small and decisive: prove simple strategies reconcile before building search.
-- Use the existing dedicated Windows VM for MT5 validation; do not redesign the VM boundary unless the actual known-working backtest workflow cannot be codified reliably.
-- Apply the Phase 0C provider/broker-reference decision and the explicit trading-timezone contract when freezing the Phase 1 data contract; do not silently flatten broker-time semantics to UTC.
-- Treat BUILD_ROADMAP sequencing rules as binding gates.
+1. `FINAL_ARCHITECTURE.md` — complete target architecture and subsystem contracts.
+2. `ARCHITECTURE_DECISIONS.md` — retained locks, approved revisions, prototypes, deferrals, rejections, and pending gate decisions.
+3. `IMPLEMENTATION_STATUS.md` — evidence-backed state of what is actually built.
+4. `PHASE2_COMPLETION_GATE.md` — exact evidence and human decisions required before Phase 3 can be considered.
+5. `BUILD_ROADMAP.md` — completed work, immediate tranches, later phases, and sequencing rules.
+6. `RISKS_AND_FAILURE_MODES.md` — current technical, scientific, evidence, and governance risks.
+7. `OPEN_QUESTIONS.md` — unresolved decisions grouped by deadline.
+8. `RECONCILIATION_NOTES.md` — how this package reconciles and supersedes the previous architecture lock.
+9. `MANIFEST.json` — package file hashes and evidence snapshot.
+
+## Authority order
+
+When documents or evidence conflict, use this order:
+
+1. Current repository code and schemas.
+2. Current tests and fixtures.
+3. Sealed manifests and machine-readable gate matrices.
+4. Git history and commit-linked evidence.
+5. This architecture package.
+6. SQX forensic reports.
+7. Historical architecture documents and planning notes.
+
+No prose document may override a false machine-readable gate.
+
+## Reading order
+
+1. `IMPLEMENTATION_STATUS.md`
+2. `PHASE2_COMPLETION_GATE.md`
+3. `FINAL_ARCHITECTURE.md`
+4. `ARCHITECTURE_DECISIONS.md`
+5. `BUILD_ROADMAP.md`
+6. `RISKS_AND_FAILURE_MODES.md`
+7. `OPEN_QUESTIONS.md`
+8. `RECONCILIATION_NOTES.md`
+
+## Adoption and maintenance
+
+- The old seven documents may be removed from the working directory after this package is staged; Git history preserves them.
+- Do not delete the separate SQX findings, New Plan, or Fable Review evidence folders.
+- Update status facts only from committed repository evidence.
+- Preserve historical failures; do not rewrite them as success.
+- Record new architecture decisions before implementation depends on them.
+- Update the Phase-2 gate only when evidence identities or signed human decisions change.
+- Do not mark a component searchable because it compiles or passes a local test.
+- Large, multi-symbol, multi-year, or tick-data acquisition requires advance notice to Gasper.
+- Current UTC fixtures remain unchanged; future production datasets are validated in their declared broker-time contract.
