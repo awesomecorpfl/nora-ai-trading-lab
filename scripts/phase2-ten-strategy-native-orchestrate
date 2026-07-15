@@ -7,19 +7,19 @@ if [[ $mode == harden-acl && $# -eq 3 ]]; then
   [[ -f $local_staged/phase-0a-h/windows/phase2-evidence-runner.ps1 ]] || { echo 'missing staged runner' >&2; exit 2; }
   ssh nora-win10 "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '$remote_root\\runner'|Out-Null\""
   scp "$local_staged/phase-0a-h/windows/phase2-evidence-runner.ps1" "nora-win10:$runner"
-  ssh nora-win10 "powershell -NoProfile -File \"$runner\" -Mode harden-acl -EvidenceRoot \"$remote_root\""
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode harden-acl -EvidenceRoot \"$remote_root\""
 elif [[ $mode == prepare && $# -eq 5 ]]; then
   run_id=$2; remote_root=$3; remote_incoming=$4; local_staged=$5
   runner="$remote_root\\runner\\phase2-evidence-runner.ps1"
   [[ -d $local_staged ]] || { echo 'missing staged packet' >&2; exit 2; }
-  ssh nora-win10 "powershell -NoProfile -File \"$runner\" -Mode prepare -RunId \"$run_id\" -EvidenceRoot \"$remote_root\"" >/dev/null
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode prepare -RunId \"$run_id\" -EvidenceRoot \"$remote_root\"" >/dev/null
   scp -r "$local_staged/." "nora-win10:$remote_incoming/"
 elif [[ $mode == launch && $# -eq 11 ]]; then
   staged=$2; run_id=$3; symbol=$4; remote_root=$5
-  ssh nora-win10 "powershell -NoProfile -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode launch -RunId \"$run_id\" -Symbol \"$symbol\" -EvidenceRoot \"$remote_root\" -BeforeBarCount \"$6\" -AfterBarCount \"$7\" -BeforeEarliest \"$8\" -BeforeLatest \"$9\" -AfterEarliest \"${10}\" -AfterLatest \"${11}\""
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode launch -RunId \"$run_id\" -Symbol \"$symbol\" -EvidenceRoot \"$remote_root\" -BeforeBarCount \"$6\" -AfterBarCount \"$7\" -BeforeEarliest \"$8\" -BeforeLatest \"$9\" -AfterEarliest \"${10}\" -AfterLatest \"${11}\""
 elif [[ $mode == status && $# -eq 4 ]]; then
   staged=$2; run_id=$3; remote_root=$4
-  ssh nora-win10 "powershell -NoProfile -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode status -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode status -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
 elif [[ $mode == retrieve && $# -eq 6 ]]; then
   staged=$2; run_id=$3; remote_root=$4; remote_complete=$5; local_raw=$6
   [[ ! -e $local_raw && ! -e $local_raw.partial ]] || { echo 'occupied local raw destination' >&2; exit 2; }
@@ -31,15 +31,15 @@ elif [[ $mode == package-persistent && $# -eq 8 ]]; then
   staged=$2; run_id=$3; remote_root=$4; remote_evaluation=$5; local_evaluation=$6; remote_returned=$7; local_return=$8
   [[ -f $local_evaluation && ! -e $local_return && ! -e $local_return.partial ]] || { echo 'invalid persistent package paths' >&2; exit 2; }
   scp "$local_evaluation" "nora-win10:$remote_evaluation"
-  ssh nora-win10 "powershell -NoProfile -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode package -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -EvaluationPath \"$remote_evaluation\"" >/dev/null
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode package -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -EvaluationPath \"$remote_evaluation\"" >/dev/null
   scp -r "nora-win10:$remote_returned" "$local_return.partial"
   mv "$local_return.partial" "$local_return"
 elif [[ $mode == record-import && $# -eq 7 ]]; then
   staged=$2; run_id=$3; remote_root=$4; remote_record=$5; local_record=$6; remote_returned=$7
   [[ -f $local_record ]] || { echo 'missing ingestion record' >&2; exit 2; }
   scp "$local_record" "nora-win10:$remote_record"
-  ssh nora-win10 "powershell -NoProfile -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode record-import -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -ImportRecordPath \"$remote_record\"" >/dev/null
-  ssh nora-win10 "powershell -NoProfile -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode status -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode record-import -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -ImportRecordPath \"$remote_record\"" >/dev/null
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$remote_root\\runner\\phase2-evidence-runner.ps1\" -Mode status -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
 else
   echo "usage: $0 harden-acl LOCAL_STAGED REMOTE_ROOT" >&2
   echo "usage: $0 prepare RUN_ID REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED" >&2
