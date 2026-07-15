@@ -87,6 +87,14 @@ def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
     assert "Set-ExecutionPolicy" not in CONTAINMENT
 
 
+def test_runner_replaces_durable_job_json_and_recovers_only_verified_containment():
+    assert "[IO.File]::Replace" in RUNNER
+    assert "[IO.File]::Move" in RUNNER
+    assert "untrusted interrupted containment evidence" in RUNNER
+    assert "containment_recovered_from_interrupted_job" in RUNNER
+    assert "-Action status -CampaignId $RunId" in RUNNER
+
+
 def test_cache_probe_is_nontrading_exact_range_and_rejects_history_changes():
     for token in ("2020.07.01", "2026.07.01", "PERIOD_M1", "CopyRates", "duplicate_timestamps", "nonmonotonic_timestamps", "TesterStop"):
         assert token in CACHE_PROBE
