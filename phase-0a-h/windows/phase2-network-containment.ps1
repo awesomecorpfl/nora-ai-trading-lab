@@ -18,9 +18,9 @@ function Executables(){
  if($agents.Count -eq 0){throw 'missing metatester executable'}
  @($terminal)+@($agents.FullName)
 }
-function Group(){'NoraPhase2Containment-'+$CampaignId}
+function ContainmentGroup(){'NoraPhase2Containment-'+$CampaignId}
 function RuleName([int]$Index){'NoraPhase2Containment-'+$CampaignId+'-'+$Index}
-function Rules(){@(Get-NetFirewallRule -Group (Group) -ErrorAction SilentlyContinue|Sort-Object Name)}
+function Rules(){@(Get-NetFirewallRule -Group (ContainmentGroup) -ErrorAction SilentlyContinue|Sort-Object Name)}
 function RuleView(){
  @((Rules)|ForEach-Object{
    $rule=$_;$app=@(Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction Stop)
@@ -39,12 +39,12 @@ function State(){
  foreach($process in @(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue)){
    $connections+=@(Get-NetTCPConnection -OwningProcess $process.Id -ErrorAction SilentlyContinue|Where-Object{$_.RemoteAddress -notin @('127.0.0.1','::1','0.0.0.0','::')}|ForEach-Object{[ordered]@{pid=$process.Id;process=$process.ProcessName;state=[string]$_.State;local_address=$_.LocalAddress;local_port=$_.LocalPort;remote_address=$_.RemoteAddress;remote_port=$_.RemotePort}})
  }
- [ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(Group);captured_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity;executables=@($paths|ForEach-Object{[ordered]@{path=$_;sha256=Hash $_}});rules=$rules;active_rule_count=$rules.Count;observed_mt5_connections=$connections}
+ [ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(ContainmentGroup);captured_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity;executables=@($paths|ForEach-Object{[ordered]@{path=$_;sha256=Hash $_}});rules=$rules;active_rule_count=$rules.Count;observed_mt5_connections=$connections}
 }
 switch($Action){
  'enable' {
    $paths=@(Executables);if((Rules).Count-ne 0){throw 'stale containment rules exist'};AssertNoContradictoryAllow $paths
-   $index=0;foreach($path in $paths){$index++;New-NetFirewallRule -Name (RuleName $index) -DisplayName (RuleName $index) -Group (Group) -Direction Outbound -Action Block -Program $path -RemoteAddress Any -Profile Any -Enabled True|Out-Null}
+   $index=0;foreach($path in $paths){$index++;New-NetFirewallRule -Name (RuleName $index) -DisplayName (RuleName $index) -Group (ContainmentGroup) -Direction Outbound -Action Block -Program $path -RemoteAddress Any -Profile Any -Enabled True|Out-Null}
    $state=State;if($state.active_rule_count-ne$paths.Count){throw 'containment rule count mismatch'}
    foreach($rule in $state.rules){if($rule.direction-ne'Outbound' -or $rule.action-ne'Block' -or $rule.enabled-ne'True' -or $rule.profile-ne'Any'){throw 'containment rule not active'}}
    AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.json')) $state;$state|ConvertTo-Json -Depth 12 -Compress
@@ -53,6 +53,6 @@ switch($Action){
    $state=State;$expected=@(Executables).Count;if($state.active_rule_count-ne$expected){throw 'containment absent or incomplete'};foreach($rule in $state.rules){if($rule.direction-ne'Outbound' -or $rule.action-ne'Block' -or $rule.enabled-ne'True' -or $rule.profile-ne'Any'){throw 'containment rule not active'}};$state|ConvertTo-Json -Depth 12 -Compress
  }
  'cleanup' {
-   $before=@(Rules);if($before.Count-eq 0){throw 'no containment rules to clean'};foreach($rule in $before){Remove-NetFirewallRule -Name $rule.Name -ErrorAction Stop};if((Rules).Count-ne 0){throw 'containment cleanup incomplete'};$result=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(Group);cleanup='pass';removed_rule_count=$before.Count;removed_rules=$before;completed_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $result;$result|ConvertTo-Json -Depth 12 -Compress
+   $before=@(Rules);if($before.Count-eq 0){throw 'no containment rules to clean'};foreach($rule in $before){Remove-NetFirewallRule -Name $rule.Name -ErrorAction Stop};if((Rules).Count-ne 0){throw 'containment cleanup incomplete'};$result=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(ContainmentGroup);cleanup='pass';removed_rule_count=$before.Count;removed_rules=$before;completed_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $result;$result|ConvertTo-Json -Depth 12 -Compress
  }
 }

@@ -81,6 +81,7 @@ def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
     for token in ("terminal64.exe", "metatester64.exe", "-Direction Outbound", "-Action Block", "-Profile Any", "Get-NetFirewallApplicationFilter", "Get-NetTCPConnection", "stale containment rules exist"):
         assert token in CONTAINMENT
     assert "Remove-NetFirewallRule" in CONTAINMENT
+    assert "ContainmentGroup" in CONTAINMENT
     assert "cleanup" in CONTAINMENT
     assert "sshd" not in CONTAINMENT.lower()
     assert "Set-ExecutionPolicy" not in CONTAINMENT
