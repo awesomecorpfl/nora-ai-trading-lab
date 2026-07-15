@@ -73,6 +73,7 @@ def test_offline_preflight_requires_containment_before_detached_probe_launch():
         assert mode in RUNNER and mode in ORCHESTRATOR
     assert "-Action enable" in RUNNER and "-Action status" in RUNNER
     assert "preflight_kind='offline_cache'" in RUNNER
+    assert "foreach($key in $extra.Keys)" in RUNNER
     assert "Start-Process -FilePath powershell.exe" in RUNNER
 
 
