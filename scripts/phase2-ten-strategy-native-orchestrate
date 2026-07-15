@@ -50,7 +50,7 @@ elif [[ $mode == cache-preflight-cleanup && $# -eq 5 ]]; then
   require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
   ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-cleanup -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
 elif [[ $mode == reconcile-no-containment && $# -eq 10 ]]; then
-  staged=$2; run_id=$3; remote_root=$4; audit_id=$5; forensic_path=$6; forensic_hash=$7; classification_path=$8; classification_hash=$9; expected=$10
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5; forensic_path=$6; forensic_hash=$7; classification_path=$8; classification_hash=$9; expected=${10}
   [[ $expected == ABANDONED_PRE_LAUNCH_NO_CONTAINMENT ]] || die 'invalid reconciliation classification'; require_run_id "$run_id"; require_root "$remote_root"; require_audit_id "$audit_id"; require_remote_path "$forensic_path"; require_remote_path "$classification_path"; [[ $forensic_hash =~ ^[0-9a-f]{64}$ && $classification_hash =~ ^[0-9a-f]{64}$ ]] || die 'invalid forensic hash'; runner=$(bound_runner "$staged" "$remote_root" "$audit_id"); install_bound_runner "$staged" "$remote_root" "$audit_id" "$runner"; ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode reconcile-no-containment -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -ForensicCapturePath \"$forensic_path\" -ForensicPackageSha256 \"$forensic_hash\" -ForensicClassificationPath \"$classification_path\" -ForensicClassificationSha256 \"$classification_hash\""
 elif [[ $mode == canary-prepare && $# -eq 7 ]]; then
   run_id=$2; kind=$3; remote_root=$4; remote_incoming=$5; local_staged=$6; audit_id=$7
