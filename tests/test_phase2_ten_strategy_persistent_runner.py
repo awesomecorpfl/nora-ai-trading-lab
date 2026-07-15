@@ -135,6 +135,9 @@ def test_containment_transaction_is_durable_reopen_verified_and_recoverable():
         assert token in CONTAINMENT
     assert "-Action verify" in CONTAINMENT
     assert "exit 1" in CONTAINMENT
+    assert "ReadAndValidateFinalRecordForRecovery" in CONTAINMENT
+    assert "final_record_sha256" in CONTAINMENT
+    assert "final_record_valid=$finalValid" in CONTAINMENT
 
 
 def test_containment_group_binding_is_explicit_validated_and_recorded():
