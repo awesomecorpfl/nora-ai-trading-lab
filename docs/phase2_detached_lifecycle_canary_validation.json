@@ -1,0 +1,99 @@
+{
+  "schema_version": "nora.phase2_detached_lifecycle_windows_validation_v1",
+  "verdict": "PASS",
+  "windows_target": "nora-win10",
+  "evidence_root": "C:\\NoraEvidence\\Phase2",
+  "lifecycle_schema_version": "nora.phase2_detached_lifecycle_v2",
+  "runner_sha256": "488e652ac60297613aea8d17fecd91e3956ee3cc18b27b89b5c305cbf79eaa9c",
+  "canary_script_sha256": "3c55996fa0b9af8ae7387f89b4df75d55b4d878838156c5288afe57fe3cc5dfa",
+  "containment_tool_sha256": "0798d251774521a5b6a24f54f5e196a2ac222f741921cd9e50e85e37b5ee4755",
+  "cases": [
+    {
+      "case": "successful_canary",
+      "run_identifier": "p2canok20260715f",
+      "state": "completed",
+      "exit_code": 0,
+      "bootstrap_sha256": "5299528b815109edd6a4964ff5fcf4e2813d89dcbd1fca1643b57e22e5bfd368",
+      "workload_result_sha256": "a521288306b1896b50ecd6ec6fb0fe8a671dab396e8df89ece948a49deac8e2e",
+      "complete_directory": true,
+      "running_directory": false
+    },
+    {
+      "case": "intentional_failure_canary",
+      "run_identifier": "p2canfail20260715b",
+      "state": "failed",
+      "exit_code": 1,
+      "bootstrap_sha256": "323421198de8381b6b750e13fa9f3fa2f912f57446dfc4139fd6e12d68f40fac",
+      "failure_sha256": "884740f87f6733dd98240b1d608e9bc06a9ba80e5ed90b0c89ddaf90fbbd05c3",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "message": "NORA_INTENTIONAL_DETACHED_CANARY_FAILURE",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "bc1b4e8cf1b3d5d93a04c515f9833aaffc916a60c97aec69b22e3796aa63b605"
+    },
+    {
+      "case": "early_parameter_failure_canary",
+      "run_identifier": "p2canparse20260715b",
+      "state": "failed",
+      "exit_code": 1,
+      "bootstrap_sha256": "f0e107e93380a33f87eedf7e92103fca0891da591e65a5af850191e1465e176e",
+      "failure_sha256": "818c79d140c0f39dabf01b1aee57c88091349190394e8d6d8a6a586c44fbfd3f",
+      "exception_type": "System.Management.Automation.ParameterBindingException",
+      "message": "A parameter cannot be found that matches parameter name 'UnexpectedParameter'.",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ca3e70a498bfc91b37b3f973cb34871ea84d9084d144c2bbd9fa28f99de675d2"
+    },
+    {
+      "case": "ssh_disconnect_canary",
+      "run_identifier": "p2candisc20260715c",
+      "launcher_connection_ended_before_independent_status": true,
+      "independent_progress_observation": {
+        "state": "running",
+        "bootstrap_process_exactly_bound": true,
+        "workload_process_exactly_bound": true,
+        "workload_pid": 7224,
+        "workload_start_time_utc": "2026-07-15T17:56:08.7529410Z"
+      },
+      "later_independent_observation": {
+        "state": "completed",
+        "exit_code": 0,
+        "completed_utc": "2026-07-15T17:56:29.2450184Z",
+        "complete_directory": true,
+        "running_directory": false
+      },
+      "bootstrap_sha256": "1a84cf0cbf2f08b1e14d5a3f6e3740ed9e31650f33947886dc7ed9822d0fba9b",
+      "workload_result_sha256": "0cd6cb9ffa8c9aa0f145e164721ec1cb2fbc7d0238fb13b5647a7397a32b97ca"
+    },
+    {
+      "case": "forced_termination_canary",
+      "run_identifier": "p2cankill20260715b",
+      "bound_process": {
+        "pid": 5828,
+        "start_time_utc": "2026-07-15T17:57:40.4882420Z",
+        "executable_path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "run_identity_bound": true
+      },
+      "terminated_utc": "2026-07-15T17:57:56.2138801Z",
+      "later_state": "failed",
+      "exit_code": 75,
+      "failure_sha256": "2503460fb5135b50ca502e2c707d4c647cab3e25a8cb9c56dd45b4cb1dd6b0b5",
+      "exception_type": "DetachedWorkloadResultMissing",
+      "message": "detached workload exited without a durable result",
+      "indefinitely_running": false
+    },
+    {
+      "case": "repeated_status_and_finalization",
+      "run_identifier": "p2canok20260715f",
+      "first_finalization_sha256": "253355693b034aca47421a2328e4ad47020cb1b0a27830bbf346351905e2ab7d",
+      "second_finalization_sha256": "253355693b034aca47421a2328e4ad47020cb1b0a27830bbf346351905e2ab7d",
+      "first_status_sha256": "258bbf6fb6bfd55f49bf302692dad96b5c3d0b45b001a509cf06b70ab026f397",
+      "second_status_sha256": "258bbf6fb6bfd55f49bf302692dad96b5c3d0b45b001a509cf06b70ab026f397",
+      "duplicate_package_created": false,
+      "contradictory_state_created": false
+    }
+  ],
+  "terminal64_process_present_at_final_collection": false,
+  "metatester64_process_present_at_final_collection": false,
+  "canary_script_contains_mt5_executable_reference": false,
+  "actual_windows_integration_tests": true,
+  "mocked_only": false
+}

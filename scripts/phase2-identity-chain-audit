@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+"""Produce the machine-readable Stage-1-to-current execution rebinding audit."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+
+ROOT = Path(__file__).resolve().parents[1]
+BASE = "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final"
+COMMITS = ("23d8801", "9ff107e", "082aa1a", "84e4be7", "5ee661c", "897af17", "10ced92")
+MISSING = "<MISSING>"
+DERIVED_FIELDS = {
+    "batch.execution_packet_identity",
+    "batch.final_batch_identity",
+    "batch.native_acceptance_identity",
+    "batch.native_execution_contract_identity",
+    "batch.staged_inventory_identity",
+    "contract.native_execution_contract_identity",
+    "packet.execution_packet_identity",
+    "packet.native_execution_contract_identity",
+    "staged.execution_packet.sha256",
+}
+ROLE_CHANGES = {
+    ("23d8801", "9ff107e"): {
+        "persistent_windows_evidence_runner": "offline_preflight_runner_admission",
+        "fedora_transfer_retrieval_orchestrator": "offline_preflight_orchestration",
+        "journal_environmental_acceptance_evaluator": "offline_role_registration_parent_identity",
+        "exact_reconciliation_implementation": "offline_role_registration_parent_identity",
+        "mt5_network_containment": "offline_preflight_role_added",
+        "mt5_cache_inventory": "offline_preflight_role_added",
+        "mt5_cache_probe_worker": "offline_preflight_role_added",
+        "mt5_cache_probe_compiler": "offline_preflight_role_added",
+        "mt5_cache_probe_source": "offline_preflight_role_added",
+    },
+    ("9ff107e", "082aa1a"): {"fedora_transfer_retrieval_orchestrator": "offline_preflight_orchestration"},
+    ("082aa1a", "84e4be7"): {"persistent_windows_evidence_runner": "offline_preflight_runner"},
+    ("84e4be7", "5ee661c"): {"mt5_network_containment": "containment_evidence_hardening"},
+    ("5ee661c", "897af17"): {"persistent_windows_evidence_runner": "offline_preflight_runner"},
+    ("897af17", "10ced92"): {"persistent_windows_evidence_runner": "offline_preflight_runner"},
+    ("10ced92", "worktree-repair"): {
+        "persistent_windows_evidence_runner": "detached_lifecycle_repair",
+        "mt5_network_containment": "containment_cleanup_proof",
+        "fedora_transfer_retrieval_orchestrator": "detached_lifecycle_orchestration",
+    },
+}
+INVARIANT_FILES = (
+    "engine/labengine/src/strategy_suite.rs",
+    "tests/fixtures/phase2_ten_strategy_suite/strategy_suite.json",
+    "tests/fixtures/phase2_ten_strategy_suite/budget_map.json",
+    "tests/fixtures/phase2_ten_strategy_suite/measurement_schema.json",
+    "tests/fixtures/phase2_ten_strategy_suite/reconciliation_protocol.json",
+    "tests/fixtures/phase2_ten_strategy_suite/generated/NoraPhase2TenStrategyRuntimeV1.mqh",
+    "tests/fixtures/phase2_ten_strategy_suite/generated/NoraPhase2TenStrategyTesterCanaryV1.mq5",
+    "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/NoraPhase2TenStrategyTesterCanaryV1.ex5",
+    "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compiler_record.json",
+    "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compile_evidence_manifest.json",
+    "phase-0a-h/windows/execute-ten-strategy-packet.ps1",
+    "phase-0a-h/windows/build-ten-strategy-tester-config.ps1",
+    "phase-0a-h/windows/build-ten-strategy-returned-package.ps1",
+    "docs/phase2_ten_strategy_marker_contract_v2.json",
+    "scripts/phase2-ten-strategy-ingest-returned",
+)
+POST_ADMISSION_INVARIANT_FILES = (
+    "phase-0a-h/windows/phase2-cache-inventory.ps1",
+    "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1",
+    "phase-0a-h/windows/compile-phase2-offline-cache-probe.ps1",
+    "phase-0a-h/windows/NoraPhase2OfflineCacheProbeV1.mq5",
+)
+
+
+def run(*args: str, binary: bool = False) -> bytes | str:
+    value = subprocess.check_output(args, cwd=ROOT)
+    return value if binary else value.decode().strip()
+
+
+def sha(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def at(label: str, path: str) -> bytes:
+    if label == "worktree-repair":
+        return (ROOT / path).read_bytes()
+    return run("git", "show", f"{label}:{path}", binary=True)
+
+
+def load(label: str, name: str) -> dict:
+    return json.loads(at(label, f"{BASE}/{name}"))
+
+
+def normalize(packet: dict, batch: dict) -> dict:
+    contract = dict(packet["native_execution_contract"])
+    roles = {item["role"]: item for item in contract.pop("roles")}
+    synthetic = {item["role"]: item for item in contract.pop("synthetic_roles")}
+    packet_top = dict(packet)
+    packet_top.pop("native_execution_contract")
+    batch_top = dict(batch)
+    staged = {item["role"]: item for item in batch_top.pop("staged_files")}
+    return {
+        "packet": packet_top,
+        "contract": contract,
+        "roles": roles,
+        "synthetic_roles": synthetic,
+        "batch": batch_top,
+        "staged": staged,
+    }
+
+
+def flatten(value: object, prefix: str = "") -> dict[str, object]:
+    result: dict[str, object] = {}
+    if isinstance(value, dict):
+        for key in sorted(value):
+            result.update(flatten(value[key], f"{prefix}.{key}" if prefix else key))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            result.update(flatten(item, f"{prefix}.{index}"))
+    else:
+        result[prefix] = value
+    return result
+
+
+def role_for_path(path: str) -> str | None:
+    parts = path.split(".")
+    return parts[1] if len(parts) > 2 and parts[0] in {"roles", "staged"} else None
+
+
+def transition(before: str, after: str, states: dict[str, dict]) -> dict:
+    left = flatten(states[before])
+    right = flatten(states[after])
+    allowed_roles = ROLE_CHANGES[(before, after)]
+    changes = []
+    disallowed = []
+    for path in sorted(set(left) | set(right)):
+        old, new = left.get(path, MISSING), right.get(path, MISSING)
+        if old == new:
+            continue
+        role = role_for_path(path)
+        if path in DERIVED_FIELDS:
+            classification = "derived_parent_identity_rebinding"
+            allowed = True
+        elif role in allowed_roles:
+            classification = allowed_roles[role]
+            allowed = True
+        else:
+            classification = "DISALLOWED_OR_UNEXPLAINED"
+            allowed = False
+            disallowed.append(path)
+        changes.append({"field": path, "before": old, "after": new, "allowed": allowed, "classification": classification})
+    return {
+        "before": before,
+        "after": after,
+        "execution_packet_before": states[before]["packet"]["execution_packet_identity"],
+        "execution_packet_after": states[after]["packet"]["execution_packet_identity"],
+        "final_batch_before": states[before]["batch"]["final_batch_identity"],
+        "final_batch_after": states[after]["batch"]["final_batch_identity"],
+        "changed_field_count": len(changes),
+        "changed_fields": changes,
+        "disallowed_fields": disallowed,
+        "verdict": "PASS" if not disallowed else "FAIL",
+    }
+
+
+def file_invariant(path: str, labels: tuple[str, ...]) -> dict:
+    values = {label: sha(at(label, path)) for label in labels}
+    unique = sorted(set(values.values()))
+    return {"path": path, "sha256_by_state": values, "unchanged": len(unique) == 1, "sha256": unique[0] if len(unique) == 1 else None}
+
+
+def atomic_json(path: Path, value: object) -> None:
+    if path.exists():
+        raise SystemExit(f"refusing to replace report: {path}")
+    temporary = path.with_name(path.name + f".partial.{os.getpid()}")
+    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+    os.replace(temporary, path)
+
+
+def main() -> None:
+    if len(sys.argv) != 2:
+        raise SystemExit("usage: phase2-identity-chain-audit REPORT")
+    labels = COMMITS + ("worktree-repair",)
+    states = {label: normalize(load(label, "execution_packet.json"), load(label, "final_batch.json")) for label in labels}
+    transitions = [transition(before, after, states) for before, after in zip(labels, labels[1:])]
+    invariants = [file_invariant(path, labels) for path in INVARIANT_FILES]
+    post_invariants = [file_invariant(path, labels[1:]) for path in POST_ADMISSION_INVARIANT_FILES]
+    strategy = json.loads((ROOT / "tests/fixtures/phase2_ten_strategy_suite/strategy_suite.json").read_text())
+    budget = json.loads((ROOT / "tests/fixtures/phase2_ten_strategy_suite/budget_map.json").read_text())
+    current_packet = states["worktree-repair"]["packet"]
+    current_batch = states["worktree-repair"]["batch"]
+    admission_diff = run("git", "diff", "--unified=0", "23d8801", "9ff107e", "--", "lab/native_target.py", "lab/phase2_ten_strategy_v2.py")
+    added = [line[1:] for line in str(admission_diff).splitlines() if line.startswith("+") and not line.startswith("+++")]
+    removed = [line[1:] for line in str(admission_diff).splitlines() if line.startswith("-") and not line.startswith("---")]
+    report = {
+        "schema_version": "nora.phase2_execution_identity_chain_audit_v1",
+        "verdict": "PASS" if all(item["verdict"] == "PASS" for item in transitions) and all(item["unchanged"] for item in invariants + post_invariants) else "FAIL",
+        "generated_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "accepted_stage1_commit": run("git", "rev-parse", "23d8801"),
+        "starting_authoritative_commit": run("git", "rev-parse", "10ced92"),
+        "states": [
+            {
+                "label": label,
+                "execution_packet_identity": states[label]["packet"]["execution_packet_identity"],
+                "final_batch_identity": states[label]["batch"]["final_batch_identity"],
+            }
+            for label in labels
+        ],
+        "transitions": transitions,
+        "offline_role_admission_source_diff": {
+            "from": "23d8801",
+            "to": "9ff107e",
+            "diff_sha256": sha(str(admission_diff).encode()),
+            "added_lines": added,
+            "removed_lines": removed,
+            "classification": "five offline-preflight role registrations only",
+        },
+        "byte_invariants_all_states": invariants,
+        "byte_invariants_post_offline_role_admission": post_invariants,
+        "semantic_invariants": {
+            "corrected_wilder_atr_node_identity": strategy["strategies"][0]["indicator_node_identities"]["layer1.atr"],
+            "suite_identity": strategy["suite_identity"],
+            "strategy_identity_order": [item["strategy_identity"] for item in strategy["strategies"]],
+            "strategy_identifier_order": [item["strategy_identifier"] for item in strategy["strategies"]],
+            "ledger_schema": strategy["ledger_schema"],
+            "execution_contract_identity": strategy["execution_contract_identity"],
+            "budget_map": budget,
+            "compiler_output_identity": current_packet["compiler_output_identity"],
+            "ex5_sha256": current_packet["ex5_sha256"],
+            "marker_contract": {
+                "completion": current_packet["completion_marker"],
+                "failure": current_packet["failure_marker"],
+            },
+            "reconciliation_protocol_identity": current_packet["reconciliation_protocol_identity"],
+            "phase2_complete": current_batch["complete_phase2_gate"],
+            "searchable": current_batch["searchable"],
+        },
+        "frozen_tester_contract": {
+            "symbols": ["GDAXI", "AUDCAD"],
+            "timeframe": "M1",
+            "tester_model": "0",
+            "requested_start": "2020.07.01",
+            "requested_end": "2026.07.01",
+            "proof": "post-admission offline worker and runner configuration bytes are invariant; literal contract assertions passed",
+        },
+        "locked_semantics_changed": False,
+        "only_runner_containment_offline_preflight_and_parent_identity_changes": True,
+    }
+    required_literals = {
+        "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1": ("2020.07.01", "2026.07.01", "@('Period','M1')", "@('Model','0')"),
+        "phase-0a-h/windows/phase2-evidence-runner.ps1": ("requested_start='2020.07.01'", "requested_end='2026.07.01'", "tester_model='0'", "timeframe='M1'"),
+    }
+    for path, literals in required_literals.items():
+        text = (ROOT / path).read_text()
+        missing = [literal for literal in literals if literal not in text]
+        if missing:
+            raise SystemExit(f"frozen tester contract missing from {path}: {missing}")
+    if report["verdict"] != "PASS" or removed:
+        raise SystemExit("identity-chain audit failed")
+    output = (ROOT / sys.argv[1]).resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    atomic_json(output, report)
+    print(json.dumps({"report": str(output), "verdict": report["verdict"], "transitions": len(transitions)}, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

@@ -10,8 +10,9 @@ require_count() { [[ $1 =~ ^[0-9]+$ ]] || die 'invalid bar count'; }
 require_timestamp() { [[ $1 =~ ^[0-9T:.+Z-]+$ ]] || die 'invalid timestamp'; }
 require_remote_path() { [[ $1 == "$expected_root"\\* && $1 != *\"* && $1 != *\'* && $1 != *' '* ]] || die 'invalid persistent remote path'; }
 require_staged_runner() { [[ -f $1/phase-0a-h/windows/phase2-evidence-runner.ps1 ]] || die 'missing staged runner'; }
+require_staged_containment() { [[ -f $1/phase-0a-h/windows/phase2-network-containment.ps1 ]] || die 'missing staged containment tool'; }
 bound_runner() { local staged=$1 root=$2 audit=$3 digest; require_staged_runner "$staged"; require_root "$root"; require_audit_id "$audit"; digest=$(sha256sum "$staged/phase-0a-h/windows/phase2-evidence-runner.ps1" | awk '{print $1}'); [[ $digest =~ ^[0-9a-f]{64}$ ]] || die 'cannot hash staged runner'; printf '%s\\acl-audits\\%s\\campaign-tool\\%s\\phase2-evidence-runner.ps1' "$root" "$audit" "$digest"; }
-install_bound_runner() { local staged=$1 root=$2 audit=$3 runner=$4 digest=${4%\\phase2-evidence-runner.ps1}; digest=${digest##*\\}; local remote_hash; require_remote_path "$runner"; remote_hash=$(ssh nora-win10 "powershell -NoProfile -Command \"if(Test-Path -LiteralPath '$runner'){(Get-FileHash -Algorithm SHA256 -LiteralPath '$runner').Hash.ToLowerInvariant()}\"" | tr -d '\r\n') || die 'cannot inspect bound runner'; if [[ -z $remote_hash ]]; then ssh nora-win10 "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '$root\\acl-audits\\$audit\\campaign-tool\\$digest'|Out-Null\""; scp "$staged/phase-0a-h/windows/phase2-evidence-runner.ps1" "nora-win10:$runner"; remote_hash=$(ssh nora-win10 "powershell -NoProfile -Command \"(Get-FileHash -Algorithm SHA256 -LiteralPath '$runner').Hash.ToLowerInvariant()\"" | tr -d '\r\n'); fi; [[ $remote_hash == "$digest" ]] || die 'bound runner hash mismatch'; }
+install_bound_runner() { local staged=$1 root=$2 audit=$3 runner=$4 digest=${4%\\phase2-evidence-runner.ps1}; digest=${digest##*\\}; local remote_hash containment containment_hash remote_containment_hash; require_remote_path "$runner"; require_staged_containment "$staged"; containment=${runner%\\phase2-evidence-runner.ps1}\\phase2-network-containment.ps1; containment_hash=$(sha256sum "$staged/phase-0a-h/windows/phase2-network-containment.ps1" | awk '{print $1}'); [[ $containment_hash =~ ^[0-9a-f]{64}$ ]] || die 'cannot hash staged containment tool'; remote_hash=$(ssh nora-win10 "powershell -NoProfile -Command \"if(Test-Path -LiteralPath '$runner'){(Get-FileHash -Algorithm SHA256 -LiteralPath '$runner').Hash.ToLowerInvariant()}\"" | tr -d '\r\n') || die 'cannot inspect bound runner'; if [[ -z $remote_hash ]]; then ssh nora-win10 "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '$root\\acl-audits\\$audit\\campaign-tool\\$digest'|Out-Null\""; scp "$staged/phase-0a-h/windows/phase2-evidence-runner.ps1" "nora-win10:$runner"; remote_hash=$(ssh nora-win10 "powershell -NoProfile -Command \"(Get-FileHash -Algorithm SHA256 -LiteralPath '$runner').Hash.ToLowerInvariant()\"" | tr -d '\r\n'); fi; [[ $remote_hash == "$digest" ]] || die 'bound runner hash mismatch'; remote_containment_hash=$(ssh nora-win10 "powershell -NoProfile -Command \"if(Test-Path -LiteralPath '$containment'){(Get-FileHash -Algorithm SHA256 -LiteralPath '$containment').Hash.ToLowerInvariant()}\"" | tr -d '\r\n') || die 'cannot inspect bound containment tool'; if [[ -z $remote_containment_hash ]]; then scp "$staged/phase-0a-h/windows/phase2-network-containment.ps1" "nora-win10:$containment"; remote_containment_hash=$(ssh nora-win10 "powershell -NoProfile -Command \"(Get-FileHash -Algorithm SHA256 -LiteralPath '$containment').Hash.ToLowerInvariant()\"" | tr -d '\r\n'); fi; [[ $remote_containment_hash == "$containment_hash" ]] || die 'bound containment tool hash mismatch'; }
 if [[ $mode == harden-acl && $# -eq 3 ]]; then
   local_staged=$2; remote_root=$3
   require_root "$remote_root"; require_staged_runner "$local_staged"
@@ -44,6 +45,37 @@ elif [[ $mode == cache-preflight-launch && $# -eq 6 ]]; then
   staged=$2; run_id=$3; symbol=$4; remote_root=$5; audit_id=$6
   require_run_id "$run_id"; [[ $symbol == GDAXI || $symbol == AUDCAD ]] || die 'invalid symbol'; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
   ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-launch -RunId \"$run_id\" -Symbol \"$symbol\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == cache-preflight-cleanup && $# -eq 5 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5
+  require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-cleanup -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == canary-prepare && $# -eq 7 ]]; then
+  run_id=$2; kind=$3; remote_root=$4; remote_incoming=$5; local_staged=$6; audit_id=$7
+  require_run_id "$run_id"; [[ $kind == success || $kind == intentional-failure || $kind == parameter-failure || $kind == disconnect || $kind == forced-termination ]] || die 'invalid canary kind'; require_root "$remote_root"; require_remote_path "$remote_incoming"; require_staged_runner "$local_staged"
+  runner=$(bound_runner "$local_staged" "$remote_root" "$audit_id"); install_bound_runner "$local_staged" "$remote_root" "$audit_id" "$runner"
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode canary-prepare -RunId \"$run_id\" -CanaryKind \"$kind\" -EvidenceRoot \"$remote_root\"" >/dev/null
+  scp -r "$local_staged/." "nora-win10:$remote_incoming/"
+elif [[ $mode == canary-launch && $# -eq 6 ]]; then
+  staged=$2; run_id=$3; kind=$4; remote_root=$5; audit_id=$6
+  require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode canary-launch -RunId \"$run_id\" -CanaryKind \"$kind\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == terminate-bound-canary && $# -eq 5 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5
+  require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode terminate-bound-canary -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == finalize-canary && $# -eq 5 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5
+  require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode finalize-canary -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == classify-incomplete && $# -eq 8 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5; forensic_path=$6; local_cause=$7; remote_cause=$8
+  require_run_id "$run_id"; require_root "$remote_root"; require_remote_path "$forensic_path"; require_remote_path "$remote_cause"; [[ -f $local_cause ]] || die 'missing local root cause report'; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  scp "$local_cause" "nora-win10:$remote_cause"
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode classify-incomplete -RunId \"$run_id\" -ForensicCapturePath \"$forensic_path\" -RootCausePath \"$remote_cause\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == cleanup-incomplete && $# -eq 5 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5
+  require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
+  ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cleanup-incomplete -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
 elif [[ $mode == prepare && $# -eq 6 ]]; then
   run_id=$2; remote_root=$3; remote_incoming=$4; local_staged=$5; audit_id=$6
   require_run_id "$run_id"; require_root "$remote_root"; require_remote_path "$remote_incoming"; require_staged_runner "$local_staged"
@@ -63,7 +95,7 @@ elif [[ $mode == retrieve && $# -eq 7 ]]; then
   require_run_id "$run_id"; require_root "$remote_root"; require_remote_path "$remote_complete"
   [[ ! -e $local_raw && ! -e $local_raw.partial ]] || { echo 'occupied local raw destination' >&2; exit 2; }
   state=$("$0" status "$staged" "$run_id" "$remote_root" "$audit_id")
-  [[ $state == *'"state":"terminal-completed"'* ]] || { echo 'run is not durably terminal-completed' >&2; exit 2; }
+  [[ $state == *'"state":"completed"'* || $state == *'"state":"terminal-completed"'* ]] || { echo 'run is not durably completed' >&2; exit 2; }
   scp -r "nora-win10:$remote_complete" "$local_raw.partial"
   mv "$local_raw.partial" "$local_raw"
 elif [[ $mode == package-persistent && $# -eq 9 ]]; then
@@ -87,6 +119,13 @@ else
   echo "   or: $0 cache-preflight-prepare RUN_ID SYMBOL REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
   echo "   or: $0 cache-preflight-contain STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
   echo "   or: $0 cache-preflight-launch STAGED RUN_ID SYMBOL REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 cache-preflight-cleanup STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 canary-prepare RUN_ID KIND REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
+  echo "   or: $0 canary-launch STAGED RUN_ID KIND REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 terminate-bound-canary STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 finalize-canary STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 classify-incomplete STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID FORENSIC_PATH LOCAL_CAUSE REMOTE_CAUSE" >&2
+  echo "   or: $0 cleanup-incomplete STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
   echo "usage: $0 prepare RUN_ID REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
   echo "   or: $0 launch STAGED RUN_ID SYMBOL REMOTE_ROOT BEFORE_COUNT AFTER_COUNT BEFORE_EARLIEST BEFORE_LATEST AFTER_EARLIEST AFTER_LATEST ACL_AUDIT_ID" >&2
   echo "   or: $0 status STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2

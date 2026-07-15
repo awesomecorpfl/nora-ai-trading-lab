@@ -1,0 +1,110 @@
+{
+  "schema_version": "nora.phase2_detached_worker_root_cause_v1",
+  "run_identifier": "p2offgdaxi20260715e",
+  "classification": "PRE_POWERSHELL_ENGINE_TERMINATION",
+  "precise_os_exit_reason_proven": false,
+  "root_cause": {
+    "narrowest_proven_boundary": "Win32 process PID 2908 was returned by Start-Process, but the child produced no PowerShell engine-start event, no bootstrap or workload file, and no stdout/stderr byte before it ceased to exist.",
+    "most_supported_cause": "The child inherited the Windows OpenSSH session process tree and was terminated when the launcher SSH session closed.",
+    "support": [
+      "The launcher PowerShell engine PID 6496 stopped at 2026-07-15T07:26:57.5732657Z.",
+      "OpenSSH recorded the corresponding client disconnect at 2026-07-15T07:26:57.5960876Z, 22.8219 milliseconds later.",
+      "Windows PowerShell and PowerShell Operational logs contain no engine-start record for the deployed worker command or PID 2908.",
+      "The .running directory was empty and both redirected streams were zero-byte files created at 2026-07-15T07:26:57.4950010Z.",
+      "Later non-MT5 integration canaries demonstrated that WMI-owned launch survives the same SSH boundary, while the historical Start-Process child did not."
+    ],
+    "remaining_possibilities": [
+      "OpenSSH session teardown terminated the not-yet-initialized child process.",
+      "A different pre-engine Windows process termination occurred in the same 23 millisecond interval."
+    ],
+    "excluded_after_engine_initialization": [
+      "PowerShell script parsing",
+      "worker parameter binding",
+      "worker path resolution",
+      "module import",
+      "worker ACL access",
+      "worker JSON parsing",
+      "worker state replacement"
+    ],
+    "missing_evidence": [
+      "Security 4688/4689 process creation and termination audit records were not available.",
+      "No repository lifecycle record stored the child Process.ExitCode before the launcher exited.",
+      "No kernel process trace or crash dump existed for PID 2908."
+    ]
+  },
+  "launch_reconstruction": {
+    "linux_orchestrator_command": "scripts/phase2-ten-strategy-native-orchestrate cache-preflight-launch /tmp/nora-stage2-offline-preflight-10ced92-1784089579-2 p2offgdaxi20260715e GDAXI 'C:\\NoraEvidence\\Phase2' 20260714T232525Z",
+    "ssh_command_template": "ssh nora-win10 \"powershell -NoProfile -ExecutionPolicy Bypass -File \\\"$runner\\\" -Mode cache-preflight-launch -RunId \\\"$run_id\\\" -Symbol \\\"$symbol\\\" -EvidenceRoot \\\"$remote_root\\\"\"",
+    "windows_launcher_host_application": "powershell -NoProfile -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\acl-audits\\20260714T232525Z\\campaign-tool\\cabff937d813fefedda8e4d170487dd598e9730f82222f788534bc36d75161bf\\phase2-evidence-runner.ps1 -Mode cache-preflight-launch -RunId p2offgdaxi20260715e -Symbol GDAXI -EvidenceRoot C:\\NoraEvidence\\Phase2",
+    "start_process_executable": "powershell.exe",
+    "start_process_argument_list": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "C:\\NoraEvidence\\Phase2\\incoming\\p2offgdaxi20260715e\\phase-0a-h\\windows\\execute-phase2-offline-cache-probe.ps1",
+      "-IncomingRoot",
+      "C:\\NoraEvidence\\Phase2\\incoming\\p2offgdaxi20260715e",
+      "-RunId",
+      "p2offgdaxi20260715e",
+      "-Symbol",
+      "GDAXI",
+      "-RunDirectory",
+      "C:\\NoraEvidence\\Phase2\\runs\\p2offgdaxi20260715e.running",
+      "-EvidenceRoot",
+      "C:\\NoraEvidence\\Phase2"
+    ],
+    "shell_boundary_quoting": {
+      "bash": "The remote PowerShell command was one double-quoted SSH argument; embedded escaped double quotes surrounded each repository value.",
+      "windows_openssh": "OpenSSH passed the rendered powershell command to the Windows command processor. The event-log HostApplication shows values without retained quote characters because none contained spaces.",
+      "powershell_start_process": "Start-Process joined the ArgumentList tokens. Every worker argument path was under C:\\NoraEvidence\\Phase2 and contained no spaces, so quote loss did not alter token boundaries."
+    },
+    "launcher_working_directory": "C:\\Users\\Gasper",
+    "worker_inherited_working_directory": {
+      "value": "C:\\Users\\Gasper",
+      "proof": "inferred from the SSH launcher default and Start-Process inheritance; the child never initialized far enough to record it"
+    },
+    "launcher_pid": 6496,
+    "launcher_engine_start_utc": "2026-07-15T07:26:55.4049711Z",
+    "launcher_engine_stop_utc": "2026-07-15T07:26:57.5732657Z",
+    "worker_pid": 2908,
+    "worker_start_reported_utc": "2026-07-15T07:26:57.4950010Z",
+    "worker_process_start_time": null,
+    "worker_exit_code": null,
+    "stdout_path": "C:\\NoraEvidence\\Phase2\\logs\\p2offgdaxi20260715e.stdout.log",
+    "stderr_path": "C:\\NoraEvidence\\Phase2\\logs\\p2offgdaxi20260715e.stderr.log",
+    "stdout_redirection_created": true,
+    "stderr_redirection_created": true,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "powershell": {
+      "version": "5.1.19041.7417",
+      "edition": "Desktop",
+      "bitness": 64,
+      "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "process_execution_policy": "Bypass",
+      "machine_policy": "Undefined",
+      "user_policy": "Undefined"
+    },
+    "environment_recovery": "The exact child environment was not independently serialized. Start-Process inherited the launcher environment; the forensic capture records the same Windows identity environment at collection time, including APPDATA=C:\\Users\\Gasper\\AppData\\Roaming.",
+    "first_worker_statement_reached": false
+  },
+  "identities": {
+    "forensic_capture_path": "C:\\NoraEvidence\\Phase2\\forensics\\p2offgdaxi20260715e\\forensic20260715d.published",
+    "forensic_manifest_sha256": "2ff44589bec0c431683c4e63e99c0037d90cd784444e4731842d011ebda63cd1",
+    "forensic_diagnostics_sha256": "390047a8d45c2e43c7881997265d59ed9f4d33fb9dc554fbc817c922383dcf18",
+    "job_sha256": "d72c82f99ceba734602da8d50892dab631de4762463c09652ed955810f763cac",
+    "containment_sha256": "e85c521946980c67f90771b2547909ac264ab0414909ecad462256568e0c7ffa",
+    "deployed_runner_sha256": "cabff937d813fefedda8e4d170487dd598e9730f82222f788534bc36d75161bf",
+    "deployed_worker_sha256": "08fb1a4a352599e2163ef62135b414b92a82ff8970ec854066bd946514824c10"
+  },
+  "event_sources": {
+    "windows_powershell": {"query_succeeded": true, "captured_events": 183},
+    "powershell_operational": {"query_succeeded": true, "captured_events": 389},
+    "openssh_operational": {"query_succeeded": true, "captured_events": 84},
+    "security_4688_4689": {"query_succeeded": false, "reason": "no matching audit events"},
+    "system": {"query_succeeded": false, "reason": "no matching events"},
+    "application": {"query_succeeded": true, "captured_events": 1}
+  },
+  "created_utc": "2026-07-15T17:46:00Z"
+}

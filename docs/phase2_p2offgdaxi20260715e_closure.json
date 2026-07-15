@@ -1,0 +1,62 @@
+{
+  "schema_version": "nora.phase2_incomplete_run_closure_v1",
+  "run_identifier": "p2offgdaxi20260715e",
+  "accepted": false,
+  "success": false,
+  "classification": "ABANDONED_INCOMPLETE_PRE_BOOTSTRAP",
+  "durable_state": "abandoned",
+  "original_job_sha256": "d72c82f99ceba734602da8d50892dab631de4762463c09652ed955810f763cac",
+  "original_containment_record_sha256": "e85c521946980c67f90771b2547909ac264ab0414909ecad462256568e0c7ffa",
+  "original_worker_sha256": "08fb1a4a352599e2163ef62135b414b92a82ff8970ec854066bd946514824c10",
+  "original_runner_sha256": "cabff937d813fefedda8e4d170487dd598e9730f82222f788534bc36d75161bf",
+  "original_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "reported_worker_pid": 2908,
+  "reported_worker_start_utc": "2026-07-15T07:26:57.4950010Z",
+  "bound_process_recoverable": false,
+  "forensic_capture": {
+    "path": "C:\\NoraEvidence\\Phase2\\forensics\\p2offgdaxi20260715e\\forensic20260715d.published",
+    "manifest_sha256": "2ff44589bec0c431683c4e63e99c0037d90cd784444e4731842d011ebda63cd1",
+    "diagnostics_sha256": "390047a8d45c2e43c7881997265d59ed9f4d33fb9dc554fbc817c922383dcf18",
+    "source_run_unmodified_during_capture": true
+  },
+  "root_cause_report_sha256": "6342d96121fab9437ca02623b1e6f3e8b89cad5c2519c0ce3b2f37a2b1787556",
+  "immutable_classification": {
+    "path": "C:\\NoraEvidence\\Phase2\\incomplete-runs\\p2offgdaxi20260715e.published",
+    "classification_sha256": "246abeabdea19e8a75848ebebcaaacf79e4dc973eef815d03375f87ab3f05682",
+    "classified_utc": "2026-07-15T17:59:24.3546122Z"
+  },
+  "containment_cleanup": {
+    "record_path": "C:\\NoraEvidence\\Phase2\\containment-p2offgdaxi20260715e-cleanup.json",
+    "record_sha256": "0ecd3a65d47c564d0eedecbd42d4b57b59e1d8f233ddb740672d2b9fcc7dc3ec",
+    "cleanup": "pass",
+    "removed_rule_count": 2,
+    "removed_rules": [
+      {
+        "name": "NoraPhase2Containment-p2offgdaxi20260715e-1",
+        "instance_id": "NoraPhase2Containment-p2offgdaxi20260715e-1",
+        "program": "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe",
+        "direction": "Outbound",
+        "action": "Block",
+        "profile": "Any"
+      },
+      {
+        "name": "NoraPhase2Containment-p2offgdaxi20260715e-2",
+        "instance_id": "NoraPhase2Containment-p2offgdaxi20260715e-2",
+        "program": "C:\\Program Files\\Darwinex MetaTrader 5\\metatester64.exe",
+        "direction": "Outbound",
+        "action": "Block",
+        "profile": "Any"
+      }
+    ],
+    "unrelated_rule_count": 425,
+    "unrelated_rules_before_sha256": "a7453125718c97daebab0d379d2d723d13bfe612ae7f7ca523889730f2d866cb",
+    "unrelated_rules_after_sha256": "a7453125718c97daebab0d379d2d723d13bfe612ae7f7ca523889730f2d866cb",
+    "unrelated_rules_unchanged": true,
+    "target_rules_remaining": 0,
+    "completed_utc": "2026-07-15T18:00:19.1357685Z"
+  },
+  "terminal64_process_present_at_classification": false,
+  "metatester64_process_present_at_classification": false,
+  "run_identifier_reusable": false
+}

@@ -9,6 +9,8 @@ CONTAINMENT = (ROOT / "phase-0a-h/windows/phase2-network-containment.ps1").read_
 CACHE_INVENTORY = (ROOT / "phase-0a-h/windows/phase2-cache-inventory.ps1").read_text()
 CACHE_WORKER = (ROOT / "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1").read_text()
 CACHE_PROBE = (ROOT / "phase-0a-h/windows/NoraPhase2OfflineCacheProbeV1.mq5").read_text()
+DETACHED_CANARY = (ROOT / "phase-0a-h/windows/phase2-detached-canary.ps1").read_text()
+FORENSIC_COLLECTOR = (ROOT / "phase-0a-h/windows/capture-phase2-run-forensics.ps1").read_text()
 
 
 def test_runner_uses_the_persistent_evidence_root_and_sid_acl_contract():
@@ -21,13 +23,17 @@ def test_runner_uses_the_persistent_evidence_root_and_sid_acl_contract():
 
 
 def test_detached_lifecycle_is_durable_and_ssh_independent():
-    for state in ("prepared", "launched", "terminal-completed", "packaging", "published", "accepted", "rejected"):
+    for state in ("prepared", "launched", "bootstrap-confirmed", "running", "completed", "failed", "abandoned", "packaging", "published", "accepted", "rejected"):
         assert state in RUNNER
+    assert "Invoke-CimMethod -ClassName Win32_Process -MethodName Create" in RUNNER
+    assert "nora.phase2_detached_bootstrap_v1" in RUNNER
     assert "Start-Process -FilePath powershell.exe" in RUNNER
     assert "ssh_disconnect_is_failure=$false" in RUNNER
     assert "ambiguous-incomplete" in RUNNER and "ambiguous-missing" in RUNNER
     assert "conflicting terminal_or_tester" in RUNNER
     assert "conflicting persistent campaign job" in RUNNER
+    for binding in ("pid", "start_time_utc", "executable_path", "command_line", "run_identifier"):
+        assert binding in RUNNER
     assert "$root=$EvidenceRoot" in WORKER
     assert ".running$','.complete'" in WORKER
 
@@ -36,12 +42,13 @@ def test_persistent_orchestrator_uses_only_the_repository_runner_commands():
     for mode in ("harden-acl", "recover-acl", "prepare", "launch", "status", "retrieve", "package-persistent", "record-import"):
         assert f"$mode == {mode}" in ORCHESTRATOR
     assert "phase2-evidence-runner.ps1" in ORCHESTRATOR
-    assert "run is not durably terminal-completed" in ORCHESTRATOR
+    assert "run is not durably completed" in ORCHESTRATOR
     assert "package not idempotent" in RUNNER
     assert "$mode == run" not in ORCHESTRATOR
     assert "jobs\\\\'+$RunId+'.linux-ingestion.json" in RUNNER
     assert "campaign-tool" in ORCHESTRATOR
     assert "bound runner hash mismatch" in ORCHESTRATOR
+    assert "bound containment tool hash mismatch" in ORCHESTRATOR
     assert "tr -d '\\r\\n'" in ORCHESTRATOR
 
 
@@ -69,12 +76,38 @@ def test_execution_policy_bypass_is_process_scoped_and_arguments_are_constrained
 
 
 def test_offline_preflight_requires_containment_before_detached_probe_launch():
-    for mode in ("cache-preflight-prepare", "cache-preflight-contain", "cache-preflight-launch"):
+    for mode in ("cache-preflight-prepare", "cache-preflight-contain", "cache-preflight-launch", "cache-preflight-cleanup"):
         assert mode in RUNNER and mode in ORCHESTRATOR
     assert "-Action enable" in RUNNER and "-Action status" in RUNNER
     assert "preflight_kind='offline_cache'" in RUNNER
     assert "foreach($key in $extra.Keys)" in RUNNER
-    assert "Start-Process -FilePath powershell.exe" in RUNNER
+    assert "LaunchDetached $p $worker $arguments $config 'offline_cache_probe'" in RUNNER
+
+
+def test_bootstrap_and_universal_failure_records_precede_workload_execution():
+    for token in ("bootstrap.json", "received_arguments", "configuration_sha256", "stdout_path", "stderr_path", "lifecycle-failure.json", "exception_type", "position_or_stack", "last_completed_lifecycle_step"):
+        assert token in RUNNER
+    assert "WriteJob $p 'bootstrap-confirmed'" in RUNNER
+    assert "WriteJob $p 'failed'" in RUNNER
+    assert "workload-failure-detail.json" in RUNNER
+
+
+def test_real_canary_and_incomplete_classification_commands_are_repository_owned():
+    for mode in ("canary-prepare", "canary-launch", "terminate-bound-canary", "finalize-canary", "classify-incomplete", "cleanup-incomplete"):
+        assert mode in RUNNER and mode in ORCHESTRATOR
+    for kind in ("success", "intentional-failure", "parameter-failure", "disconnect", "forced-termination"):
+        assert kind in RUNNER
+    assert "NORA_INTENTIONAL_DETACHED_CANARY_FAILURE" in DETACHED_CANARY
+    assert "terminal64" not in DETACHED_CANARY.lower() and "metatester64" not in DETACHED_CANARY.lower()
+    assert "nora.phase2_immutable_incomplete_run_v1" in RUNNER
+
+
+def test_forensic_collector_is_copy_only_for_the_source_run_and_atomic():
+    assert "nora.phase2_incomplete_run_forensic_capture_v1" in FORENSIC_COLLECTOR
+    assert "source_inventory" in FORENSIC_COLLECTOR and "event_logs" in FORENSIC_COLLECTOR
+    assert "Copy-Item -LiteralPath $Source" in FORENSIC_COLLECTOR
+    assert "Move-Item -LiteralPath $partial -Destination $published" in FORENSIC_COLLECTOR
+    assert "Remove-Item" not in FORENSIC_COLLECTOR
 
 
 def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():

@@ -28,6 +28,13 @@ function RuleView(){
    [ordered]@{name=$rule.Name;instance_id=$rule.InstanceID;display_name=$rule.DisplayName;group=$rule.Group;enabled=[string]$rule.Enabled;direction=[string]$rule.Direction;action=[string]$rule.Action;profile=[string]$rule.Profile;program=$app[0].Program}
  })
 }
+function AllRuleView(){
+ @((Get-NetFirewallRule -ErrorAction Stop|Sort-Object Name|ForEach-Object{
+   $rule=$_;$apps=@(Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction SilentlyContinue)
+   [ordered]@{name=$rule.Name;instance_id=$rule.InstanceID;display_name=$rule.DisplayName;group=$rule.Group;enabled=[string]$rule.Enabled;direction=[string]$rule.Direction;action=[string]$rule.Action;profile=[string]$rule.Profile;policy_store_source=$rule.PolicyStoreSource;policy_store_source_type=[string]$rule.PolicyStoreSourceType;programs=@($apps|ForEach-Object{$_.Program})}
+ }))
+}
+function CanonicalHash($Value){$json=$Value|ConvertTo-Json -Depth 10 -Compress;([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($json))).Replace('-','').ToLowerInvariant())}
 function AssertNoContradictoryAllow([string[]]$Paths){
  $allows=@(Get-NetFirewallRule -Direction Outbound -Enabled True -Action Allow -ErrorAction Stop|ForEach-Object{
    $rule=$_;Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction SilentlyContinue|ForEach-Object{[ordered]@{rule=$rule.Name;program=$_.Program}}
@@ -53,6 +60,6 @@ switch($Action){
    $state=State;$expected=@(Executables).Count;if($state.active_rule_count-ne$expected){throw 'containment absent or incomplete'};foreach($rule in $state.rules){if($rule.direction-ne'Outbound' -or $rule.action-ne'Block' -or $rule.enabled-ne'True' -or $rule.profile-ne'Any'){throw 'containment rule not active'}};$state|ConvertTo-Json -Depth 12 -Compress
  }
  'cleanup' {
-   $before=@(Rules);if($before.Count-eq 0){throw 'no containment rules to clean'};foreach($rule in $before){Remove-NetFirewallRule -Name $rule.Name -ErrorAction Stop};if((Rules).Count-ne 0){throw 'containment cleanup incomplete'};$result=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(ContainmentGroup);cleanup='pass';removed_rule_count=$before.Count;removed_rules=$before;completed_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $result;$result|ConvertTo-Json -Depth 12 -Compress
+   $beforeRules=@(RuleView);if($beforeRules.Count-eq 0){throw 'no containment rules to clean'};$allBefore=@(AllRuleView);$targetNames=@($beforeRules|ForEach-Object{$_.name});$unrelatedBefore=@($allBefore|Where-Object{$targetNames -notcontains $_.name});$unrelatedBeforeHash=CanonicalHash $unrelatedBefore;foreach($rule in $beforeRules){Remove-NetFirewallRule -Name $rule.name -ErrorAction Stop};if((Rules).Count-ne 0){throw 'containment cleanup incomplete'};$allAfter=@(AllRuleView);$unrelatedAfter=@($allAfter|Where-Object{$targetNames -notcontains $_.name});$unrelatedAfterHash=CanonicalHash $unrelatedAfter;if($unrelatedAfterHash-ne$unrelatedBeforeHash){throw 'unrelated firewall rules changed during cleanup'};$result=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;group=(ContainmentGroup);cleanup='pass';removed_rule_count=$beforeRules.Count;removed_rules=$beforeRules;unrelated_rule_count=$unrelatedBefore.Count;unrelated_rules_before_sha256=$unrelatedBeforeHash;unrelated_rules_after_sha256=$unrelatedAfterHash;unrelated_rules_unchanged=$true;completed_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $result;$result|ConvertTo-Json -Depth 12 -Compress
  }
 }

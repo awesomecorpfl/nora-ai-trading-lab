@@ -1,0 +1,55 @@
+{
+  "capture_report": "/home/gasper/nora-ai-trading-lab/docs/phase2_linux_temp_artifact_forensics.json",
+  "capture_report_sha256": "422e82f27b68d6cabe244e07a098f2253e35111134c370f5ea02828bb7646c18",
+  "completed_utc": "2026-07-15T15:03:04.273604Z",
+  "removed": [
+    {
+      "file_count": 10,
+      "path": "/tmp/nora-reissue-1784089312-645198",
+      "removed": true
+    },
+    {
+      "file_count": 10,
+      "path": "/tmp/nora-reissue-1784089508-646188",
+      "removed": true
+    },
+    {
+      "file_count": 10,
+      "path": "/tmp/nora-reissue-1784089527-646210",
+      "removed": true
+    },
+    {
+      "file_count": 19,
+      "path": "/tmp/nora-stage2-offline-preflight-082aa1a",
+      "removed": true
+    },
+    {
+      "file_count": 19,
+      "path": "/tmp/nora-stage2-offline-preflight-10ced92-1784089579-2",
+      "removed": true
+    },
+    {
+      "file_count": 19,
+      "path": "/tmp/nora-stage2-offline-preflight-5ee661c",
+      "removed": true
+    },
+    {
+      "file_count": 19,
+      "path": "/tmp/nora-stage2-offline-preflight-84e4be7",
+      "removed": true
+    },
+    {
+      "file_count": 19,
+      "path": "/tmp/nora-stage2-offline-preflight-897af17-1784089450-2",
+      "removed": true
+    },
+    {
+      "file_count": 19,
+      "path": "/tmp/nora-stage2-offline-preflight-9ff107e",
+      "removed": true
+    }
+  ],
+  "removed_count": 9,
+  "schema_version": "nora.phase2_linux_temporary_artifact_cleanup_v1",
+  "unrelated_paths_touched": []
+}
