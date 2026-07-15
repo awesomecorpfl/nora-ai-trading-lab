@@ -79,7 +79,7 @@ def test_execution_policy_bypass_is_process_scoped_and_arguments_are_constrained
 def test_offline_preflight_requires_containment_before_detached_probe_launch():
     for mode in ("cache-preflight-prepare", "cache-preflight-contain", "cache-preflight-launch", "cache-preflight-cleanup"):
         assert mode in RUNNER and mode in ORCHESTRATOR
-    assert "-Action enable" in RUNNER and "-Action status" in RUNNER
+    assert "-Action stage" in RUNNER and "-Action verify" in RUNNER
     assert "preflight_kind='offline_cache'" in RUNNER
     assert "foreach($key in $extra.Keys)" in RUNNER
     assert "LaunchDetached $p $worker $arguments $config 'offline_cache_probe'" in RUNNER
@@ -112,13 +112,36 @@ def test_forensic_collector_is_copy_only_for_the_source_run_and_atomic():
 
 
 def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
-    for token in ("terminal64.exe", "metatester64.exe", "-Direction Outbound", "-Action Block", "-Profile Any", "Get-NetFirewallApplicationFilter", "Get-NetTCPConnection", "stale containment rules exist"):
+    for token in ("terminal64.exe", "metatester64.exe", "-Direction Outbound", "-Action Block", "-Profile Any", "Get-NetFirewallApplicationFilter", "Get-NetTCPConnection", "stale or incomplete containment transaction requires recovery"):
         assert token in CONTAINMENT
     assert "Remove-NetFirewallRule" in CONTAINMENT
-    assert "ContainmentGroup" in CONTAINMENT
+    assert "function Group" in CONTAINMENT
     assert "cleanup" in CONTAINMENT
     assert "sshd" not in CONTAINMENT.lower()
     assert "Set-ExecutionPolicy" not in CONTAINMENT
+
+
+def test_containment_transaction_is_durable_reopen_verified_and_recoverable():
+    for token in (
+        "intent_prepared", "pre_state_captured", "rules_verified",
+        "final_record_published", "final_record_reopened", "transaction_accepted",
+        "RULES_PRESENT_RECORD_INCOMPLETE", "NO_RULES_TRANSACTION_FAILED",
+        "FreshVerify", "transaction-accepted.json", "transaction-recovery.json",
+        "after_first_rule", "after_all_rules_before_final",
+    ):
+        assert token in CONTAINMENT
+    assert "-Action','verify" in CONTAINMENT
+    assert "exit 1" in CONTAINMENT
+
+
+def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():
+    assert "reconcile-no-containment" in RUNNER
+    for token in (
+        "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT", "original-job.json",
+        "nora.phase2_prelaunch_reconciliation_v1", "NO_CONTAINMENT_RULES_NO_DURABLE_RECORD",
+        "reconciliation_original_job_sha256",
+    ):
+        assert token in RUNNER
 
 
 def test_runner_replaces_durable_job_json_and_recovers_only_verified_containment():
@@ -126,7 +149,7 @@ def test_runner_replaces_durable_job_json_and_recovers_only_verified_containment
     assert ".replace-backup." in RUNNER
     assert "Remove-Item -LiteralPath $backup -Force" in RUNNER
     assert "[IO.File]::Move" in RUNNER
-    assert "untrusted interrupted containment evidence" in RUNNER
+    assert "containment_accepted_path" in RUNNER
     assert "containment_recovered_from_interrupted_job" in RUNNER
     assert "-Action status -CampaignId $RunId" in RUNNER
 

@@ -49,6 +49,9 @@ elif [[ $mode == cache-preflight-cleanup && $# -eq 5 ]]; then
   staged=$2; run_id=$3; remote_root=$4; audit_id=$5
   require_run_id "$run_id"; require_root "$remote_root"; runner=$(bound_runner "$staged" "$remote_root" "$audit_id")
   ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode cache-preflight-cleanup -RunId \"$run_id\" -EvidenceRoot \"$remote_root\""
+elif [[ $mode == reconcile-no-containment && $# -eq 10 ]]; then
+  staged=$2; run_id=$3; remote_root=$4; audit_id=$5; forensic_path=$6; forensic_hash=$7; classification_path=$8; classification_hash=$9; expected=$10
+  [[ $expected == ABANDONED_PRE_LAUNCH_NO_CONTAINMENT ]] || die 'invalid reconciliation classification'; require_run_id "$run_id"; require_root "$remote_root"; require_audit_id "$audit_id"; require_remote_path "$forensic_path"; require_remote_path "$classification_path"; [[ $forensic_hash =~ ^[0-9a-f]{64}$ && $classification_hash =~ ^[0-9a-f]{64}$ ]] || die 'invalid forensic hash'; runner=$(bound_runner "$staged" "$remote_root" "$audit_id"); install_bound_runner "$staged" "$remote_root" "$audit_id" "$runner"; ssh nora-win10 "powershell -NoProfile -ExecutionPolicy Bypass -File \"$runner\" -Mode reconcile-no-containment -RunId \"$run_id\" -EvidenceRoot \"$remote_root\" -ForensicCapturePath \"$forensic_path\" -ForensicPackageSha256 \"$forensic_hash\" -ForensicClassificationPath \"$classification_path\" -ForensicClassificationSha256 \"$classification_hash\""
 elif [[ $mode == canary-prepare && $# -eq 7 ]]; then
   run_id=$2; kind=$3; remote_root=$4; remote_incoming=$5; local_staged=$6; audit_id=$7
   require_run_id "$run_id"; [[ $kind == success || $kind == intentional-failure || $kind == parameter-failure || $kind == disconnect || $kind == forced-termination ]] || die 'invalid canary kind'; require_root "$remote_root"; require_remote_path "$remote_incoming"; require_staged_runner "$local_staged"
@@ -120,6 +123,7 @@ else
   echo "   or: $0 cache-preflight-contain STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
   echo "   or: $0 cache-preflight-launch STAGED RUN_ID SYMBOL REMOTE_ROOT ACL_AUDIT_ID" >&2
   echo "   or: $0 cache-preflight-cleanup STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
+  echo "   or: $0 reconcile-no-containment STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID FORENSIC_PATH FORENSIC_SHA256 CLASSIFICATION_PATH CLASSIFICATION_SHA256 ABANDONED_PRE_LAUNCH_NO_CONTAINMENT" >&2
   echo "   or: $0 canary-prepare RUN_ID KIND REMOTE_ROOT REMOTE_INCOMING LOCAL_STAGED ACL_AUDIT_ID" >&2
   echo "   or: $0 canary-launch STAGED RUN_ID KIND REMOTE_ROOT ACL_AUDIT_ID" >&2
   echo "   or: $0 terminate-bound-canary STAGED RUN_ID REMOTE_ROOT ACL_AUDIT_ID" >&2
