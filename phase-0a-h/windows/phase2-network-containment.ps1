@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
- [Parameter(Mandatory=$true)][ValidateSet('stage','verify','status','recover','cleanup')][string]$Action,
+ [Parameter(Mandatory=$true)][ValidateSet('stage','verify','status','recover','cleanup','smoke')][string]$Action,
  [Parameter(Mandatory=$true)][string]$CampaignId,
  [Parameter(Mandatory=$true)][string]$EvidenceRoot,
  [string]$InstallRoot='C:\Program Files\Darwinex MetaTrader 5',
@@ -43,12 +43,19 @@ function AcceptedPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.tr
 function FailurePath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-failure.json')}
 function RecoveryPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-recovery.json')}
 function Assert-NoraExecutablePath([string]$Path){
- if($Path -match '[\x00]' -or $Path -match '^(\\\\|//|\\\\\?\\)' -or $Path -notmatch '^[A-Za-z]:[\\/]'){throw 'unsafe containment executable path'}
+ if($Path -match '[\x00]' -or $Path -match '^(\\\\|//|\\\\\?\\)' -or $Path -notmatch '^[A-Za-z]:[\\/]' -or $Path -match '(^|[\\/])\.\.([\\/]|$)'){throw 'unsafe containment executable path'}
  if($Path.Length -gt 2 -and $Path.Substring(2).Contains(':')){throw 'alternate data stream in containment executable path'}
  $canonical=[IO.Path]::GetFullPath($Path)
  if(!(Test-Path -LiteralPath $canonical -PathType Leaf)){throw 'missing containment executable'}
+ $root=[IO.Path]::GetPathRoot($canonical);if([string]::IsNullOrWhiteSpace($root)){throw 'missing containment executable root'}
  $cursor=Get-Item -LiteralPath $canonical -Force
- while($null -ne $cursor){if(($cursor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw 'reparse point containment executable path'};$parent=Split-Path -LiteralPath $cursor.FullName -Parent;if([string]::IsNullOrWhiteSpace($parent) -or $parent-eq$cursor.FullName){break};$cursor=Get-Item -LiteralPath $parent -Force}
+ if($cursor -isnot [IO.FileInfo]){throw 'containment executable is not a regular file'}
+ while($null -ne $cursor){
+  $cursorCanonical=[IO.Path]::GetFullPath($cursor.FullName)
+  if(![string]::Equals([IO.Path]::GetPathRoot($cursorCanonical),$root,[StringComparison]::OrdinalIgnoreCase)){throw 'containment executable ancestor escapes drive root'}
+  if(($cursor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw 'reparse point containment executable path'}
+  if($cursor -is [IO.FileInfo]){$cursor=$cursor.Directory}elseif($cursor -is [IO.DirectoryInfo]){$cursor=$cursor.Parent}else{throw 'unexpected containment executable ancestor type'}
+ }
  return $canonical
 }
 function Bindings(){
@@ -91,6 +98,7 @@ try {
   }
   'verify' {if(!(Test-Path -LiteralPath (FinalPath)) -or !(Test-Path -LiteralPath (AcceptedPath))){throw 'missing accepted containment records'};$state=Get-Content -LiteralPath (FinalPath) -Raw|ConvertFrom-Json;VerifyState $state|Out-Null;$accepted=Get-Content -LiteralPath (AcceptedPath) -Raw|ConvertFrom-Json;if($accepted.phase-ne'transaction_accepted' -or $accepted.final_record_sha256-ne(Hash (FinalPath))){throw 'accepted transaction binding mismatch'};$state|ConvertTo-Json -Depth 20 -Compress}
   'status' {& $PSCommandPath -Action verify -CampaignId $CampaignId -EvidenceRoot $EvidenceRoot -InstallRoot $InstallRoot -ExecutablePath $normalizedExecutablePaths}
+  'smoke' {$bindings=@(Bindings);$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;executables=$bindings;group=$firewallGroup;intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot};$intentJson=$intent|ConvertTo-Json -Depth 20 -Compress;$roundTrip=$intentJson|ConvertFrom-Json;if(@($roundTrip.executables).Count-ne$bindings.Count){throw 'smoke intent serialization shape'};$v=[ordered]@{schema_version='nora.phase2_containment_runtime_smoke_v1';campaign_identity=$CampaignId;mutation_cmdlets_invoked=$false;normalized_executable_count=$bindings.Count;executables=$bindings;expected_rule_names=$intent.intended_rule_names;intent_round_trip=$true;final_record_serialization=([bool](($intent|ConvertTo-Json -Depth 20 -Compress)|ConvertFrom-Json));cleanup_plan=@($bindings|ForEach-Object{[ordered]@{rule_name=(RuleName ([array]::IndexOf($bindings,$_)+1));program=$_.path}});synthetic_firewall_result_counts=[ordered]@{zero=@().Count;one=@([pscustomobject]@{name='one'}).Count;multiple=@([pscustomobject]@{name='one'},[pscustomobject]@{name='two'}).Count}};$v|ConvertTo-Json -Depth 20 -Compress}
   'recover' {$count=@(Rules).Count;$classification=if($count-eq0 -and !(Test-Path -LiteralPath (IntentPath))){'NO_RULES_NO_RECORD'}elseif($count-eq0){'NO_RULES_TRANSACTION_FAILED'}elseif(!(Test-Path -LiteralPath (FinalPath))){'RULES_PRESENT_RECORD_INCOMPLETE'}else{'RECORD_PRESENT_REQUIRES_VERIFY'};$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;classification=$classification;active_rule_count=$count;intent_present=(Test-Path -LiteralPath (IntentPath));final_record_present=(Test-Path -LiteralPath (FinalPath));accepted_record_present=(Test-Path -LiteralPath (AcceptedPath));recovered_utc=(Get-Date).ToUniversalTime().ToString('o')};AtomicJson (RecoveryPath) $v;$v|ConvertTo-Json -Depth 20 -Compress}
   'cleanup' {$before=State (Bindings);$rules=@(Rules);foreach($rule in $rules){Remove-NetFirewallRule -Name $rule.Name -ErrorAction Stop};if(@(Rules).Count-ne0){throw 'containment cleanup incomplete'};$after=AllRuleIdentity;$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;cleanup='pass';removed_rule_count=$rules.Count;unrelated_rules_before_sha256=$before.unrelated_firewall_population_identity;unrelated_rules_after_sha256=$after;unrelated_rules_unchanged=($before.unrelated_firewall_population_identity-eq$after);completed_utc=(Get-Date).ToUniversalTime().ToString('o')};if(!$v.unrelated_rules_unchanged){throw 'unrelated firewall rules changed during cleanup'};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $v;$v|ConvertTo-Json -Depth 20 -Compress}
  }

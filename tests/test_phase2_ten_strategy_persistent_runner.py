@@ -164,6 +164,16 @@ def test_containment_executable_paths_are_normalized_before_collection_operation
     assert "foreach($p in @($ExecutablePath))" not in CONTAINMENT
 
 
+def test_containment_path_walk_uses_typed_filesystem_objects_and_runtime_smoke_harness():
+    smoke = (ROOT / "phase-0a-h/windows/phase2-network-containment-smoke.ps1").read_text()
+    for token in ("[IO.FileInfo]", "[IO.DirectoryInfo]", "$cursor.Directory", "$cursor.Parent", "reparse point containment executable path"):
+        assert token in CONTAINMENT
+    assert "Split-Path -LiteralPath" not in CONTAINMENT
+    assert "New-NetFirewallRule" not in smoke
+    assert "Remove-NetFirewallRule" not in smoke
+    assert "-Action smoke" in smoke and "mutation_cmdlets_invoked=$false" in smoke
+
+
 def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():
     assert "reconcile-no-containment" in RUNNER
     for token in (
