@@ -6,6 +6,7 @@ RUNNER = (ROOT / "phase-0a-h/windows/phase2-evidence-runner.ps1").read_text()
 WORKER = (ROOT / "phase-0a-h/windows/execute-ten-strategy-packet.ps1").read_text()
 ORCHESTRATOR = (ROOT / "scripts/phase2-ten-strategy-native-orchestrate").read_text()
 CONTAINMENT = (ROOT / "phase-0a-h/windows/phase2-network-containment.ps1").read_text()
+FRESH_VERIFY = (ROOT / "phase-0a-h/windows/phase2-network-containment-fresh-verify.ps1").read_text()
 CACHE_INVENTORY = (ROOT / "phase-0a-h/windows/phase2-cache-inventory.ps1").read_text()
 CACHE_SCOPE = (ROOT / "phase-0a-h/windows/resolve-phase2-mt5-server-scope.ps1").read_text()
 CACHE_WORKER = (ROOT / "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1").read_text()
@@ -132,7 +133,7 @@ def test_containment_transaction_is_durable_reopen_verified_and_recoverable():
         "after_first_rule", "after_all_rules_before_final",
     ):
         assert token in CONTAINMENT
-    assert "-Action','verify" in CONTAINMENT
+    assert "-Action verify" in CONTAINMENT
     assert "exit 1" in CONTAINMENT
 
 
@@ -157,7 +158,7 @@ def test_containment_executable_paths_are_normalized_before_collection_operation
         "At least one executable path is required.",
         "duplicate containment executable",
         "reparse point containment executable path",
-        "foreach($p in $normalizedExecutablePaths)",
+            "foreach($path in $paths)",
     ):
         assert token in CONTAINMENT
     assert "$ExecutablePath.Count" not in CONTAINMENT
@@ -172,6 +173,7 @@ def test_containment_path_walk_uses_typed_filesystem_objects_and_runtime_smoke_h
     assert "New-NetFirewallRule" not in smoke
     assert "Remove-NetFirewallRule" not in smoke
     assert "-Action smoke" in smoke and "mutation_cmdlets_invoked=$false" in smoke
+    assert "FreshVerifierPath" in smoke and "repeated_executable_parameter_used=$false" in smoke
 
 
 def test_containment_rule_queries_are_named_and_normalized_at_every_boundary():
@@ -184,6 +186,20 @@ def test_containment_rule_queries_are_named_and_normalized_at_every_boundary():
         assert token in CONTAINMENT
     for forbidden in ("function Rules", "(Rules).Count", "function RuleView", "@(Rules).Count"):
         assert forbidden not in CONTAINMENT
+
+
+def test_fresh_verifier_uses_only_scalar_record_transport_and_record_authority():
+    for token in (
+        "$FinalRecordPath", "$ExpectedFinalRecordSha256", "AssertUnderRoot",
+        "[IO.File]::ReadAllBytes", "HashBytes", "[object[]]$executables=@($record.executables)",
+        "[object[]]$expectedRules=@($record.rules)", "Get-NetFirewallRule",
+        "phase2_mt5_network_containment_fresh_verification_v1",
+    ):
+        assert token in FRESH_VERIFY
+    assert "-ExecutablePath" not in CONTAINMENT.split("function FreshVerify", 1)[1].split("try {", 1)[0]
+    assert "foreach($p in $normalizedExecutablePaths)" not in CONTAINMENT.split("function FreshVerify", 1)[1].split("try {", 1)[0]
+    for forbidden in ("Invoke-Expression", "Split-Path", "-ExecutablePath')"):
+        assert forbidden not in FRESH_VERIFY
 
 
 def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():

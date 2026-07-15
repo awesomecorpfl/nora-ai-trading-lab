@@ -1,0 +1,46 @@
+{
+  "schema_version": "nora.phase2_fresh_verification_rebind_audit_v1",
+  "before_commit": "9b0fc167ef54dac5432902384e06930e144800d0",
+  "verdict": "PASS_EXECUTION_ONLY_REBIND",
+  "changed_roles": {
+    "containment_sha256": {
+      "before": "4c7f4fb9639782dd173f02afe4a1da8dd69b3dcb121117fb21b32ae0f2eebb6b",
+      "after": "ae2a45f76f02ea0291eb1f6876a186db1cce26e5d8556b0c5f7adcbd0597d218"
+    },
+    "fresh_verifier_sha256": {
+      "before": null,
+      "after": "75d4f4a6ec6d476285be79e7ea246122eba492577879af7ca277f19a55f4fc82"
+    },
+    "smoke_harness_sha256": {
+      "before": "d875061eed35c7d91e93a86e2933f9cf531a3e9eca5c523238835e6e8f63153b",
+      "after": "655f82705199bc1f4c21ee833be01691cd355aced7b35009e5e9cfb7d472b888"
+    },
+    "native_execution_contract_identity": {
+      "before": "11899da27f10dc0f013af3bd5caaf5f0521488825163792219ac5b20d684b757",
+      "after": "58d973b2bd7025b449741f72dfcf3f98dce82d3eb9d0f7cdd47ed22a8945ee67"
+    },
+    "execution_packet_identity": {
+      "before": "990ee92e03c0c7a7a253299c8cce962b9f8c1e0457237823ca1366338cb66c0a",
+      "after": "4fdeefbe6f9c9919f609ce63b3e98ae0aceec0c4c0b942821e202d7613dce99b"
+    },
+    "final_batch_identity": {
+      "before": "418a84f3b32a7cbd28e5f72739bb583ca27c737a7cb298289b66a870cbd9ce80",
+      "after": "1aeaf37b67bbcb4562a9a41949f76582b54cc38fab1db8c2943d5e72b5b280eb"
+    }
+  },
+  "unchanged_semantic_identities": {
+    "wilder_atr": true,
+    "rust_strategy_source": true,
+    "generated_mql5": true,
+    "compiler_evidence": true,
+    "ex5_bytes": true,
+    "suite_and_order": true,
+    "terminal_server_cache_contract": true,
+    "tester_contract": true,
+    "importer": true,
+    "ledger": true,
+    "reconciliation": true,
+    "budget_map": true,
+    "tolerances": true
+  }
+}
