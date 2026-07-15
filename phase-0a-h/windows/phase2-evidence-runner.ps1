@@ -23,7 +23,7 @@ $required=@('SYSTEM','BA','')
 function Hash([string]$Path){(Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()}
 function BytesHash([byte[]]$Bytes){([Security.Cryptography.SHA256]::Create().ComputeHash($Bytes)|ForEach-Object {$_.ToString('x2')}) -join ''}
 function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');$Value|ConvertTo-Json -Depth 12 -Compress|Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline;Move-Item -LiteralPath $tmp -Destination $Path}
-function NormalizePath([string]$Path){$Path.TrimStart('\\').Replace('\','/')}
+function NormalizePath([string]$Path){$Path.TrimStart('\').Replace('\','/')}
 function NeedRunId(){if(!$RunId -or $RunId -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$'){throw 'invalid run identity'}}
 function Paths(){NeedRunId;return [ordered]@{incoming=(Join-Path $EvidenceRoot ('incoming\'+$RunId));running=(Join-Path $EvidenceRoot ('runs\'+$RunId+'.running'));complete=(Join-Path $EvidenceRoot ('runs\'+$RunId+'.complete'));returned=(Join-Path $EvidenceRoot ('returned\'+$RunId+'.published'));job=(Join-Path $EvidenceRoot ('jobs\'+$RunId+'.json'));stdout=(Join-Path $EvidenceRoot ('logs\'+$RunId+'.stdout.log'));stderr=(Join-Path $EvidenceRoot ('logs\'+$RunId+'.stderr.log'))}}
 function Inventory([string]$Base){@(Get-ChildItem -LiteralPath $Base -File -Recurse -Force|Sort-Object FullName|ForEach-Object{[ordered]@{path=NormalizePath ($_.FullName.Substring($Base.Length));size=[int64]$_.Length;sha256=Hash $_.FullName}})}
@@ -36,7 +36,7 @@ function SecureAcl([string]$Path,[bool]$Container,[string]$RunnerSid){$acl=if($C
 function WriteJob($paths,[string]$State,$extra=@{}){ $old=if(Test-Path -LiteralPath $paths.job){Get-Content -LiteralPath $paths.job -Raw|ConvertFrom-Json}else{$null};$value=[ordered]@{};if($old){foreach($p in $old.PSObject.Properties){$value[$p.Name]=$p.Value}};$value.schema_version=$schema;$value.run_identifier=$RunId;$value.state=$State;$value.updated_utc=(Get-Date).ToUniversalTime().ToString('o');$value.evidence_root=$EvidenceRoot;$value.runner_identity=Identity;$value.terminal_path=$terminal;$value.paths=$paths;if(!$value.created_utc){$value.created_utc=$value.updated_utc};foreach($p in $extra.PSObject.Properties){$value[$p.Name]=$p.Value};AtomicJson $paths.job $value;return $value }
 function RequireSecureRoot(){
  if(!(Test-Path -LiteralPath $EvidenceRoot -PathType Container)){throw 'missing evidence root'}
- $volume=Get-Volume -DriveLetter ([IO.Path]::GetPathRoot($EvidenceRoot).TrimEnd(':','\\'))
+ $volume=Get-Volume -DriveLetter ([IO.Path]::GetPathRoot($EvidenceRoot).TrimEnd(':','\'))
  if($volume.HealthStatus -ne 'Healthy'){throw 'unhealthy evidence volume'}
  if($volume.SizeRemaining -lt 5GB){throw 'insufficient evidence free space'}
  AssertSecureAcl $EvidenceRoot $true;$tree=@($EvidenceRoot)+@(Get-ChildItem -LiteralPath $EvidenceRoot -Recurse -Force|ForEach-Object{$_.FullName});foreach($path in @($tree|Select-Object -Skip 1)){AssertSecureAcl $path}
