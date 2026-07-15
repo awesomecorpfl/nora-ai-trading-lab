@@ -42,6 +42,7 @@ function FinalPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.json'
 function AcceptedPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-accepted.json')}
 function FailurePath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-failure.json')}
 function RecoveryPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.transaction-recovery.json')}
+function ClassificationPath(){Join-Path $EvidenceRoot ('containment-'+$CampaignId+'.classification.json')}
 function Assert-NoraExecutablePath([string]$Path){
  if($Path -match '[\x00]' -or $Path -match '^(\\\\|//|\\\\\?\\)' -or $Path -notmatch '^[A-Za-z]:[\\/]' -or $Path -match '(^|[\\/])\.\.([\\/]|$)'){throw 'unsafe containment executable path'}
  if($Path.Length -gt 2 -and $Path.Substring(2).Contains(':')){throw 'alternate data stream in containment executable path'}
@@ -92,6 +93,7 @@ try {
   'stage' {
    [object[]]$bindings=@(Bindings);[object[]]$existingRules=@(Get-NoraContainmentRules -CampaignId $CampaignId);$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;repository_commit=$env:NORA_REPOSITORY_COMMIT;creator=Identity;executables=@($bindings);rules=@($existingRules);group=$firewallGroup;intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
    if(Test-Path -LiteralPath (AcceptedPath)){throw 'accepted containment identity cannot be restaged'}
+   if(Test-Path -LiteralPath (ClassificationPath)){throw 'terminal containment classification forbids restaging'}
    if($existingRules.Count -ne 0 -or (Test-Path -LiteralPath (IntentPath))){throw 'stale or incomplete containment transaction requires recovery'}
    AtomicJson (IntentPath) $intent
    $pre=[ordered]@{phase='pre_state_captured';unrelated_firewall_population_identity=AllRuleIdentity;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
