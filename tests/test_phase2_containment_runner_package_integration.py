@@ -37,6 +37,11 @@ def test_runner_owned_capture_executes_and_binds_real_command_artifacts():
     assert "$PublisherPath -SourceRoot $captureRoot" in mode
 
 
+def test_runner_binds_multiple_executables_as_one_array_argument():
+    mode = RUNNER.split("'capture-containment-command'", 1)[1].split("'package-containment'", 1)[0]
+    assert "$arguments+=@('-ExecutablePath',($ContainmentExecutablePath -join ','))" in mode
+
+
 def test_runner_has_repository_owned_abandoned_fixture_mode():
     assert "abandon-fixture" in RUNNER
     assert "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT" in RUNNER
