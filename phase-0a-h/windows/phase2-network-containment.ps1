@@ -27,6 +27,7 @@ function Normalize-NoraExecutablePaths {
  return @($normalized)
 }
 [string[]]$normalizedExecutablePaths=@(Normalize-NoraExecutablePaths -WasBound $PSBoundParameters.ContainsKey('ExecutablePath') -RawPaths $ExecutablePath -Root $InstallRoot)
+if($normalizedExecutablePaths.Count -eq 1 -and $normalizedExecutablePaths[0].Contains(',')){$normalizedExecutablePaths=@($normalizedExecutablePaths[0].Split(','));if($normalizedExecutablePaths.Count -lt 1){throw 'invalid executable path collection'}}
 function Get-NoraContainmentGroup {
  param([Parameter(Mandatory=$true)][string]$RunId)
  $value='NoraPhase2Containment-'+$RunId
