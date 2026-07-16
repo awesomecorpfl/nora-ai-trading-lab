@@ -1,5 +1,5 @@
 param(
- [Parameter(Mandatory=$true)][ValidateSet('preflight','prepare','launch','status','package','package-containment','capture-containment-command','record-import','harden-acl','recover-acl','cache-preflight-prepare','cache-preflight-contain','cache-preflight-cleanup','reconcile-no-containment','abandon-fixture','abandon-fixture-cleanup','canary-prepare','canary-launch','terminate-bound-canary','finalize-canary','classify-stale','classify-incomplete','cleanup-incomplete','detached-bootstrap','detached-workload')][string]$Mode,
+ [Parameter(Mandatory=$true)][ValidateSet('preflight','prepare','launch','status','package','package-containment','capture-containment-command','record-import','harden-acl','recover-acl','cache-preflight-prepare','cache-preflight-contain','cache-preflight-cleanup','reconcile-no-containment','abandon-fixture','abandon-fixture-cleanup','firewall-readonly','canary-prepare','canary-launch','terminate-bound-canary','finalize-canary','classify-stale','classify-incomplete','cleanup-incomplete','detached-bootstrap','detached-workload')][string]$Mode,
  [string]$RunId,
  [string]$IncomingRoot,
  [ValidateSet('GDAXI','AUDCAD')][string]$Symbol,
@@ -35,7 +35,7 @@ param(
  [string]$PublisherPath,
  [string]$PublisherSha256,
  [ValidateSet('stage','verify','verify-final','status','recover','cleanup','synthetic-failure','runner-operation')][string]$ContainmentAction,
- [ValidateSet('abandon-fixture','abandon-fixture-cleanup')][string]$RunnerOperationMode,
+ [ValidateSet('abandon-fixture','abandon-fixture-cleanup','firewall-readonly')][string]$RunnerOperationMode,
  [string[]]$ContainmentExecutablePath,
  [ValidateSet('none','before_rules','after_first_rule','after_all_rules_before_final','after_final_before_accept')][string]$ContainmentFault='none',
  [string]$ContainmentToolPath,
@@ -230,6 +230,14 @@ switch($Mode){
    $record=Get-Content -LiteralPath $path -Raw|ConvertFrom-Json
    if($record.campaign_identity-ne$RunId -or $record.classification-ne'ABANDONED_PRE_LAUNCH_NO_CONTAINMENT' -or !$record.non_reusable){throw 'untrusted abandoned fixture classification'}
    [ordered]@{schema_version='nora.phase2_abandoned_fixture_cleanup_v1';campaign_identity=$RunId;result='no_op';classification_path=$path;classification_sha256=Hash $path;created_or_modified_durable_record=$false;created_or_modified_firewall_rule=$false}|ConvertTo-Json -Depth 12 -Compress
+ }
+ 'firewall-readonly' {
+   $profiles=@(Get-NetFirewallProfile -PolicyStore ActiveStore -ErrorAction Stop|Sort-Object Name|ForEach-Object{[ordered]@{name=[string]$_.Name;enabled=[bool]$_.Enabled;default_inbound=[string]$_.DefaultInboundAction;default_outbound=[string]$_.DefaultOutboundAction}})
+   if($profiles.Count-ne3-or@($profiles|Where-Object{!$_.enabled}).Count-ne0){throw 'required firewall profile disabled or unavailable'}
+   $nora=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop|Where-Object{([string]$_.Name).ToLowerInvariant().StartsWith('noraphase2containment-')-or([string]$_.Group).ToLowerInvariant().StartsWith('noraphase2containment-')})
+   $processes=@(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue)
+   if($nora.Count-ne0-or$processes.Count-ne0){throw 'firewall read-only precondition failed'}
+   [ordered]@{schema_version='nora.phase2_firewall_readonly_operation_v1';campaign_identity=$RunId;profiles=$profiles;nora_rule_count=0;terminal_or_tester_process_count=0;firewall_mutation_requested=$false;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}|ConvertTo-Json -Depth 12 -Compress
  }
  'prepare' { $root=RequireSecureRoot;$p=Paths;foreach($path in @($p.incoming,$p.running,$p.complete,$p.returned,$p.job)){if(Test-Path -LiteralPath $path){throw 'duplicate or stale run identity'}};foreach($dir in @($EvidenceRoot,(Join-Path $EvidenceRoot 'incoming'),(Join-Path $EvidenceRoot 'runs'),(Join-Path $EvidenceRoot 'returned'),(Join-Path $EvidenceRoot 'jobs'),(Join-Path $EvidenceRoot 'logs'))){New-Item -ItemType Directory -Path $dir -Force|Out-Null};New-Item -ItemType Directory -Path $p.incoming|Out-Null;New-Item -ItemType Directory -Path $p.running|Out-Null;WriteJob $p 'prepared' @{prepared_root=$root;run_directory=$p.running}|ConvertTo-Json -Depth 12 -Compress }
  'launch' { $root=RequireSecureRoot;NoTerminal;NoCampaignJob;$p=Paths;if(!(Test-Path -LiteralPath $p.incoming) -or !(Test-Path -LiteralPath $p.running) -or !(Test-Path -LiteralPath $p.job)){throw 'missing prepared run'};$old=Get-Content -LiteralPath $p.job -Raw|ConvertFrom-Json;if($old.state -ne 'prepared'){throw 'launch not idempotent'};$packetPath=Join-Path $p.incoming 'execution_packet.json';$packet=Get-Content -LiteralPath $packetPath -Raw|ConvertFrom-Json;$batch=Get-Content -LiteralPath (Join-Path $p.incoming 'final_batch.json') -Raw|ConvertFrom-Json;if($batch.execution_packet_identity -ne $packet.execution_packet_identity){throw 'packet batch mismatch'};foreach($file in @($batch.staged_files)){ $candidate=Join-Path $p.incoming $file.path;if(!(Test-Path -LiteralPath $candidate) -or (Hash $candidate) -ne $file.sha256){throw 'staged role hash mismatch'} };$role=@($packet.native_execution_contract.roles|Where-Object{$_.role -eq 'persistent_windows_evidence_runner'});if($role.Count -ne 1 -or (Hash $PSCommandPath) -ne $role[0].sha256){throw 'persistent runner identity mismatch'};$worker=RequireWorker $p.incoming;$arguments=@('-IncomingRoot',$p.incoming,'-RunId',$RunId,'-Symbol',$Symbol,'-BeforeBarCount',[string]$BeforeBarCount,'-AfterBarCount',[string]$AfterBarCount,'-BeforeEarliest',$BeforeEarliest,'-BeforeLatest',$BeforeLatest,'-AfterEarliest',$AfterEarliest,'-AfterLatest',$AfterLatest,'-RunDirectory',$p.running,'-EvidenceRoot',$EvidenceRoot);LaunchDetached $p $worker $arguments $packetPath 'ten_strategy_campaign' }

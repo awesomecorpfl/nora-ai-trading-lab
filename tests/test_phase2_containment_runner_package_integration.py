@@ -66,6 +66,15 @@ def test_runner_has_repository_owned_abandoned_fixture_mode():
     assert "operationTool=$PSCommandPath" in RUNNER
 
 
+def test_runner_has_read_only_firewall_qualification_mode():
+    branch = RUNNER.split("'firewall-readonly' {", 1)[1].split("\n }", 1)[0]
+    assert "Get-NetFirewallProfile -PolicyStore ActiveStore" in branch
+    assert "Get-NetFirewallRule -PolicyStore ActiveStore" in branch
+    assert "firewall_mutation_requested=$false" in branch
+    for cmdlet in ("New-NetFirewallRule", "Set-NetFirewallRule", "Remove-NetFirewallRule", "Disable-NetFirewallRule", "Enable-NetFirewallRule"):
+        assert cmdlet not in branch
+
+
 def test_deployment_helper_is_stdin_isolated_and_hash_addressed():
     assert "NORA_SSH_CONFIG must name the established explicit SSH configuration" in DEPLOY
     assert 'ssh_cmd=(ssh -F "$NORA_SSH_CONFIG" -n nora-win10)' in DEPLOY
