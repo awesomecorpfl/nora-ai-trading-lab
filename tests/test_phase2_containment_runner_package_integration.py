@@ -8,9 +8,10 @@ def test_runner_has_explicit_containment_package_mode():
     assert "package-containment" in RUNNER
     for token in ("ContainmentSourceRoot", "ContainmentSummaryPath", "ContainmentDestinationPath", "PublisherPath", "PublisherSha256"):
         assert token in RUNNER
-    assert "-SourceRoot $ContainmentSourceRoot" in RUNNER
-    assert "-SummaryPath $ContainmentSummaryPath" in RUNNER
-    assert "-DestinationPath $ContainmentDestinationPath" in RUNNER
+    assert "direct containment package publication is forbidden" in RUNNER
+    assert "capture-containment-command" in RUNNER
+    assert "-SourceRoot $captureRoot" in RUNNER
+    assert "-SummaryPath (Join-Path $captureRoot 'summary.json')" in RUNNER
     assert "-ExpectedRunId $RunId" in RUNNER
     assert "Hash $PublisherPath" in RUNNER
 
@@ -19,6 +20,18 @@ def test_runner_package_mode_has_no_firewall_mutation():
     mode = RUNNER.split("'package-containment'", 1)[1].split("'record-import'", 1)[0]
     assert "New-NetFirewallRule" not in mode
     assert "Remove-NetFirewallRule" not in mode
+
+
+def test_runner_owned_capture_executes_and_binds_real_command_artifacts():
+    mode = RUNNER.split("'capture-containment-command'", 1)[1].split("'package-containment'", 1)[0]
+    for token in (
+        "CaptureContainmentProcess", "stdout.txt", "stderr.txt", "pre_state.json",
+        "post_state.json", "firewall_pre.json", "firewall_post.json", "processes.json",
+        "capture_provenance", "containment capture identity already exists",
+    ):
+        assert token in mode
+    assert "Move-Item -LiteralPath $partial -Destination $captureRoot" in mode
+    assert "$PublisherPath -SourceRoot $captureRoot" in mode
 
 
 def test_runner_has_repository_owned_abandoned_fixture_mode():

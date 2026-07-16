@@ -1,5 +1,5 @@
 param(
- [Parameter(Mandatory=$true)][ValidateSet('preflight','prepare','launch','status','package','package-containment','record-import','harden-acl','recover-acl','cache-preflight-prepare','cache-preflight-contain','cache-preflight-launch','cache-preflight-cleanup','reconcile-no-containment','abandon-fixture','canary-prepare','canary-launch','terminate-bound-canary','finalize-canary','classify-stale','classify-incomplete','cleanup-incomplete','detached-bootstrap','detached-workload')][string]$Mode,
+ [Parameter(Mandatory=$true)][ValidateSet('preflight','prepare','launch','status','package','package-containment','capture-containment-command','record-import','harden-acl','recover-acl','cache-preflight-prepare','cache-preflight-contain','cache-preflight-cleanup','reconcile-no-containment','abandon-fixture','canary-prepare','canary-launch','terminate-bound-canary','finalize-canary','classify-stale','classify-incomplete','cleanup-incomplete','detached-bootstrap','detached-workload')][string]$Mode,
  [string]$RunId,
  [string]$IncomingRoot,
  [ValidateSet('GDAXI','AUDCAD')][string]$Symbol,
@@ -34,6 +34,14 @@ param(
  [string]$ContainmentDestinationPath,
  [string]$PublisherPath,
  [string]$PublisherSha256,
+ [ValidateSet('stage','verify','verify-final','status','recover','cleanup')][string]$ContainmentAction,
+ [string[]]$ContainmentExecutablePath,
+ [ValidateSet('none','before_rules','after_first_rule','after_all_rules_before_final','after_final_before_accept')][string]$ContainmentFault='none',
+ [string]$ContainmentToolPath,
+ [string]$ContainmentToolSha256,
+ [string]$ContainmentCaseId,
+ [string]$ContainmentExpectedVerdict,
+ [string]$RepositoryCommit,
  [string]$EvidenceRoot='C:\NoraEvidence\Phase2'
 )
 $ErrorActionPreference='Stop'
@@ -50,6 +58,27 @@ function Paths(){NeedRunId;return [ordered]@{incoming=(Join-Path $EvidenceRoot (
 function Inventory([string]$Base){@(Get-ChildItem -LiteralPath $Base -File -Recurse -Force|Sort-Object FullName|ForEach-Object{[ordered]@{path=NormalizePath ($_.FullName.Substring($Base.Length));size=[int64]$_.Length;sha256=Hash $_.FullName}})}
 function CurrentInventory([string]$Base){@(Get-ChildItem -LiteralPath $Base -Force -Recurse|Sort-Object FullName|ForEach-Object{[ordered]@{path=NormalizePath ($_.FullName.Substring($Base.Length));type=if($_.PSIsContainer){'directory'}else{'file'};reparse=(($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0);size=if($_.PSIsContainer){$null}else{[int64]$_.Length};sha256=if($_.PSIsContainer){$null}else{Hash $_.FullName}}})}
 function Identity(){ $i=[Security.Principal.WindowsIdentity]::GetCurrent();[ordered]@{name=$i.Name;sid=$i.User.Value} }
+function AtomicText([string]$Path,[string]$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,$Value,[Text.UTF8Encoding]::new($false));if(Test-Path -LiteralPath $Path){throw 'immutable evidence path already exists'};[IO.File]::Move($tmp,$Path)}
+function ContainmentRecordInventory(){
+ NeedRunId
+ $names=@('intent.json','.json','.transaction-accepted.json','.transaction-failure.json','.transaction-recovery.json','.classification.json','-cleanup.json')
+ @($names|ForEach-Object{$candidate=Join-Path $EvidenceRoot ('containment-'+$RunId+$_);if(Test-Path -LiteralPath $candidate -PathType Leaf){[ordered]@{path=$candidate;size=[int64](Get-Item -LiteralPath $candidate).Length;sha256=Hash $candidate}}}|Where-Object{$_})
+}
+function ContainmentFirewallInventory(){
+ $group='NoraPhase2Containment-'+$RunId
+ @((Get-NetFirewallRule -Group $group -ErrorAction SilentlyContinue|Sort-Object Name)|ForEach-Object{$rule=$_;$apps=@(Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction Stop);[ordered]@{name=$rule.Name;instance_id=[string]$rule.InstanceID;group=$rule.Group;enabled=[string]$rule.Enabled;direction=[string]$rule.Direction;action=[string]$rule.Action;profile=[string]$rule.Profile;application_filters=@($apps|ForEach-Object{[string]$_.Program})}})
+}
+function ContainmentProcessInventory(){@((Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object{$_.Name -in @('terminal64.exe','metatester64.exe','powershell.exe')}|Sort-Object ProcessId|ForEach-Object{[ordered]@{pid=[int]$_.ProcessId;parent_pid=[int]$_.ParentProcessId;name=[string]$_.Name;command_line=[string]$_.CommandLine;executable_path=[string]$_.ExecutablePath}})}
+function CaptureContainmentProcess([string]$Tool,[string[]]$Arguments){
+ $psi=New-Object Diagnostics.ProcessStartInfo
+ $psi.FileName='powershell.exe';$psi.UseShellExecute=$false;$psi.RedirectStandardOutput=$true;$psi.RedirectStandardError=$true;$psi.CreateNoWindow=$true
+ $quoted=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$Tool)+$Arguments
+ $psi.Arguments=($quoted|ForEach-Object{if($_ -match '[\s"]'){ '"'+($_ -replace '"','\\"')+'"'}else{$_}}) -join ' '
+ $process=New-Object Diagnostics.Process;$process.StartInfo=$psi
+ if(!$process.Start()){throw 'containment child process did not start'}
+ $stdout=$process.StandardOutput.ReadToEnd();$stderr=$process.StandardError.ReadToEnd();$process.WaitForExit()
+ return [ordered]@{exit_code=[int]$process.ExitCode;stdout=$stdout;stderr=$stderr;command_line=$psi.FileName+' '+$psi.Arguments}
+}
 function AclView([string]$Path){$a=Get-Acl -LiteralPath $Path;[ordered]@{owner=$a.Owner;sddl=$a.Sddl;protected=$a.AreAccessRulesProtected;access=@($a.Access|ForEach-Object{[ordered]@{identity=$_.IdentityReference.Value;rights=[string]$_.FileSystemRights;type=[string]$_.AccessControlType;inherited=$_.IsInherited}})}}
 function RuleSid($Rule){try{return $Rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value}catch{throw 'unresolvable ACL principal'}}
 function AssertSecureAcl([string]$Path,[bool]$RequireProtected=$false){$a=Get-Acl -LiteralPath $Path;if($RequireProtected -and !$a.AreAccessRulesProtected){throw 'evidence root ACL inheritance enabled'};$broad='S-1-1-0','S-1-5-11','S-1-5-32-545';foreach($rule in @($a.Access)){if(($broad -contains (RuleSid $rule)) -and ([string]$rule.FileSystemRights -match 'Write|Modify|FullControl|Delete')){throw 'broad evidence write ACL'}}}
@@ -196,6 +225,43 @@ switch($Mode){
  'launch' { $root=RequireSecureRoot;NoTerminal;NoCampaignJob;$p=Paths;if(!(Test-Path -LiteralPath $p.incoming) -or !(Test-Path -LiteralPath $p.running) -or !(Test-Path -LiteralPath $p.job)){throw 'missing prepared run'};$old=Get-Content -LiteralPath $p.job -Raw|ConvertFrom-Json;if($old.state -ne 'prepared'){throw 'launch not idempotent'};$packetPath=Join-Path $p.incoming 'execution_packet.json';$packet=Get-Content -LiteralPath $packetPath -Raw|ConvertFrom-Json;$batch=Get-Content -LiteralPath (Join-Path $p.incoming 'final_batch.json') -Raw|ConvertFrom-Json;if($batch.execution_packet_identity -ne $packet.execution_packet_identity){throw 'packet batch mismatch'};foreach($file in @($batch.staged_files)){ $candidate=Join-Path $p.incoming $file.path;if(!(Test-Path -LiteralPath $candidate) -or (Hash $candidate) -ne $file.sha256){throw 'staged role hash mismatch'} };$role=@($packet.native_execution_contract.roles|Where-Object{$_.role -eq 'persistent_windows_evidence_runner'});if($role.Count -ne 1 -or (Hash $PSCommandPath) -ne $role[0].sha256){throw 'persistent runner identity mismatch'};$worker=RequireWorker $p.incoming;$arguments=@('-IncomingRoot',$p.incoming,'-RunId',$RunId,'-Symbol',$Symbol,'-BeforeBarCount',[string]$BeforeBarCount,'-AfterBarCount',[string]$AfterBarCount,'-BeforeEarliest',$BeforeEarliest,'-BeforeLatest',$BeforeLatest,'-AfterEarliest',$AfterEarliest,'-AfterLatest',$AfterLatest,'-RunDirectory',$p.running,'-EvidenceRoot',$EvidenceRoot);LaunchDetached $p $worker $arguments $packetPath 'ten_strategy_campaign' }
  'status' { $p=Paths;if(!(Test-Path -LiteralPath $p.job)){throw 'missing durable run state'};$job=Get-Content -LiteralPath $p.job -Raw|ConvertFrom-Json;$running=Test-Path -LiteralPath $p.running;$complete=Test-Path -LiteralPath $p.complete;$published=Test-Path -LiteralPath $p.returned;$bootstrapBound=BoundProcess $job.bootstrap_binding;$workloadBound=BoundProcess $job.workload_binding;$state=if($job.state-in@('completed','failed','abandoned','packaging','published','accepted','rejected')){$job.state}elseif($workloadBound){'running'}elseif($bootstrapBound){if($job.state-eq'launched'){'launched'}else{'bootstrap-confirmed'}}elseif($complete){'completed-unrecorded'}elseif($running -and ($job.bootstrap_binding-or$job.workload_binding)){'stale-unclassified'}elseif($running){'ambiguous-incomplete'}else{'ambiguous-missing'};[ordered]@{schema_version=$schema;lifecycle_schema_version=if($job.lifecycle_schema_version){$job.lifecycle_schema_version}else{'historical-unbound-v1'};run_identifier=$RunId;state=$state;durable_job=$job;bootstrap_process_exactly_bound=$bootstrapBound;workload_process_exactly_bound=$workloadBound;running_directory=$running;complete_directory=$complete;published_directory=$published;bootstrap_record_present=(Test-Path -LiteralPath (Join-Path $(if($running){$p.running}else{$p.complete}) 'bootstrap.json'));classification_required=($state-in@('stale-unclassified','ambiguous-incomplete','completed-unrecorded','ambiguous-missing'));ssh_disconnect_is_failure=$false}|ConvertTo-Json -Depth 12 -Compress }
  'package' { $p=Paths;if(!(Test-Path -LiteralPath $p.complete)){throw 'terminal completion not durable'};if(Test-Path -LiteralPath $p.returned){throw 'package not idempotent'};if(!$EvaluationPath -or !(Test-Path -LiteralPath $EvaluationPath)){throw 'missing environmental evaluation'};Copy-Item -LiteralPath $EvaluationPath -Destination (Join-Path $p.complete 'environmental-evaluation.json');WriteJob $p 'packaging' @{}|Out-Null;$builder=Join-Path $p.incoming 'phase-0a-h\windows\build-ten-strategy-returned-package.ps1';& $builder -RunDirectory $p.complete -Destination $p.returned;WriteJob $p 'published' @{returned_package_path=$p.returned}|Out-Null;$p.returned }
- 'package-containment' { if(!$ContainmentSourceRoot -or !$ContainmentSummaryPath -or !$ContainmentDestinationPath -or !$PublisherPath -or !$PublisherSha256){throw 'missing containment package binding'};if(!(Test-Path -LiteralPath $PublisherPath -PathType Leaf)){throw 'missing containment publisher'};if((Hash $PublisherPath) -ne $PublisherSha256.ToLowerInvariant()){throw 'containment publisher hash mismatch'};if(!(Test-Path -LiteralPath $ContainmentSummaryPath -PathType Leaf)){throw 'missing containment summary'};$result=& $PublisherPath -SourceRoot $ContainmentSourceRoot -SummaryPath $ContainmentSummaryPath -DestinationPath $ContainmentDestinationPath -EvidenceRoot $EvidenceRoot -ExpectedRunId $RunId;if(!$?){throw 'containment package publication failed'};$result }
+ 'capture-containment-command' {
+   NeedRunId
+   if(!$ContainmentAction -or !$ContainmentToolPath -or !$ContainmentToolSha256 -or !$ContainmentCaseId -or !$ContainmentExpectedVerdict -or !$RepositoryCommit -or !$ContainmentDestinationPath -or !$PublisherPath -or !$PublisherSha256){throw 'missing runner-owned containment capture binding'}
+   if($RepositoryCommit -notmatch '^[0-9a-f]{40}$'){throw 'invalid repository commit'}
+   if(!(Test-Path -LiteralPath $ContainmentToolPath -PathType Leaf) -or (Hash $ContainmentToolPath) -ne $ContainmentToolSha256.ToLowerInvariant()){throw 'containment tool hash mismatch'}
+   if(!(Test-Path -LiteralPath $PublisherPath -PathType Leaf) -or (Hash $PublisherPath) -ne $PublisherSha256.ToLowerInvariant()){throw 'containment publisher hash mismatch'}
+   $captureRoot=Join-Path $EvidenceRoot ('containment-captures\\'+$RunId+'\\'+$ContainmentCaseId)
+   $expectedRoot=Join-Path $EvidenceRoot 'containment-captures'
+   if(Test-Path -LiteralPath $captureRoot){throw 'containment capture identity already exists'}
+   New-Item -ItemType Directory -Force -Path $expectedRoot|Out-Null
+   $partial=$captureRoot+'.partial.'+[guid]::NewGuid().ToString('N');New-Item -ItemType Directory -Path $partial|Out-Null
+   try {
+     $preRecords=@(ContainmentRecordInventory);$preRules=@(ContainmentFirewallInventory);$preProcesses=@(ContainmentProcessInventory)
+     $arguments=@('-Action',$ContainmentAction,'-CampaignId',$RunId,'-EvidenceRoot',$EvidenceRoot,'-Fault',$ContainmentFault)
+     foreach($path in @($ContainmentExecutablePath)){if([string]::IsNullOrWhiteSpace($path)){throw 'invalid containment executable argument'};$arguments+=@('-ExecutablePath',$path)}
+     $result=CaptureContainmentProcess $ContainmentTool $arguments
+     $postRecords=@(ContainmentRecordInventory);$postRules=@(ContainmentFirewallInventory);$postProcesses=@(ContainmentProcessInventory)
+     AtomicText (Join-Path $partial 'stdout.txt') ([string]$result.stdout);AtomicText (Join-Path $partial 'stderr.txt') ([string]$result.stderr)
+     AtomicJson (Join-Path $partial 'pre_state.json') ([ordered]@{records=@($preRecords);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
+     AtomicJson (Join-Path $partial 'post_state.json') ([ordered]@{records=@($postRecords);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
+     AtomicJson (Join-Path $partial 'firewall_pre.json') ([ordered]@{rules=@($preRules);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
+     AtomicJson (Join-Path $partial 'firewall_post.json') ([ordered]@{rules=@($postRules);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
+     AtomicJson (Join-Path $partial 'processes.json') ([ordered]@{before=@($preProcesses);after=@($postProcesses)})
+     AtomicJson (Join-Path $partial 'recovery.json') ([ordered]@{invoked=$false;result=$null})
+     AtomicJson (Join-Path $partial 'cleanup.json') ([ordered]@{invoked=($ContainmentAction -eq 'cleanup');result_records=@($postRecords|Where-Object{$_.path -like '*-cleanup.json'})})
+     $final=Join-Path $EvidenceRoot ('containment-'+$RunId+'.json');$accepted=Join-Path $EvidenceRoot ('containment-'+$RunId+'.transaction-accepted.json')
+     $transaction=if(Test-Path -LiteralPath $accepted){(Get-Content -LiteralPath $accepted -Raw|ConvertFrom-Json).campaign_identity}elseif(Test-Path -LiteralPath $final){(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).campaign_identity}else{$RunId}
+     $bindings=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).executables}else{@()};$rules=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).rules}else{@()}
+     $summary=[ordered]@{case_id=$ContainmentCaseId;expected_verdict=$ContainmentExpectedVerdict;run_id=$RunId;repository_commit=$RepositoryCommit;script_hashes=[ordered]@{containment=Hash $ContainmentTool;runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};windows_hashes=[ordered]@{containment=Hash $ContainmentTool;runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};host_identity=Identity;evidence_root=$EvidenceRoot;transaction_identity=$transaction;executable_paths=@($bindings|ForEach-Object{[string]$_.path});executable_hashes=@($bindings|ForEach-Object{[string]$_.sha256});rule_guids=@($rules|ForEach-Object{[string]$_.instance_id});rule_names=@($rules|ForEach-Object{[string]$_.name});application_filters=@($rules|ForEach-Object{[string]$_.program});fault_injection_point=$ContainmentFault;started_at=(Get-Date).ToUniversalTime().ToString('o');finished_at=(Get-Date).ToUniversalTime().ToString('o');command=$result.command_line;wrapper_identity=[ordered]@{path=$PSCommandPath;sha256=Hash $PSCommandPath};original_containment_exit_code=[int]$result.exit_code;package_publication_exit_code=0;retrieval_exit_code=$null;fedora_verification_exit_code=$null;final_caller_exit_code=[int]$result.exit_code;recovery_result='not_invoked';cleanup_result=if($ContainmentAction-eq'cleanup'){'invoked'}else{'not_invoked'};unrelated_firewall_result='captured_in_firewall_records';final_invariants=[ordered]@{rule_count=$postRules.Count;terminal_or_tester_processes=@($postProcesses|Where-Object{$_.name -in @('terminal64.exe','metatester64.exe')}).Count};capture_provenance=[ordered]@{schema='nora.phase2_runner_owned_containment_capture_v1';runner_path=$PSCommandPath;runner_sha256=Hash $PSCommandPath;capture_path=$captureRoot;source_root=$partial;command_exit_code=[int]$result.exit_code}}
+     AtomicJson (Join-Path $partial 'summary.json') $summary
+     Move-Item -LiteralPath $partial -Destination $captureRoot
+     $publication=& $PublisherPath -SourceRoot $captureRoot -SummaryPath (Join-Path $captureRoot 'summary.json') -DestinationPath $ContainmentDestinationPath -EvidenceRoot $EvidenceRoot -ExpectedRunId $RunId
+     if(!$?){throw 'containment package publication failed'}
+     [ordered]@{capture_path=$captureRoot;package_sha256=[string]$publication;containment_exit_code=[int]$result.exit_code}|ConvertTo-Json -Compress
+     if($result.exit_code -ne 0){exit $result.exit_code}
+   } catch { if(Test-Path -LiteralPath $partial){Remove-Item -LiteralPath $partial -Recurse -Force -ErrorAction SilentlyContinue};throw }
+ }
+ 'package-containment' { throw 'direct containment package publication is forbidden; use capture-containment-command' }
  'record-import' { $p=Paths;if(!(Test-Path -LiteralPath $p.returned)){throw 'missing published package'};if(!$ImportRecordPath -or !(Test-Path -LiteralPath $ImportRecordPath)){throw 'missing import record'};Copy-Item -LiteralPath $ImportRecordPath -Destination (Join-Path $EvidenceRoot ('jobs\\'+$RunId+'.linux-ingestion.json'));$i=Get-Content -LiteralPath $ImportRecordPath -Raw|ConvertFrom-Json;$state=if($i.classification -eq 'PASS_EXACT'){'accepted'}else{'rejected'};WriteJob $p $state @{linux_ingestion_identity=$i.ingestion_identity;linux_classification=$i.classification}|ConvertTo-Json -Depth 12 -Compress }
 }
