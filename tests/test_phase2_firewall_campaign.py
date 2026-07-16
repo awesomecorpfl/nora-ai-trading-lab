@@ -30,7 +30,7 @@ def test_atomic_directory_claim_has_one_winner(tmp_path):
  [t.start() for t in ts];[t.join() for t in ts]
  assert sorted(out)==['loser','winner']
 def test_campaign_script_requires_atomic_owner_slot_and_nonoverwrite_publication():
- for token in ('New-Item -ItemType Directory -Path (Root) -ErrorAction Stop','AtomicJson (OwnerPath)','AtomicJson (ClaimPath $Number)','final capture overwrite attempt','[IO.File]::Move($temporary,(FinalPath $Number))','unresolved campaign partial','foreign campaign owner','completed immutable campaign cannot be resumed'):
+ for token in ('New-Item -ItemType Directory -Path (Root) -ErrorAction Stop','AtomicJson (OwnerPath)','AtomicJson (ClaimPath $Number)','final capture overwrite attempt','[IO.File]::Move($temporary,(FinalPath $Number))','unresolved campaign partial','foreign campaign owner','completed immutable campaign cannot be resumed','runner identity mismatch','runner_sha256=$RunnerSha256'):
   assert token in SCRIPT
  assert 'Remove-NetFirewallRule' not in SCRIPT and 'Set-NetFirewallRule' not in SCRIPT
 def test_foreign_owner_and_mixed_identity_rejected(tmp_path):

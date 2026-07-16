@@ -5,6 +5,8 @@ param(
  [Parameter(Mandatory=$true)][string]$RepositoryCommit,
  [Parameter(Mandatory=$true)][string]$CaptureToolPath,
  [Parameter(Mandatory=$true)][string]$CaptureToolSha256,
+ [Parameter(Mandatory=$true)][string]$RunnerPath,
+ [Parameter(Mandatory=$true)][string]$RunnerSha256,
  [string]$EvidenceRoot='C:\NoraEvidence\Phase2',
  [ValidateRange(1,100)][int]$CaptureCount=20,
  [ValidateRange(0,3600)][int]$CaptureIntervalSeconds=0,
@@ -18,7 +20,7 @@ $schema='nora.phase2_firewall_campaign_v1'
 function Hash([string]$Path){(Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()}
 function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 30 -Compress),[Text.UTF8Encoding]::new($false));$s=[IO.File]::Open($tmp,'Open','ReadWrite','None');$s.Flush($true);$s.Dispose();if(Test-Path -LiteralPath $Path){throw 'immutable publication target already exists'};[IO.File]::Move($tmp,$Path)}
 function UTC(){(Get-Date).ToUniversalTime().ToString('o')}
-function RequireId(){if($CampaignId-notmatch'^[A-Za-z0-9][A-Za-z0-9._-]{7,127}$'){throw 'invalid campaign id'};if($RepositoryCommit-notmatch'^[0-9a-f]{40}$'){throw 'invalid repository commit'};if(!(Test-Path -LiteralPath $CaptureToolPath -PathType Leaf) -or (Hash $CaptureToolPath)-ne$CaptureToolSha256.ToLowerInvariant()){throw 'capture tool identity mismatch'}}
+function RequireId(){if($CampaignId-notmatch'^[A-Za-z0-9][A-Za-z0-9._-]{7,127}$'){throw 'invalid campaign id'};if($RepositoryCommit-notmatch'^[0-9a-f]{40}$'){throw 'invalid repository commit'};if(!(Test-Path -LiteralPath $CaptureToolPath -PathType Leaf) -or (Hash $CaptureToolPath)-ne$CaptureToolSha256.ToLowerInvariant()){throw 'capture tool identity mismatch'};if(!(Test-Path -LiteralPath $RunnerPath -PathType Leaf) -or (Hash $RunnerPath)-ne$RunnerSha256.ToLowerInvariant()){throw 'runner identity mismatch'}}
 function Root(){Join-Path (Join-Path $EvidenceRoot 'firewall-campaigns') $CampaignId}
 function OwnerPath(){Join-Path (Root) 'owner.json'}
 function CompletionPath(){Join-Path (Root) 'completion.json'}
@@ -28,14 +30,14 @@ function ReceiptPath([int]$Number){Join-Path (Join-Path (Root) 'receipts') ((Slo
 function FinalPath([int]$Number){Join-Path (Join-Path (Root) 'captures') ((SlotName $Number)+'.json')}
 function Owner(){if(!(Test-Path -LiteralPath (OwnerPath) -PathType Leaf)){throw 'missing immutable campaign owner'};Get-Content -LiteralPath (OwnerPath) -Raw|ConvertFrom-Json}
 function ProcessStart(){try{(Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)).CreationDate}catch{$null}}
-function CommandHash(){$v=[ordered]@{path=$PSCommandPath;mode=$Mode;campaign_id=$CampaignId;repository_commit=$RepositoryCommit;capture_tool_sha256=$CaptureToolSha256;capture_count=$CaptureCount;capture_interval_seconds=$CaptureIntervalSeconds};$b=[Text.Encoding]::UTF8.GetBytes(($v|ConvertTo-Json -Compress));([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($b))).Replace('-','').ToLowerInvariant()}
+function CommandHash(){$v=[ordered]@{path=$PSCommandPath;mode=$Mode;campaign_id=$CampaignId;repository_commit=$RepositoryCommit;runner_sha256=$RunnerSha256;capture_tool_sha256=$CaptureToolSha256;capture_count=$CaptureCount;capture_interval_seconds=$CaptureIntervalSeconds};$b=[Text.Encoding]::UTF8.GetBytes(($v|ConvertTo-Json -Compress));([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($b))).Replace('-','').ToLowerInvariant()}
 function Reserve(){
  RequireId;$base=Join-Path $EvidenceRoot 'firewall-campaigns';New-Item -ItemType Directory -Path $base -Force|Out-Null
  # New-Item without Force is the atomic campaign-identity claim.  A partially created root is intentionally terminal.
  New-Item -ItemType Directory -Path (Root) -ErrorAction Stop|Out-Null
  foreach($d in 'claims','captures','receipts','temporary','partials'){New-Item -ItemType Directory -Path (Join-Path (Root) $d) -ErrorAction Stop|Out-Null}
  $token=if($OwnerToken){$OwnerToken}else{[guid]::NewGuid().ToString('N')+[guid]::NewGuid().ToString('N')}
- $o=[ordered]@{schema_version=$schema;campaign_id=$CampaignId;host_identity=[Security.Principal.WindowsIdentity]::GetCurrent().Name;windows_user=[Security.Principal.WindowsIdentity]::GetCurrent().Name;owner_pid=$PID;owner_process_start_utc=ProcessStart;parent_process_id=(Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)).ParentProcessId;launcher_path=$PSCommandPath;normalized_command_sha256=CommandHash;repository_commit=$RepositoryCommit;runner_sha256=$null;capture_tool_path=$CaptureToolPath;capture_tool_sha256=$CaptureToolSha256;expected_capture_count=$CaptureCount;capture_interval_seconds=$CaptureIntervalSeconds;created_utc=UTC;owner_token_sha256=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($token)))).Replace('-','').ToLowerInvariant();state='reserved'}
+ $o=[ordered]@{schema_version=$schema;campaign_id=$CampaignId;host_identity=[Security.Principal.WindowsIdentity]::GetCurrent().Name;windows_user=[Security.Principal.WindowsIdentity]::GetCurrent().Name;owner_pid=$PID;owner_process_start_utc=ProcessStart;parent_process_id=(Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)).ParentProcessId;launcher_path=$PSCommandPath;normalized_command_sha256=CommandHash;repository_commit=$RepositoryCommit;runner_path=$RunnerPath;runner_sha256=$RunnerSha256;capture_tool_path=$CaptureToolPath;capture_tool_sha256=$CaptureToolSha256;expected_capture_count=$CaptureCount;capture_interval_seconds=$CaptureIntervalSeconds;created_utc=UTC;owner_token_sha256=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($token)))).Replace('-','').ToLowerInvariant();state='reserved'}
  AtomicJson (OwnerPath) $o;[ordered]@{campaign_root=Root;owner_path=OwnerPath;owner_sha256=Hash (OwnerPath);owner_token=$token}|ConvertTo-Json -Compress
 }
 function Claim([int]$Number,[string]$Token){if($Number-lt1-or$Number-gt$CaptureCount){throw 'slot outside campaign range'};$o=Owner;if((HashToken $Token)-ne$o.owner_token_sha256){throw 'foreign campaign owner'};if(Test-Path -LiteralPath (FinalPath $Number)){throw 'final capture already exists'};if(Test-Path -LiteralPath (ReceiptPath $Number)){throw 'slot receipt already exists'};$claim=[ordered]@{schema_version='nora.phase2_firewall_campaign_slot_claim_v1';campaign_id=$CampaignId;slot=$Number;owner_sha256=Hash (OwnerPath);owner_pid=$PID;owner_process_start_utc=ProcessStart;claim_utc=UTC;capture_tool_sha256=$CaptureToolSha256;repository_commit=$RepositoryCommit;state='claimed'};AtomicJson (ClaimPath $Number) $claim;return $claim}
