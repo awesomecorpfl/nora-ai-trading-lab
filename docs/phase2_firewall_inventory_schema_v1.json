@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"nora.phase2_firewall_inventory_v1",
+  "type":"object",
+  "required":["schema_version","host_identity","repository_commit","captured_utc","profiles","effective_rules","persistent_rules","diagnostics"],
+  "properties":{
+    "schema_version":{"const":"nora.phase2_firewall_inventory_v1"},
+    "repository_commit":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "profiles":{"type":"array","minItems":3},
+    "effective_rules":{"type":"array"},
+    "persistent_rules":{"type":"array"},
+    "diagnostics":{"type":"object"}
+  },
+  "additionalProperties":false
+}
