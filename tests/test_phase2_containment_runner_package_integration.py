@@ -54,8 +54,11 @@ def test_containment_decodes_runner_array_token_before_path_binding():
 
 def test_runner_has_repository_owned_abandoned_fixture_mode():
     assert "abandon-fixture" in RUNNER
+    assert "abandon-fixture-cleanup" in RUNNER
     assert "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT" in RUNNER
     assert "non_reusable=$true" in RUNNER
+    assert "created_or_modified_durable_record=$false" in RUNNER
+    assert "created_or_modified_firewall_rule=$false" in RUNNER
 
 
 def test_deployment_helper_is_stdin_isolated_and_hash_addressed():
