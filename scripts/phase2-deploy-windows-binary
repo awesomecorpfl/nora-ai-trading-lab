@@ -3,6 +3,7 @@ set -euo pipefail
 
 die() { printf '%s\n' "$1" >&2; exit 2; }
 [[ $# -eq 3 ]] || die 'usage: phase2-deploy-windows-binary SOURCE REMOTE_DEST EXPECTED_SHA256'
+[[ -n ${NORA_SSH_CONFIG:-} && -f ${NORA_SSH_CONFIG:-} ]] || die 'NORA_SSH_CONFIG must name the established explicit SSH configuration'
 source_path=$1
 remote_dest=$2
 expected=$3
@@ -12,6 +13,7 @@ expected=$3
 [[ $remote_dest != *'$'* && $remote_dest != *'"'* && $remote_dest != *"'"* ]] || die 'unsafe destination'
 actual=$(sha256sum "$source_path" | awk '{print tolower($1)}')
 [[ $actual == ${expected,,} ]] || die 'source hash does not match expected hash'
+ssh_cmd=(ssh -F "$NORA_SSH_CONFIG" -n nora-win10)
 
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 remote_partial="$remote_dest.partial.$stamp"
@@ -27,7 +29,7 @@ base64 -w 1024 "$source_path" | split -b 1024 -d -a 6 - "$chunks/chunk."
 mapfile -t chunk_paths < <(find "$chunks" -type f -name 'chunk.*' -print | sort)
 (( ${#chunk_paths[@]} > 0 )) || die 'no chunks generated'
 
-ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -Command \"\$dest='$remote_dest';\$partial='$remote_partial';\$b64='$remote_b64';\$decoded='$remote_decoded';\$parent=Split-Path -Parent \$dest;New-Item -ItemType Directory -Force -Path \$parent|Out-Null;if(Test-Path -LiteralPath \$dest){throw 'conflicting destination exists'};foreach(\$p in @(@(\$partial,\$b64,\$decoded))){if(Test-Path -LiteralPath \$p){Remove-Item -LiteralPath \$p -Force}};[ordered]@{chunk_count=${#chunk_paths[@]};expected='$expected';state='ready'}|ConvertTo-Json -Compress\"" >/dev/null
+"${ssh_cmd[@]}" "powershell.exe -NoProfile -NonInteractive -Command \"\$dest='$remote_dest';\$partial='$remote_partial';\$b64='$remote_b64';\$decoded='$remote_decoded';\$parent=Split-Path -Parent \$dest;New-Item -ItemType Directory -Force -Path \$parent|Out-Null;if(Test-Path -LiteralPath \$dest){throw 'conflicting destination exists'};foreach(\$p in @(@(\$partial,\$b64,\$decoded))){if(Test-Path -LiteralPath \$p){Remove-Item -LiteralPath \$p -Force}};[ordered]@{chunk_count=${#chunk_paths[@]};expected='$expected';state='ready'}|ConvertTo-Json -Compress\"" >/dev/null
 
 index=0
 for chunk_path in "${chunk_paths[@]}"; do
@@ -37,8 +39,8 @@ for chunk_path in "${chunk_paths[@]}"; do
   chunk=$(<"$chunk_path")
   append_command="[IO.File]::AppendAllText('$remote_b64','$chunk',[Text.Encoding]::ASCII)"
   append_encoded=$(printf '%s' "$append_command" | iconv -f UTF-8 -t UTF-16LE | base64 -w 0)
-  ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -EncodedCommand $append_encoded" >/dev/null
+  "${ssh_cmd[@]}" "powershell.exe -NoProfile -NonInteractive -EncodedCommand $append_encoded" >/dev/null
   printf '%06d %s %s %s\n' "$index" "$(basename "$chunk_path")" "$chunk_size" "$chunk_hash"
 done
 
-ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -Command \"\$dest='$remote_dest';\$partial='$remote_partial';\$b64='$remote_b64';\$decoded='$remote_decoded';certutil.exe -f -decode \$b64 \$decoded|Out-Null;\$h=(Get-FileHash -Algorithm SHA256 -LiteralPath \$decoded).Hash.ToLowerInvariant();if(\$h -ne '$expected'){throw ('hash mismatch '+\$h)};if(Test-Path -LiteralPath \$dest){throw 'conflicting destination exists'};Move-Item -LiteralPath \$decoded -Destination \$dest;Remove-Item -LiteralPath \$b64 -Force;[ordered]@{sha256=\$h;size=(Get-Item -LiteralPath \$dest).Length;chunk_count=${#chunk_paths[@]};published=\$true}|ConvertTo-Json -Compress\""
+"${ssh_cmd[@]}" "powershell.exe -NoProfile -NonInteractive -Command \"\$dest='$remote_dest';\$partial='$remote_partial';\$b64='$remote_b64';\$decoded='$remote_decoded';certutil.exe -f -decode \$b64 \$decoded|Out-Null;\$h=(Get-FileHash -Algorithm SHA256 -LiteralPath \$decoded).Hash.ToLowerInvariant();if(\$h -ne '$expected'){throw ('hash mismatch '+\$h)};if(Test-Path -LiteralPath \$dest){throw 'conflicting destination exists'};Move-Item -LiteralPath \$decoded -Destination \$dest;Remove-Item -LiteralPath \$b64 -Force;[ordered]@{sha256=\$h;size=(Get-Item -LiteralPath \$dest).Length;chunk_count=${#chunk_paths[@]};published=\$true}|ConvertTo-Json -Compress\""

@@ -59,7 +59,10 @@ def test_runner_has_repository_owned_abandoned_fixture_mode():
 
 
 def test_deployment_helper_is_stdin_isolated_and_hash_addressed():
-    assert "ssh -n nora-win10" in DEPLOY
+    assert "NORA_SSH_CONFIG must name the established explicit SSH configuration" in DEPLOY
+    assert 'ssh_cmd=(ssh -F "$NORA_SSH_CONFIG" -n nora-win10)' in DEPLOY
+    assert '"${ssh_cmd[@]}"' in DEPLOY
+    assert "ssh -n nora-win10" not in DEPLOY
     assert "AppendAllText" in DEPLOY
     assert "-EncodedCommand" in DEPLOY
     assert "iconv -f UTF-8 -t UTF-16LE" in DEPLOY
