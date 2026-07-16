@@ -35,7 +35,9 @@ for chunk_path in "${chunk_paths[@]}"; do
   chunk_hash=$(sha256sum "$chunk_path" | awk '{print tolower($1)}')
   chunk_size=$(wc -c < "$chunk_path")
   chunk=$(<"$chunk_path")
-  ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -Command \"[IO.File]::AppendAllText('$remote_b64','$chunk',[Text.Encoding]::ASCII)\"" >/dev/null
+  append_command="[IO.File]::AppendAllText('$remote_b64','$chunk',[Text.Encoding]::ASCII)"
+  append_encoded=$(printf '%s' "$append_command" | iconv -f UTF-8 -t UTF-16LE | base64 -w 0)
+  ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -EncodedCommand $append_encoded" >/dev/null
   printf '%06d %s %s %s\n' "$index" "$(basename "$chunk_path")" "$chunk_size" "$chunk_hash"
 done
 
