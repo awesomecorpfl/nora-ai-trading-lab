@@ -108,6 +108,8 @@ NATIVE_EXECUTION_REQUIRED_ROLES = (
     "compiled_ex5",
     "windows_packet_launcher",
     "persistent_windows_evidence_runner",
+    "firewall_campaign_owner",
+    "firewall_campaign_fedora_verifier",
     "mt5_network_containment",
     "mt5_cache_inventory",
     "mt5_server_scope_resolver",
