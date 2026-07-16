@@ -2,7 +2,7 @@
 """Repository-owned end-to-end abandoned multi-operation case orchestration."""
 from __future__ import annotations
 
-import argparse, hashlib, json, re, shlex, subprocess, sys
+import argparse, base64, hashlib, json, re, shlex, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,6 +26,11 @@ def run(command, *, stdout=None, stderr=None, check=True, env=None):
 
 
 def utc(): return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
+
+
+def encoded_powershell(script: str) -> list[str]:
+    encoded=base64.b64encode(script.encode("utf-16le")).decode("ascii")
+    return ["powershell.exe","-NoProfile","-NonInteractive","-EncodedCommand",encoded]
 
 
 def main(argv=None):
@@ -55,8 +60,8 @@ def main(argv=None):
         match=re.search(rb"CASE=1 EXIT=(\d+) EXPECTED=(\d+)",out.read_bytes())
         if not match or int(match.group(1))!=expected or int(match.group(2))!=expected: raise RuntimeError(f"operation exit capture mismatch: {op_id}")
         meta_script=f"$p='{windows_package}';[ordered]@{{size=(Get-Item -LiteralPath $p).Length;sha256=(Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant()}}|ConvertTo-Json -Compress"
-        meta=run(ssh+["powershell.exe","-NoProfile","-NonInteractive","-Command",meta_script])
-        package_meta=json.loads(meta.stdout.decode().strip().splitlines()[0]);local_package=root/f"{op_id}.zip";receipt_id=f"{a.case_id}-{op_id}"
+        meta=run(ssh+encoded_powershell(meta_script))
+        package_meta=json.loads(next(line for line in meta.stdout.decode().splitlines() if line.startswith("{")));local_package=root/f"{op_id}.zip";receipt_id=f"{a.case_id}-{op_id}"
         receipt_root=Path("/tmp/nora-phase2-containment-retrieval");receipt=receipt_root/"receipts"/(receipt_id+".json")
         retrieve=[sys.executable,str(retrieval),"--ssh-config",a.ssh_config,"--ssh-alias",a.ssh_alias,
                   "--windows-host-identity","DESKTOP-21I1FJP","--reader-path",a.reader_path,"--reader-sha256",a.reader_sha256,

@@ -105,6 +105,7 @@ def test_repository_owned_abandoned_orchestrator_has_exact_sequence_and_boundari
                   "phase2-exit-propagation-batch", "phase2-retrieve-containment-evidence.py", "runner-operation",
                   "abandon-fixture-cleanup", "verify_operation", "verify_envelope"):
         assert token in source
+    assert "encoded_powershell(meta_script)" in source
     assert source.index('("classification"') < source.index('("same-before"') < source.index('("changed-before"') < source.index('("cleanup"') < source.index('("same-after"') < source.index('("changed-after"')
 
 
