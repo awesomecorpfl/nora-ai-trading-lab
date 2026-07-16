@@ -12,7 +12,7 @@ def test_runner_has_explicit_containment_package_mode():
     assert "direct containment package publication is forbidden" in RUNNER
     assert "capture-containment-command" in RUNNER
     assert "-SourceRoot $captureRoot" in RUNNER
-    assert "-SummaryPath (Join-Path $captureRoot 'summary.json')" in RUNNER
+    assert "-SummaryPath $summarySidecar" in RUNNER
     assert "-ExpectedRunId $RunId" in RUNNER
     assert "Hash $PublisherPath" in RUNNER
 
@@ -31,6 +31,8 @@ def test_runner_owned_capture_executes_and_binds_real_command_artifacts():
         "capture_provenance", "containment capture identity already exists",
     ):
         assert token in mode
+    assert "$summarySidecar=$captureRoot+'.summary.json'" in mode
+    assert "-SummaryPath $summarySidecar" in mode
     assert "Move-Item -LiteralPath $partial -Destination $captureRoot" in mode
     assert "$PublisherPath -SourceRoot $captureRoot" in mode
 
