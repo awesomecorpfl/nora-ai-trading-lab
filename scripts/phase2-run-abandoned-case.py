@@ -85,12 +85,17 @@ def main(argv=None):
     plan_path=root/"case-plan.json";plan_path.write_text(json.dumps(plan,sort_keys=True,separators=(",",":"))+"\n")
     windows_plan=rf"C:\NoraEvidence\Phase2\case-plans\{a.case_id}.json";plan_hash=file_hash(plan_path)
     env=dict(**__import__('os').environ,NORA_SSH_CONFIG=a.ssh_config)
-    deployed=run([a.deployment_helper,str(plan_path),windows_plan,plan_hash],check=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=env)
+    deployment_stdout=root/"case-plan-deployment.stdout";deployment_stderr=root/"case-plan-deployment.stderr"
+    with deployment_stdout.open("wb") as so,deployment_stderr.open("wb") as se:
+        deployed=run([a.deployment_helper,str(plan_path),windows_plan,plan_hash],check=False,stdout=so,stderr=se,env=env)
     if deployed.returncode: raise RuntimeError("case plan deployment failed")
     windows_envelope=rf"C:\NoraEvidence\Phase2\case-envelopes\{a.case_id}.json"
-    build=run(ssh+["powershell.exe","-NoProfile","-NonInteractive","-ExecutionPolicy","Bypass","-File",a.case_builder_path,
-                   "-Mode","publish","-PlanPath",windows_plan,"-EnvelopePath",windows_envelope,"-EvidenceRoot",r"C:\NoraEvidence\Phase2","-ExpectedCaseId",a.case_id])
-    built=json.loads(build.stdout.decode().strip().splitlines()[0]);envelope_receipt_id=f"{a.case_id}-envelope";receipt_root=Path("/tmp/nora-phase2-containment-retrieval")
+    builder_stdout=root/"case-envelope-builder.stdout";builder_stderr=root/"case-envelope-builder.stderr"
+    with builder_stdout.open("wb") as so,builder_stderr.open("wb") as se:
+        build=run(ssh+["powershell.exe","-NoProfile","-NonInteractive","-ExecutionPolicy","Bypass","-File",a.case_builder_path,
+                       "-Mode","publish","-PlanPath",windows_plan,"-EnvelopePath",windows_envelope,"-EvidenceRoot",r"C:\NoraEvidence\Phase2","-ExpectedCaseId",a.case_id],stdout=so,stderr=se,check=False)
+    if build.returncode: raise RuntimeError("case envelope build failed")
+    built=json.loads(next(line for line in builder_stdout.read_text().splitlines() if line.startswith("{")));envelope_receipt_id=f"{a.case_id}-envelope";receipt_root=Path("/tmp/nora-phase2-containment-retrieval")
     envelope_local=receipt_root/"cases"/a.case_id/"case-envelope.json"
     retrieve=run([sys.executable,str(retrieval),"--ssh-config",a.ssh_config,"--ssh-alias",a.ssh_alias,"--windows-host-identity","DESKTOP-21I1FJP",
         "--reader-path",a.reader_path,"--reader-sha256",a.reader_sha256,"--deployed-reader-sha256",a.reader_sha256,"--windows-source",windows_envelope,

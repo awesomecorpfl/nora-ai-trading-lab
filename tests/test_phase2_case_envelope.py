@@ -115,6 +115,7 @@ def test_windows_builder_is_atomic_hash_validating_and_path_confined():
                   "component_identity", "operation_exit_or_verdict", "predecessor", "after_cleanup_relationship",
                   "Flush($true)", "[IO.File]::Move", "conflicting_envelope", "reparse_path", "outside_root"):
         assert token in source
+    assert "return ,$bytes" in source
     assert "New-NetFirewallRule" not in source and "Remove-NetFirewallRule" not in source
 
 
@@ -129,3 +130,9 @@ def test_stale_process_cleanup_is_exactly_bound():
     for token in ("ExpectedStartTimeUtc", "ExpectedCommandLineSha256", "ExpectedOwner", "HashText", "bound process identity mismatch", "Stop-Process -Id $ProcessId"):
         assert token in source
     assert "Get-Process powershell" not in source and "taskkill" not in source.lower()
+
+
+def test_orchestrator_preserves_plan_and_envelope_builder_streams():
+    source=(Path(__file__).parents[1]/"scripts"/"phase2-run-abandoned-case.py").read_text()
+    for token in ("case-plan-deployment.stdout", "case-plan-deployment.stderr", "case-envelope-builder.stdout", "case-envelope-builder.stderr"):
+        assert token in source

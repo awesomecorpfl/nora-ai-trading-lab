@@ -15,7 +15,7 @@ function Fail([string]$m){throw ('NORA_CASE_ENVELOPE:'+$m)}
 function Hash([string]$p){(Get-FileHash -LiteralPath $p -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()}
 function HashBytes([byte[]]$b){([Security.Cryptography.SHA256]::Create().ComputeHash($b)|ForEach-Object{$_.ToString('x2')})-join''}
 function UnderRoot([string]$p){$root=[IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\');$full=[IO.Path]::GetFullPath($p);if(!$full.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)){Fail 'outside_root'};$cursor=Get-Item -LiteralPath $root -Force;foreach($part in $full.Substring($root.Length).TrimStart('\').Split('\',[StringSplitOptions]::RemoveEmptyEntries)){$cursor=Get-Item -LiteralPath (Join-Path $cursor.FullName $part) -Force;if(($cursor.Attributes-band[IO.FileAttributes]::ReparsePoint)-ne0){Fail 'reparse_path'}};$full}
-function EntryBytes($archive,[string]$name){$entries=@($archive.Entries|Where-Object{$_.FullName-eq$name});if($entries.Count-ne1){Fail ('missing_or_duplicate_'+$name)};$s=$entries[0].Open();$m=New-Object IO.MemoryStream;$s.CopyTo($m);$s.Dispose();$bytes=$m.ToArray();$m.Dispose();$bytes}
+function EntryBytes($archive,[string]$name){$entries=@($archive.Entries|Where-Object{$_.FullName-eq$name});if($entries.Count-ne1){Fail ('missing_or_duplicate_'+$name)};$s=$entries[0].Open();$m=New-Object IO.MemoryStream;$s.CopyTo($m);$s.Dispose();$bytes=$m.ToArray();$m.Dispose();return ,$bytes}
 function ValidatePackage($spec,$plan){
  $zip=$null
  $path=UnderRoot ([string]$spec.windows_path);if(!(Test-Path -LiteralPath $path -PathType Leaf)){Fail 'missing_package'}
