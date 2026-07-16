@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() { printf '%s\n' "$1" >&2; exit 2; }
+[[ $# -eq 3 ]] || die 'usage: phase2-deploy-windows-binary SOURCE REMOTE_DEST EXPECTED_SHA256'
+source_path=$1
+remote_dest=$2
+expected=$3
+[[ -f $source_path ]] || die 'source file missing'
+[[ $expected =~ ^[0-9a-fA-F]{64}$ ]] || die 'invalid expected hash'
+[[ $remote_dest == C:\\NoraEvidence\\Phase2\\* ]] || die 'destination outside canonical root'
+[[ $remote_dest != *'$'* && $remote_dest != *'"'* && $remote_dest != *"'"* ]] || die 'unsafe destination'
+actual=$(sha256sum "$source_path" | awk '{print tolower($1)}')
+[[ $actual == ${expected,,} ]] || die 'source hash does not match expected hash'
+
+stamp=$(date -u +%Y%m%dT%H%M%SZ)
+remote_partial="$remote_dest.partial.$stamp"
+remote_b64="$remote_partial.b64"
+remote_decoded="$remote_partial.decoded"
+chunks=$(mktemp -d)
+cleanup() { rm -rf "$chunks"; }
+trap cleanup EXIT
+base64 -w 3072 "$source_path" | split -b 3072 -d -a 6 - "$chunks/chunk."
+mapfile -t chunk_paths < <(find "$chunks" -type f -name 'chunk.*' -print | sort)
+(( ${#chunk_paths[@]} > 0 )) || die 'no chunks generated'
+
+ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -Command \"\$dest='$remote_dest';\$partial='$remote_partial';\$b64='$remote_b64';\$decoded='$remote_decoded';\$parent=Split-Path -Parent \$dest;New-Item -ItemType Directory -Force -Path \$parent|Out-Null;if(Test-Path -LiteralPath \$dest){throw 'conflicting destination exists'};foreach(\$p in @(@(\$partial,\$b64,\$decoded))){if(Test-Path -LiteralPath \$p){Remove-Item -LiteralPath \$p -Force}};[ordered]@{chunk_count=${#chunk_paths[@]};expected='$expected';state='ready'}|ConvertTo-Json -Compress\"" >/dev/null
+
+index=0
+for chunk_path in "${chunk_paths[@]}"; do
+  index=$((index+1))
+  chunk_hash=$(sha256sum "$chunk_path" | awk '{print tolower($1)}')
+  chunk_size=$(wc -c < "$chunk_path")
+  chunk=$(<"$chunk_path")
+  ssh -n nora-win10 "cmd.exe /d /s /c \"echo $chunk>>$remote_b64\"" >/dev/null
+  printf '%06d %s %s %s\n' "$index" "$(basename "$chunk_path")" "$chunk_size" "$chunk_hash"
+done
+
+ssh -n nora-win10 "powershell.exe -NoProfile -NonInteractive -Command \"\$dest='$remote_dest';\$partial='$remote_partial';\$b64='$remote_b64';\$decoded='$remote_decoded';certutil.exe -f -decode \$b64 \$decoded|Out-Null;\$h=(Get-FileHash -Algorithm SHA256 -LiteralPath \$decoded).Hash.ToLowerInvariant();if(\$h -ne '$expected'){throw ('hash mismatch '+\$h)};if(Test-Path -LiteralPath \$dest){throw 'conflicting destination exists'};Move-Item -LiteralPath \$decoded -Destination \$dest;Remove-Item -LiteralPath \$b64 -Force;[ordered]@{sha256=\$h;size=(Get-Item -LiteralPath \$dest).Length;chunk_count=${#chunk_paths[@]};published=\$true}|ConvertTo-Json -Compress\""
