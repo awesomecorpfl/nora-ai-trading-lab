@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+usage() { printf 'usage: %s SPEC...\n' "$0" >&2; exit 2; }
+(( $# > 0 )) || usage
+
+aggregate=0
+index=0
+for spec in "$@"; do
+  index=$((index + 1))
+  expected=${spec%%:*}
+  command=${spec#*:}
+  [[ $expected =~ ^[0-9]+$ && $expected -le 255 && -n $command && $command != "$spec" ]] || { printf 'invalid batch spec %s\n' "$spec" >&2; exit 2; }
+  out=$(mktemp)
+  err=$(mktemp)
+  bash -c "$command" >"$out" 2>"$err"
+  code=$?
+  printf 'CASE=%d EXIT=%d EXPECTED=%s\n' "$index" "$code" "$expected"
+  cat "$out"
+  cat "$err" >&2
+  rm -f "$out" "$err"
+  if (( code != expected )); then aggregate=1; fi
+done
+exit "$aggregate"
