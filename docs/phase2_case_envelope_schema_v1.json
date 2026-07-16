@@ -30,6 +30,7 @@
       }
     },
     "case_invariants": {"type": "object"},
+    "firewall_preservation": {"type": ["object", "null"]},
     "final_verdict": {"enum": ["PASS", "FAIL"]},
     "failure_stage": {"type": ["string", "null"]},
     "failure_reason": {"type": ["string", "null"]}

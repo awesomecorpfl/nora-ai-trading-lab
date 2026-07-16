@@ -34,6 +34,14 @@ def sha256(path: Path) -> str:
             h.update(block)
     return h.hexdigest()
 
+def _bound_artifact(spec: dict[str, Any], label: str) -> dict[str, Any]:
+    if not isinstance(spec, dict): raise CaseEnvelopeError(f"missing {label} artifact")
+    path=Path(spec.get("path",""))
+    if not path.is_file() or path.is_symlink(): raise CaseEnvelopeError(f"missing {label} artifact")
+    size,d=path.stat().st_size,sha256(path)
+    if size!=spec.get("size") or d!=spec.get("sha256"): raise CaseEnvelopeError(f"{label} artifact identity mismatch")
+    return {"path":str(path),"windows_path":spec.get("windows_path"),"size":size,"sha256":d}
+
 
 def _hex(value: Any, name: str) -> str:
     if not isinstance(value, str) or not HEX64.fullmatch(value):
@@ -90,6 +98,13 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
         raise CaseEnvelopeError("operation order mismatch")
     if len({x.get("package_path") for x in operations}) != len(operations):
         raise CaseEnvelopeError("duplicate package reference")
+    firewall=plan.get("firewall_preservation"); rendered_firewall=None
+    if firewall is not None:
+        if not isinstance(firewall,dict) or firewall.get("schema_version")!="nora.phase2_firewall_case_binding_v1":raise CaseEnvelopeError("invalid firewall preservation binding")
+        artifacts={k:_bound_artifact(firewall.get(k),k) for k in ("baseline_inventory","invariant_report","historical_drift_report","final_inventory","equality_report")}
+        for k in ("baseline_canonical_digest","baseline_unrelated_digest","baseline_profile_digest","baseline_legacy_digest","final_canonical_digest"):_hex(firewall.get(k),k)
+        if firewall.get("baseline_final_equal") is not True or firewall.get("final_invariant_verdict")!="PASS":raise CaseEnvelopeError("firewall case invariant failure")
+        rendered_firewall={**firewall,"artifacts":artifacts}
     rendered = []
     for index, spec in enumerate(operations):
         op_id, op_type = spec.get("operation_id"), spec.get("operation_type")
@@ -113,6 +128,10 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
         verdict = spec.get("operation_verdict")
         if verdict != "PASS":
             raise CaseEnvelopeError("operation verdict mismatch")
+        op_firewall=summary.get("firewall_preservation")
+        if firewall is not None:
+            if not isinstance(op_firewall,dict) or op_firewall.get("baseline_sha256")!=firewall["baseline_inventory"]["sha256"]:raise CaseEnvelopeError("operation firewall baseline mismatch")
+            if op_firewall.get("unrelated_equal") is not True or op_firewall.get("profile_equal") is not True:raise CaseEnvelopeError("operation firewall equality failure")
         if (summary.get("script_hashes", {}).get("runner") != identities["runner"]
                 or summary.get("script_hashes", {}).get("publisher") != identities["publisher"]
                 or summary.get("script_hashes", {}).get("containment") != identities["containment"]):
@@ -132,6 +151,7 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
             "precondition_state_sha256": pre_digest, "postcondition_state_sha256": post_digest,
             "predecessor_operation_id": expected_predecessor, "causal_relationship": spec.get("causal_relationship"),
             "cleanup_recovery_relationship": spec.get("cleanup_recovery_relationship"), "retrieval": receipt,
+            "firewall_preservation": op_firewall,
         })
     cleanup_positions = [i for i, x in enumerate(rendered) if x["operation_type"] == "cleanup"]
     if plan.get("case_type") == "abandoned_reuse":
@@ -142,6 +162,7 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
             "repository_commit": plan["repository_commit"], "identities": identities,
             "declared_sequence": sequence, "operations": rendered,
             "case_invariants": plan.get("case_invariants", {}), "final_verdict": "PASS",
+            "firewall_preservation": rendered_firewall,
             "failure_stage": None, "failure_reason": None, "published_utc": plan.get("published_utc")}
 
 
