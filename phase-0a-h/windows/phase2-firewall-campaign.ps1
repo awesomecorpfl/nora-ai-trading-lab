@@ -7,6 +7,9 @@ param(
  [Parameter(Mandatory=$true)][string]$CaptureToolSha256,
  [Parameter(Mandatory=$true)][string]$RunnerPath,
  [Parameter(Mandatory=$true)][string]$RunnerSha256,
+ [Parameter(Mandatory=$true)][string]$WrapperPath,
+ [Parameter(Mandatory=$true)][string]$WrapperSha256,
+ [string]$LogicalCommandSha256,[string]$SubmittedCommandSha256,[int]$WrapperPid=0,[string]$WrapperStartUtc,
  [string]$LaunchId,
  [string]$EvidenceRoot='C:\NoraEvidence\Phase2',
  [ValidateRange(1,100)][int]$CaptureCount=20,
@@ -39,6 +42,7 @@ function Reserve(){
  foreach($d in 'claims','captures','receipts','temporary','partials'){New-Item -ItemType Directory -Path (Join-Path (Root) $d) -ErrorAction Stop|Out-Null}
  $token=if($OwnerToken){$OwnerToken}else{[guid]::NewGuid().ToString('N')+[guid]::NewGuid().ToString('N')}
  $o=[ordered]@{schema_version=$schema;campaign_id=$CampaignId;launch_id=$LaunchId;host_identity=[Security.Principal.WindowsIdentity]::GetCurrent().Name;windows_user=[Security.Principal.WindowsIdentity]::GetCurrent().Name;owner_pid=$PID;owner_process_start_utc=ProcessStart;parent_process_id=(Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)).ParentProcessId;launcher_path=$PSCommandPath;normalized_command_sha256=CommandHash;repository_commit=$RepositoryCommit;runner_path=$RunnerPath;runner_sha256=$RunnerSha256;capture_tool_path=$CaptureToolPath;capture_tool_sha256=$CaptureToolSha256;expected_capture_count=$CaptureCount;capture_interval_seconds=$CaptureIntervalSeconds;created_utc=UTC;owner_token_sha256=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($token)))).Replace('-','').ToLowerInvariant();state='reserved'}
+ $o.wrapper_path=$WrapperPath;$o.wrapper_sha256=$WrapperSha256;$o.logical_command_sha256=$LogicalCommandSha256;$o.submitted_command_sha256=$SubmittedCommandSha256;$o.wrapper_pid=$WrapperPid;$o.wrapper_start_utc=$WrapperStartUtc;$o.campaign_executable_path=(Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)).ExecutablePath;$o.campaign_command_line=(Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)).CommandLine
  AtomicJson (OwnerPath) $o;[ordered]@{campaign_root=Root;owner_path=OwnerPath;owner_sha256=Hash (OwnerPath);owner_token=$token}|ConvertTo-Json -Compress
 }
 function Claim([int]$Number,[string]$Token){if($Number-lt1-or$Number-gt$CaptureCount){throw 'slot outside campaign range'};$o=Owner;if((HashToken $Token)-ne$o.owner_token_sha256){throw 'foreign campaign owner'};if(Test-Path -LiteralPath (FinalPath $Number)){throw 'final capture already exists'};if(Test-Path -LiteralPath (ReceiptPath $Number)){throw 'slot receipt already exists'};$claim=[ordered]@{schema_version='nora.phase2_firewall_campaign_slot_claim_v1';campaign_id=$CampaignId;slot=$Number;owner_sha256=Hash (OwnerPath);owner_pid=$PID;owner_process_start_utc=ProcessStart;claim_utc=UTC;capture_tool_sha256=$CaptureToolSha256;repository_commit=$RepositoryCommit;state='claimed'};AtomicJson (ClaimPath $Number) $claim;return $claim}
