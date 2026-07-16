@@ -92,8 +92,8 @@ try {
  switch($Action){
   'stage' {
    [object[]]$bindings=@(Bindings);[object[]]$existingRules=@(Get-NoraContainmentRules -CampaignId $CampaignId);$intent=[ordered]@{schema_version=$schema;phase='intent_prepared';campaign_identity=$CampaignId;repository_commit=$env:NORA_REPOSITORY_COMMIT;creator=Identity;executables=@($bindings);rules=@($existingRules);group=$firewallGroup;intended_rule_names=@(for($i=1;$i-le$bindings.Count;$i++){RuleName $i});intended_final_record_path=FinalPath;evidence_root=$EvidenceRoot;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
-   if(Test-Path -LiteralPath (AcceptedPath)){throw 'accepted containment identity cannot be restaged'}
-   if(Test-Path -LiteralPath (ClassificationPath)){throw 'terminal containment classification forbids restaging'}
+   if(Test-Path -LiteralPath (AcceptedPath)){throw 'NORA_TERMINAL_REUSE_REJECTED:accepted containment identity cannot be restaged'}
+   if(Test-Path -LiteralPath (ClassificationPath)){throw 'NORA_TERMINAL_REUSE_REJECTED:terminal containment classification forbids restaging'}
    if($existingRules.Count -ne 0 -or (Test-Path -LiteralPath (IntentPath))){throw 'stale or incomplete containment transaction requires recovery'}
    AtomicJson (IntentPath) $intent
    $pre=[ordered]@{phase='pre_state_captured';unrelated_firewall_population_identity=AllRuleIdentity;captured_utc=(Get-Date).ToUniversalTime().ToString('o')}
@@ -114,4 +114,9 @@ try {
   'recover' {[object[]]$rules=@(Get-NoraContainmentRules -CampaignId $CampaignId);$intentPresent=Test-Path -LiteralPath (IntentPath);$finalPresent=Test-Path -LiteralPath (FinalPath);$acceptedPresent=Test-Path -LiteralPath (AcceptedPath);$finalSha=$null;$finalValid=$false;if($finalPresent){$validated=ReadAndValidateFinalRecordForRecovery;$finalSha=$validated.final_record_sha256;$finalValid=$true};$classification=if($rules.Count-eq0 -and !$intentPresent){'NO_RULES_NO_RECORD'}elseif($rules.Count-eq0){'NO_RULES_TRANSACTION_FAILED'}elseif(!$finalPresent){'RULES_PRESENT_RECORD_INCOMPLETE'}else{'RECORD_PRESENT_REQUIRES_VERIFY'};$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;classification=$classification;active_rule_count=$rules.Count;rules=@($rules);intent_present=$intentPresent;final_record_present=$finalPresent;final_record_sha256=$finalSha;final_record_valid=$finalValid;accepted_record_present=$acceptedPresent;recovered_utc=(Get-Date).ToUniversalTime().ToString('o')};AtomicJson (RecoveryPath) $v;$v|ConvertTo-Json -Depth 20 -Compress}
   'cleanup' {[object[]]$bindings=@(Bindings);$before=State $bindings;[object[]]$rules=@(Get-NoraContainmentRules -CampaignId $CampaignId);foreach($rule in $rules){Remove-NetFirewallRule -Name $rule.Name -ErrorAction Stop};[object[]]$remaining=@(Get-NoraContainmentRules -CampaignId $CampaignId);if($remaining.Count-ne0){throw 'containment cleanup incomplete'};$after=AllRuleIdentity;$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;cleanup='pass';removed_rule_count=$rules.Count;removed_rules=@($rules|ForEach-Object{[ordered]@{name=$_.Name;instance_id=[string]$_.InstanceID}});remaining_rules=@($remaining);unrelated_rules_before_sha256=$before.unrelated_firewall_population_identity;unrelated_rules_after_sha256=$after;unrelated_rules_unchanged=($before.unrelated_firewall_population_identity-eq$after);completed_utc=(Get-Date).ToUniversalTime().ToString('o')};if(!$v.unrelated_rules_unchanged){throw 'unrelated firewall rules changed during cleanup'};AtomicJson (Join-Path $EvidenceRoot ('containment-'+$CampaignId+'-cleanup.json')) $v;$v|ConvertTo-Json -Depth 20 -Compress}
  }
-} catch {Failure $_.Exception.GetType().FullName $_.Exception.Message|Out-Null;[Console]::Error.WriteLine($_.Exception.Message);exit 1}
+} catch {
+ $message=$_.Exception.Message
+ if($message -notlike 'NORA_TERMINAL_REUSE_REJECTED:*'){Failure $_.Exception.GetType().FullName $message|Out-Null}
+ [Console]::Error.WriteLine($message -replace '^NORA_TERMINAL_REUSE_REJECTED:','')
+ exit 1
+}

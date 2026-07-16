@@ -137,6 +137,8 @@ def test_containment_transaction_is_durable_reopen_verified_and_recoverable():
     assert "exit 1" in CONTAINMENT
     assert "accepted containment identity cannot be restaged" in CONTAINMENT
     assert "terminal containment classification forbids restaging" in CONTAINMENT
+    assert "NORA_TERMINAL_REUSE_REJECTED:" in CONTAINMENT
+    assert "if($message -notlike 'NORA_TERMINAL_REUSE_REJECTED:*')" in CONTAINMENT
     assert "ReadAndValidateFinalRecordForRecovery" in CONTAINMENT
     assert "final_record_sha256" in CONTAINMENT
     assert "final_record_valid=$finalValid" in CONTAINMENT
