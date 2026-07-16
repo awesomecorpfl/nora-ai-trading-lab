@@ -19,3 +19,9 @@ def test_runner_package_mode_has_no_firewall_mutation():
     mode = RUNNER.split("'package-containment'", 1)[1].split("'record-import'", 1)[0]
     assert "New-NetFirewallRule" not in mode
     assert "Remove-NetFirewallRule" not in mode
+
+
+def test_runner_has_repository_owned_abandoned_fixture_mode():
+    assert "abandon-fixture" in RUNNER
+    assert "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT" in RUNNER
+    assert "non_reusable=$true" in RUNNER
