@@ -76,6 +76,12 @@ def _metadata(value: dict[str, Any]) -> dict[str, Any]:
             raise EvidenceError(f"{field} must be an array")
     if not isinstance(value["final_caller_exit_code"], int):
         raise EvidenceError("final_caller_exit_code must be an integer")
+    firewall=value.get("firewall_preservation")
+    if firewall is not None:
+        if not isinstance(firewall,dict) or firewall.get("schema_version")!="nora.phase2_operation_firewall_binding_v1":raise EvidenceError("invalid firewall preservation binding")
+        for field in ("baseline_sha256","pre_canonical_digest","post_canonical_digest","pre_unrelated_digest","post_unrelated_digest","pre_profile_digest","post_profile_digest","legacy_digest"):
+            if not isinstance(firewall.get(field),str) or not __import__('re').fullmatch(r"[0-9a-f]{64}",firewall[field]):raise EvidenceError("invalid firewall preservation digest")
+        if firewall.get("unrelated_equal") is not True or firewall.get("profile_equal") is not True or firewall.get("invariant_verdict")!="PASS":raise EvidenceError("firewall preservation verdict failure")
     return value
 
 
