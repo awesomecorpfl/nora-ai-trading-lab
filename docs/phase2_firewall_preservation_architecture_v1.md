@@ -26,6 +26,27 @@ safe current state.
    expected Nora lifecycle is evaluated separately.
 3. Campaign history and the legacy projection are forensic comparisons only.
 
+## Capture-campaign ownership
+
+Complete-inventory stability campaigns use `nora.phase2_firewall_campaign_v1`.
+Each campaign has a caller-supplied immutable campaign ID and an atomically reserved
+root at `firewall-campaigns/<campaign-id>`.  The root contains an immutable owner
+record before the first capture.  It binds the host, user, reserving process and
+start time, command identity, repository commit, capture-tool identity, capture
+count, and sequencing interval.
+
+Capture slots are ordered, one-based immutable claims.  A slot claim is an atomic
+file publication and is rejected if a claim, receipt, or final capture already
+exists.  The capture tool writes only to a unique campaign-scoped temporary file;
+the campaign owner publishes it to the final slot path through an atomic same-volume
+move, then writes an immutable receipt binding the claim, owner, temporary and final
+artifact identities, implementation identity, order, timestamps, byte size, and
+hash.  A failed capture is explicitly classified as a partial and cannot silently be
+reused.  Completion requires every ordered slot, every receipt, one owner and one
+implementation identity, and no partial state.  The independent Fedora verifier
+rejects missing, duplicate, reordered, substituted, foreign-owner, or mixed-identity
+campaign members.
+
 ## Policy-store and trust boundaries
 
 The inventory retains `ActiveStore` as effective merged policy and

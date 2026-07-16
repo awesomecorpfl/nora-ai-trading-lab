@@ -151,6 +151,8 @@ def native_execution_contract() -> dict:
               digest=sha(output_contract), hash_kind="compiler_output_contract_identity"),
         _role("windows_packet_launcher", "phase-0a-h/windows/execute-ten-strategy-packet.ps1", "nora.ten_strategy_windows_launcher_v2"),
         _role("persistent_windows_evidence_runner", "phase-0a-h/windows/phase2-evidence-runner.ps1", "nora.phase2_persistent_evidence_runner_v1"),
+        _role("firewall_campaign_owner", "phase-0a-h/windows/phase2-firewall-campaign.ps1", "nora.phase2_firewall_campaign_v1"),
+        _role("firewall_campaign_fedora_verifier", "lab/phase2_firewall_campaign.py", "nora.phase2_firewall_campaign_verifier_v1"),
         _role("mt5_network_containment", "phase-0a-h/windows/phase2-network-containment.ps1", "nora.phase2_mt5_network_containment_v1"),
         _role("mt5_cache_inventory", "phase-0a-h/windows/phase2-cache-inventory.ps1", "nora.phase2_mt5_cache_inventory_v2"),
         _role("mt5_server_scope_resolver", "phase-0a-h/windows/resolve-phase2-mt5-server-scope.ps1", "nora.phase2_mt5_server_scoped_cache_v2"),
