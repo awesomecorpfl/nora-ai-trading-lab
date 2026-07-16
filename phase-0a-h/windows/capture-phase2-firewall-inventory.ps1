@@ -12,7 +12,7 @@ $ErrorActionPreference='Stop'
 $schema='nora.phase2_firewall_inventory_v1'
 function Hash([string]$p){(Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant()}
 function Property($o,[string]$n){$p=$o.PSObject.Properties[$n];if($null-eq$p){return $null};return $p.Value}
-function Values($v){@($v|ForEach-Object{[string]$_}|Where-Object{![string]::IsNullOrWhiteSpace($_)}|Sort-Object -Unique)}
+function Values($v){return ,@($v|ForEach-Object{[string]$_}|Where-Object{![string]::IsNullOrWhiteSpace($_)}|Sort-Object -Unique)}
 function OneFilter($rule,[string]$cmd){$v=@(& $cmd -AssociatedNetFirewallRule $rule -ErrorAction Stop);if($v.Count-ne1){throw ('ambiguous filter association: '+$cmd)};return $v[0]}
 function Rules([string]$store,[string]$view){
  @(Get-NetFirewallRule -PolicyStore $store -ErrorAction Stop|ForEach-Object{
