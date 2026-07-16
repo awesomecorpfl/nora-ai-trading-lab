@@ -61,7 +61,7 @@ function Identity(){ $i=[Security.Principal.WindowsIdentity]::GetCurrent();[orde
 function AtomicText([string]$Path,[string]$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,$Value,[Text.UTF8Encoding]::new($false));if(Test-Path -LiteralPath $Path){throw 'immutable evidence path already exists'};[IO.File]::Move($tmp,$Path)}
 function ContainmentRecordInventory(){
  NeedRunId
- $roles=[ordered]@{intent='intent.json';final='.json';accepted='.transaction-accepted.json';failure='.transaction-failure.json';recovery='.transaction-recovery.json';classification='.classification.json';cleanup='-cleanup.json'}
+ $roles=[ordered]@{intent='.intent.json';final='.json';accepted='.transaction-accepted.json';failure='.transaction-failure.json';recovery='.transaction-recovery.json';classification='.classification.json';cleanup='-cleanup.json'}
  @($roles.Keys|ForEach-Object{$role=$_;$candidate=Join-Path $EvidenceRoot ('containment-'+$RunId+$roles[$role]);if(Test-Path -LiteralPath $candidate -PathType Leaf){[ordered]@{role=$role;path=$candidate;exists=$true;size=[int64](Get-Item -LiteralPath $candidate).Length;sha256=Hash $candidate}}else{[ordered]@{role=$role;path=$candidate;exists=$false;size=$null;sha256=$null}}})
 }
 function ContainmentFirewallInventory(){

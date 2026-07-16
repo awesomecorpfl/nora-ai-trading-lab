@@ -11,6 +11,11 @@ def test_runner_has_explicit_containment_package_mode():
     for token in ("ContainmentSourceRoot", "ContainmentSummaryPath", "ContainmentDestinationPath", "PublisherPath", "PublisherSha256"):
         assert token in RUNNER
     assert "direct containment package publication is forbidden" in RUNNER
+
+
+def test_runner_inventory_binds_the_actual_intent_record_path():
+    assert "intent='.intent.json'" in RUNNER
+    assert "intent='intent.json'" not in RUNNER
     assert "capture-containment-command" in RUNNER
     assert "-SourceRoot $captureRoot" in RUNNER
     assert "-SummaryPath $summarySidecar" in RUNNER
