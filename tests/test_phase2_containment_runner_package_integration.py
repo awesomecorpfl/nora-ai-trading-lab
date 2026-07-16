@@ -11,6 +11,7 @@ def test_runner_has_explicit_containment_package_mode():
     assert "-SourceRoot $ContainmentSourceRoot" in RUNNER
     assert "-SummaryPath $ContainmentSummaryPath" in RUNNER
     assert "-DestinationPath $ContainmentDestinationPath" in RUNNER
+    assert "-ExpectedRunId $RunId" in RUNNER
     assert "Hash $PublisherPath" in RUNNER
 
 

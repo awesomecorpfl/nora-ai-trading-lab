@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory=$true)][string]$SourceRoot,
     [Parameter(Mandatory=$true)][string]$SummaryPath,
     [Parameter(Mandatory=$true)][string]$DestinationPath,
-    [Parameter(Mandatory=$true)][string]$EvidenceRoot
+    [Parameter(Mandatory=$true)][string]$EvidenceRoot,
+    [string]$ExpectedRunId
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -42,6 +43,7 @@ if (-not (Test-Path -LiteralPath $summaryFile -PathType Leaf)) { Fail 'summary_m
 $summary=Get-Content -LiteralPath $summaryFile -Raw | ConvertFrom-Json
 $summary | Add-Member -NotePropertyName schema -NotePropertyValue $schema -Force
 foreach($field in @('run_id','case_id','repository_commit','transaction_identity')) { if ([string]::IsNullOrWhiteSpace([string]$summary.$field)) { Fail "summary_$field" } }
+if ($ExpectedRunId -and $summary.run_id -ne $ExpectedRunId) { Fail 'summary_run_id_mismatch' }
 foreach($field in @('executable_paths','executable_hashes','rule_guids','rule_names','application_filters')) { if ($null -eq $summary.$field -or $summary.$field -is [string]) { Fail "summary_$field_array" } }
 if ($summary.final_caller_exit_code -isnot [int]) { Fail 'summary_exit_code' }
 $files=@(); foreach($item in @(Get-ChildItem -LiteralPath $source -Recurse -File -Force | Sort-Object FullName)) {
