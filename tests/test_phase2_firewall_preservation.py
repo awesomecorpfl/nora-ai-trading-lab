@@ -1,7 +1,7 @@
 import copy,json
 from pathlib import Path
 import pytest
-from lab.phase2_firewall_preservation import FirewallError,compare,digest,evaluate,normalize,SCHEMA
+from lab.phase2_firewall_preservation import FirewallError,compare,digest,evaluate,legacy_digest,normalize,SCHEMA
 
 def rule(**kw):
  d={"view":"effective","name":"safe","instance_id":"id1","group":"system","enabled":True,"direction":"inbound","action":"allow","profile":"any","policy_store":"activestore","policy_store_source_type":"local","policy_store_source":"local","edge_traversal":"none","interface_types":[],"owner":None,"programs":[],"services":[],"protocols":["tcp"],"local_ports":["22"],"remote_ports":[],"icmp_types":[],"local_addresses":[],"remote_addresses":[],"interfaces":[],"security":[],"packages":[],"local_users":[],"remote_users":[]};d.update(kw);return d
@@ -38,9 +38,11 @@ def test_duplicate_identity_and_malformed_fail():
  with pytest.raises(FirewallError,match="unsupported"):normalize(a)
 def test_historical_drift_is_diagnostic_when_current_safe():
  r=evaluate(inv());assert r["verdict"]=="PASS" and r["legacy_digest"]
+def test_legacy_projection_uses_powershell_boolean_and_no_trailing_lf():
+ a=inv();assert legacy_digest(a)==__import__('hashlib').sha256(b'[{"name":"safe","enabled":"True","direction":"inbound","action":"allow","profile":"any","group":"system"}]').hexdigest()
 def test_windows_capture_is_read_only_and_dual_store():
  s=(Path(__file__).parents[1]/"phase-0a-h/windows/capture-phase2-firewall-inventory.ps1").read_text()
- for x in ("ActiveStore","PersistentStore","Get-NetFirewallApplicationFilter","Get-NetFirewallSecurityFilter","mutation_cmdlets_invoked=$false"):assert x in s
+ for x in ("ActiveStore","PersistentStore","Get-NetFirewallApplicationFilter","Get-NetFirewallSecurityFilter","mutation_cmdlets_invoked=$false","function LegacyDigest"):assert x in s
  assert "New-NetFirewallRule" not in s and "Remove-NetFirewallRule" not in s and "Set-NetFirewall" not in s
 def test_exact_remediation_is_guid_store_and_executable_bound():
  s=(Path(__file__).parents[1]/"phase-0a-h/windows/disable-phase2-exact-firewall-rule.ps1").read_text()

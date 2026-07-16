@@ -57,8 +57,17 @@ def normalize(value:dict)->dict:
         if len(ids)!=len(set(ids)):raise FirewallError("duplicate stable rule identity")
         return out
     return {"schema_version":SCHEMA,"profiles":ps,"effective_rules":rules("effective_rules"),"persistent_rules":rules("persistent_rules")}
-def legacy_projection(n:dict)->list:
-    return [{k:r[k] for k in ("name","enabled","direction","action","profile","group")} for r in n["effective_rules"]]
+def legacy_projection(value:dict)->list:
+    """Reproduce the historical PowerShell six-field projection exactly."""
+    rows=[]
+    for r in sorted(value.get("effective_rules",[]),key=lambda x:str(x.get("name","")).lower()):
+        enabled=r.get("enabled")
+        rows.append({"name":r.get("name"),"enabled":"True" if enabled is True else "False" if enabled is False else str(enabled),
+                     "direction":r.get("direction"),"action":r.get("action"),"profile":r.get("profile"),"group":r.get("group")})
+    return rows
+def legacy_digest(value:dict)->str:
+    payload=json.dumps(legacy_projection(value),separators=(",",":"),ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 def evaluate(value:dict,qualified_paths:list[str]|None=None)->dict:
     n=normalize(value); paths={_path(x) for x in (qualified_paths or [])};violations=[]
     for p in n["profiles"]:
@@ -73,7 +82,8 @@ def evaluate(value:dict,qualified_paths:list[str]|None=None)->dict:
                 if p.endswith("\\terminal64.exe") or p.endswith("\\metatester64.exe") or p in paths:violations.append("unsafe_executable_allow:"+(r["name"] or ""))
     if nora:violations.append("stale_nora_rules")
     semantic=digest(n); unrelated=copy.deepcopy(n);unrelated["effective_rules"]=[r for r in n["effective_rules"] if not ((r["name"]or"").startswith(NORA_PREFIX)or(r["group"]or"").startswith(NORA_PREFIX))];unrelated["persistent_rules"]=[r for r in n["persistent_rules"] if not ((r["name"]or"").startswith(NORA_PREFIX)or(r["group"]or"").startswith(NORA_PREFIX))]
-    return {"schema_version":"nora.phase2_firewall_invariant_report_v1","verdict":"PASS" if not violations else "FAIL","violations":violations,"canonical_digest":semantic,"unrelated_digest":digest(unrelated),"profile_digest":digest(n["profiles"]),"nora_digest":digest(nora),"legacy_digest":digest(legacy_projection(n)),"effective_rule_count":len(n["effective_rules"]),"persistent_rule_count":len(n["persistent_rules"]),"nora_rule_count":len(nora)}
+    reported=value.get("legacy_digest"); legacy=reported if isinstance(reported,str) and re.fullmatch(r"[0-9a-f]{64}",reported) else legacy_digest(value)
+    return {"schema_version":"nora.phase2_firewall_invariant_report_v1","verdict":"PASS" if not violations else "FAIL","violations":violations,"canonical_digest":semantic,"unrelated_digest":digest(unrelated),"profile_digest":digest(n["profiles"]),"nora_digest":digest(nora),"legacy_digest":legacy,"legacy_source":"windows_exact" if reported==legacy else "diagnostic_reconstruction","effective_rule_count":len(n["effective_rules"]),"persistent_rule_count":len(n["persistent_rules"]),"nora_rule_count":len(nora)}
 def compare(a:dict,b:dict)->dict:
     x,y=evaluate(a),evaluate(b); fields=("canonical_digest","unrelated_digest","profile_digest")
     return {"schema_version":"nora.phase2_firewall_equality_report_v1","verdict":"PASS" if all(x[k]==y[k] for k in fields) else "FAIL","baseline":x,"final":y,"equal":{k:x[k]==y[k] for k in fields}}
