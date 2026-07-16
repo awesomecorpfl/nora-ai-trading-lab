@@ -68,7 +68,7 @@ function ContainmentFirewallInventory(){
  $group='NoraPhase2Containment-'+$RunId
  @((Get-NetFirewallRule -Group $group -ErrorAction SilentlyContinue|Sort-Object Name)|ForEach-Object{$rule=$_;$apps=@(Get-NetFirewallApplicationFilter -AssociatedNetFirewallRule $rule -ErrorAction Stop);[ordered]@{name=$rule.Name;instance_id=[string]$rule.InstanceID;group=$rule.Group;enabled=[string]$rule.Enabled;direction=[string]$rule.Direction;action=[string]$rule.Action;profile=[string]$rule.Profile;application_filters=@($apps|ForEach-Object{[string]$_.Program})}})
 }
-function ContainmentProcessInventory(){@((Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object{$_.Name -in @('terminal64.exe','metatester64.exe','powershell.exe')}|Sort-Object ProcessId|ForEach-Object{[ordered]@{pid=[int]$_.ProcessId;parent_pid=[int]$_.ParentProcessId;name=[string]$_.Name;command_line=[string]$_.CommandLine;executable_path=[string]$_.ExecutablePath}})}
+function ContainmentProcessInventory(){@((Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object{$_.Name -in @('terminal64.exe','metatester64.exe','powershell.exe')}|Sort-Object ProcessId|ForEach-Object{[ordered]@{pid=[int]$_.ProcessId;parent_pid=[int]$_.ParentProcessId;name=[string]$_.Name;command_line=[string]$_.CommandLine;executable_path=[string]$_.ExecutablePath}}))}
 function CaptureContainmentProcess([string]$Tool,[string[]]$Arguments){
  $psi=New-Object Diagnostics.ProcessStartInfo
  $psi.FileName='powershell.exe';$psi.UseShellExecute=$false;$psi.RedirectStandardOutput=$true;$psi.RedirectStandardError=$true;$psi.CreateNoWindow=$true
