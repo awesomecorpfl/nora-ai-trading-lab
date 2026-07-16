@@ -1,9 +1,13 @@
 import json
+import hashlib
+import copy
+import zipfile
 from pathlib import Path
 
 import pytest
 
 from lab.phase2_containment_evidence import EvidenceError, SCHEMA, publish, verify
+from lab.phase2_firewall_preservation import SCHEMA as FIREWALL_SCHEMA
 
 
 def metadata():
@@ -68,3 +72,48 @@ def test_array_shape_is_required(tmp_path):
     root = source(tmp_path / "source"); bad = metadata(); bad["executable_paths"] = "scalar"
     with pytest.raises(EvidenceError, match="must be an array"):
         publish(root, tmp_path / "case.zip", bad)
+
+
+def complete_firewall():
+    profiles=[{"name":n,"enabled":True,"default_inbound":"block","default_outbound":"allow","allow_local_firewall_rules":"true","allow_local_ipsec_rules":"true","notify_on_listen":"false","policy_store_source":"local"} for n in ("Domain","Private","Public")]
+    rule={"view":"effective","name":"safe","instance_id":"id1","group":"system","enabled":True,"direction":"inbound","action":"allow","profile":"any","policy_store":"activestore","policy_store_source_type":"local","policy_store_source":"local","edge_traversal":"none","interface_types":[],"owner":None,"programs":[],"services":[],"protocols":["tcp"],"local_ports":["22"],"remote_ports":[],"icmp_types":[],"local_addresses":[],"remote_addresses":[],"interfaces":[],"security":[],"packages":[],"local_users":[],"remote_users":[]}
+    return {"schema_version":FIREWALL_SCHEMA,"host_identity":"host","repository_commit":"a"*40,"captured_utc":"now","profiles":profiles,"effective_rules":[rule],"persistent_rules":[],"diagnostics":{}}
+
+
+def firewall_source(tmp_path, post=None):
+    root=source(tmp_path); pre=complete_firewall(); post=copy.deepcopy(post or pre)
+    (root/"firewall_inventory_pre.json").write_text(json.dumps(pre),encoding="utf-8")
+    (root/"firewall_inventory_post.json").write_text(json.dumps(post),encoding="utf-8")
+    summary=metadata(); summary["firewall_preservation"]={"schema_version":"nora.phase2_operation_firewall_binding_v2","capture_tool_sha256":"d"*64,"pre_inventory":{"sha256":hashlib.sha256((root/"firewall_inventory_pre.json").read_bytes()).hexdigest()},"post_inventory":{"sha256":hashlib.sha256((root/"firewall_inventory_post.json").read_bytes()).hexdigest()}}
+    return root,summary
+
+
+def test_fedora_recomputes_complete_firewall_and_rejects_temporal_substitution(tmp_path):
+    root,summary=firewall_source(tmp_path/"source")
+    package=tmp_path/"case.zip";digest=publish(root,package,summary)
+    assert verify(package,digest)["firewall_recomputed"]["verdict"]=="PASS"
+    stale=copy.deepcopy(complete_firewall());stale["effective_rules"][0]["enabled"]=False
+    root,summary=firewall_source(tmp_path/"stale",stale)
+    summary["firewall_preservation"]["pre_inventory"]["sha256"]="0"*64
+    stale_package=tmp_path/"stale.zip";publish(root,stale_package,summary)
+    with pytest.raises(EvidenceError,match="firewall semantic inequality"):
+        verify(stale_package)
+
+
+def test_fedora_rejects_swapped_or_semantically_different_post_inventory(tmp_path):
+    changed=complete_firewall();changed["profiles"][0]["enabled"]=False
+    root,summary=firewall_source(tmp_path/"source",changed);package=tmp_path/"case.zip";publish(root,package,summary)
+    with pytest.raises(EvidenceError,match="firewall invariant failure"):
+        verify(package)
+
+
+def test_fedora_rejects_one_byte_firewall_member_tampering(tmp_path):
+    root,summary=firewall_source(tmp_path/"source");package=tmp_path/"case.zip";publish(root,package,summary)
+    tampered=tmp_path/"tampered.zip"
+    with zipfile.ZipFile(package) as zin, zipfile.ZipFile(tampered,"w",compression=zipfile.ZIP_STORED) as zout:
+        for info in zin.infolist():
+            data=zin.read(info.filename)
+            if info.filename=="firewall_inventory_pre.json": data=data[:-1]+(b" " if data[-1:]!=b" " else b"!")
+            zout.writestr(info,data)
+    with pytest.raises(EvidenceError):
+        verify(tampered)

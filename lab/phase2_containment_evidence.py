@@ -14,6 +14,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from lab.phase2_firewall_preservation import compare as compare_firewall, evaluate as evaluate_firewall
+
 SCHEMA = "nora.phase2_containment_atomic_evidence_v1"
 REQUIRED_METADATA = {
     "case_id", "operation_id", "expected_verdict", "run_id", "repository_commit",
@@ -28,6 +30,7 @@ REQUIRED_MEMBERS = (
     "firewall_pre.json", "firewall_post.json", "processes.json",
     "recovery.json", "cleanup.json",
 )
+FIREWALL_MEMBERS = ("firewall_inventory_pre.json", "firewall_inventory_post.json")
 ARRAY_FIELDS = {
     "executable_paths", "executable_hashes", "rule_guids", "rule_names",
     "application_filters",
@@ -78,11 +81,38 @@ def _metadata(value: dict[str, Any]) -> dict[str, Any]:
         raise EvidenceError("final_caller_exit_code must be an integer")
     firewall=value.get("firewall_preservation")
     if firewall is not None:
-        if not isinstance(firewall,dict) or firewall.get("schema_version")!="nora.phase2_operation_firewall_binding_v1":raise EvidenceError("invalid firewall preservation binding")
-        for field in ("baseline_sha256","pre_canonical_digest","post_canonical_digest","pre_unrelated_digest","post_unrelated_digest","pre_profile_digest","post_profile_digest","legacy_digest"):
-            if not isinstance(firewall.get(field),str) or not __import__('re').fullmatch(r"[0-9a-f]{64}",firewall[field]):raise EvidenceError("invalid firewall preservation digest")
-        if firewall.get("unrelated_equal") is not True or firewall.get("profile_equal") is not True or firewall.get("invariant_verdict")!="PASS":raise EvidenceError("firewall preservation verdict failure")
+        if not isinstance(firewall,dict) or firewall.get("schema_version") not in {"nora.phase2_operation_firewall_binding_v1", "nora.phase2_operation_firewall_binding_v2"}:raise EvidenceError("invalid firewall preservation binding")
+        if firewall.get("schema_version")=="nora.phase2_operation_firewall_binding_v1":
+            for field in ("baseline_sha256","pre_canonical_digest","post_canonical_digest","pre_unrelated_digest","post_unrelated_digest","pre_profile_digest","post_profile_digest","legacy_digest"):
+                if not isinstance(firewall.get(field),str) or not __import__('re').fullmatch(r"[0-9a-f]{64}",firewall[field]):raise EvidenceError("invalid firewall preservation digest")
+            if firewall.get("unrelated_equal") is not True or firewall.get("profile_equal") is not True or firewall.get("invariant_verdict")!="PASS":raise EvidenceError("firewall preservation verdict failure")
+        else:
+            if not isinstance(firewall.get("capture_tool_sha256"),str) or not __import__('re').fullmatch(r"[0-9a-f]{64}",firewall["capture_tool_sha256"]):raise EvidenceError("invalid firewall capture identity")
+            for key in ("pre_inventory","post_inventory"):
+                item=firewall.get(key)
+                if not isinstance(item,dict) or not __import__('re').fullmatch(r"[0-9a-f]{64}",str(item.get("sha256"))):raise EvidenceError("invalid firewall artifact identity")
     return value
+
+
+def _verify_firewall_archive(archive: zipfile.ZipFile, summary: dict[str, Any], listed: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
+    firewall=summary.get("firewall_preservation")
+    if not isinstance(firewall,dict) or firewall.get("schema_version")!="nora.phase2_operation_firewall_binding_v2":
+        return None
+    for name in FIREWALL_MEMBERS:
+        item=listed.get(name)
+        if not isinstance(item,dict): raise EvidenceError("missing complete firewall inventory member")
+        data=archive.read(name)
+        if len(data)!=item.get("size") or hashlib.sha256(data).hexdigest()!=item.get("sha256"): raise EvidenceError("firewall inventory member mismatch")
+    try:
+        pre=json.loads(archive.read(FIREWALL_MEMBERS[0]));post=json.loads(archive.read(FIREWALL_MEMBERS[1]))
+    except (KeyError,json.JSONDecodeError) as exc: raise EvidenceError("invalid complete firewall inventory") from exc
+    if pre.get("repository_commit")!=summary.get("repository_commit") or post.get("repository_commit")!=summary.get("repository_commit"): raise EvidenceError("firewall inventory repository mismatch")
+    pre_report=evaluate_firewall(pre);post_report=evaluate_firewall(post);equality=compare_firewall(pre,post)
+    if pre_report.get("verdict")!="PASS" or post_report.get("verdict")!="PASS": raise EvidenceError("firewall invariant failure")
+    if equality.get("verdict")!="PASS": raise EvidenceError("firewall semantic inequality")
+    for key,name in (("pre_inventory",FIREWALL_MEMBERS[0]),("post_inventory",FIREWALL_MEMBERS[1])):
+        if firewall[key].get("sha256")!=listed[name].get("sha256"): raise EvidenceError("firewall summary artifact substitution")
+    return {"schema_version":"nora.phase2_operation_firewall_recomputed_v1","pre":pre_report,"post":post_report,"equality":equality,"verdict":"PASS"}
 
 
 def _members(source: Path) -> list[tuple[str, int, str]]:
@@ -171,7 +201,8 @@ def verify(package: Path, expected_sha256: str | None = None) -> dict[str, Any]:
             if len(data) != item.get("size") or hashlib.sha256(data).hexdigest() != item.get("sha256"):
                 raise EvidenceError(f"member hash mismatch: {name}")
         _metadata(summary)
-    return {"schema": SCHEMA, "run_id": summary["run_id"], "package_sha256": actual, "member_count": len(listed)}
+        recomputed=_verify_firewall_archive(archive,summary,listed)
+    return {"schema": SCHEMA, "run_id": summary["run_id"], "package_sha256": actual, "member_count": len(listed), "firewall_recomputed": recomputed}
 
 
 def main(argv: list[str] | None = None) -> int:

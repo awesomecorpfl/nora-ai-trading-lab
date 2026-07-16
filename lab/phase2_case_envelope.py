@@ -49,7 +49,7 @@ def _hex(value: Any, name: str) -> str:
     return value
 
 
-def _read_package(path: Path) -> tuple[dict, dict, str, int, str, str]:
+def _read_package(path: Path) -> tuple[dict, dict, str, int, str, str, dict | None]:
     if not path.is_file() or path.is_symlink():
         raise CaseEnvelopeError("missing or unsafe operation package")
     package_hash, size = sha256(path), path.stat().st_size
@@ -72,6 +72,8 @@ def _read_package(path: Path) -> tuple[dict, dict, str, int, str, str]:
                     raise CaseEnvelopeError(f"operation member mismatch: {name}")
             pre = hashlib.sha256(archive.read("pre_state.json") + archive.read("firewall_pre.json")).hexdigest()
             post = hashlib.sha256(archive.read("post_state.json") + archive.read("firewall_post.json")).hexdigest()
+            from lab.phase2_containment_evidence import _verify_firewall_archive
+            recomputed = _verify_firewall_archive(archive, summary, by_name)
     except (OSError, zipfile.BadZipFile, KeyError, json.JSONDecodeError) as exc:
         raise CaseEnvelopeError("invalid operation package") from exc
     if summary.get("schema") != PACKAGE_SCHEMA or manifest.get("schema") != PACKAGE_SCHEMA:
@@ -79,7 +81,7 @@ def _read_package(path: Path) -> tuple[dict, dict, str, int, str, str]:
     for field in ("run_id", "case_id", "operation_id", "repository_commit"):
         if summary.get(field) != manifest.get(field):
             raise CaseEnvelopeError(f"operation {field} mismatch")
-    return summary, manifest, package_hash, size, hashlib.sha256(manifest_bytes).hexdigest(), pre + ":" + post
+    return summary, manifest, package_hash, size, hashlib.sha256(manifest_bytes).hexdigest(), pre + ":" + post, recomputed
 
 
 def build(plan: dict[str, Any]) -> dict[str, Any]:
@@ -113,7 +115,7 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
         expected_predecessor = None if index == 0 else sequence[index - 1]
         if spec.get("predecessor_operation_id") != expected_predecessor:
             raise CaseEnvelopeError("operation predecessor mismatch")
-        summary, manifest, digest, size, manifest_hash, states = _read_package(Path(spec["package_path"]))
+        summary, manifest, digest, size, manifest_hash, states, firewall_recomputed = _read_package(Path(spec["package_path"]))
         pre_digest, post_digest = states.split(":")
         if summary.get("case_id") != case_id or summary.get("run_id") != case_id or summary.get("operation_id") != op_id:
             raise CaseEnvelopeError("foreign operation package")
@@ -128,6 +130,8 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
         verdict = spec.get("operation_verdict")
         if verdict != "PASS":
             raise CaseEnvelopeError("operation verdict mismatch")
+        if summary.get("firewall_preservation", {}).get("schema_version")=="nora.phase2_operation_firewall_binding_v2":
+            if not firewall_recomputed or firewall_recomputed.get("verdict")!="PASS": raise CaseEnvelopeError("operation firewall recomputation failure")
         op_firewall=summary.get("firewall_preservation")
         if firewall is not None:
             if not isinstance(op_firewall,dict) or op_firewall.get("baseline_sha256")!=firewall["baseline_inventory"]["sha256"]:raise CaseEnvelopeError("operation firewall baseline mismatch")
@@ -200,7 +204,7 @@ def verify(envelope: Path, expected_sha256: str | None = None) -> dict[str, Any]
         package = Path(receipt_value["fedora_destination"])
         if sha256(package) != op["package"]["sha256"] or sha256(package) != op["retrieval"]["fedora_package_sha256"]:
             raise CaseEnvelopeError("Fedora operation package mismatch")
-        summary, _, _, size, manifest_hash, _ = _read_package(package)
+        summary, _, _, size, manifest_hash, _, _ = _read_package(package)
         if size != op["package"]["size"] or manifest_hash != op["package"]["manifest_sha256"] or summary["operation_id"] != op["operation_id"]:
             raise CaseEnvelopeError("Fedora operation reference mismatch")
     return {"schema_version": SCHEMA, "case_id": value["case_id"], "operation_count": len(operations), "envelope_sha256": digest, "verdict": "PASS"}

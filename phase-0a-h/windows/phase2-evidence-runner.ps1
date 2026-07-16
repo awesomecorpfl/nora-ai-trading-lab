@@ -45,6 +45,8 @@ param(
  [string]$RepositoryCommit,
  [string]$FirewallBindingPath,
  [string]$FirewallBindingSha256,
+ [string]$FirewallCaptureToolPath,
+ [string]$FirewallCaptureToolSha256,
  [string]$EvidenceRoot='C:\NoraEvidence\Phase2'
 )
 $ErrorActionPreference='Stop'
@@ -81,6 +83,26 @@ function CaptureContainmentProcess([string]$Tool,[string[]]$Arguments){
  if(!$process.Start()){throw 'containment child process did not start'}
  $stdout=$process.StandardOutput.ReadToEnd();$stderr=$process.StandardError.ReadToEnd();$process.WaitForExit()
  return [ordered]@{exit_code=[int]$process.ExitCode;stdout=$stdout;stderr=$stderr;command_line=$psi.FileName+' '+$psi.Arguments}
+}
+function CaptureCompleteFirewall([string]$Destination){
+ if(!$FirewallCaptureToolPath-or!$FirewallCaptureToolSha256-or!(Test-Path -LiteralPath $FirewallCaptureToolPath -PathType Leaf)-or(Hash $FirewallCaptureToolPath)-ne$FirewallCaptureToolSha256.ToLowerInvariant()){throw 'firewall capture tool identity mismatch'}
+ $null=& $FirewallCaptureToolPath -Mode capture -DestinationPath $Destination -RepositoryCommit $RepositoryCommit -EvidenceRoot $EvidenceRoot
+ if(!$? -or !(Test-Path -LiteralPath $Destination -PathType Leaf)){throw 'complete firewall capture failed'}
+ $v=Get-Content -LiteralPath $Destination -Raw|ConvertFrom-Json
+ if($v.schema_version-ne'nora.phase2_firewall_inventory_v1'-or$v.repository_commit-ne$RepositoryCommit){throw 'complete firewall capture schema or commit mismatch'}
+ [ordered]@{path=$Destination;size=[int64](Get-Item -LiteralPath $Destination).Length;sha256=Hash $Destination;value=$v}
+}
+function FirewallComparable($Value){
+ $clone=($Value|ConvertTo-Json -Depth 30 -Compress)|ConvertFrom-Json
+ $clone.captured_utc=$null;$clone.diagnostics=$null
+ foreach($section in @('effective_rules','persistent_rules')){foreach($r in @($clone.$section)){$r.display_name=$null;$r.description=$null;$r.diagnostics=$null}}
+ ($clone|ConvertTo-Json -Depth 30 -Compress)
+}
+function FirewallVerdict($Pre,$Post){
+ $violations=@();foreach($p in @($Pre.value.profiles)+@($Post.value.profiles)){if(!$p.enabled){$violations+='profile_disabled:'+[string]$p.name}}
+ foreach($v in @($Pre.value,$Post.value)){foreach($r in @($v.effective_rules)){if(([string]$r.name).ToLowerInvariant().StartsWith('noraphase2containment-')-or([string]$r.group).ToLowerInvariant().StartsWith('noraphase2containment-')){$violations+='stale_nora_rules'};if($r.enabled-and([string]$r.action).ToLowerInvariant() -eq 'allow'){foreach($p in @($r.programs)){if(([string]$p).ToLowerInvariant().EndsWith('\terminal64.exe')-or([string]$p).ToLowerInvariant().EndsWith('\metatester64.exe')){$violations+='unsafe_executable_allow'}}}}}
+ $preText=FirewallComparable $Pre.value;$postText=FirewallComparable $Post.value
+ [ordered]@{schema_version='nora.phase2_operation_firewall_binding_v2';capture_tool_path=$FirewallCaptureToolPath;capture_tool_sha256=$FirewallCaptureToolSha256;pre_inventory=[ordered]@{path=(Split-Path -Leaf $Pre.path);size=$Pre.size;sha256=$Pre.sha256};post_inventory=[ordered]@{path=(Split-Path -Leaf $Post.path);size=$Post.size;sha256=$Post.sha256};pre_capture_digest=BytesHash ([Text.Encoding]::UTF8.GetBytes($preText));post_capture_digest=BytesHash ([Text.Encoding]::UTF8.GetBytes($postText));windows_semantic_equal=($preText -eq $postText);windows_invariant_verdict=if($violations.Count){'FAIL'}else{'PASS'};violations=@($violations);capture_order=@('pre','operation','post')}
 }
 function AclView([string]$Path){$a=Get-Acl -LiteralPath $Path;[ordered]@{owner=$a.Owner;sddl=$a.Sddl;protected=$a.AreAccessRulesProtected;access=@($a.Access|ForEach-Object{[ordered]@{identity=$_.IdentityReference.Value;rights=[string]$_.FileSystemRights;type=[string]$_.AccessControlType;inherited=$_.IsInherited}})}}
 function RuleSid($Rule){try{return $Rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value}catch{throw 'unresolvable ACL principal'}}
@@ -255,6 +277,8 @@ switch($Mode){
    New-Item -ItemType Directory -Force -Path $expectedRoot|Out-Null
    $partial=$captureRoot+'.partial.'+[guid]::NewGuid().ToString('N');New-Item -ItemType Directory -Path $partial|Out-Null
    try {
+     $completeFirewall=$null;$firewallPrePath=Join-Path $partial 'firewall_inventory_pre.json';$firewallPostPath=Join-Path $partial 'firewall_inventory_post.json'
+     if($FirewallCaptureToolPath-or$FirewallCaptureToolSha256){$completeFirewall=[ordered]@{pre=(CaptureCompleteFirewall $firewallPrePath)} }
      $preRecords=@(ContainmentRecordInventory);$preRules=@(ContainmentFirewallInventory);$preProcesses=@(ContainmentProcessInventory)
      if($ContainmentAction-eq'runner-operation'){
        if(!$RunnerOperationMode){throw 'missing structured runner operation mode'}
@@ -265,6 +289,7 @@ switch($Mode){
        $operationTool=if($ContainmentAction -eq 'synthetic-failure'){'__synthetic__'}else{$ContainmentToolPath}
      }
      $result=CaptureContainmentProcess $operationTool $arguments
+     if($completeFirewall){$completeFirewall.post=CaptureCompleteFirewall $firewallPostPath}
      $postRecords=@(ContainmentRecordInventory);$postRules=@(ContainmentFirewallInventory);$postProcesses=@(ContainmentProcessInventory)
      AtomicText (Join-Path $partial 'stdout.txt') ([string]$result.stdout);AtomicText (Join-Path $partial 'stderr.txt') ([string]$result.stderr)
      AtomicJson (Join-Path $partial 'pre_state.json') ([ordered]@{records=@($preRecords);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
@@ -277,7 +302,8 @@ switch($Mode){
      $final=Join-Path $EvidenceRoot ('containment-'+$RunId+'.json');$accepted=Join-Path $EvidenceRoot ('containment-'+$RunId+'.transaction-accepted.json')
      $transaction=if(Test-Path -LiteralPath $accepted){(Get-Content -LiteralPath $accepted -Raw|ConvertFrom-Json).campaign_identity}elseif(Test-Path -LiteralPath $final){(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).campaign_identity}else{$RunId}
      $bindings=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).executables}else{@()};$rules=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).rules}else{@()}
-     $firewallBinding=$null;if($FirewallBindingPath-or$FirewallBindingSha256){if(!$FirewallBindingPath-or!$FirewallBindingSha256-or!(Test-Path -LiteralPath $FirewallBindingPath -PathType Leaf)-or(Hash $FirewallBindingPath)-ne$FirewallBindingSha256.ToLowerInvariant()){throw 'firewall binding identity mismatch'};$firewallBinding=Get-Content -LiteralPath $FirewallBindingPath -Raw|ConvertFrom-Json;if($firewallBinding.schema_version-ne'nora.phase2_operation_firewall_binding_v1'-or!$firewallBinding.unrelated_equal-or!$firewallBinding.profile_equal-or$firewallBinding.invariant_verdict-ne'PASS'){throw 'firewall binding verdict failure'}}
+     $firewallBinding=$null;if($completeFirewall){$firewallBinding=FirewallVerdict $completeFirewall.pre $completeFirewall.post;if($firewallBinding.windows_semantic_equal-ne$true-or$firewallBinding.windows_invariant_verdict-ne'PASS'){throw 'runner firewall verdict failure'}}
+     if($FirewallBindingPath-or$FirewallBindingSha256){if(!$FirewallBindingPath-or!$FirewallBindingSha256-or!(Test-Path -LiteralPath $FirewallBindingPath -PathType Leaf)-or(Hash $FirewallBindingPath)-ne$FirewallBindingSha256.ToLowerInvariant()){throw 'firewall binding identity mismatch'};$expectedFirewall=Get-Content -LiteralPath $FirewallBindingPath -Raw|ConvertFrom-Json;if($expectedFirewall.schema_version-notin @('nora.phase2_operation_firewall_binding_v1','nora.phase2_operation_firewall_binding_v2')){throw 'firewall binding verdict failure'}}
      $summary=[ordered]@{case_id=$ContainmentCaseId;expected_verdict=$ContainmentExpectedVerdict;run_id=$RunId;repository_commit=$RepositoryCommit;script_hashes=[ordered]@{containment=if($ContainmentAction-eq'synthetic-failure'){$null}else{Hash $ContainmentToolPath};runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};windows_hashes=[ordered]@{containment=if($ContainmentAction-eq'synthetic-failure'){$null}else{Hash $ContainmentToolPath};runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};host_identity=Identity;evidence_root=$EvidenceRoot;transaction_identity=$transaction;executable_paths=@($bindings|ForEach-Object{[string]$_.path});executable_hashes=@($bindings|ForEach-Object{[string]$_.sha256});rule_guids=@($rules|ForEach-Object{[string]$_.instance_id});rule_names=@($rules|ForEach-Object{[string]$_.name});application_filters=@($rules|ForEach-Object{[string]$_.program});fault_injection_point=$ContainmentFault;started_at=(Get-Date).ToUniversalTime().ToString('o');finished_at=(Get-Date).ToUniversalTime().ToString('o');command=$result.command_line;wrapper_identity=[ordered]@{path=$PSCommandPath;sha256=Hash $PSCommandPath};original_containment_exit_code=[int]$result.exit_code;package_publication_exit_code=0;retrieval_exit_code=$null;fedora_verification_exit_code=$null;final_caller_exit_code=[int]$result.exit_code;recovery_result='not_invoked';cleanup_result=if($ContainmentAction-eq'cleanup'){'invoked'}else{'not_invoked'};unrelated_firewall_result='captured_in_firewall_records';firewall_preservation=$firewallBinding;final_invariants=[ordered]@{rule_count=$postRules.Count;terminal_or_tester_processes=@($postProcesses|Where-Object{$_.name -in @('terminal64.exe','metatester64.exe')}).Count};capture_provenance=[ordered]@{schema='nora.phase2_runner_owned_containment_capture_v1';runner_path=$PSCommandPath;runner_sha256=Hash $PSCommandPath;capture_path=$captureRoot;source_root=$partial;command_exit_code=[int]$result.exit_code}}
      $summary.case_id=$RunId
      $summary|Add-Member -NotePropertyName operation_id -NotePropertyValue $ContainmentCaseId

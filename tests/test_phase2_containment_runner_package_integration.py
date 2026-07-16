@@ -43,6 +43,8 @@ def test_runner_owned_capture_executes_and_binds_real_command_artifacts():
     assert "$PublisherPath -SourceRoot $captureRoot" in mode
     for token in ("FirewallBindingPath","FirewallBindingSha256","nora.phase2_operation_firewall_binding_v1","firewall binding verdict failure","firewall_preservation=$firewallBinding"):
         assert token in RUNNER
+    for token in ("FirewallCaptureToolPath","FirewallCaptureToolSha256","CaptureCompleteFirewall","firewall_inventory_pre.json","firewall_inventory_post.json","FirewallVerdict","capture_order=@('pre','operation','post')"):
+        assert token in RUNNER
 
 
 def test_runner_binds_multiple_executables_as_one_array_argument():
