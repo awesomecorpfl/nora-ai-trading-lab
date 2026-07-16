@@ -72,7 +72,7 @@ function ContainmentProcessInventory(){@((Get-CimInstance Win32_Process -ErrorAc
 function CaptureContainmentProcess([string]$Tool,[string[]]$Arguments){
  $psi=New-Object Diagnostics.ProcessStartInfo
  $psi.FileName='powershell.exe';$psi.UseShellExecute=$false;$psi.RedirectStandardOutput=$true;$psi.RedirectStandardError=$true;$psi.CreateNoWindow=$true
- $quoted=if($Tool -eq '__synthetic__'){@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command','Write-Output synthetic-stdout; [Console]::Error.WriteLine("synthetic-stderr"); exit 37')}else{@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$Tool)+$Arguments}
+ $quoted=if($Tool -eq '__synthetic__'){@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command',"Write-Output synthetic-stdout; [Console]::Error.WriteLine([string]::Concat('synthetic-stderr')); exit 37")}else{@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$Tool)+$Arguments}
  $psi.Arguments=($quoted|ForEach-Object{if($_ -match '[\s"]'){ '"'+($_ -replace '"','\\"')+'"'}else{$_}}) -join ' '
  $process=New-Object Diagnostics.Process;$process.StartInfo=$psi
  if(!$process.Start()){throw 'containment child process did not start'}
