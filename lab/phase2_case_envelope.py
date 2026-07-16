@@ -102,7 +102,7 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
         raise CaseEnvelopeError("duplicate package reference")
     firewall=plan.get("firewall_preservation"); rendered_firewall=None
     if firewall is not None:
-        if not isinstance(firewall,dict) or firewall.get("schema_version")!="nora.phase2_firewall_case_binding_v1":raise CaseEnvelopeError("invalid firewall preservation binding")
+        if not isinstance(firewall,dict) or firewall.get("schema_version") not in {"nora.phase2_firewall_case_binding_v1","nora.phase2_firewall_case_binding_v2"}:raise CaseEnvelopeError("invalid firewall preservation binding")
         artifacts={k:_bound_artifact(firewall.get(k),k) for k in ("baseline_inventory","invariant_report","historical_drift_report","final_inventory","equality_report")}
         for k in ("baseline_canonical_digest","baseline_unrelated_digest","baseline_profile_digest","baseline_legacy_digest","final_canonical_digest"):_hex(firewall.get(k),k)
         if firewall.get("baseline_final_equal") is not True or firewall.get("final_invariant_verdict")!="PASS":raise CaseEnvelopeError("firewall case invariant failure")
@@ -134,8 +134,11 @@ def build(plan: dict[str, Any]) -> dict[str, Any]:
             if not firewall_recomputed or firewall_recomputed.get("verdict")!="PASS": raise CaseEnvelopeError("operation firewall recomputation failure")
         op_firewall=summary.get("firewall_preservation")
         if firewall is not None:
-            if not isinstance(op_firewall,dict) or op_firewall.get("baseline_sha256")!=firewall["baseline_inventory"]["sha256"]:raise CaseEnvelopeError("operation firewall baseline mismatch")
-            if op_firewall.get("unrelated_equal") is not True or op_firewall.get("profile_equal") is not True:raise CaseEnvelopeError("operation firewall equality failure")
+            if not isinstance(op_firewall,dict):raise CaseEnvelopeError("operation firewall binding missing")
+            if firewall.get("schema_version")=="nora.phase2_firewall_case_binding_v1":
+                if op_firewall.get("baseline_sha256")!=firewall["baseline_inventory"]["sha256"] or op_firewall.get("unrelated_equal") is not True or op_firewall.get("profile_equal") is not True:raise CaseEnvelopeError("operation firewall equality failure")
+            elif not firewall_recomputed or firewall_recomputed.get("verdict")!="PASS":
+                raise CaseEnvelopeError("operation firewall recomputation failure")
         if (summary.get("script_hashes", {}).get("runner") != identities["runner"]
                 or summary.get("script_hashes", {}).get("publisher") != identities["publisher"]
                 or summary.get("script_hashes", {}).get("containment") != identities["containment"]):
