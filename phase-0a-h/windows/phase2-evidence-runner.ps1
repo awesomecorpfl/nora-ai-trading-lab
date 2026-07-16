@@ -49,7 +49,7 @@ $schema='nora.phase2_persistent_evidence_runner_v1'
 $terminal='C:\Program Files\Darwinex MetaTrader 5\terminal64.exe'
 $required=@('SYSTEM','BA','')
 
-function Hash([string]$Path){(Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()}
+function Hash([string]$Path){if([string]::IsNullOrWhiteSpace($Path)){throw 'NORA_CAPTURE_HASH_PATH_EMPTY'};if(!(Test-Path -LiteralPath $Path -PathType Leaf)){throw ('NORA_CAPTURE_HASH_PATH_NOT_FILE:'+[string]$Path)};(Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()}
 function BytesHash([byte[]]$Bytes){([Security.Cryptography.SHA256]::Create().ComputeHash($Bytes)|ForEach-Object {$_.ToString('x2')}) -join ''}
 function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');$Value|ConvertTo-Json -Depth 12 -Compress|Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline;if(Test-Path -LiteralPath $Path){$backup=$Path+'.replace-backup.'+[guid]::NewGuid().ToString('N');[IO.File]::Replace($tmp,$Path,$backup);Remove-Item -LiteralPath $backup -Force}else{[IO.File]::Move($tmp,$Path)}}
 function NormalizePath([string]$Path){$Path.TrimStart('\').Replace('\','/')}
@@ -61,8 +61,8 @@ function Identity(){ $i=[Security.Principal.WindowsIdentity]::GetCurrent();[orde
 function AtomicText([string]$Path,[string]$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,$Value,[Text.UTF8Encoding]::new($false));if(Test-Path -LiteralPath $Path){throw 'immutable evidence path already exists'};[IO.File]::Move($tmp,$Path)}
 function ContainmentRecordInventory(){
  NeedRunId
- $names=@('intent.json','.json','.transaction-accepted.json','.transaction-failure.json','.transaction-recovery.json','.classification.json','-cleanup.json')
- @($names|ForEach-Object{$candidate=Join-Path $EvidenceRoot ('containment-'+$RunId+$_);if(Test-Path -LiteralPath $candidate -PathType Leaf){[ordered]@{path=$candidate;size=[int64](Get-Item -LiteralPath $candidate).Length;sha256=Hash $candidate}}}|Where-Object{$_})
+ $roles=[ordered]@{intent='intent.json';final='.json';accepted='.transaction-accepted.json';failure='.transaction-failure.json';recovery='.transaction-recovery.json';classification='.classification.json';cleanup='-cleanup.json'}
+ @($roles.Keys|ForEach-Object{$role=$_;$candidate=Join-Path $EvidenceRoot ('containment-'+$RunId+$roles[$role]);if(Test-Path -LiteralPath $candidate -PathType Leaf){[ordered]@{role=$role;path=$candidate;exists=$true;size=[int64](Get-Item -LiteralPath $candidate).Length;sha256=Hash $candidate}}else{[ordered]@{role=$role;path=$candidate;exists=$false;size=$null;sha256=$null}}})
 }
 function ContainmentFirewallInventory(){
  $group='NoraPhase2Containment-'+$RunId
