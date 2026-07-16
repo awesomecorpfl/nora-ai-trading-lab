@@ -121,3 +121,10 @@ def test_schema_rejects_scalar_or_null_operation_collections_by_contract():
     schema=json.loads((Path(__file__).parents[1]/"docs"/"phase2_case_envelope_schema_v1.json").read_text())
     assert schema["properties"]["declared_sequence"]["type"]=="array"
     assert schema["properties"]["operations"]["type"]=="array"
+
+
+def test_stale_process_cleanup_is_exactly_bound():
+    source=(Path(__file__).parents[1]/"phase-0a-h"/"windows"/"stop-phase2-bound-process.ps1").read_text()
+    for token in ("ExpectedStartTimeUtc", "ExpectedCommandLineSha256", "ExpectedOwner", "HashText", "bound process identity mismatch", "Stop-Process -Id $ProcessId"):
+        assert token in source
+    assert "Get-Process powershell" not in source and "taskkill" not in source.lower()
