@@ -43,7 +43,7 @@ def test_runner_has_repository_owned_abandoned_fixture_mode():
 
 def test_deployment_helper_is_stdin_isolated_and_hash_addressed():
     assert "ssh -n nora-win10" in DEPLOY
-    assert "base64 -w 3072" in DEPLOY
+    assert "base64 -w 1024" in DEPLOY
     assert "chunk_count" in DEPLOY
     assert "Get-FileHash -Algorithm SHA256" in DEPLOY
     assert "Move-Item -LiteralPath \\$decoded -Destination \\$dest" in DEPLOY

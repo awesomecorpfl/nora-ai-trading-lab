@@ -20,7 +20,10 @@ remote_decoded="$remote_partial.decoded"
 chunks=$(mktemp -d)
 cleanup() { rm -rf "$chunks"; }
 trap cleanup EXIT
-base64 -w 3072 "$source_path" | split -b 3072 -d -a 6 - "$chunks/chunk."
+# Keep each nested cmd.exe argument comfortably below Windows command-line
+# limits; every chunk is still binary-safe base64 text and is independently
+# counted and hashed before publication.
+base64 -w 1024 "$source_path" | split -b 1024 -d -a 6 - "$chunks/chunk."
 mapfile -t chunk_paths < <(find "$chunks" -type f -name 'chunk.*' -print | sort)
 (( ${#chunk_paths[@]} > 0 )) || die 'no chunks generated'
 
