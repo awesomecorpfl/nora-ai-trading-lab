@@ -34,7 +34,7 @@ param(
  [string]$ContainmentDestinationPath,
  [string]$PublisherPath,
  [string]$PublisherSha256,
- [ValidateSet('stage','verify','verify-final','status','recover','cleanup')][string]$ContainmentAction,
+ [ValidateSet('stage','verify','verify-final','status','recover','cleanup','synthetic-failure')][string]$ContainmentAction,
  [string[]]$ContainmentExecutablePath,
  [ValidateSet('none','before_rules','after_first_rule','after_all_rules_before_final','after_final_before_accept')][string]$ContainmentFault='none',
  [string]$ContainmentToolPath,
@@ -72,7 +72,7 @@ function ContainmentProcessInventory(){@((Get-CimInstance Win32_Process -ErrorAc
 function CaptureContainmentProcess([string]$Tool,[string[]]$Arguments){
  $psi=New-Object Diagnostics.ProcessStartInfo
  $psi.FileName='powershell.exe';$psi.UseShellExecute=$false;$psi.RedirectStandardOutput=$true;$psi.RedirectStandardError=$true;$psi.CreateNoWindow=$true
- $quoted=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$Tool)+$Arguments
+ $quoted=if($Tool -eq '__synthetic__'){@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command','Write-Output synthetic-stdout; [Console]::Error.WriteLine("synthetic-stderr"); exit 37')}else{@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$Tool)+$Arguments}
  $psi.Arguments=($quoted|ForEach-Object{if($_ -match '[\s"]'){ '"'+($_ -replace '"','\\"')+'"'}else{$_}}) -join ' '
  $process=New-Object Diagnostics.Process;$process.StartInfo=$psi
  if(!$process.Start()){throw 'containment child process did not start'}
@@ -229,7 +229,7 @@ switch($Mode){
    NeedRunId
    if(!$ContainmentAction -or !$ContainmentToolPath -or !$ContainmentToolSha256 -or !$ContainmentCaseId -or !$ContainmentExpectedVerdict -or !$RepositoryCommit -or !$ContainmentDestinationPath -or !$PublisherPath -or !$PublisherSha256){throw 'missing runner-owned containment capture binding'}
    if($RepositoryCommit -notmatch '^[0-9a-f]{40}$'){throw 'invalid repository commit'}
-   if(!(Test-Path -LiteralPath $ContainmentToolPath -PathType Leaf) -or (Hash $ContainmentToolPath) -ne $ContainmentToolSha256.ToLowerInvariant()){throw 'containment tool hash mismatch'}
+   if($ContainmentAction -ne 'synthetic-failure' -and (!(Test-Path -LiteralPath $ContainmentToolPath -PathType Leaf) -or (Hash $ContainmentToolPath) -ne $ContainmentToolSha256.ToLowerInvariant())){throw 'containment tool hash mismatch'}
    if(!(Test-Path -LiteralPath $PublisherPath -PathType Leaf) -or (Hash $PublisherPath) -ne $PublisherSha256.ToLowerInvariant()){throw 'containment publisher hash mismatch'}
    $captureRoot=Join-Path $EvidenceRoot ('containment-captures\\'+$RunId+'\\'+$ContainmentCaseId)
    $expectedRoot=Join-Path $EvidenceRoot 'containment-captures'
@@ -240,7 +240,7 @@ switch($Mode){
      $preRecords=@(ContainmentRecordInventory);$preRules=@(ContainmentFirewallInventory);$preProcesses=@(ContainmentProcessInventory)
      $arguments=@('-Action',$ContainmentAction,'-CampaignId',$RunId,'-EvidenceRoot',$EvidenceRoot,'-Fault',$ContainmentFault)
      foreach($path in @($ContainmentExecutablePath)){if([string]::IsNullOrWhiteSpace($path)){throw 'invalid containment executable argument'};$arguments+=@('-ExecutablePath',$path)}
-     $result=CaptureContainmentProcess $ContainmentTool $arguments
+     $result=CaptureContainmentProcess $(if($ContainmentAction -eq 'synthetic-failure'){'__synthetic__'}else{$ContainmentTool}) $arguments
      $postRecords=@(ContainmentRecordInventory);$postRules=@(ContainmentFirewallInventory);$postProcesses=@(ContainmentProcessInventory)
      AtomicText (Join-Path $partial 'stdout.txt') ([string]$result.stdout);AtomicText (Join-Path $partial 'stderr.txt') ([string]$result.stderr)
      AtomicJson (Join-Path $partial 'pre_state.json') ([ordered]@{records=@($preRecords);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
@@ -253,7 +253,7 @@ switch($Mode){
      $final=Join-Path $EvidenceRoot ('containment-'+$RunId+'.json');$accepted=Join-Path $EvidenceRoot ('containment-'+$RunId+'.transaction-accepted.json')
      $transaction=if(Test-Path -LiteralPath $accepted){(Get-Content -LiteralPath $accepted -Raw|ConvertFrom-Json).campaign_identity}elseif(Test-Path -LiteralPath $final){(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).campaign_identity}else{$RunId}
      $bindings=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).executables}else{@()};$rules=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).rules}else{@()}
-     $summary=[ordered]@{case_id=$ContainmentCaseId;expected_verdict=$ContainmentExpectedVerdict;run_id=$RunId;repository_commit=$RepositoryCommit;script_hashes=[ordered]@{containment=Hash $ContainmentTool;runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};windows_hashes=[ordered]@{containment=Hash $ContainmentTool;runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};host_identity=Identity;evidence_root=$EvidenceRoot;transaction_identity=$transaction;executable_paths=@($bindings|ForEach-Object{[string]$_.path});executable_hashes=@($bindings|ForEach-Object{[string]$_.sha256});rule_guids=@($rules|ForEach-Object{[string]$_.instance_id});rule_names=@($rules|ForEach-Object{[string]$_.name});application_filters=@($rules|ForEach-Object{[string]$_.program});fault_injection_point=$ContainmentFault;started_at=(Get-Date).ToUniversalTime().ToString('o');finished_at=(Get-Date).ToUniversalTime().ToString('o');command=$result.command_line;wrapper_identity=[ordered]@{path=$PSCommandPath;sha256=Hash $PSCommandPath};original_containment_exit_code=[int]$result.exit_code;package_publication_exit_code=0;retrieval_exit_code=$null;fedora_verification_exit_code=$null;final_caller_exit_code=[int]$result.exit_code;recovery_result='not_invoked';cleanup_result=if($ContainmentAction-eq'cleanup'){'invoked'}else{'not_invoked'};unrelated_firewall_result='captured_in_firewall_records';final_invariants=[ordered]@{rule_count=$postRules.Count;terminal_or_tester_processes=@($postProcesses|Where-Object{$_.name -in @('terminal64.exe','metatester64.exe')}).Count};capture_provenance=[ordered]@{schema='nora.phase2_runner_owned_containment_capture_v1';runner_path=$PSCommandPath;runner_sha256=Hash $PSCommandPath;capture_path=$captureRoot;source_root=$partial;command_exit_code=[int]$result.exit_code}}
+     $summary=[ordered]@{case_id=$ContainmentCaseId;expected_verdict=$ContainmentExpectedVerdict;run_id=$RunId;repository_commit=$RepositoryCommit;script_hashes=[ordered]@{containment=if($ContainmentAction-eq'synthetic-failure'){$null}else{Hash $ContainmentTool};runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};windows_hashes=[ordered]@{containment=if($ContainmentAction-eq'synthetic-failure'){$null}else{Hash $ContainmentTool};runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};host_identity=Identity;evidence_root=$EvidenceRoot;transaction_identity=$transaction;executable_paths=@($bindings|ForEach-Object{[string]$_.path});executable_hashes=@($bindings|ForEach-Object{[string]$_.sha256});rule_guids=@($rules|ForEach-Object{[string]$_.instance_id});rule_names=@($rules|ForEach-Object{[string]$_.name});application_filters=@($rules|ForEach-Object{[string]$_.program});fault_injection_point=$ContainmentFault;started_at=(Get-Date).ToUniversalTime().ToString('o');finished_at=(Get-Date).ToUniversalTime().ToString('o');command=$result.command_line;wrapper_identity=[ordered]@{path=$PSCommandPath;sha256=Hash $PSCommandPath};original_containment_exit_code=[int]$result.exit_code;package_publication_exit_code=0;retrieval_exit_code=$null;fedora_verification_exit_code=$null;final_caller_exit_code=[int]$result.exit_code;recovery_result='not_invoked';cleanup_result=if($ContainmentAction-eq'cleanup'){'invoked'}else{'not_invoked'};unrelated_firewall_result='captured_in_firewall_records';final_invariants=[ordered]@{rule_count=$postRules.Count;terminal_or_tester_processes=@($postProcesses|Where-Object{$_.name -in @('terminal64.exe','metatester64.exe')}).Count};capture_provenance=[ordered]@{schema='nora.phase2_runner_owned_containment_capture_v1';runner_path=$PSCommandPath;runner_sha256=Hash $PSCommandPath;capture_path=$captureRoot;source_root=$partial;command_exit_code=[int]$result.exit_code}}
      AtomicJson (Join-Path $partial 'summary.json') $summary
      Move-Item -LiteralPath $partial -Destination $captureRoot
      $publication=& $PublisherPath -SourceRoot $captureRoot -SummaryPath (Join-Path $captureRoot 'summary.json') -DestinationPath $ContainmentDestinationPath -EvidenceRoot $EvidenceRoot -ExpectedRunId $RunId
