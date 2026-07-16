@@ -42,8 +42,9 @@ if (-not (Test-Path -LiteralPath $source -PathType Container)) { Fail 'source_mi
 if (-not (Test-Path -LiteralPath $summaryFile -PathType Leaf)) { Fail 'summary_missing' }
 $summary=Get-Content -LiteralPath $summaryFile -Raw | ConvertFrom-Json
 $summary | Add-Member -NotePropertyName schema -NotePropertyValue $schema -Force
-foreach($field in @('run_id','case_id','repository_commit','transaction_identity')) { if ([string]::IsNullOrWhiteSpace([string]$summary.$field)) { Fail "summary_$field" } }
+foreach($field in @('run_id','case_id','operation_id','repository_commit','transaction_identity')) { if ([string]::IsNullOrWhiteSpace([string]$summary.$field)) { Fail "summary_$field" } }
 if ($ExpectedRunId -and $summary.run_id -ne $ExpectedRunId) { Fail 'summary_run_id_mismatch' }
+if ($summary.case_id -ne $summary.run_id) { Fail 'summary_case_run_mismatch' }
 foreach($field in @('executable_paths','executable_hashes','rule_guids','rule_names','application_filters')) { if ($null -eq $summary.$field -or $summary.$field -is [string]) { Fail "summary_$field_array" } }
 if ($summary.final_caller_exit_code -isnot [int]) { Fail 'summary_exit_code' }
 $files=@(); foreach($item in @(Get-ChildItem -LiteralPath $source -Recurse -File -Force | Sort-Object FullName)) {
@@ -53,7 +54,7 @@ $files=@(); foreach($item in @(Get-ChildItem -LiteralPath $source -Recurse -File
     $files += [pscustomobject]@{path=$rel;size=[int64]$item.Length;sha256=(Hash $item.FullName)}
 }
 foreach($need in $required) { if (-not @($files | Where-Object path -eq $need).Count) { Fail "missing_member_$need" } }
-$manifest=[ordered]@{schema=$schema;run_id=[string]$summary.run_id;case_id=[string]$summary.case_id;repository_commit=[string]$summary.repository_commit;members=@($files)}
+$manifest=[ordered]@{schema=$schema;run_id=[string]$summary.run_id;case_id=[string]$summary.case_id;operation_id=[string]$summary.operation_id;repository_commit=[string]$summary.repository_commit;members=@($files)}
 $parent=[IO.Directory]::GetParent($destination).FullName; New-Item -ItemType Directory -Force -Path $parent | Out-Null
 $partial="$destination.partial.$([guid]::NewGuid().ToString('N'))"; $zip=$null
 try {

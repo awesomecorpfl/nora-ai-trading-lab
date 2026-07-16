@@ -34,7 +34,8 @@ param(
  [string]$ContainmentDestinationPath,
  [string]$PublisherPath,
  [string]$PublisherSha256,
- [ValidateSet('stage','verify','verify-final','status','recover','cleanup','synthetic-failure')][string]$ContainmentAction,
+ [ValidateSet('stage','verify','verify-final','status','recover','cleanup','synthetic-failure','runner-operation')][string]$ContainmentAction,
+ [ValidateSet('abandon-fixture','abandon-fixture-cleanup')][string]$RunnerOperationMode,
  [string[]]$ContainmentExecutablePath,
  [ValidateSet('none','before_rules','after_first_rule','after_all_rules_before_final','after_final_before_accept')][string]$ContainmentFault='none',
  [string]$ContainmentToolPath,
@@ -245,9 +246,15 @@ switch($Mode){
    $partial=$captureRoot+'.partial.'+[guid]::NewGuid().ToString('N');New-Item -ItemType Directory -Path $partial|Out-Null
    try {
      $preRecords=@(ContainmentRecordInventory);$preRules=@(ContainmentFirewallInventory);$preProcesses=@(ContainmentProcessInventory)
-     $arguments=@('-Action',$ContainmentAction,'-CampaignId',$RunId,'-EvidenceRoot',$EvidenceRoot,'-Fault',$ContainmentFault)
-     if($PSBoundParameters.ContainsKey('ContainmentExecutablePath')){foreach($path in @($ContainmentExecutablePath)){if([string]::IsNullOrWhiteSpace($path)){throw 'invalid containment executable argument'}};$arguments+=@('-ExecutablePath',($ContainmentExecutablePath -join ','))}
-     $result=CaptureContainmentProcess $(if($ContainmentAction -eq 'synthetic-failure'){'__synthetic__'}else{$ContainmentToolPath}) $arguments
+     if($ContainmentAction-eq'runner-operation'){
+       if(!$RunnerOperationMode){throw 'missing structured runner operation mode'}
+       $arguments=@('-Mode',$RunnerOperationMode,'-RunId',$RunId,'-EvidenceRoot',$EvidenceRoot);$operationTool=$PSCommandPath
+     }else{
+       $arguments=@('-Action',$ContainmentAction,'-CampaignId',$RunId,'-EvidenceRoot',$EvidenceRoot,'-Fault',$ContainmentFault)
+       if($PSBoundParameters.ContainsKey('ContainmentExecutablePath')){foreach($path in @($ContainmentExecutablePath)){if([string]::IsNullOrWhiteSpace($path)){throw 'invalid containment executable argument'}};$arguments+=@('-ExecutablePath',($ContainmentExecutablePath -join ','))}
+       $operationTool=if($ContainmentAction -eq 'synthetic-failure'){'__synthetic__'}else{$ContainmentToolPath}
+     }
+     $result=CaptureContainmentProcess $operationTool $arguments
      $postRecords=@(ContainmentRecordInventory);$postRules=@(ContainmentFirewallInventory);$postProcesses=@(ContainmentProcessInventory)
      AtomicText (Join-Path $partial 'stdout.txt') ([string]$result.stdout);AtomicText (Join-Path $partial 'stderr.txt') ([string]$result.stderr)
      AtomicJson (Join-Path $partial 'pre_state.json') ([ordered]@{records=@($preRecords);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
@@ -256,11 +263,14 @@ switch($Mode){
      AtomicJson (Join-Path $partial 'firewall_post.json') ([ordered]@{rules=@($postRules);captured_utc=(Get-Date).ToUniversalTime().ToString('o')})
      AtomicJson (Join-Path $partial 'processes.json') ([ordered]@{before=@($preProcesses);after=@($postProcesses)})
      AtomicJson (Join-Path $partial 'recovery.json') ([ordered]@{invoked=$false;result=$null})
-     AtomicJson (Join-Path $partial 'cleanup.json') ([ordered]@{invoked=($ContainmentAction -eq 'cleanup');result_records=@($postRecords|Where-Object{$_.path -like '*-cleanup.json'})})
+     AtomicJson (Join-Path $partial 'cleanup.json') ([ordered]@{invoked=($ContainmentAction -eq 'cleanup' -or $RunnerOperationMode-eq'abandon-fixture-cleanup');operation_mode=$RunnerOperationMode;result_records=@($postRecords|Where-Object{$_.path -like '*-cleanup.json'});child_stdout=[string]$result.stdout})
      $final=Join-Path $EvidenceRoot ('containment-'+$RunId+'.json');$accepted=Join-Path $EvidenceRoot ('containment-'+$RunId+'.transaction-accepted.json')
      $transaction=if(Test-Path -LiteralPath $accepted){(Get-Content -LiteralPath $accepted -Raw|ConvertFrom-Json).campaign_identity}elseif(Test-Path -LiteralPath $final){(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).campaign_identity}else{$RunId}
      $bindings=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).executables}else{@()};$rules=if(Test-Path -LiteralPath $final){@(Get-Content -LiteralPath $final -Raw|ConvertFrom-Json).rules}else{@()}
      $summary=[ordered]@{case_id=$ContainmentCaseId;expected_verdict=$ContainmentExpectedVerdict;run_id=$RunId;repository_commit=$RepositoryCommit;script_hashes=[ordered]@{containment=if($ContainmentAction-eq'synthetic-failure'){$null}else{Hash $ContainmentToolPath};runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};windows_hashes=[ordered]@{containment=if($ContainmentAction-eq'synthetic-failure'){$null}else{Hash $ContainmentToolPath};runner=Hash $PSCommandPath;publisher=Hash $PublisherPath};host_identity=Identity;evidence_root=$EvidenceRoot;transaction_identity=$transaction;executable_paths=@($bindings|ForEach-Object{[string]$_.path});executable_hashes=@($bindings|ForEach-Object{[string]$_.sha256});rule_guids=@($rules|ForEach-Object{[string]$_.instance_id});rule_names=@($rules|ForEach-Object{[string]$_.name});application_filters=@($rules|ForEach-Object{[string]$_.program});fault_injection_point=$ContainmentFault;started_at=(Get-Date).ToUniversalTime().ToString('o');finished_at=(Get-Date).ToUniversalTime().ToString('o');command=$result.command_line;wrapper_identity=[ordered]@{path=$PSCommandPath;sha256=Hash $PSCommandPath};original_containment_exit_code=[int]$result.exit_code;package_publication_exit_code=0;retrieval_exit_code=$null;fedora_verification_exit_code=$null;final_caller_exit_code=[int]$result.exit_code;recovery_result='not_invoked';cleanup_result=if($ContainmentAction-eq'cleanup'){'invoked'}else{'not_invoked'};unrelated_firewall_result='captured_in_firewall_records';final_invariants=[ordered]@{rule_count=$postRules.Count;terminal_or_tester_processes=@($postProcesses|Where-Object{$_.name -in @('terminal64.exe','metatester64.exe')}).Count};capture_provenance=[ordered]@{schema='nora.phase2_runner_owned_containment_capture_v1';runner_path=$PSCommandPath;runner_sha256=Hash $PSCommandPath;capture_path=$captureRoot;source_root=$partial;command_exit_code=[int]$result.exit_code}}
+     $summary.case_id=$RunId
+     $summary|Add-Member -NotePropertyName operation_id -NotePropertyValue $ContainmentCaseId
+     if($RunnerOperationMode-eq'abandon-fixture-cleanup'){$summary.cleanup_result='invoked_no_op'}
      $summarySidecar=$captureRoot+'.summary.json'
      Move-Item -LiteralPath $partial -Destination $captureRoot
      AtomicJson $summarySidecar $summary

@@ -16,7 +16,7 @@ from typing import Any
 
 SCHEMA = "nora.phase2_containment_atomic_evidence_v1"
 REQUIRED_METADATA = {
-    "case_id", "expected_verdict", "run_id", "repository_commit",
+    "case_id", "operation_id", "expected_verdict", "run_id", "repository_commit",
     "script_hashes", "windows_hashes", "host_identity", "evidence_root",
     "transaction_identity", "executable_paths", "executable_hashes",
     "fault_injection_point", "started_at", "finished_at", "command",
@@ -65,6 +65,10 @@ def _metadata(value: dict[str, Any]) -> dict[str, Any]:
         raise EvidenceError("missing metadata: " + ",".join(missing))
     if not isinstance(value.get("run_id"), str) or not value["run_id"]:
         raise EvidenceError("invalid run_id")
+    if value.get("run_id") != value.get("case_id"):
+        raise EvidenceError("run_id must equal case_id")
+    if not isinstance(value.get("operation_id"), str) or not value["operation_id"]:
+        raise EvidenceError("invalid operation_id")
     if not isinstance(value.get("repository_commit"), str) or len(value["repository_commit"]) != 40:
         raise EvidenceError("invalid repository_commit")
     for field in ARRAY_FIELDS:
@@ -99,7 +103,8 @@ def _write_zip(destination: Path, source: Path, summary: dict[str, Any], members
     try:
         manifest = {
             "schema": SCHEMA, "run_id": summary["run_id"],
-            "case_id": summary["case_id"], "repository_commit": summary["repository_commit"],
+            "case_id": summary["case_id"], "operation_id": summary["operation_id"],
+            "repository_commit": summary["repository_commit"],
             "members": [{"path": n, "size": s, "sha256": h} for n, s, h in members],
         }
         with zipfile.ZipFile(temporary_path, "w", compression=zipfile.ZIP_STORED) as archive:
@@ -147,7 +152,10 @@ def verify(package: Path, expected_sha256: str | None = None) -> dict[str, Any]:
             manifest = json.loads(archive.read("manifest.json"))
         except (KeyError, json.JSONDecodeError) as exc:
             raise EvidenceError("invalid package JSON") from exc
-        if summary.get("schema") != SCHEMA or manifest.get("schema") != SCHEMA or summary.get("run_id") != manifest.get("run_id"):
+        if (summary.get("schema") != SCHEMA or manifest.get("schema") != SCHEMA
+                or summary.get("run_id") != manifest.get("run_id")
+                or summary.get("case_id") != manifest.get("case_id")
+                or summary.get("operation_id") != manifest.get("operation_id")):
             raise EvidenceError("schema or identity mismatch")
         listed = {item["path"]: item for item in manifest.get("members", [])}
         if set(listed) != set(names) - {"summary.json", "manifest.json"}:

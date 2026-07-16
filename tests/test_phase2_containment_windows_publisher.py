@@ -10,6 +10,7 @@ def test_windows_publisher_matches_contract():
         "LastWriteTime", "CreateNew", "Flush($true)", "Move-Item", "conflicting_duplicate",
         "stdout.txt", "stderr.txt", "firewall_pre.json", "firewall_post.json",
         "ReparsePoint", "OrdinalIgnoreCase", "repository_commit", "final_caller_exit_code",
+        "operation_id", "summary_case_run_mismatch",
     ):
         assert token in SCRIPT
     assert "New-NetFirewallRule" not in SCRIPT

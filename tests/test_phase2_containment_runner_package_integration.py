@@ -59,6 +59,9 @@ def test_runner_has_repository_owned_abandoned_fixture_mode():
     assert "non_reusable=$true" in RUNNER
     assert "created_or_modified_durable_record=$false" in RUNNER
     assert "created_or_modified_firewall_rule=$false" in RUNNER
+    assert "'runner-operation'" in RUNNER
+    assert "missing structured runner operation mode" in RUNNER
+    assert "operationTool=$PSCommandPath" in RUNNER
 
 
 def test_deployment_helper_is_stdin_isolated_and_hash_addressed():

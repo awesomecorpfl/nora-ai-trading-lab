@@ -1,6 +1,6 @@
 # Phase-2 containment atomic evidence contract
 
-Containment-case evidence is published with schema
+Containment-operation evidence is published with schema
 `nora.phase2_containment_atomic_evidence_v1`.  The repository-owned
 `lab.phase2_containment_evidence` module is read-only with respect to firewall
 state: it packages artifacts that have already been captured by the Windows
@@ -13,7 +13,7 @@ firewall inventories, process evidence, recovery and cleanup records.  The
 manifest records every member's path, size, and SHA-256.  The source tree must
 contain all required members before a package is created.
 
-The summary binds the case and expected verdict, unique run ID, repository and
+The summary binds a distinct outer case ID, operation ID, expected verdict, unique run ID, repository and
 Windows script identities, host/evidence-root and transaction identities,
 executable arrays and hashes, fault point, command/wrapper and timestamps,
 final-caller exit code, recovery/cleanup results, unrelated-firewall result,
@@ -26,6 +26,10 @@ opens the archive, rejects unsafe or duplicate member paths, validates schema
 and identity, checks the required member set, and independently recomputes
 every member hash.  It never creates, enables, disables, deletes, or changes a
 firewall rule.
+
+An operation package does not prove a multi-operation acceptance case. Formal
+case credit additionally requires `nora.phase2_case_envelope_v1`, which binds
+the ordered verified operation packages and their causal relationships.
 
 This contract closes an evidence gap in the earlier containment work: the
 existing native campaign package builders and Windows forensic copier did not

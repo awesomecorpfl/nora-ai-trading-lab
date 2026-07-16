@@ -8,7 +8,7 @@ from lab.phase2_containment_evidence import EvidenceError, SCHEMA, publish, veri
 
 def metadata():
     return {
-        "case_id": "synthetic", "expected_verdict": "PASS", "run_id": "pkg-test-1",
+        "case_id": "pkg-test-1", "operation_id": "synthetic", "expected_verdict": "PASS", "run_id": "pkg-test-1",
         "repository_commit": "a" * 40, "script_hashes": {"containment": "b" * 64},
         "windows_hashes": {"containment": "b" * 64}, "host_identity": "host",
         "evidence_root": "C:\\NoraEvidence\\Phase2", "transaction_identity": "tx",

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nora.phase2_case_envelope_v1",
+  "type": "object",
+  "required": ["schema_version", "case_id", "case_type", "repository_commit", "identities", "declared_sequence", "operations", "case_invariants", "final_verdict", "published_utc"],
+  "properties": {
+    "schema_version": {"const": "nora.phase2_case_envelope_v1"},
+    "case_id": {"type": "string"},
+    "case_type": {"type": "string"},
+    "repository_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "identities": {
+      "type": "object",
+      "required": ["native_execution", "runner", "containment", "publisher", "verifier", "retrieval_wrapper"],
+      "additionalProperties": {"type": ["string", "null"]}
+    },
+    "declared_sequence": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "operations": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["operation_id", "operation_type", "package", "original_child_exit", "helper_exit", "expected_exit", "operation_verdict", "started_utc", "finished_utc", "precondition_state_sha256", "postcondition_state_sha256", "predecessor_operation_id", "causal_relationship", "retrieval"],
+        "properties": {
+          "operation_id": {"type": "string"},
+          "operation_type": {"enum": ["classification", "reuse_attempt", "cleanup", "recovery", "interruption", "concurrency_owner", "concurrency_loser", "publication", "retrieval", "verification"]},
+          "package": {"type": "object", "required": ["windows_path", "size", "sha256", "manifest_sha256"]},
+          "predecessor_operation_id": {"type": ["string", "null"]},
+          "causal_relationship": {"type": "string"},
+          "retrieval": {"type": "object", "required": ["receipt_path", "receipt_sha256", "fedora_package_sha256", "verification_result"]}
+        }
+      }
+    },
+    "case_invariants": {"type": "object"},
+    "final_verdict": {"enum": ["PASS", "FAIL"]},
+    "failure_stage": {"type": ["string", "null"]},
+    "failure_reason": {"type": ["string", "null"]}
+  }
+}
