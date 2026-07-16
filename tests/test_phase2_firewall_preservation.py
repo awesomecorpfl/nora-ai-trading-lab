@@ -42,3 +42,10 @@ def test_windows_capture_is_read_only_and_dual_store():
  s=(Path(__file__).parents[1]/"phase-0a-h/windows/capture-phase2-firewall-inventory.ps1").read_text()
  for x in ("ActiveStore","PersistentStore","Get-NetFirewallApplicationFilter","Get-NetFirewallSecurityFilter","mutation_cmdlets_invoked=$false"):assert x in s
  assert "New-NetFirewallRule" not in s and "Remove-NetFirewallRule" not in s and "Set-NetFirewall" not in s
+def test_exact_remediation_is_guid_store_and_executable_bound():
+ s=(Path(__file__).parents[1]/"phase-0a-h/windows/disable-phase2-exact-firewall-rule.ps1").read_text()
+ for x in ("{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}","-PolicyStore PersistentStore","-Name $authorized","-Enabled False","only_enabled_changed=$true","rule_still_exists=$true","remote_address-ne'Any'","interface_type-ne'Any'"):assert x in s
+ assert "Remove-NetFirewallRule" not in s and "DisplayName" not in s.split("Set-NetFirewallRule",1)[1]
+def test_disabled_exact_rule_is_not_an_unsafe_enabled_allow():
+ a=inv();a["effective_rules"][0].update(programs=[r"C:\Program Files\Darwinex MetaTrader 5\metatester64.exe"],enabled=False)
+ assert evaluate(a)["verdict"]=="PASS"

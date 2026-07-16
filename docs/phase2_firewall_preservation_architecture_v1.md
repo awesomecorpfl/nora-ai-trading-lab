@@ -80,3 +80,12 @@ terminal-state matrix cases require v1 firewall-preservation bindings. The
 previous abandoned case remains architecture evidence and requires a fresh
 complete-contract case for final firewall-preservation credit.
 
+## Future native-testing policy
+
+Phase-2 containment acceptance proceeds with the identified MetaTester inbound
+allow rule disabled. FR-T1 and native MT5 work must first be attempted while it
+remains disabled. It may never be enabled automatically. If a later authorized
+native test proves it indispensable, a separate human-authorized, time-bounded
+case must capture complete pre-state, enable only the exact GUID and verified
+scope, run only the authorized test, disable it again, prove exact restoration,
+and publish its own immutable operation packages and case envelope.
