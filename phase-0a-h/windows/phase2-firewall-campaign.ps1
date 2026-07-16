@@ -55,4 +55,12 @@ function Complete([string]$Token){$o=Owner;if((HashToken $Token)-ne$o.owner_toke
 function Status(){[ordered]@{campaign_id=$CampaignId;root=Root;owner_present=(Test-Path -LiteralPath (OwnerPath));completion_present=(Test-Path -LiteralPath (CompletionPath));claim_count=@(Get-ChildItem -LiteralPath (Join-Path (Root) 'claims') -Filter '*.json' -File -ErrorAction SilentlyContinue).Count;receipt_count=@(Get-ChildItem -LiteralPath (Join-Path (Root) 'receipts') -Filter '*.json' -File -ErrorAction SilentlyContinue).Count;final_count=@(Get-ChildItem -LiteralPath (Join-Path (Root) 'captures') -Filter '*.json' -File -ErrorAction SilentlyContinue).Count;partial_count=@(Get-ChildItem -LiteralPath (Join-Path (Root) 'partials') -File -ErrorAction SilentlyContinue).Count}|ConvertTo-Json -Compress}
 function Run(){ $reservation=Reserve|ConvertFrom-Json;$token=$reservation.owner_token;for($i=1;$i-le$CaptureCount;$i++){Capture $i $token|Out-Null;if($CaptureIntervalSeconds-gt0 -and $i-lt$CaptureCount){Start-Sleep -Seconds $CaptureIntervalSeconds}};Complete $token;Status }
 RequireId
-switch($Mode){'run'{Run}' 'reserve'{Reserve}' 'capture'{if(!$OwnerToken){throw 'capture requires exact owner token'};Capture $Slot $OwnerToken|ConvertTo-Json -Depth 20 -Compress}'complete'{if(!$OwnerToken){throw 'complete requires exact owner token'};Complete $OwnerToken;Status}'status'{Status}'recover'{throw 'recovery requires separately authorized exact-owner procedure'}'smoke'{[ordered]@{schema_version='nora.phase2_firewall_campaign_smoke_v1';mutation_cmdlets_invoked=$false;campaign_id=$CampaignId}|ConvertTo-Json -Compress}}
+switch($Mode){
+ 'run' { Run }
+ 'reserve' { Reserve }
+ 'capture' { if(!$OwnerToken){throw 'capture requires exact owner token'};Capture $Slot $OwnerToken|ConvertTo-Json -Depth 20 -Compress }
+ 'complete' { if(!$OwnerToken){throw 'complete requires exact owner token'};Complete $OwnerToken;Status }
+ 'status' { Status }
+ 'recover' { throw 'recovery requires separately authorized exact-owner procedure' }
+ 'smoke' { [ordered]@{schema_version='nora.phase2_firewall_campaign_smoke_v1';mutation_cmdlets_invoked=$false;campaign_id=$CampaignId}|ConvertTo-Json -Compress }
+}
