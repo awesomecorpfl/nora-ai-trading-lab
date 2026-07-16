@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory=$true)][string]$SummaryPath,
     [Parameter(Mandatory=$true)][string]$DestinationPath,
     [Parameter(Mandatory=$true)][string]$EvidenceRoot,
-    [string]$ExpectedRunId
+    [Parameter(Mandatory=$true)][string]$ExpectedRunId
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'

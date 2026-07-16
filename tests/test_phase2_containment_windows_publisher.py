@@ -14,6 +14,7 @@ def test_windows_publisher_matches_contract():
         assert token in SCRIPT
     assert "New-NetFirewallRule" not in SCRIPT
     assert "Remove-NetFirewallRule" not in SCRIPT
+    assert "[Parameter(Mandatory=$true)][string]$ExpectedRunId" in SCRIPT
 
 
 def test_windows_publisher_never_uses_loose_prefix_cleanup():
