@@ -239,7 +239,7 @@ switch($Mode){
    try {
      $preRecords=@(ContainmentRecordInventory);$preRules=@(ContainmentFirewallInventory);$preProcesses=@(ContainmentProcessInventory)
      $arguments=@('-Action',$ContainmentAction,'-CampaignId',$RunId,'-EvidenceRoot',$EvidenceRoot,'-Fault',$ContainmentFault)
-     foreach($path in @($ContainmentExecutablePath)){if([string]::IsNullOrWhiteSpace($path)){throw 'invalid containment executable argument'};$arguments+=@('-ExecutablePath',$path)}
+     if($PSBoundParameters.ContainsKey('ContainmentExecutablePath')){foreach($path in @($ContainmentExecutablePath)){if([string]::IsNullOrWhiteSpace($path)){throw 'invalid containment executable argument'};$arguments+=@('-ExecutablePath',$path)}}
      $result=CaptureContainmentProcess $(if($ContainmentAction -eq 'synthetic-failure'){'__synthetic__'}else{$ContainmentTool}) $arguments
      $postRecords=@(ContainmentRecordInventory);$postRules=@(ContainmentFirewallInventory);$postProcesses=@(ContainmentProcessInventory)
      AtomicText (Join-Path $partial 'stdout.txt') ([string]$result.stdout);AtomicText (Join-Path $partial 'stderr.txt') ([string]$result.stderr)
