@@ -1,0 +1,91 @@
+{
+  "final_envelope": {
+    "fedora_verification": "PASS",
+    "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/case-envelope.json",
+    "retrieved_identical": true,
+    "sha256": "380e114002ee0f9aa73db2e7e206a6ea73970e2b3a4539fb5eeb75450332e1a4",
+    "size": 18840,
+    "windows_verification": "PASS"
+  },
+  "final_safety": {
+    "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/final-safety-report.json",
+    "retrieval": "PASS",
+    "sha256": "c6a2093e0b512e8a9d39adfba3a9390e7c5e2a8170a01a39c3add4bf50fc2247",
+    "size": 6781
+  },
+  "operations": [
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "59d5494aaa2ff246ee3e656c70f58a9da98166826c98c62c3e2925ceb9eeca2c",
+      "member_count": 11,
+      "operation_id": "phase2-tstm-1-case-20260717T080912Z-changed-after",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/operation-packages/phase2-tstm-1-case-20260717T080912Z-changed-after.zip",
+      "sha256": "0cffba6543a516ca0c6741dd8b8f87f0ad54d398cff04370330132a640f2035a",
+      "size": 1757717,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "ac5d202b6b83882043b95f4f052d7c3b22cec68232a8a258a24118a4529fc9c2",
+      "member_count": 11,
+      "operation_id": "phase2-tstm-1-case-20260717T080912Z-changed-before",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/operation-packages/phase2-tstm-1-case-20260717T080912Z-changed-before.zip",
+      "sha256": "e1514618107c722aa483f5751ee59e8356b394fc2dacb4d98a045a231dda44de",
+      "size": 1757725,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "7b0dd94fb77e1fcc8fd8009f0036b0448605af3546bd5d11c55dd18d1432985d",
+      "member_count": 11,
+      "operation_id": "phase2-tstm-1-case-20260717T080912Z-classification",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/operation-packages/phase2-tstm-1-case-20260717T080912Z-classification.zip",
+      "sha256": "5a60e211badbe931216b96eb9550efb03fc040f526e5f7fbda30b660b3cb8987",
+      "size": 1758330,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "78a60b56d42856f98d83b0f35394fefd58a150f97fa87fdc8e82a4246aa752e6",
+      "member_count": 11,
+      "operation_id": "phase2-tstm-1-case-20260717T080912Z-cleanup",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/operation-packages/phase2-tstm-1-case-20260717T080912Z-cleanup.zip",
+      "sha256": "6505a88ce9c60bb7e70297084b941b88551311cdb7bf6131f053cedb11d7a6da",
+      "size": 1758479,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "f1d13941322e1424355717b4f30d3f1eab261b8a16137af2be87f274d7dffcbb",
+      "member_count": 11,
+      "operation_id": "phase2-tstm-1-case-20260717T080912Z-same-after",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/operation-packages/phase2-tstm-1-case-20260717T080912Z-same-after.zip",
+      "sha256": "0692d2ffe406faf2c363e47a0c2c67927bbffb38fa08968947467abb8c01edb4",
+      "size": 1757703,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "b742c26cde5b476b40c3484de23a25fb5ba42fa24dfe9dcf19a116c6349e6fad",
+      "member_count": 11,
+      "operation_id": "phase2-tstm-1-case-20260717T080912Z-same-before",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T080912Z/operation-packages/phase2-tstm-1-case-20260717T080912Z-same-before.zip",
+      "sha256": "579049da0118fce320e6e2da99ca343a348bd36602584696b276557977345e87",
+      "size": 1757713,
+      "windows_recomputation": "PASS"
+    }
+  ],
+  "schema_version": "nora.phase2_tstm_1_independent_verification_v1"
+}

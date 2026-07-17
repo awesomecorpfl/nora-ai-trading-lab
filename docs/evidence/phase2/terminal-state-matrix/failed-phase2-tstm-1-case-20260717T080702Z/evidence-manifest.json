@@ -1,0 +1,23 @@
+{
+  "artifact_count": 3,
+  "artifacts": [
+    {
+      "path": "failure-classification.json",
+      "sha256": "801795d54f6a919a16571355033221d1ada310acfccfa9961a68e602dd11c402",
+      "size": 414
+    },
+    {
+      "path": "phase2-tstm-1-case-20260717T080702Z-classification.helper.stderr",
+      "sha256": "10a7bfe734c8d6dd8bc3c96a235122183448cc54610fe23af2075713897de886",
+      "size": 423
+    },
+    {
+      "path": "phase2-tstm-1-case-20260717T080702Z-classification.helper.stdout",
+      "sha256": "7aafd3ef9df4ac9079bbdd22bb3700ee7f6160fe6783a6d868b17c0b4786d743",
+      "size": 170
+    }
+  ],
+  "case_id": "phase2-tstm-1-case-20260717T080702Z",
+  "kind": "diagnostic-failed-launch",
+  "schema_version": "nora.phase2_evidence_manifest_v1"
+}

@@ -1,0 +1,14 @@
+{
+  "croq1": {
+    "commit": "e80336696bc8c58e117086ed5d2510b40044915a",
+    "manifest_sha256": "35cadb03edf26abe4695b32f38125b13974407aebb16546fc76838e86540725e",
+    "manifest_size": 15097,
+    "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/"
+  },
+  "semantic_baseline": {
+    "commit": "9ae03da91b5d8875e8a0766b580d382628b57beb",
+    "manifest_sha256": "7b9d79e4ec2dfea01b1c32921847cdc44b579c7837999783ca2bcebe920c80e7",
+    "manifest_size": 25390,
+    "path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/"
+  }
+}

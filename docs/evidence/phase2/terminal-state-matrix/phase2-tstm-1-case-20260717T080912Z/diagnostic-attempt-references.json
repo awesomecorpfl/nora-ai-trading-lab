@@ -1,0 +1,14 @@
+{
+  "accepted_case": "phase2-tstm-1-case-20260717T080912Z",
+  "not_credited": [
+    "phase2-tstm-1-case-20260717T074931Z",
+    "phase2-tstm-1-case-20260717T075303Z",
+    "phase2-tstm-1-case-20260717T080702Z"
+  ],
+  "reasons": [
+    "first case omitted complete firewall capture binding",
+    "second case reused short operation IDs across cases",
+    "third attempt occurred after exact Windows tool cleanup and created no operation"
+  ],
+  "schema_version": "nora.phase2_tstm_1_diagnostic_reference_v1"
+}

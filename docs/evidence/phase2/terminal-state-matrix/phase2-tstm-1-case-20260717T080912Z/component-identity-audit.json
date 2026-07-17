@@ -1,0 +1,84 @@
+{
+  "components": [
+    {
+      "deployed_equality": null,
+      "deployed_path": null,
+      "repository_path": "scripts/phase2-run-abandoned-case.py",
+      "sha256": "99cba21265a41fa076d0344f9b7318e55771f0f4c255c7dbbced67d6aa6d250a",
+      "size": 9563
+    },
+    {
+      "deployed_equality": null,
+      "deployed_path": null,
+      "repository_path": "lab/phase2_containment_evidence.py",
+      "sha256": "efcdf8c7f9925937c02f42e1a11390d71fe4a81fd697c9a05634c9a099f13704",
+      "size": 12226
+    },
+    {
+      "deployed_equality": null,
+      "deployed_path": null,
+      "repository_path": "scripts/phase2-retrieve-containment-evidence.py",
+      "sha256": "8e4107db2b2e81019e23f5e8f0d055dcd7d213955419e5a3cad7289b4867b63a",
+      "size": 9014
+    },
+    {
+      "deployed_equality": null,
+      "deployed_path": null,
+      "repository_path": "lab/phase2_case_envelope.py",
+      "sha256": "8daf7af18f2db52390ae1dc576756e95773ff09c5a62e2f97a9447ab5528ade3",
+      "size": 14153
+    },
+    {
+      "deployed_equality": null,
+      "deployed_path": null,
+      "repository_path": "lab/phase2_firewall_preservation.py",
+      "sha256": "2afa1d9d38212fdb30b06f60ccdf50f5176bca1179ed178278bd7109362266c7",
+      "size": 7179
+    },
+    {
+      "deployed_equality": true,
+      "deployed_path": "C:\\NoraEvidence\\Phase2\\tstm-1-tools\\phase2-evidence-runner.ps1",
+      "repository_path": "phase-0a-h/windows/phase2-evidence-runner.ps1",
+      "sha256": "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+      "size": 70169
+    },
+    {
+      "deployed_equality": true,
+      "deployed_path": "C:\\NoraEvidence\\Phase2\\tstm-1-tools\\phase2-network-containment.ps1",
+      "repository_path": "phase-0a-h/windows/phase2-network-containment.ps1",
+      "sha256": "c906a0e428be78c72cb9c063566b3ec7bc1f907879cefe620a7735130b043774",
+      "size": 20143
+    },
+    {
+      "deployed_equality": true,
+      "deployed_path": "C:\\NoraEvidence\\Phase2\\tstm-1-tools\\capture-phase2-firewall-inventory.ps1",
+      "repository_path": "phase-0a-h/windows/capture-phase2-firewall-inventory.ps1",
+      "sha256": "a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7",
+      "size": 7336
+    },
+    {
+      "deployed_equality": true,
+      "deployed_path": "C:\\NoraEvidence\\Phase2\\tstm-1-tools\\build-containment-evidence-package.ps1",
+      "repository_path": "phase-0a-h/windows/build-containment-evidence-package.ps1",
+      "sha256": "00b73a7a95d5406df1faf6955b54bfb4340d042b15b1a73ff6a3cd94c16d0f6f",
+      "size": 6356
+    },
+    {
+      "deployed_equality": true,
+      "deployed_path": "C:\\NoraEvidence\\Phase2\\tstm-1-tools\\read-phase2-evidence-file.ps1",
+      "repository_path": "phase-0a-h/windows/read-phase2-evidence-file.ps1",
+      "sha256": "e9349ef00390115a0a3f7769dff8c70160e5c93cdcb6e7952e5c44ee44913f18",
+      "size": 5485
+    },
+    {
+      "deployed_equality": true,
+      "deployed_path": "C:\\NoraEvidence\\Phase2\\tstm-1-tools\\phase2-case-envelope.ps1",
+      "repository_path": "phase-0a-h/windows/phase2-case-envelope.ps1",
+      "sha256": "ca6159b1ab2d11e4f753689e8edddb5748ef07a0176e3f304f45008be651c114",
+      "size": 9040
+    }
+  ],
+  "final_reader_removed": true,
+  "repository_commit": "9d798ff9769e0d9f8b32bc087a74e9dd6e1babd8",
+  "schema_version": "nora.phase2_tstm_1_component_identity_audit_v1"
+}

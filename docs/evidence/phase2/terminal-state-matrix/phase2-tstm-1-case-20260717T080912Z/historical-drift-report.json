@@ -1,0 +1,6 @@
+{
+  "accepted_baseline_commit": "9ae03da91b5d8875e8a0766b580d382628b57beb",
+  "drift_is_forensic_only": true,
+  "gating_drift": false,
+  "schema_version": "nora.phase2_tstm_1_historical_drift_report_v1"
+}

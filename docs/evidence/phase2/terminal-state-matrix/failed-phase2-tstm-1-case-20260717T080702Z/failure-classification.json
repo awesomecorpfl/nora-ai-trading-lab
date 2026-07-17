@@ -1,0 +1,9 @@
+{
+  "case_id": "phase2-tstm-1-case-20260717T080702Z",
+  "credit": "NOT_GRANTED",
+  "failure_classification": "EXTERNAL_SETUP_FAILURE",
+  "ids_burned": true,
+  "mutation_occurred": false,
+  "reason": "final safety cleanup had removed the exact Windows tool root before this attempted operation; no operation helper child ran and no package was created",
+  "schema_version": "nora.phase2_tstm_1_failed_attempt_v1"
+}

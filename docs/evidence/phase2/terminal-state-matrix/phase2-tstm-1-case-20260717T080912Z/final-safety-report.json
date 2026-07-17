@@ -1,0 +1,104 @@
+﻿{
+    "schema_version":  "nora.phase2_tstm_1_final_safety_v1",
+    "case_id":  "phase2-tstm-1-case-20260717T080912Z",
+    "pre_cleanup":  {
+                        "profiles":  [
+                                         {
+                                             "name":  "Domain",
+                                             "enabled":  true
+                                         },
+                                         {
+                                             "name":  "Private",
+                                             "enabled":  true
+                                         },
+                                         {
+                                             "name":  "Public",
+                                             "enabled":  true
+                                         }
+                                     ],
+                        "tester_rule":  [
+                                            {
+                                                "Name":  "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}",
+                                                "Enabled":  2,
+                                                "DisplayName":  "MetaTrader 5 Strategy Tester Agent"
+                                            }
+                                        ],
+                        "nora_rules":  0,
+                        "terminal_tester_processes":  0,
+                        "related_processes":  0,
+                        "packages":  [
+                                         {
+                                             "operation_id":  "phase2-tstm-1-case-20260717T080912Z-classification",
+                                             "path":  "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T080912Z\\phase2-tstm-1-case-20260717T080912Z-classification.zip",
+                                             "exists":  true,
+                                             "size":  1758330
+                                         },
+                                         {
+                                             "operation_id":  "phase2-tstm-1-case-20260717T080912Z-same-before",
+                                             "path":  "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T080912Z\\phase2-tstm-1-case-20260717T080912Z-same-before.zip",
+                                             "exists":  true,
+                                             "size":  1757713
+                                         },
+                                         {
+                                             "operation_id":  "phase2-tstm-1-case-20260717T080912Z-changed-before",
+                                             "path":  "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T080912Z\\phase2-tstm-1-case-20260717T080912Z-changed-before.zip",
+                                             "exists":  true,
+                                             "size":  1757725
+                                         },
+                                         {
+                                             "operation_id":  "phase2-tstm-1-case-20260717T080912Z-cleanup",
+                                             "path":  "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T080912Z\\phase2-tstm-1-case-20260717T080912Z-cleanup.zip",
+                                             "exists":  true,
+                                             "size":  1758479
+                                         },
+                                         {
+                                             "operation_id":  "phase2-tstm-1-case-20260717T080912Z-same-after",
+                                             "path":  "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T080912Z\\phase2-tstm-1-case-20260717T080912Z-same-after.zip",
+                                             "exists":  true,
+                                             "size":  1757703
+                                         },
+                                         {
+                                             "operation_id":  "phase2-tstm-1-case-20260717T080912Z-changed-after",
+                                             "path":  "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T080912Z\\phase2-tstm-1-case-20260717T080912Z-changed-after.zip",
+                                             "exists":  true,
+                                             "size":  1757717
+                                         }
+                                     ],
+                        "final_envelope_exists":  true,
+                        "partial_or_pending":  0
+                    },
+    "removed_exact_paths":  [
+                                "C:\\NoraEvidence\\Phase2\\tstm1-preflight.ps1",
+                                "C:\\NoraEvidence\\Phase2\\tstm-1-tools",
+                                "C:\\NoraEvidence\\Phase2\\containment-captures\\phase2-tstm-1-case-20260717T080912Z",
+                                "C:\\NoraEvidence\\Phase2\\containment-captures\\phase2-tstm-1-case-20260717T080702Z"
+                            ],
+    "post_cleanup":  {
+                         "profiles":  [
+                                          {
+                                              "name":  "Domain",
+                                              "enabled":  true
+                                          },
+                                          {
+                                              "name":  "Private",
+                                              "enabled":  true
+                                          },
+                                          {
+                                              "name":  "Public",
+                                              "enabled":  true
+                                          }
+                                      ],
+                         "tester_rule":  [
+                                             {
+                                                 "Name":  "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}",
+                                                 "Enabled":  2,
+                                                 "DisplayName":  "MetaTrader 5 Strategy Tester Agent"
+                                             }
+                                         ],
+                         "nora_rules":  0,
+                         "terminal_tester_processes":  0,
+                         "related_processes":  0,
+                         "partial_or_pending":  0,
+                         "final_envelope_exists":  true
+                     }
+}
