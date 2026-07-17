@@ -11,16 +11,11 @@ $err=$p.stderr_path
 New-Item -ItemType File -Path $out -Force|Out-Null
 New-Item -ItemType File -Path $err -Force|Out-Null
 $self=Get-CimInstance Win32_Process -Filter ('ProcessId='+$PID)
-$submittedSha=$null;if($p.PSObject.Properties['submitted_command_sha256']){$submittedSha=$p.submitted_command_sha256}
-$logicalSha=$null;if($p.PSObject.Properties['logical_command_sha256']){$logicalSha=$p.logical_command_sha256}
+$submittedSha='';if($p.PSObject.Properties['submitted_command_sha256']){$submittedSha=$p.submitted_command_sha256}
+$logicalSha='';if($p.PSObject.Properties['logical_command_sha256']){$logicalSha=$p.logical_command_sha256}
 Save-Artifact $start ([ordered]@{schema_version='nora.phase2_firewall_wrapper_start_v1';launch_id=$p.launch_id;campaign_id=$p.campaign_id;wrapper_pid=$PID;wrapper_start_utc=([datetime]$self.CreationDate).ToUniversalTime().ToString('o');windows_user=[Security.Principal.WindowsIdentity]::GetCurrent().Name;wrapper_path=$PSCommandPath;wrapper_sha256=(Get-SHA256 $PSCommandPath);logical_command_sha256=$logicalSha;submitted_command_sha256=$submittedSha;campaign_tool_sha256=$p.campaign_tool_sha256;runner_sha256=$p.runner_sha256;capture_tool_sha256=$p.capture_tool_sha256;repository_commit=$p.repository_commit;stdout_path=$out;stderr_path=$err})
 $procArgs=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$p.campaign_tool_path,'-Mode','run','-LaunchId',$p.launch_id,'-CampaignId',$p.campaign_id,'-RepositoryCommit',$p.repository_commit,'-CaptureToolPath',$p.capture_tool_path,'-CaptureToolSha256',$p.capture_tool_sha256,'-RunnerPath',$p.runner_path,'-RunnerSha256',$p.runner_sha256,'-WrapperPath',$p.wrapper_path,'-WrapperSha256',$p.wrapper_sha256,'-LogicalCommandSha256',$logicalSha,'-SubmittedCommandSha256',$submittedSha,'-WrapperPid',[string]$PID,'-WrapperStartUtc',([datetime]$self.CreationDate).ToUniversalTime().ToString('o'),'-EvidenceRoot',$p.evidence_root,'-CaptureCount',[string]$p.capture_count)
-try{
 $c=Start-Process -FilePath powershell.exe -ArgumentList $procArgs -RedirectStandardOutput $out -RedirectStandardError $err -PassThru
-}catch{
-  [IO.File]::AppendAllText((Join-Path $root 'wrapper-error.log'),'Start-Process failed: '+($_.Exception.Message))
-  throw
-}
 $cv=Get-CimInstance Win32_Process -Filter ('ProcessId='+$c.Id)
 $owner=Join-Path (Join-Path (Join-Path $p.evidence_root 'firewall-campaigns') $p.campaign_id) 'owner.json'
 for($i=0;$i-lt100;$i++){
