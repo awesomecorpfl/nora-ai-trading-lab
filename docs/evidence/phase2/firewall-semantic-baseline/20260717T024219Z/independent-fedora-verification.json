@@ -1,0 +1,807 @@
+{
+  "campaign_id": "sync-20260717T024219Z",
+  "completion": {
+    "campaign_id": "sync-20260717T024219Z",
+    "capture_tool_sha256": "a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7",
+    "completed_utc": "2026-07-17T05:44:52.3471023Z",
+    "expected_capture_count": 20,
+    "owner_sha256": "41eb581bd91cd0b4e50b4e656848e4b409b8ac33e5ed7b25c1144004e75f46b7",
+    "receipt_paths": [
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\01.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\02.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\03.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\04.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\05.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\06.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\07.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\08.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\09.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\10.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\11.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\12.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\13.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\14.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\15.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\16.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\17.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\18.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\19.json",
+      "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\20.json"
+    ],
+    "receipt_sha256": [
+      "89204c83fc1bfb444e2a5fde96a71364a2d140a6625d784efaf5a5597b12ed3f",
+      "47330e69196ce061dbfa7a3c3162f7df26a5f332feb0d639475193bd83985636",
+      "d827806b43c8236e61da1391e7856cf2106c1c14b78d9fc44fb84d9f1261cbda",
+      "3cd826ff930fd4e3289512360819f4a4bf1fbbb3e7c20d5e382c5abd120e20ea",
+      "2d97ac78e28f567dbaf677deac308e27485afca159a86a9916841edd1934b7f3",
+      "8a0b24c6c85455a715df5430df17fa7b6f6b401804389f0aec4c993040308a45",
+      "1cb2df664de8412fcd6a32d5625a9d98e4ee75b5e7cd128e34bef19eb9d611a9",
+      "41ca090e3289be39b940636eeaba28305f4218ffb5f16b76287105228ecc4042",
+      "335248224726c7b8f59650a330b9eb56f16234fec3d7f63500947be00060a5dc",
+      "925951d4e4592a06cc9044bcebd9102b1e9d7ab26d02863f45ea8c31b94d6b62",
+      "9f8179dca4c58fdc0db4885595d0d785466132bdac94763a9b214b6114f3899d",
+      "c4dafbd1dd6041e8d1d853d616755ae342967e1a5338839e229bc1ee7b30ca47",
+      "2be6f4239ad1416009f62b8829874f139928480b1f20751c67d7c2892b6c1d3a",
+      "776f3e2d628e58f047f6f4782f5cc10ed2233e69a69835b3fc6c3d318d64dd5c",
+      "1da6c1eb133076cbd57688d865ce12b7e3109ba8de209ff60a823e701584b266",
+      "51fde800d08193b53e7a0ec072507d30b1115b993e9171bb9b9a2abe55b2247e",
+      "9e98c1845417c3f5495205fd2614c63561fabe89fd53f80699d657dc7feb715c",
+      "cd9019f75de98da035a9b77dfb9bd7d7812905d049f6e486fac0e62d2e5474e4",
+      "ef5a4d58ae8172b57034c37a8df567f2501762bbaba893d122dd4ccdd834d8eb",
+      "46bcd5b7928bb6811ff7fa74d1aafe42da7f68c17f26c39a1f8a5709a4f447b8"
+    ],
+    "repository_commit": "336ec9ba99d1f7fe53cf4bf7f8f84db88010e02a",
+    "schema_version": "nora.phase2_firewall_campaign_v1",
+    "state": "complete"
+  },
+  "digest_stability": {
+    "canonical_digest": 1,
+    "nora_digest": 1,
+    "profile_digest": 1,
+    "unrelated_digest": 1
+  },
+  "launch_id": "synlc-20260717T024219Z",
+  "launch_receipt": {
+    "acknowledged_utc": "2026-07-17T05:42:59.2692164Z",
+    "campaign_id": "sync-20260717T024219Z",
+    "command_line": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-campaign.ps1 -Mode run -LaunchId synlc-20260717T024219Z -CampaignId sync-20260717T024219Z -RepositoryCommit 336ec9ba99d1f7fe53cf4bf7f8f84db88010e02a -CaptureToolPath C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\capture-phase2-firewall-inventory.ps1 -CaptureToolSha256 a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7 -RunnerPath C:\\NoraEvidence\\Phase2\\runner\\phase2-evidence-runner.ps1 -RunnerSha256 0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2 -WrapperPath C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1 -WrapperSha256 48aa6336bade5ff29a801c222218969453e0108da8f18007be0ebbc79be85e9e -LogicalCommandSha256 f4ecac2acde4d69b269845ec2b02bf724e6091a940b27c6208da7e29afe4914a -SubmittedCommandSha256 unavailable -WrapperPid 5608 -WrapperStartUtc 2026-07-17T05:42:57.9555150Z -EvidenceRoot C:\\NoraEvidence\\Phase2 -CaptureCount 20 ",
+    "executable_path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "intent_sha256": "0f64ec96078967ab5788d64b007d8e1d982aa21afba1e6d745e2379cdaeb8dab",
+    "launch_id": "synlc-20260717T024219Z",
+    "owner_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\owner.json",
+    "owner_sha256": "41eb581bd91cd0b4e50b4e656848e4b409b8ac33e5ed7b25c1144004e75f46b7",
+    "pid": 5608,
+    "process_start_utc": "2026-07-17T05:42:58.4250650Z",
+    "schema_version": "nora.phase2_firewall_campaign_launch_receipt_v1",
+    "stderr_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T024219Z\\stderr.txt",
+    "stdout_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T024219Z\\stdout.txt"
+  },
+  "owner": {
+    "campaign_command_line": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-campaign.ps1 -Mode run -LaunchId synlc-20260717T024219Z -CampaignId sync-20260717T024219Z -RepositoryCommit 336ec9ba99d1f7fe53cf4bf7f8f84db88010e02a -CaptureToolPath C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\capture-phase2-firewall-inventory.ps1 -CaptureToolSha256 a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7 -RunnerPath C:\\NoraEvidence\\Phase2\\runner\\phase2-evidence-runner.ps1 -RunnerSha256 0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2 -WrapperPath C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1 -WrapperSha256 48aa6336bade5ff29a801c222218969453e0108da8f18007be0ebbc79be85e9e -LogicalCommandSha256 f4ecac2acde4d69b269845ec2b02bf724e6091a940b27c6208da7e29afe4914a -SubmittedCommandSha256 unavailable -WrapperPid 5608 -WrapperStartUtc 2026-07-17T05:42:57.9555150Z -EvidenceRoot C:\\NoraEvidence\\Phase2 -CaptureCount 20 ",
+    "campaign_executable_path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "campaign_id": "sync-20260717T024219Z",
+    "capture_interval_seconds": 0,
+    "capture_tool_path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\capture-phase2-firewall-inventory.ps1",
+    "capture_tool_sha256": "a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7",
+    "created_utc": "2026-07-17T05:42:58.8941621Z",
+    "expected_capture_count": 20,
+    "host_identity": "DESKTOP-21I1FJP\\Gasper",
+    "launch_id": "synlc-20260717T024219Z",
+    "launcher_path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-campaign.ps1",
+    "logical_command_sha256": "f4ecac2acde4d69b269845ec2b02bf724e6091a940b27c6208da7e29afe4914a",
+    "normalized_command_sha256": "805c3c27aac0b264e0dd622883a9311b5cb879e6f67e8a4b60c283657ed58192",
+    "owner_pid": 3744,
+    "owner_process_start_utc": "/Date(1784266978425)/",
+    "owner_token_sha256": "8364426ea90122f63c9fa1293a37de0a4230d8643a04331d9cf9a9425ee611ae",
+    "parent_process_id": 5608,
+    "repository_commit": "336ec9ba99d1f7fe53cf4bf7f8f84db88010e02a",
+    "runner_path": "C:\\NoraEvidence\\Phase2\\runner\\phase2-evidence-runner.ps1",
+    "runner_sha256": "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+    "schema_version": "nora.phase2_firewall_campaign_v1",
+    "state": "reserved",
+    "submitted_command_sha256": "unavailable",
+    "windows_user": "DESKTOP-21I1FJP\\Gasper",
+    "wrapper_path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1",
+    "wrapper_pid": 5608,
+    "wrapper_sha256": "48aa6336bade5ff29a801c222218969453e0108da8f18007be0ebbc79be85e9e",
+    "wrapper_start_utc": "2026-07-17T05:42:57.9555150Z"
+  },
+  "partial_count": 0,
+  "repository_commit": "336ec9ba99d1f7fe53cf4bf7f8f84db88010e02a",
+  "run_id": "semantic20-20260717T024219Z",
+  "semantic_baseline": {
+    "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+    "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8"
+  },
+  "slot_count": 20,
+  "slots": [
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/01.json",
+        "sha256": "72305d4c3d92936a1399c29ad27aecbf7b466b26cb379c4e986381307d4580c4",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/01.json",
+        "sha256": "34939efac2c883ee5f1546e230a16f58d4f9cc3d8dfb7d6606996aa39fccefd8",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/01.json",
+        "sha256": "89204c83fc1bfb444e2a5fde96a71364a2d140a6625d784efaf5a5597b12ed3f",
+        "size": 1089
+      },
+      "slot": 1,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\01.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/02.json",
+        "sha256": "1981a8508557825fa0dfd118c97a93e4cf2518c6e81a83b1de59eecc1801a110",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/02.json",
+        "sha256": "c8e9f13c5700ebac6313b92b32343347c62ea68e23dd67f4a8726935bdf26f17",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/02.json",
+        "sha256": "47330e69196ce061dbfa7a3c3162f7df26a5f332feb0d639475193bd83985636",
+        "size": 1089
+      },
+      "slot": 2,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\02.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/03.json",
+        "sha256": "0d0fe8b9f2932316638a929c5ef91b165eb47db48ff33936787fe0552b0757e8",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/03.json",
+        "sha256": "e60ca509927b90cf2874af4019411b55b61bc77e34eb86cc82745c5638b8e20b",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/03.json",
+        "sha256": "d827806b43c8236e61da1391e7856cf2106c1c14b78d9fc44fb84d9f1261cbda",
+        "size": 1089
+      },
+      "slot": 3,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\03.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/04.json",
+        "sha256": "3d7306180e3978d1b8eab0401966288f230138cbc12ca7f8bcc291f1ba99f951",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/04.json",
+        "sha256": "f38b50013c13d8b6309f2027f2d73bf288c3127754d606aa4894039a5555aa5a",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/04.json",
+        "sha256": "3cd826ff930fd4e3289512360819f4a4bf1fbbb3e7c20d5e382c5abd120e20ea",
+        "size": 1089
+      },
+      "slot": 4,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\04.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/05.json",
+        "sha256": "ad2e3858e4888b853fae1ad0aed04ef90cc01cd0639f5dcd84f8c904afde96e0",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/05.json",
+        "sha256": "f2f298859fdd0471298cc98995cc77db05f0a0dc2e98371be0e7b5426f1d6751",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/05.json",
+        "sha256": "2d97ac78e28f567dbaf677deac308e27485afca159a86a9916841edd1934b7f3",
+        "size": 1089
+      },
+      "slot": 5,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\05.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/06.json",
+        "sha256": "f08e71e257eb49878811d596cf704850174c49756c944c8095fabd9c4e4d167a",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/06.json",
+        "sha256": "a8073b73151f51458b24a89bdedb04d5ffabcacfc06e8ba96c19fc4c2717d548",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/06.json",
+        "sha256": "8a0b24c6c85455a715df5430df17fa7b6f6b401804389f0aec4c993040308a45",
+        "size": 1089
+      },
+      "slot": 6,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\06.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/07.json",
+        "sha256": "d1c14eef2a2f3a4a089986b1aab4307d8bdb0d38c556a2249f9f0a18c0704dd2",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/07.json",
+        "sha256": "71318dce9220e82214611f924fdc8434ea60086c2406ad1ad465951db0301c99",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/07.json",
+        "sha256": "1cb2df664de8412fcd6a32d5625a9d98e4ee75b5e7cd128e34bef19eb9d611a9",
+        "size": 1089
+      },
+      "slot": 7,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\07.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/08.json",
+        "sha256": "429c84a65fa655b027f8e6f8bb2c490686d728bae5959e3e21bcef21cc4adf4b",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/08.json",
+        "sha256": "0310e55ed00275d2233d2541f62e1ebd75b5eab49f676e1b7e49aff2fcc79fd3",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/08.json",
+        "sha256": "41ca090e3289be39b940636eeaba28305f4218ffb5f16b76287105228ecc4042",
+        "size": 1089
+      },
+      "slot": 8,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\08.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/09.json",
+        "sha256": "5d1ccbdfacbf4f15eb465e330c3be1177d5cd4d110f3c656bd4982984548d0fe",
+        "size": 475
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/09.json",
+        "sha256": "c94026ecf12e0827986e7c6fa5e94645b8f8e3409ad9fb7322a5e50f1f18c9b7",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/09.json",
+        "sha256": "335248224726c7b8f59650a330b9eb56f16234fec3d7f63500947be00060a5dc",
+        "size": 1089
+      },
+      "slot": 9,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\09.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/10.json",
+        "sha256": "498fca4fce4656333625fdb27fb26db5360d11ba27b1bd498b5b9d48f8dbff12",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/10.json",
+        "sha256": "893d60afd02a528a74bc222a526115734786adc905920a0dea732b01164483b4",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/10.json",
+        "sha256": "925951d4e4592a06cc9044bcebd9102b1e9d7ab26d02863f45ea8c31b94d6b62",
+        "size": 1091
+      },
+      "slot": 10,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\10.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/11.json",
+        "sha256": "5e9e752525963673122729937935ffb0b4abd157726a558cbd2bbe650d24b63a",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/11.json",
+        "sha256": "b5e800d4ba9c23be041a71db3b32e42c6cfed8a37fcc1ba558ab28726ef1c30f",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/11.json",
+        "sha256": "9f8179dca4c58fdc0db4885595d0d785466132bdac94763a9b214b6114f3899d",
+        "size": 1091
+      },
+      "slot": 11,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\11.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/12.json",
+        "sha256": "bc390078eb90cc600bd5002effa8a3d85b0fd8d24a9b911305b5a01e07b2b1fe",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/12.json",
+        "sha256": "f7fdc6a398dd5bec742dd4a7e419dae4ab5410ea440beff6d5aec399f0a9ce2c",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/12.json",
+        "sha256": "c4dafbd1dd6041e8d1d853d616755ae342967e1a5338839e229bc1ee7b30ca47",
+        "size": 1091
+      },
+      "slot": 12,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\12.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/13.json",
+        "sha256": "ff30f41d991bdc1b8ea8ca9c5e19dbd3195c59440be068ac8b913892db0e6e3b",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/13.json",
+        "sha256": "7c41ccba02fdd4c9eb47e26622207bd89d9e6563b25611f0757f79c788fefc7a",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/13.json",
+        "sha256": "2be6f4239ad1416009f62b8829874f139928480b1f20751c67d7c2892b6c1d3a",
+        "size": 1091
+      },
+      "slot": 13,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\13.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/14.json",
+        "sha256": "45873d232667a64fa03a69bb54e32b3c133943c41ffb5bd8c2016cdff0a1779a",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/14.json",
+        "sha256": "f517aea523c50d4350e7cc1f999a8b39ffcd51f652df5ce600b9a2839b04e5b4",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/14.json",
+        "sha256": "776f3e2d628e58f047f6f4782f5cc10ed2233e69a69835b3fc6c3d318d64dd5c",
+        "size": 1091
+      },
+      "slot": 14,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\14.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/15.json",
+        "sha256": "d90bd4efbbdb5eaec801975d9a36413f01e6dab409f47f9dc1843752c2592b3f",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/15.json",
+        "sha256": "9fe24a4f53cb3881ba9258dc897893a24a4e6f1249cabd13c638aa28babeb2a3",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/15.json",
+        "sha256": "1da6c1eb133076cbd57688d865ce12b7e3109ba8de209ff60a823e701584b266",
+        "size": 1091
+      },
+      "slot": 15,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\15.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/16.json",
+        "sha256": "8820ef601df4b4deb32f9ed73959c6d755f135f015cc6741a667c54de4e4d0a5",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/16.json",
+        "sha256": "8a756c95c3f01cb0a0ddeb6a67f687d7ef6b58d1a9a8dc65521d66d3e0fbc5d8",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/16.json",
+        "sha256": "51fde800d08193b53e7a0ec072507d30b1115b993e9171bb9b9a2abe55b2247e",
+        "size": 1091
+      },
+      "slot": 16,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\16.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/17.json",
+        "sha256": "7f1420dd6c667be89167d11a44c423e01d7c653b3077664704c156fd42b25857",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/17.json",
+        "sha256": "2079d87da51843e6e7680ca157f5da1a18ded4a7bfdecb982b0c5f056849c21a",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/17.json",
+        "sha256": "9e98c1845417c3f5495205fd2614c63561fabe89fd53f80699d657dc7feb715c",
+        "size": 1091
+      },
+      "slot": 17,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\17.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/18.json",
+        "sha256": "25a3daf5e9c591be94dc6dfddae283e37f31e4ee999f0afc3e6dc62f82534c75",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/18.json",
+        "sha256": "7faf950eda8922103181363ccbe15abc831208f068795469060353cc729f95d7",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/18.json",
+        "sha256": "cd9019f75de98da035a9b77dfb9bd7d7812905d049f6e486fac0e62d2e5474e4",
+        "size": 1091
+      },
+      "slot": 18,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\18.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/19.json",
+        "sha256": "6613b49a65063c6c9fc47c2aa57faf20a347706c35afd5a6755aa83ff84bb7d6",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/19.json",
+        "sha256": "6bbc306ac2bc4f87301b7036c50e59a0e555c817779e709cffa7a8d0d080880f",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/19.json",
+        "sha256": "ef5a4d58ae8172b57034c37a8df567f2501762bbaba893d122dd4ccdd834d8eb",
+        "size": 1091
+      },
+      "slot": 19,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\19.json"
+    },
+    {
+      "claim": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/claims/20.json",
+        "sha256": "bcfd0cc5fc1aa88ecf6edf713063599e4cbc92d31b3cb0a738839c17a571317f",
+        "size": 476
+      },
+      "inventory": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/captures/20.json",
+        "sha256": "53c22eddc1a418991d2419589ca97ee5b4a77e9edcb726be4b272c23956a04aa",
+        "size": 870649
+      },
+      "inventory_verdict": {
+        "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "effective_rule_count": 425,
+        "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+        "legacy_source": "windows_exact",
+        "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "nora_rule_count": 0,
+        "persistent_rule_count": 425,
+        "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+        "schema_version": "nora.phase2_firewall_invariant_report_v1",
+        "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+        "verdict": "PASS",
+        "violations": []
+      },
+      "receipt": {
+        "path": "/tmp/semantic20-final/firewall-campaigns/sync-20260717T024219Z/receipts/20.json",
+        "sha256": "46bcd5b7928bb6811ff7fa74d1aafe42da7f68c17f26c39a1f8a5709a4f447b8",
+        "size": 1091
+      },
+      "slot": 20,
+      "windows_final_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\captures\\20.json"
+    }
+  ],
+  "verdict": "PASS",
+  "wrapper_outcome": {
+    "campaign_pid": 3744,
+    "campaign_start_utc": "2026-07-17T05:42:58.4250650Z",
+    "owner_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T024219Z\\owner.json",
+    "owner_sha256": "41eb581bd91cd0b4e50b4e656848e4b409b8ac33e5ed7b25c1144004e75f46b7",
+    "state": "BOOTSTRAP_ACQUIRED"
+  },
+  "wrapper_start": {
+    "campaign_id": "sync-20260717T024219Z",
+    "campaign_tool_sha256": "4ff07f32c89b4150bd35eb5f96389f3107eb13c1942deeed22666fc01271c9ee",
+    "capture_tool_sha256": "a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7",
+    "launch_id": "synlc-20260717T024219Z",
+    "logical_command_sha256": "f4ecac2acde4d69b269845ec2b02bf724e6091a940b27c6208da7e29afe4914a",
+    "repository_commit": "336ec9ba99d1f7fe53cf4bf7f8f84db88010e02a",
+    "runner_sha256": "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+    "schema_version": "nora.phase2_firewall_wrapper_start_v1",
+    "stderr_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T024219Z\\stderr.txt",
+    "stdout_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T024219Z\\stdout.txt",
+    "submitted_command_sha256": "unavailable",
+    "windows_user": "DESKTOP-21I1FJP\\Gasper",
+    "wrapper_path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1",
+    "wrapper_pid": 5608,
+    "wrapper_sha256": "48aa6336bade5ff29a801c222218969453e0108da8f18007be0ebbc79be85e9e",
+    "wrapper_start_utc": "2026-07-17T05:42:57.9555150Z"
+  }
+}

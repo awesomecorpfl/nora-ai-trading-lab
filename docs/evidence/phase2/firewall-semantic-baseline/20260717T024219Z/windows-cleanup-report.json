@@ -1,0 +1,41 @@
+{
+    "schema_version":  "nora.phase2_firewall_cleanup_v1",
+    "run_id":  "semantic20-20260717T024219Z",
+    "launch_id":  "synlc-20260717T024219Z",
+    "campaign_id":  "sync-20260717T024219Z",
+    "launch_directory_remaining":  false,
+    "campaign_directory_remaining":  false,
+    "synthetic_launch_directories_remaining":  0,
+    "pending_artifacts_remaining":  0,
+    "processes_before":  [
+
+                         ],
+    "processes_after":  [
+
+                        ],
+    "related_processes_remaining":  0,
+    "nora_rules_remaining":  0,
+    "firewall_profiles":  [
+                              {
+                                  "Name":  "Domain",
+                                  "Enabled":  1
+                              },
+                              {
+                                  "Name":  "Private",
+                                  "Enabled":  1
+                              },
+                              {
+                                  "Name":  "Public",
+                                  "Enabled":  1
+                              }
+                          ],
+    "tester_rules":  [
+                         {
+                             "DisplayName":  "MetaTrader 5 Strategy Tester Agent",
+                             "Enabled":  2,
+                             "Action":  2,
+                             "Direction":  1
+                         }
+                     ],
+    "cleaned_utc":  "2026-07-17T05:47:49.6126992Z"
+}
