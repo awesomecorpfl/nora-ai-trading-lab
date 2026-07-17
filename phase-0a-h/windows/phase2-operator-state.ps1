@@ -23,7 +23,7 @@ function Read-ReconciledJobFile([string]$Path){
   if($null-ne$top -and $null-ne$nested -and $topJson-ne$nestedJson){throw ('legacy job contradictory field:'+ $name)}
   if($null-ne$top){$legacy[$name]=$top}
  }
- if(!$legacy.run_identifier -or !$legacy.state){throw 'normalized job identity/state missing'}
+ if(!$legacy.Contains('run_identifier') -or !$legacy.Contains('state') -or !$legacy['run_identifier'] -or !$legacy['state']){throw 'normalized job identity/state missing'}
  [ordered]@{raw=$raw;job=$job;normalized=$legacy}
 }
 function Hash-Bytes([byte[]]$Bytes){([Security.Cryptography.SHA256]::Create().ComputeHash($Bytes)|ForEach-Object{$_.ToString('x2')})-join''}
@@ -49,16 +49,16 @@ function Get-ReconciledJobInventory([string]$Root){
  $rows=@();$known=@{}
  if(Test-Path -LiteralPath $jobsRoot -PathType Container){
   foreach($file in @(Get-ChildItem -LiteralPath $jobsRoot -Filter '*.json' -File|Sort-Object Name)){
-   $decoded=Read-ReconciledJobFile $file.FullName;$n=$decoded.normalized;$id=[string]$n.run_identifier
+   $decoded=Read-ReconciledJobFile $file.FullName;$n=$decoded.normalized;$id=[string]$n['run_identifier']
    if($known.ContainsKey($id)){throw 'duplicate normalized run identifier'};$known[$id]=$true
    $reconDirectory=Join-Path $reconRoot ($id+'.published');$reconPath=Join-Path $reconDirectory 'reconciliation.json';$reconciled=$false;$binding=$null
-   if([string]$n.state -eq 'prepared'){
+   if([string]$n['state'] -eq 'prepared'){
     if(Test-Path -LiteralPath $reconPath){$binding=Read-ReconciliationBinding $reconDirectory $id;$reconciled=$true}
-   }elseif([string]$n.state -eq 'abandoned' -and $decoded.job.PSObject.Properties.Name -contains 'reconciliation_record_path' -and $decoded.job.reconciliation_record_path){$binding=Read-ReconciliationBinding (Split-Path -Parent ([string]$decoded.job.reconciliation_record_path)) $id;$reconciled=$true}
+   }elseif([string]$n['state'] -eq 'abandoned' -and $decoded.job.PSObject.Properties.Name -contains 'reconciliation_record_path' -and $decoded.job.reconciliation_record_path){$binding=Read-ReconciliationBinding (Split-Path -Parent ([string]$decoded.job.reconciliation_record_path)) $id;$reconciled=$true}
    $validStates=$activeStates+@('prepared')+$terminalStates
-   if([string]$n.state -notin $validStates){throw 'unknown job state'}
+   if([string]$n['state'] -notin $validStates){throw 'unknown job state'}
    $currentChanged=if($binding){$binding.original_sha256-ne(Hash-Bytes $decoded.raw)}else{$false}
-   $rows+=[ordered]@{run_identifier=$id;normalized_state=[string]$n.state;reconciled_historical_prepared=$reconciled;original_binding_path=if($binding){$binding.original_path}else{$null};original_job_size=if($binding){$binding.original_size}else{$null};original_job_sha256=if($binding){$binding.original_sha256}else{$null};current_job_changed_after_reconciliation=$currentChanged}
+   $rows+=[ordered]@{run_identifier=$id;normalized_state=[string]$n['state'];reconciled_historical_prepared=$reconciled;original_binding_path=if($binding){$binding.original_path}else{$null};original_job_size=if($binding){$binding.original_size}else{$null};original_job_sha256=if($binding){$binding.original_sha256}else{$null};current_job_changed_after_reconciliation=$currentChanged}
   }
  }
  # Every published reconciliation must have exactly one source job and matching bytes.
