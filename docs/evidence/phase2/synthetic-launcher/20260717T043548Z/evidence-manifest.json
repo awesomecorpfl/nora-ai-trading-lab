@@ -1,0 +1,104 @@
+{
+  "case_c_clarification": {
+    "clarification_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-case-c-clarification-20260717.md",
+    "contract_conclusion": "not fully evidence-sealed for causal mismatch proof; original report unchanged",
+    "explicit_owner_binding_mismatch_record_retained": false,
+    "retained_outcome": "CAMPAIGN_EXITED_BEFORE_OWNER",
+    "underlying_mismatch_proven_in_retained_evidence": false
+  },
+  "case_outcomes": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS (externally visible outcome retained as CAMPAIGN_EXITED_BEFORE_OWNER)",
+    "D": "PASS"
+  },
+  "cleanup_state": {
+    "nora_rules_remaining": 0,
+    "phase2_processes_remaining": 0,
+    "synthetic_campaign_dirs_remaining": 0,
+    "synthetic_launch_dirs_remaining": 0
+  },
+  "copy_method": "cp --preserve=mode,timestamps followed by cmp -s byte-identity verification",
+  "created_utc": "2026-07-17T01:50:29Z",
+  "current_evidence_sealing_head": "90c5f8c525378c2b37587249449079977f702573",
+  "files": {
+    "case_c_erratum": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-case-c-clarification-20260717.md",
+        "sha256": "8c139915feacabdd440ffa1be797067c64c983ea1cc16bdc495745691dbb3f0a",
+        "size": 2014
+      },
+      "source": {
+        "path": "/home/gasper/Documents/phase2-case-c-clarification-20260717.md",
+        "sha256": "8c139915feacabdd440ffa1be797067c64c983ea1cc16bdc495745691dbb3f0a",
+        "size": 2014
+      }
+    },
+    "receipt": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-synthetic-lifecycle-preservation-20260717T043548Z.json",
+        "sha256": "a903c3feafdb821682abd1646d38c851d79d459143782ee5d1f89cf28c877e70",
+        "size": 1012
+      },
+      "source": {
+        "path": "/home/gasper/Documents/phase2-synthetic-lifecycle-preservation-20260717T043548Z.json",
+        "sha256": "a903c3feafdb821682abd1646d38c851d79d459143782ee5d1f89cf28c877e70",
+        "size": 1012
+      }
+    },
+    "report": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-synthetic-launcher-qualification-report-20260717.md",
+        "sha256": "2beb4c7f29d6c49bd3dce03a96b9cf5018ea55cc84dbb6deffc3a5eaa0fe85be",
+        "size": 4938
+      },
+      "source": {
+        "path": "/home/gasper/Documents/phase2-synthetic-launcher-qualification-report-20260717.md",
+        "sha256": "2beb4c7f29d6c49bd3dce03a96b9cf5018ea55cc84dbb6deffc3a5eaa0fe85be",
+        "size": 4938
+      }
+    }
+  },
+  "firewall_state": {
+    "Domain": "Enabled",
+    "Private": "Enabled",
+    "Public": "Enabled"
+  },
+  "protected_directories": {
+    "accessed": false,
+    "modified": false,
+    "paths": [
+      "phase-0a-h/results/import-20260710T211431Z/",
+      "phase-0a-h/results/import-20260710T211510Z/",
+      "phase-0a-h/results/import-20260710T211555Z/",
+      "phase-0a-harness/results/20260710T233529Z/"
+    ]
+  },
+  "qualification_repository_head": "90c5f8c525378c2b37587249449079977f702573",
+  "run_id": "20260717T043548Z",
+  "schema_version": "nora.phase2_synthetic_launcher_evidence_manifest_v1",
+  "second_rerun": {
+    "credit_status": "uncredited operator confirmation; not included as sealed evidence",
+    "exact_retained_artifacts_found": false,
+    "reported_run_id": "20260717T043955Z"
+  },
+  "tester_rule_state": {
+    "display_name": "MetaTrader 5 Strategy Tester Agent",
+    "enabled": "Disabled"
+  },
+  "tool_hashes": {
+    "capture-phase2-firewall-inventory.ps1": "0153f6cdada06a98f7c7ae3af704a36c232bb3b2ba625640fc928a808d5cfe57",
+    "launch-phase2-firewall-campaign.ps1": "3e3bdb46c5fcf555fc3493e8cada718b7b03b2d64dbf8f17f5249ccbc4f11371",
+    "phase2-firewall-launch-wrapper.ps1": "839d2e9a3932561f4b28e787d8c85b8f20e05111a48f0b66d6a1d3755192d599"
+  },
+  "windows_fedora_receipt": {
+    "byte_identical": true,
+    "fedora_path": "/home/gasper/Documents/phase2-synthetic-lifecycle-preservation-20260717T043548Z.json",
+    "sha256": "a903c3feafdb821682abd1646d38c851d79d459143782ee5d1f89cf28c877e70",
+    "size": 1012,
+    "windows_path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-preservation-20260717T043548Z.json"
+  }
+}
