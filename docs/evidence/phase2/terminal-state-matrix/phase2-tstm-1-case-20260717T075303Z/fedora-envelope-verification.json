@@ -1,0 +1,7 @@
+{
+  "case_id": "phase2-tstm-1-case-20260717T075303Z",
+  "envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+  "operation_count": 6,
+  "schema_version": "nora.phase2_case_envelope_v1",
+  "verdict": "PASS"
+}

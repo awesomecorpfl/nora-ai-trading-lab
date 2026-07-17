@@ -1,0 +1,89 @@
+{
+  "final_envelope": {
+    "fedora_verification": "PASS",
+    "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+    "sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+    "size": 17843,
+    "windows_verification": "PASS"
+  },
+  "final_safety": {
+    "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/final-safety-report.json",
+    "retrieval": "PASS",
+    "sha256": "c766cb7e557b6854a7096c393ba3798a5f0993c4d01a9dd0bcd0706e7298b29b"
+  },
+  "operations": [
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "90bf1aad77429c55b9cf565c5cffe992efe5c5e5c62de11e81a1ea03314ff54f",
+      "member_count": 11,
+      "operation_id": "changed-after",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-after.zip",
+      "sha256": "a7da7d47dd5af07d840ba2ceffe4c5335a745e35fe8853f01543a5ff39ce4d84",
+      "size": 1757429,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "31ad16e5419d5be0a8531efa34bfd9fc43a7424f9a3bec513da0a03e97523819",
+      "member_count": 11,
+      "operation_id": "changed-before",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-before.zip",
+      "sha256": "f6c3c7b52b314eb6f693b0780c70a547f9cadee79f47f328f97b7cfee373f87f",
+      "size": 1757437,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "3d8744e2cc263bce46482fe0e05133b466af2c638bcc23eab215992ad7791670",
+      "member_count": 11,
+      "operation_id": "classification",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/classification.zip",
+      "sha256": "559e7d875394479211a9e214c3dbc8e7957ffd18d0bf9b2886e6452e1a726e14",
+      "size": 1758042,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "4ed747acc376c9c8288cefc747c95d31ca2f43d60706f2c4d3ad9812be9cf9ef",
+      "member_count": 11,
+      "operation_id": "cleanup",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/cleanup.zip",
+      "sha256": "c37df412d33edf3811647d85e29d9fbf28d737a2c7045508c7c5094a33dd36ac",
+      "size": 1758191,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "2a0b18f42135e2d088caa2c4416441de60800048145a368721d43931417dda68",
+      "member_count": 11,
+      "operation_id": "same-after",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-after.zip",
+      "sha256": "82783fe5e441e8b4e511d253e7d7fd3f45d5794c9aa3c0e9d73063613e3c29aa",
+      "size": 1757417,
+      "windows_recomputation": "PASS"
+    },
+    {
+      "fedora_recomputation": "PASS",
+      "firewall_equality_verdict": "PASS",
+      "firewall_recomputed_verdict": "PASS",
+      "manifest_sha256": "7a3fe154bf327ef009165d38049ef26e5a99e4d69ec1f66f951bae1a051a9184",
+      "member_count": 11,
+      "operation_id": "same-before",
+      "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-before.zip",
+      "sha256": "94a3484e972ea3482bebb09a30a202b17ac28944bbf9f2b5f309f155c028b987",
+      "size": 1757425,
+      "windows_recomputation": "PASS"
+    }
+  ],
+  "schema_version": "nora.phase2_tstm_1_independent_verification_v1"
+}

@@ -1,0 +1,30 @@
+{
+  "active_pending_case": false,
+  "candidate_identity_dirs": [],
+  "host": "DESKTOP-21I1FJP",
+  "nora_rule_count": 0,
+  "profiles": [
+    {
+      "enabled": true,
+      "name": "Domain"
+    },
+    {
+      "enabled": true,
+      "name": "Private"
+    },
+    {
+      "enabled": true,
+      "name": "Public"
+    }
+  ],
+  "protected_paths_not_inspected": true,
+  "related_process_count": 0,
+  "schema_version": "nora.phase2_tstm_1_preflight_v1",
+  "terminal_tester_process_count": 0,
+  "tester_rule": {
+    "enabled": false,
+    "enabled_value": 2,
+    "name": "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}",
+    "present": true
+  }
+}

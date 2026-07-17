@@ -1,0 +1,236 @@
+{
+  "accepted_baseline_commit": "9ae03da91b5d8875e8a0766b580d382628b57beb",
+  "accepted_croq_case": "phase2-croq-1-case-20260717T044631Z",
+  "case_envelope": {
+    "fedora_verification": "PASS",
+    "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+    "retrieval_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/final-case-envelope.json",
+    "retrieval_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+    "sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+    "size": 17843,
+    "windows_verification": "PASS"
+  },
+  "complete_coverage": true,
+  "credited_row_count": 6,
+  "deferred_reason": "No tracked repository-owned formal containment-acceptance publication command or explicit final prerequisite contract is defined; Phase 2 remains incomplete.",
+  "final_baseline_equal": true,
+  "final_invariant_verdict": "PASS",
+  "final_safety_report": {
+    "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/final-safety-report.json",
+    "sha256": "c766cb7e557b6854a7096c393ba3798a5f0993c4d01a9dd0bcd0706e7298b29b",
+    "size": 6349,
+    "verdict": "PASS"
+  },
+  "formal_acceptance_deferred": true,
+  "matrix_contract_identity": {
+    "case_envelope_schema": "nora.phase2_case_envelope_v1",
+    "case_type": "abandoned_reuse",
+    "sequence": [
+      "classification",
+      "same-before",
+      "changed-before",
+      "cleanup",
+      "same-after",
+      "changed-after"
+    ],
+    "sequence_source": "scripts/phase2-run-abandoned-case.py::SEQUENCE"
+  },
+  "missing_row_count": 0,
+  "repository_commit": "7092251ada66bb02eb36af23d98f89ba7ec95616",
+  "required_row_count": 6,
+  "rows": [
+    {
+      "case_envelope_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+      "case_envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+      "case_envelope_size": 17843,
+      "case_envelope_verification": "PASS",
+      "credit": "GRANTED",
+      "event": "publish abandoned pre-launch classification",
+      "evidence_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/classification.zip",
+      "evidence_sha256": "559e7d875394479211a9e214c3dbc8e7957ffd18d0bf9b2886e6452e1a726e14",
+      "evidence_size": 1758042,
+      "execution_required": true,
+      "fedora_recomputation": "PASS",
+      "manifest_sha256": "3d8744e2cc263bce46482fe0e05133b466af2c638bcc23eab215992ad7791670",
+      "mutation_expected": false,
+      "operation_envelope_role": "classification",
+      "package": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/classification.zip",
+      "package_member_count": 11,
+      "recovery_expected": false,
+      "repeated_retrieval": [
+        {
+          "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-repeat-classification-20260717T075303Z.json",
+          "result": "identical_existing",
+          "sha256": "8ddd80231bec451401c1684ae62d79e263e09e8eb9d6a56c23904d8e1d5e4766"
+        }
+      ],
+      "required_starting_state": "no durable classification; no Nora rules",
+      "retrieval_receipt_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-classification.json",
+      "retrieval_receipt_sha256": "201d2144bbaa1d6a52ac908bc2d88e387663da4ee57b04e8b14288aa093937cf",
+      "row_id": "classification",
+      "terminal_state": "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT",
+      "windows_recomputation": "PASS"
+    },
+    {
+      "case_envelope_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+      "case_envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+      "case_envelope_size": 17843,
+      "case_envelope_verification": "PASS",
+      "credit": "GRANTED",
+      "event": "reuse stage attempt with original executable path",
+      "evidence_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-before.zip",
+      "evidence_sha256": "94a3484e972ea3482bebb09a30a202b17ac28944bbf9f2b5f309f155c028b987",
+      "evidence_size": 1757425,
+      "execution_required": true,
+      "fedora_recomputation": "PASS",
+      "manifest_sha256": "7a3fe154bf327ef009165d38049ef26e5a99e4d69ec1f66f951bae1a051a9184",
+      "mutation_expected": false,
+      "operation_envelope_role": "reuse_attempt",
+      "package": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-before.zip",
+      "package_member_count": 11,
+      "recovery_expected": false,
+      "repeated_retrieval": [
+        {
+          "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-repeat-same-before-20260717T075303Z.json",
+          "result": "identical_existing",
+          "sha256": "8c6a9f5f2c46fb3c5576873e56ed17977f68cf2a976c2f6d8e33fceb052b1e9a"
+        }
+      ],
+      "required_starting_state": "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT classification present",
+      "retrieval_receipt_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-same-before.json",
+      "retrieval_receipt_sha256": "b1c2187577024ef65f6c3aa4a2ef5bff8fe9575c58cbad4425ed26f36e7a0d6c",
+      "row_id": "same-before",
+      "terminal_state": "NORA_TERMINAL_REUSE_REJECTED",
+      "windows_recomputation": "PASS"
+    },
+    {
+      "case_envelope_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+      "case_envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+      "case_envelope_size": 17843,
+      "case_envelope_verification": "PASS",
+      "credit": "GRANTED",
+      "event": "reuse stage attempt with changed executable path",
+      "evidence_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-before.zip",
+      "evidence_sha256": "f6c3c7b52b314eb6f693b0780c70a547f9cadee79f47f328f97b7cfee373f87f",
+      "evidence_size": 1757437,
+      "execution_required": true,
+      "fedora_recomputation": "PASS",
+      "manifest_sha256": "31ad16e5419d5be0a8531efa34bfd9fc43a7424f9a3bec513da0a03e97523819",
+      "mutation_expected": false,
+      "operation_envelope_role": "reuse_attempt",
+      "package": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-before.zip",
+      "package_member_count": 11,
+      "recovery_expected": false,
+      "repeated_retrieval": [
+        {
+          "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-repeat-changed-before-20260717T075303Z.json",
+          "result": "identical_existing",
+          "sha256": "7d700936dec747047c1b68b2ce6f2cf3f7c3b0db3f1c19351ea67e2e5c773100"
+        }
+      ],
+      "required_starting_state": "same classification present; no rules",
+      "retrieval_receipt_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-changed-before.json",
+      "retrieval_receipt_sha256": "d9a11e3ca6646b6977c51e9df0026f17c343db257bd192aff1b35ca140c52fea",
+      "row_id": "changed-before",
+      "terminal_state": "NORA_TERMINAL_REUSE_REJECTED",
+      "windows_recomputation": "PASS"
+    },
+    {
+      "case_envelope_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+      "case_envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+      "case_envelope_size": 17843,
+      "case_envelope_verification": "PASS",
+      "credit": "GRANTED",
+      "event": "repository-owned abandoned-fixture cleanup",
+      "evidence_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/cleanup.zip",
+      "evidence_sha256": "c37df412d33edf3811647d85e29d9fbf28d737a2c7045508c7c5094a33dd36ac",
+      "evidence_size": 1758191,
+      "execution_required": true,
+      "fedora_recomputation": "PASS",
+      "manifest_sha256": "4ed747acc376c9c8288cefc747c95d31ca2f43d60706f2c4d3ad9812be9cf9ef",
+      "mutation_expected": false,
+      "operation_envelope_role": "cleanup",
+      "package": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/cleanup.zip",
+      "package_member_count": 11,
+      "recovery_expected": false,
+      "repeated_retrieval": [
+        {
+          "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-repeat-cleanup-20260717T075303Z.json",
+          "result": "identical_existing",
+          "sha256": "168bafa7480e3eab695fc04beecd7590361df39c68757c2d073dff26066b5a63"
+        }
+      ],
+      "required_starting_state": "classification present; no rules",
+      "retrieval_receipt_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-cleanup.json",
+      "retrieval_receipt_sha256": "692531103902ad91d618f6317c9f58afe314f76a09308f377a8d26c71244425e",
+      "row_id": "cleanup",
+      "terminal_state": "NO_OP_CLEANUP",
+      "windows_recomputation": "PASS"
+    },
+    {
+      "case_envelope_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+      "case_envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+      "case_envelope_size": 17843,
+      "case_envelope_verification": "PASS",
+      "credit": "GRANTED",
+      "event": "post-cleanup reuse stage attempt with original executable path",
+      "evidence_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-after.zip",
+      "evidence_sha256": "82783fe5e441e8b4e511d253e7d7fd3f45d5794c9aa3c0e9d73063613e3c29aa",
+      "evidence_size": 1757417,
+      "execution_required": true,
+      "fedora_recomputation": "PASS",
+      "manifest_sha256": "2a0b18f42135e2d088caa2c4416441de60800048145a368721d43931417dda68",
+      "mutation_expected": false,
+      "operation_envelope_role": "reuse_attempt",
+      "package": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-after.zip",
+      "package_member_count": 11,
+      "recovery_expected": false,
+      "repeated_retrieval": [
+        {
+          "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-repeat-same-after-20260717T075303Z.json",
+          "result": "identical_existing",
+          "sha256": "029bc3f85b7afbbe9f0deff06c08fb1f23b73e9c8f0df714c705022dde5d617c"
+        }
+      ],
+      "required_starting_state": "classification present; no rules",
+      "retrieval_receipt_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-same-after.json",
+      "retrieval_receipt_sha256": "7d4f5bd12c8b9d2fb54c85a32ca9638ec91b406960afeb028f027d5ade38d11a",
+      "row_id": "same-after",
+      "terminal_state": "NORA_TERMINAL_REUSE_REJECTED",
+      "windows_recomputation": "PASS"
+    },
+    {
+      "case_envelope_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/case-envelope.json",
+      "case_envelope_sha256": "450c15193ce65b80e81c28f1bf2e2235844de21da2b8b0fd1f1c2a8f7ed23251",
+      "case_envelope_size": 17843,
+      "case_envelope_verification": "PASS",
+      "credit": "GRANTED",
+      "event": "post-cleanup reuse stage attempt with changed executable path",
+      "evidence_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-after.zip",
+      "evidence_sha256": "a7da7d47dd5af07d840ba2ceffe4c5335a745e35fe8853f01543a5ff39ce4d84",
+      "evidence_size": 1757429,
+      "execution_required": true,
+      "fedora_recomputation": "PASS",
+      "manifest_sha256": "90bf1aad77429c55b9cf565c5cffe992efe5c5e5c62de11e81a1ea03314ff54f",
+      "mutation_expected": false,
+      "operation_envelope_role": "reuse_attempt",
+      "package": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-after.zip",
+      "package_member_count": 11,
+      "recovery_expected": false,
+      "repeated_retrieval": [
+        {
+          "path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-repeat-changed-after-20260717T075303Z.json",
+          "result": "identical_existing",
+          "sha256": "6718b5c2e5fc96bc6e6877b2d12e11ed11e749c73b26ab9bf47468d2a3d867e6"
+        }
+      ],
+      "required_starting_state": "classification present; no rules",
+      "retrieval_receipt_path": "docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-changed-after.json",
+      "retrieval_receipt_sha256": "d55ff7754e84c213fb429888ec0d6e4fe80566059641c4d592893871d816fcaf",
+      "row_id": "changed-after",
+      "terminal_state": "NORA_TERMINAL_REUSE_REJECTED",
+      "windows_recomputation": "PASS"
+    }
+  ],
+  "schema_version": "nora.phase2_tstm_1_terminal_state_matrix_result_v1"
+}

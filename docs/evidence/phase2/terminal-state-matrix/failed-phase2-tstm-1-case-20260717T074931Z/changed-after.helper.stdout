@@ -1,0 +1,2 @@
+CASE=1 EXIT=1 EXPECTED=1
+{"capture_path":"C:\\NoraEvidence\\Phase2\\containment-captures\\\\phase2-tstm-1-case-20260717T074931Z\\\\changed-after","package_sha256":"5c9a57c05b9dbe4308ed0b694a2fe9d966d37f189965988c5511775aa5bf3f2d","containment_exit_code":1}

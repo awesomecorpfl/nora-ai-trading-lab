@@ -1,0 +1,201 @@
+{
+  "case_id": "phase2-tstm-1-case-20260717T075303Z",
+  "case_invariants": {
+    "accepted_baseline_commit": "9ae03da91b5d8875e8a0766b580d382628b57beb",
+    "accepted_baseline_manifest_sha256": "7b9d79e4ec2dfea01b1c32921847cdc44b579c7837999783ca2bcebe920c80e7",
+    "accepted_campaign_id": "sync-20260717T034100Z",
+    "baseline_final_equal": true,
+    "classification": "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT",
+    "final_invariant_verdict": "PASS",
+    "final_nora_rules": 0,
+    "non_reusable": true,
+    "semantic_digests": {
+      "canonical": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+      "nora": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "profile": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+      "unrelated": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8"
+    }
+  },
+  "case_type": "abandoned_reuse",
+  "declared_sequence": [
+    "classification",
+    "same-before",
+    "changed-before",
+    "cleanup",
+    "same-after",
+    "changed-after"
+  ],
+  "firewall_preservation": {
+    "baseline_canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "baseline_final_equal": true,
+    "baseline_inventory": {
+      "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/baseline-inventory.json",
+      "sha256": "3d9a993dbb3a92f93961fdcd0c0672a282bb66d590aba3b7bd5579dd4afa91bf",
+      "size": 870649
+    },
+    "baseline_legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+    "baseline_profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+    "baseline_unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "equality_report": {
+      "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/baseline-equality-report.json",
+      "sha256": "fd13aed288820f93608c16c934d16af6f0ec13065de7f1c7f77694731f1dd4fa",
+      "size": 1613
+    },
+    "final_canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "final_invariant_verdict": "PASS",
+    "final_inventory": {
+      "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/final-inventory.json",
+      "sha256": "4dd222d3f375d9018e4bc292def059bb0dc3e8e2eecf049bee25360024ffed3c",
+      "size": 870636
+    },
+    "historical_drift_report": {
+      "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/historical-drift-report.json",
+      "sha256": "15bb76c4f591755293a015566e34ba54c151d01e4926aace84f603c96f371125",
+      "size": 308
+    },
+    "invariant_report": {
+      "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/baseline-invariant-report.json",
+      "sha256": "5c3e2a29b7aa1fa9e4250c55ee34703e2855d8596e6c05dc46dd768eaa8f9ba1",
+      "size": 671
+    },
+    "schema_version": "nora.phase2_firewall_case_binding_v2"
+  },
+  "identities": {
+    "containment": "c906a0e428be78c72cb9c063566b3ec7bc1f907879cefe620a7735130b043774",
+    "native_execution": "cec6c3e2fe8e102fdc18008706ffc93555e81fd12d68fbfb5a06d97118373dbc",
+    "publisher": "00b73a7a95d5406df1faf6955b54bfb4340d042b15b1a73ff6a3cd94c16d0f6f",
+    "retrieval_wrapper": "8e4107db2b2e81019e23f5e8f0d055dcd7d213955419e5a3cad7289b4867b63a",
+    "runner": "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+    "verifier": "efcdf8c7f9925937c02f42e1a11390d71fe4a81fd697c9a05634c9a099f13704"
+  },
+  "operations": [
+    {
+      "causal_relationship": "ordered_after_predecessor",
+      "cleanup_recovery_relationship": null,
+      "expected_exit": 0,
+      "helper_exit": 0,
+      "operation_id": "classification",
+      "operation_type": "classification",
+      "operation_verdict": "PASS",
+      "original_child_exit": 0,
+      "package_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/classification.zip",
+      "package_sha256": "559e7d875394479211a9e214c3dbc8e7957ffd18d0bf9b2886e6452e1a726e14",
+      "package_size": 1758042,
+      "predecessor_operation_id": null,
+      "retrieval": {
+        "fedora_package_sha256": "559e7d875394479211a9e214c3dbc8e7957ffd18d0bf9b2886e6452e1a726e14",
+        "receipt_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-classification.json",
+        "receipt_sha256": "201d2144bbaa1d6a52ac908bc2d88e387663da4ee57b04e8b14288aa093937cf",
+        "verification_result": "PASS"
+      },
+      "windows_path": "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T075303Z\\classification.zip"
+    },
+    {
+      "causal_relationship": "ordered_after_predecessor",
+      "cleanup_recovery_relationship": null,
+      "expected_exit": 1,
+      "helper_exit": 0,
+      "operation_id": "same-before",
+      "operation_type": "reuse_attempt",
+      "operation_verdict": "PASS",
+      "original_child_exit": 1,
+      "package_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-before.zip",
+      "package_sha256": "94a3484e972ea3482bebb09a30a202b17ac28944bbf9f2b5f309f155c028b987",
+      "package_size": 1757425,
+      "predecessor_operation_id": "classification",
+      "retrieval": {
+        "fedora_package_sha256": "94a3484e972ea3482bebb09a30a202b17ac28944bbf9f2b5f309f155c028b987",
+        "receipt_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-same-before.json",
+        "receipt_sha256": "b1c2187577024ef65f6c3aa4a2ef5bff8fe9575c58cbad4425ed26f36e7a0d6c",
+        "verification_result": "PASS"
+      },
+      "windows_path": "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T075303Z\\same-before.zip"
+    },
+    {
+      "causal_relationship": "ordered_after_predecessor",
+      "cleanup_recovery_relationship": null,
+      "expected_exit": 1,
+      "helper_exit": 0,
+      "operation_id": "changed-before",
+      "operation_type": "reuse_attempt",
+      "operation_verdict": "PASS",
+      "original_child_exit": 1,
+      "package_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-before.zip",
+      "package_sha256": "f6c3c7b52b314eb6f693b0780c70a547f9cadee79f47f328f97b7cfee373f87f",
+      "package_size": 1757437,
+      "predecessor_operation_id": "same-before",
+      "retrieval": {
+        "fedora_package_sha256": "f6c3c7b52b314eb6f693b0780c70a547f9cadee79f47f328f97b7cfee373f87f",
+        "receipt_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-changed-before.json",
+        "receipt_sha256": "d9a11e3ca6646b6977c51e9df0026f17c343db257bd192aff1b35ca140c52fea",
+        "verification_result": "PASS"
+      },
+      "windows_path": "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T075303Z\\changed-before.zip"
+    },
+    {
+      "causal_relationship": "ordered_after_predecessor",
+      "cleanup_recovery_relationship": "cleanup_boundary",
+      "expected_exit": 0,
+      "helper_exit": 0,
+      "operation_id": "cleanup",
+      "operation_type": "cleanup",
+      "operation_verdict": "PASS",
+      "original_child_exit": 0,
+      "package_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/cleanup.zip",
+      "package_sha256": "c37df412d33edf3811647d85e29d9fbf28d737a2c7045508c7c5094a33dd36ac",
+      "package_size": 1758191,
+      "predecessor_operation_id": "changed-before",
+      "retrieval": {
+        "fedora_package_sha256": "c37df412d33edf3811647d85e29d9fbf28d737a2c7045508c7c5094a33dd36ac",
+        "receipt_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-cleanup.json",
+        "receipt_sha256": "692531103902ad91d618f6317c9f58afe314f76a09308f377a8d26c71244425e",
+        "verification_result": "PASS"
+      },
+      "windows_path": "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T075303Z\\cleanup.zip"
+    },
+    {
+      "causal_relationship": "ordered_after_predecessor",
+      "cleanup_recovery_relationship": "after_cleanup:cleanup",
+      "expected_exit": 1,
+      "helper_exit": 0,
+      "operation_id": "same-after",
+      "operation_type": "reuse_attempt",
+      "operation_verdict": "PASS",
+      "original_child_exit": 1,
+      "package_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/same-after.zip",
+      "package_sha256": "82783fe5e441e8b4e511d253e7d7fd3f45d5794c9aa3c0e9d73063613e3c29aa",
+      "package_size": 1757417,
+      "predecessor_operation_id": "cleanup",
+      "retrieval": {
+        "fedora_package_sha256": "82783fe5e441e8b4e511d253e7d7fd3f45d5794c9aa3c0e9d73063613e3c29aa",
+        "receipt_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-same-after.json",
+        "receipt_sha256": "7d4f5bd12c8b9d2fb54c85a32ca9638ec91b406960afeb028f027d5ade38d11a",
+        "verification_result": "PASS"
+      },
+      "windows_path": "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T075303Z\\same-after.zip"
+    },
+    {
+      "causal_relationship": "ordered_after_predecessor",
+      "cleanup_recovery_relationship": "after_cleanup:cleanup",
+      "expected_exit": 1,
+      "helper_exit": 0,
+      "operation_id": "changed-after",
+      "operation_type": "reuse_attempt",
+      "operation_verdict": "PASS",
+      "original_child_exit": 1,
+      "package_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/operation-packages/changed-after.zip",
+      "package_sha256": "a7da7d47dd5af07d840ba2ceffe4c5335a745e35fe8853f01543a5ff39ce4d84",
+      "package_size": 1757429,
+      "predecessor_operation_id": "same-after",
+      "retrieval": {
+        "fedora_package_sha256": "a7da7d47dd5af07d840ba2ceffe4c5335a745e35fe8853f01543a5ff39ce4d84",
+        "receipt_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/terminal-state-matrix/phase2-tstm-1-case-20260717T075303Z/retrieval/phase2-tstm-1-case-20260717T075303Z-changed-after.json",
+        "receipt_sha256": "d55ff7754e84c213fb429888ec0d6e4fe80566059641c4d592893871d816fcaf",
+        "verification_result": "PASS"
+      },
+      "windows_path": "C:\\NoraEvidence\\Phase2\\case-operations\\phase2-tstm-1-case-20260717T075303Z\\changed-after.zip"
+    }
+  ],
+  "published_utc": "2026-07-17T07:53:03Z",
+  "repository_commit": "7092251ada66bb02eb36af23d98f89ba7ec95616"
+}

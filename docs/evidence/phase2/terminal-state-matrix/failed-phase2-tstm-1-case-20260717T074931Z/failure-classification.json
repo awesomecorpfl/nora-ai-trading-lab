@@ -1,0 +1,13 @@
+{
+  "accepted": false,
+  "case_envelope_present": true,
+  "case_envelope_verdict": "PASS for stale prelaunch contract only; not credited for TSTM complete-contract coverage",
+  "case_id": "phase2-tstm-1-case-20260717T074931Z",
+  "credit": "NOT_GRANTED",
+  "failure_classification": "EVIDENCE_DEFECT",
+  "ids_burned": true,
+  "mutation_occurred": false,
+  "operation_count": 6,
+  "reason": "orchestrator omitted FirewallCaptureToolPath and FirewallCaptureToolSha256; packages lacked complete runner-owned firewall inventory binding",
+  "schema_version": "nora.phase2_tstm_1_failed_attempt_v1"
+}

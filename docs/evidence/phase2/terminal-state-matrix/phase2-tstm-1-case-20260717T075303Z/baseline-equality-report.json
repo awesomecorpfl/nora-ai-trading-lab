@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "effective_rule_count": 425,
+    "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+    "legacy_source": "windows_exact",
+    "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "nora_rule_count": 0,
+    "persistent_rule_count": 425,
+    "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+    "schema_version": "nora.phase2_firewall_invariant_report_v1",
+    "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "verdict": "PASS",
+    "violations": []
+  },
+  "equal": {
+    "canonical_digest": true,
+    "profile_digest": true,
+    "unrelated_digest": true
+  },
+  "final": {
+    "canonical_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "effective_rule_count": 425,
+    "legacy_digest": "ec69686f91fa2cab86d0d782b4c7077344abbe8b01fc42afd8daf522bce1851c",
+    "legacy_source": "windows_exact",
+    "nora_digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "nora_rule_count": 0,
+    "persistent_rule_count": 425,
+    "profile_digest": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+    "schema_version": "nora.phase2_firewall_invariant_report_v1",
+    "unrelated_digest": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "verdict": "PASS",
+    "violations": []
+  },
+  "schema_version": "nora.phase2_firewall_equality_report_v1",
+  "verdict": "PASS"
+}

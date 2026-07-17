@@ -1,0 +1,2 @@
+CASE=1 EXIT=0 EXPECTED=0
+{"capture_path":"C:\\NoraEvidence\\Phase2\\containment-captures\\\\phase2-tstm-1-case-20260717T074931Z\\\\cleanup","package_sha256":"f3694cae57416b0e458cda3b9ff1d3538e0ed9a4331dd09317cac87a2c7c7173","containment_exit_code":0}
