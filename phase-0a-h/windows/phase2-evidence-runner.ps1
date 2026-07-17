@@ -140,7 +140,8 @@ function ReadReconciliationJob([string]$Path){
  }
  foreach($name in @('run_identifier','state','preflight_kind','created_utc','updated_utc')){
   $top=$null;if($job.PSObject.Properties.Name -contains $name){$top=$job.$name};$nested=if($legacy.Contains($name)){$legacy[$name]}else{$null}
-  if($null-ne$top -and $null-ne$nested -and (($top|ConvertTo-Json -Depth 20 -Compress)-ne($nested|ConvertTo-Json -Depth 20 -Compress)){throw ('legacy job contradictory field:'+ $name)}
+  $topJson=if($null-ne$top){$top|ConvertTo-Json -Depth 20 -Compress}else{$null};$nestedJson=if($null-ne$nested){$nested|ConvertTo-Json -Depth 20 -Compress}else{$null}
+  if($null-ne$top -and $null-ne$nested -and $topJson-ne$nestedJson){throw ('legacy job contradictory field:'+ $name)}
   if($null-ne$top){$legacy[$name]=$top}
  }
  [ordered]@{raw=$raw;job=$job;normalized=$legacy}
