@@ -1,0 +1,28 @@
+{
+  "schema_version": "nora.phase2_transactional_containment_acceptance_impact_v1",
+  "repository_commit": "aa7ee49502edad3b7a1c015dec8ef25deb4c805c",
+  "historical_acceptance": {
+    "status": "TRANSACTIONAL_CONTAINMENT_ACCEPTED",
+    "path": "docs/evidence/phase2/transactional-containment/tca1-20260717T160046Z/acceptance.json",
+    "sha256": "32c9635239c31bc686db4d5566065e45d783af4883e0ce7ea86fdbaa95e01c72",
+    "semantic_identity": "d4aa8d482658e3ce4b85e738d2e5072b74cd35b5282bee6e8ac147463b2dd4c1"
+  },
+  "changed_implementation": [
+    {"path":"phase-0a-h/windows/phase2-network-containment.ps1","sha256":"0bb7c7bbb447f32fc998ffb6e2030309ae6a7ca430b2b24f2e7c6f6571fa97a7","change":"fresh-verifier argument builder integration"},
+    {"path":"phase-0a-h/windows/phase2-fresh-verifier-arguments.ps1","sha256":"6481c432c071a9690e25affffb42ef42f704b7c8fee88fbeee595a156641a281","change":"new production-used pure argument builder"},
+    {"path":"phase-0a-h/windows/phase2-evidence-runner.ps1","sha256":"2a33b35b9d57501cec03c23e25f26de1aea68b52dd86bd0b4fb09480cd34942a","change":"legacy job normalization and stale classification"},
+    {"path":"phase-0a-h/windows/capture-phase2-run-forensics.ps1","sha256":"3ed2f9664c731c8679deced9f70ec1718eb5fc38ce5f87ce609a815fcae83900","change":"safe absent-path and directory capture handling"}
+  ],
+  "contract_analysis": {
+    "directly_or_indirectly_bound_by_historical_acceptance": true,
+    "semantic_firewall_rule_behavior_changed": false,
+    "argument_transport_changed": true,
+    "legacy_job_state_handling_changed": true,
+    "old_acceptance_artifact_republished": false
+  },
+  "impact": "DELTA_LIVE_QUALIFICATION_REQUIRED",
+  "required_next_evidence": "one operator-run containment-only qualification using the committed and inert-deployed bytes; no full matrix rerun is authorized by this tranche",
+  "native_credit": false,
+  "e1_credit": false,
+  "e2_credit": false
+}
