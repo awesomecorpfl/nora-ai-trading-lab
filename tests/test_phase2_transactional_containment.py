@@ -1,7 +1,7 @@
 import copy, json, tempfile, unittest
 from unittest.mock import patch
 from pathlib import Path
-from lab.phase2_transactional_containment import ContractError, build_candidate, canonical, identity, verify_document, publish
+from lab.phase2_transactional_containment import ContractError, _porcelain_rows, build_candidate, canonical, identity, verify_document, publish
 from lab.phase2_transactional_containment_verifier import verify as independent_verify
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,5 +61,9 @@ class Phase2ContractCases(unittest.TestCase):
         self.reject(lambda d:d["acceptance"].update(verdict="FAIL")); self.reject(lambda d:d["diagnostics"][0].update(id="substitute"))
     def test_creation_command_is_exact_and_status_is_narrow(self):
         d=self.candidate(); self.assertIn("--publication-id read-only --timestamp 2026-07-17T00:00:00Z",d["acceptance"]["creation_command"])
+    def test_porcelain_preserves_leading_index_column(self):
+        output = " M docs/phase2_transactional_containment_status_v1.json\n?? protected/top-level/file\n"
+        with patch("lab.phase2_transactional_containment.subprocess.check_output", return_value=output):
+            self.assertEqual(_porcelain_rows(ROOT), output.splitlines())
 
 if __name__ == "__main__": unittest.main()

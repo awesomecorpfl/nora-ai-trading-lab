@@ -49,15 +49,28 @@ def _status_exception(root: Path, publication_id: str | None = None) -> bool:
     except Exception: return False
     if set(s) != {"schema_version","owner","status","acceptance_id","artifact_sha256"}: return False
     if s["schema_version"] != "nora.phase2_transactional_containment_status_v1" or s["owner"] != "transactional_containment_v1" or s["status"] != ACCEPTANCE_STATUS: return False
-    if publication_id is not None and s["acceptance_id"] != publication_id: return False
-    return isinstance(s["acceptance_id"], str) and isinstance(s["artifact_sha256"], str) and len(s["artifact_sha256"]) == 64 and not (set(s["artifact_sha256"]) - HEX)
+    if not isinstance(s["acceptance_id"], str) or not isinstance(s["artifact_sha256"], str) or len(s["artifact_sha256"]) != 64 or (set(s["artifact_sha256"]) - HEX): return False
+    artifact = root / f"docs/evidence/phase2/transactional-containment/{s['acceptance_id']}/acceptance.json"
+    if not artifact.is_file() or digest_bytes(artifact.read_bytes()) != s["artifact_sha256"]: return False
+    return publication_id is None or s["acceptance_id"] == publication_id
+def _porcelain_rows(root: Path) -> list[str]:
+    try:
+        output = subprocess.check_output(
+            ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=all"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+    except subprocess.CalledProcessError as e:
+        raise ContractError("git prerequisite failed: status --porcelain --untracked-files=all") from e
+    return output.splitlines()
+
 def live_head(root: Path, publication_id: str | None = None) -> str:
     if _git(root, "symbolic-ref", "--quiet", "--short", "HEAD") != "main": _fail("branch is not main")
-    rows = _git(root, "status", "--porcelain", "--untracked-files=all").splitlines()
+    rows = _porcelain_rows(root)
     for row in rows:
         path = row[3:] if len(row) >= 3 else row
         if row.startswith("?? "): continue
-        if path == STATUS_REL and _status_exception(root, publication_id): continue
+        if path == STATUS_REL and _status_exception(root): continue
         _fail("tracked/staged changes present")
     h = _git(root, "rev-parse", "HEAD")
     for anc in REQUIRED_ANCESTORS:
@@ -137,11 +150,12 @@ def build_candidate(root: Path, timestamp: str, publication_id: str) -> dict:
             "artifact_sha256": None,
         }
         if s != pending:
-            if not _status_exception(root, publication_id):
-                _fail("status is not bound to publication")
-            artifact = root / doc["publication"]["path"]
-            if not artifact.is_file() or s.get("artifact_sha256") != digest_bytes(canonical(doc)):
-                _fail("status is not bound to acceptance artifact")
+            if not _status_exception(root):
+                _fail("status is not bound to an immutable acceptance artifact")
+            if s.get("acceptance_id") == publication_id:
+                artifact = root / doc["publication"]["path"]
+                if not artifact.is_file() or s.get("artifact_sha256") != digest_bytes(canonical(doc)):
+                    _fail("status is not bound to acceptance artifact")
     return doc
 def verify_document(doc: dict, root: Path, **_: Any) -> dict:
     if not isinstance(doc,dict) or doc.get("schema_version") != SCHEMA or doc.get("acceptance_type") != ACCEPTANCE_TYPE or doc.get("status") != ACCEPTANCE_STATUS: _fail("contract header")
