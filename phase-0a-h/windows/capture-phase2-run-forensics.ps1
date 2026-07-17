@@ -16,12 +16,12 @@ function ItemView([string]$Path,[string]$Base){
  [ordered]@{path=$Path;relative_path=if($Base){$Path.Substring($Base.Length).TrimStart('\').Replace('\','/')}else{$null};type=if($i.PSIsContainer){'directory'}else{'file'};attributes=[string]$i.Attributes;creation_utc=$i.CreationTimeUtc.ToString('o');last_write_utc=$i.LastWriteTimeUtc.ToString('o');last_access_utc=$i.LastAccessTimeUtc.ToString('o');owner=$acl.Owner;sddl=$acl.Sddl;size=if($i.PSIsContainer){$null}else{[int64]$i.Length};sha256=if($i.PSIsContainer){$null}else{Hash $Path}}
 }
 function TreeView([string]$Path){
- if(!(Test-Path -LiteralPath $Path)){return @()}
+ if([string]::IsNullOrWhiteSpace($Path) -or !(Test-Path -LiteralPath $Path)){return @()}
  $rootItem=ItemView $Path ''
  @(@($rootItem)+@(Get-ChildItem -LiteralPath $Path -Force -Recurse|Sort-Object FullName|ForEach-Object{ItemView $_.FullName $Path}))
 }
 function CopyEvidence([string]$Source,[string]$Destination){
- if(!(Test-Path -LiteralPath $Source)){return $false}
+ if([string]::IsNullOrWhiteSpace($Source) -or !(Test-Path -LiteralPath $Source)){return $false}
  $parent=Split-Path $Destination -Parent;if(!(Test-Path -LiteralPath $parent)){New-Item -ItemType Directory -Path $parent -Force|Out-Null}
  Copy-Item -LiteralPath $Source -Destination $Destination -Recurse -Force
  return $true
