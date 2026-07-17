@@ -27,14 +27,15 @@ $command='powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Fil
 $submitted=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($command)))).Replace('-','').ToLowerInvariant()
 $payload.submitted_command_sha256=$submitted
 $encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress)))
+$actualCommand='powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File '+$WrapperPath+' -PayloadBase64 '+$encoded
 $intent=[ordered]@{
   schema_version='nora.phase2_firewall_campaign_launch_v2'
   launch_id=$LaunchId;campaign_id=$CampaignId;payload=$payload;encoded_payload=$encoded
-  logical_command_sha256=$payload.logical_command_sha256;submitted_command=$command
+  logical_command_sha256=$payload.logical_command_sha256;submitted_command=$actualCommand;submitted_command_hash_basis=$command
   submitted_command_sha256=$submitted;requested_utc=(Get-Date).ToUniversalTime().ToString('o')
 }
 Atomic (Join-Path $root 'intent.json') $intent
-$created=Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine=$command}
+$created=Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine=$actualCommand}
 if($created.ReturnValue-ne0 -or !$created.ProcessId){
   Atomic (Join-Path $root 'failure.json') ([ordered]@{launch_id=$LaunchId;reason='PROCESS_CREATE_FAILED';return_value=$created.ReturnValue;pid=$created.ProcessId})
   throw 'process creation failure'
