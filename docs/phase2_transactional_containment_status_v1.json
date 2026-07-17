@@ -1,1 +1,1 @@
-{"acceptance_id":null,"artifact_sha256":null,"owner":"transactional_containment_v1","schema_version":"nora.phase2_transactional_containment_status_v1","status":"NOT_ACCEPTED"}
+{"acceptance_id":"tca1-20260717T155527Z","artifact_sha256":"3e9a5d44c694e5e4ba4ac4cfb4f3fe2fa988b728ab8108c896585a6a6748f3cc","owner":"transactional_containment_v1","schema_version":"nora.phase2_transactional_containment_status_v1","status":"TRANSACTIONAL_CONTAINMENT_ACCEPTED"}
