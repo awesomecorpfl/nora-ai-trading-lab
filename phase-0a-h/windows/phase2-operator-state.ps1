@@ -48,7 +48,8 @@ function Get-ReconciledJobInventory([string]$Root){
  $terminalStates=@('completed','failed','interrupted','cancelled','abandoned','packaging','published','accepted','rejected')
  $rows=@();$known=@{}
  if(Test-Path -LiteralPath $jobsRoot -PathType Container){
-  foreach($file in @(Get-ChildItem -LiteralPath $jobsRoot -Filter '*.json' -File|Sort-Object Name)){
+   foreach($file in @(Get-ChildItem -LiteralPath $jobsRoot -Filter '*.json' -File|Sort-Object Name)){
+   $quick=Get-Content -LiteralPath $file.FullName -Raw|ConvertFrom-Json;if($quick.schema_version-ne'nora.phase2_persistent_evidence_runner_v1' -and !($quick.PSObject.Properties.Name -contains 'Keys' -and $quick.PSObject.Properties.Name -contains 'Values')){continue}
    $decoded=Read-ReconciledJobFile $file.FullName;$n=$decoded.normalized;$id=[string]$n['run_identifier']
    if($known.ContainsKey($id)){throw 'duplicate normalized run identifier'};$known[$id]=$true
    $reconDirectory=Join-Path $reconRoot ($id+'.published');$reconPath=Join-Path $reconDirectory 'reconciliation.json';$reconciled=$false;$binding=$null
