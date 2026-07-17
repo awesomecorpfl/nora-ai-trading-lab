@@ -12,6 +12,7 @@ $ErrorActionPreference='Stop'
 $schema='nora.phase2_mt5_network_containment_transaction_v3'
 if($CampaignId -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$'){throw 'invalid containment identity'}
 if(!(Test-Path -LiteralPath $EvidenceRoot -PathType Container)){throw 'missing evidence root'}
+. (Join-Path $PSScriptRoot 'phase2-fresh-verifier-arguments.ps1')
 function Hash([string]$Path){(Get-FileHash -Algorithm SHA256 -LiteralPath $Path -ErrorAction Stop).Hash.ToLowerInvariant()}
 function AtomicJson([string]$Path,$Value){$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 20 -Compress),[Text.UTF8Encoding]::new($false));if(Test-Path -LiteralPath $Path){$backup=$Path+'.replace-backup.'+[guid]::NewGuid().ToString('N');[IO.File]::Replace($tmp,$Path,$backup);Remove-Item -LiteralPath $backup -Force}else{[IO.File]::Move($tmp,$Path)}}
 function Identity(){ $i=[Security.Principal.WindowsIdentity]::GetCurrent();[ordered]@{name=$i.Name;sid=$i.User.Value} }
@@ -79,7 +80,7 @@ function VerifyState($state){
  return $true
 }
 function Failure([string]$Reason,[string]$Message){[object[]]$bindings=@();try{$bindings=@(Bindings)}catch{};[object[]]$ruleObjects=@(Get-NoraContainmentRules -CampaignId $CampaignId);[object[]]$ruleViews=@(Get-NoraContainmentRuleViews -RuleObjects $ruleObjects);$classification=if($ruleObjects.Count-eq0){'NO_RULES_TRANSACTION_FAILED'}else{'RULES_PRESENT_RECORD_INCOMPLETE'};$v=[ordered]@{schema_version=$schema;campaign_identity=$CampaignId;classification=$classification;accepted=$false;reason=$Reason;message=$Message;intent_path=IntentPath;final_record_path=FinalPath;active_rule_count=$ruleObjects.Count;executables=@($bindings);rules=@($ruleViews);captured_utc=(Get-Date).ToUniversalTime().ToString('o');creator=Identity};AtomicJson (FailurePath) $v;return $v}
-function FreshVerify(){ $verifier=Join-Path $PSScriptRoot 'phase2-network-containment-fresh-verify.ps1';if(!(Test-Path -LiteralPath $verifier -PathType Leaf)){throw 'missing fresh containment verifier'};$verifyArgs=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$verifier,'-FinalRecordPath',(FinalPath),'-ExpectedFinalRecordSha256',(Hash (FinalPath)),'-EvidenceRoot',$EvidenceRoot);$output=@(& powershell.exe @verifyArgs 2>&1);if($LASTEXITCODE-ne0){throw ('fresh record validation failed: '+($output -join "`n"))};return ($output -join "`n")}
+function FreshVerify(){ $verifier=Join-Path $PSScriptRoot 'phase2-network-containment-fresh-verify.ps1';if(!(Test-Path -LiteralPath $verifier -PathType Leaf)){throw 'missing fresh containment verifier'};$verifyArgs=New-NoraFreshVerifierArgumentVector -VerifierPath $verifier -FinalRecordPath (FinalPath) -ExpectedFinalRecordSha256 (Hash (FinalPath)) -EvidenceRoot $EvidenceRoot;$output=@(& powershell.exe @verifyArgs 2>&1);if($LASTEXITCODE-ne0){throw ('fresh record validation failed: '+($output -join "`n"))};return ($output -join "`n")}
 function ReadAndValidateFinalRecordForRecovery {
  [byte[]]$bytes=[IO.File]::ReadAllBytes((FinalPath))
  $finalSha=([BitConverter]::ToString(([Security.Cryptography.SHA256]::Create().ComputeHash($bytes)))).Replace('-','').ToLowerInvariant()

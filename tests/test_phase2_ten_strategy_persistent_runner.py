@@ -219,6 +219,15 @@ def test_stale_prepared_offline_job_is_reconciled_without_history_rewrite():
         assert token in RUNNER
 
 
+def test_legacy_prepared_job_values_are_decoded_without_replacing_raw_bytes():
+    for token in (
+        "function ReadReconciliationJob", "[IO.File]::ReadAllBytes($Path)",
+        "legacy job key/value shape incomplete", "legacy job key/value count mismatch",
+        "legacy job contradictory field:", "normalized=$legacy", "raw=$raw",
+    ):
+        assert token in RUNNER
+
+
 def test_runner_replaces_durable_job_json_and_recovers_only_verified_containment():
     assert "[IO.File]::Replace" in RUNNER
     assert ".replace-backup." in RUNNER

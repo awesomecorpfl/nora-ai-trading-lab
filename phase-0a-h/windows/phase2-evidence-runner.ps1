@@ -131,6 +131,20 @@ function BoundProcess($Binding){
  $actual=ProcessView ([int]$Binding.pid);if(!$actual){return $false}
  return ($actual.start_time_utc-eq[string]$Binding.start_time_utc -and $actual.executable_path-eq[string]$Binding.executable_path -and $actual.command_line-eq[string]$Binding.command_line -and $actual.command_line-like('*'+[string]$Binding.run_identifier+'*'))
 }
+function ReadReconciliationJob([string]$Path){
+ $raw=[IO.File]::ReadAllBytes($Path);$job=([Text.Encoding]::UTF8.GetString($raw).TrimStart([char]0xFEFF)|ConvertFrom-Json);$legacy=[ordered]@{}
+ if($job.PSObject.Properties.Name -contains 'Keys' -or $job.PSObject.Properties.Name -contains 'Values'){
+  if(!($job.PSObject.Properties.Name -contains 'Keys') -or !($job.PSObject.Properties.Name -contains 'Values')){throw 'legacy job key/value shape incomplete'}
+  $keys=@($job.Keys);$values=@($job.Values);if($keys.Count-ne$values.Count){throw 'legacy job key/value count mismatch'}
+  for($i=0;$i-lt$keys.Count;$i++){if([string]::IsNullOrWhiteSpace([string]$keys[$i]) -or $legacy.Contains($keys[$i])){throw 'legacy job key invalid or duplicated'};$legacy[[string]$keys[$i]]=$values[$i]}
+ }
+ foreach($name in @('run_identifier','state','preflight_kind','created_utc','updated_utc')){
+  $top=$null;if($job.PSObject.Properties.Name -contains $name){$top=$job.$name};$nested=if($legacy.Contains($name)){$legacy[$name]}else{$null}
+  if($null-ne$top -and $null-ne$nested -and (($top|ConvertTo-Json -Depth 20 -Compress)-ne($nested|ConvertTo-Json -Depth 20 -Compress)){throw ('legacy job contradictory field:'+ $name)}
+  if($null-ne$top){$legacy[$name]=$top}
+ }
+ [ordered]@{raw=$raw;job=$job;normalized=$legacy}
+}
 function FailureDirectory($paths){if(Test-Path -LiteralPath $paths.running){return $paths.running};if(Test-Path -LiteralPath $paths.complete){return $paths.complete};throw 'missing failure evidence directory'}
 function WriteLifecycleFailure($paths,[string]$ExceptionType,[string]$Message,[int]$ExitCode,[string]$LastStep,[string]$Position=$null){
  $directory=FailureDirectory $paths;$stdoutHash=if(Test-Path -LiteralPath $paths.stdout){Hash $paths.stdout}else{$null};$stderrHash=if(Test-Path -LiteralPath $paths.stderr){Hash $paths.stderr}else{$null};$job=if(Test-Path -LiteralPath $paths.job){Get-Content -LiteralPath $paths.job -Raw|ConvertFrom-Json}else{$null}
@@ -156,9 +170,9 @@ function LaunchDetached($paths,[string]$Worker,[string[]]$WorkerArguments,[strin
  [ordered]@{run_identifier=$RunId;state='launched';bootstrap_binding=$binding;launch_envelope_path=$envelopePath;launch_envelope_sha256=$envelopeHash}|ConvertTo-Json -Depth 12 -Compress
 }
 function ReconcileNoContainment(){
- $p=Paths;if(!(Test-Path -LiteralPath $p.job)){throw 'missing durable prepared job'};$original=[IO.File]::ReadAllBytes($p.job);$job=([Text.Encoding]::UTF8.GetString($original).TrimStart([char]0xFEFF)|ConvertFrom-Json)
+ $p=Paths;if(!(Test-Path -LiteralPath $p.job)){throw 'missing durable prepared job'};$decoded=ReadReconciliationJob $p.job;$original=$decoded.raw;$job=$decoded.job;$normalized=$decoded.normalized
  if($job.state-eq'abandoned' -and $job.abandoned_classification-eq'pre_launch_no_containment'){return (Get-Content -LiteralPath $job.reconciliation_record_path -Raw)}
- if($job.state-ne'prepared' -or $job.preflight_kind-ne'offline_cache'){throw 'job is not a stale offline prepared record'}
+ if($normalized.state-ne'prepared' -or $normalized.preflight_kind-ne'offline_cache'){throw 'job is not a stale offline prepared record'}
  if(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue){throw 'terminal_or_tester_exists'}
  if(!$ForensicCapturePath -or !$ForensicPackageSha256 -or !$ForensicClassificationPath -or !$ForensicClassificationSha256){throw 'missing forensic bindings'}
  if(!(Test-Path -LiteralPath $ForensicCapturePath -PathType Container) -or !(Test-Path -LiteralPath $ForensicClassificationPath -PathType Leaf)){throw 'missing forensic source'}
