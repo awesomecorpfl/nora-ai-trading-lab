@@ -224,6 +224,8 @@ def test_legacy_prepared_job_values_are_decoded_without_replacing_raw_bytes():
         "function ReadReconciliationJob", "[IO.File]::ReadAllBytes($Path)",
         "legacy job key/value shape incomplete", "legacy job key/value count mismatch",
         "legacy job contradictory field:", "normalized=$legacy", "raw=$raw",
+        "classify-prepared-no-containment", "NO_ACTIVE_RULES_NONACCEPTED_RECORD",
+        "scheduled run remains", "containment accepted record exists",
     ):
         assert token in RUNNER
 
