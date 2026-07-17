@@ -22,10 +22,11 @@ $payload=[ordered]@{
 }
 $logical=($payload|ConvertTo-Json -Compress)
 $payload.logical_command_sha256=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($logical)))).Replace('-','').ToLowerInvariant()
-$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress)))
+$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress))]
 $command='powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File '+$WrapperPath+' -PayloadBase64 '+$encoded
 $submitted=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($command)))).Replace('-','').ToLowerInvariant()
 $payload.submitted_command_sha256=$submitted
+$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress))]
 $intent=[ordered]@{
   schema_version='nora.phase2_firewall_campaign_launch_v2'
   launch_id=$LaunchId;campaign_id=$CampaignId;payload=$payload;encoded_payload=$encoded
