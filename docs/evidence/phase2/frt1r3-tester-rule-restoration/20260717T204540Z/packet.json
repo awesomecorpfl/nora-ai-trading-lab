@@ -1,0 +1,50 @@
+{
+  "schema_version": "nora.phase2_tester_rule_restoration_packet_v1",
+  "packet_id": "20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318",
+  "credit": "NON_CREDIT_OPERATOR_RESTORATION_PREPARATION",
+  "repository_commit": "c3b8e88beee20d247a96e327f4baecb0ab4ef05d",
+  "deployed_root": "C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49",
+  "helper_path": "C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-operator-state.ps1",
+  "helper_sha256": "aef1d348c0010b607b712cb67ce3c0f6644001cac799453eb1c1503b6cd3c207",
+  "restoration_script": "phase-0a-h/windows/phase2-tester-rule-restoration.ps1",
+  "restoration_script_sha256": "4a1b41ff27484ed7777aa5800e28a822f70a602abe26e9efee058115aaee0533",
+  "evidence_directory": "C:\\NoraEvidence\\Phase2\\frt1r3-tester-rule-restoration-20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318",
+  "accepted_baseline": {
+    "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/accepted-baseline-reference/semantic-firewall-baseline.json",
+    "size": 14374,
+    "sha256": "366f13ed170e26d679981c8f1692325997315883891ea17eb2366daf8f4d0497"
+  },
+  "tester_rule_contract": {
+    "name": "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}",
+    "display_name": "MetaTrader 5 Strategy Tester Agent",
+    "description": "",
+    "policy_store": "PersistentStore",
+    "source_type": "Local",
+    "direction": "Inbound",
+    "action": "Allow",
+    "profiles": "Domain, Private",
+    "program": "C:\\Program Files\\Darwinex MetaTrader 5\\metatester64.exe",
+    "program_sha256": "19c1c41cf4a32b7ad9e4a4b1b028364d7ca85b20ba08e9e4cc27bf209f9764ed",
+    "service": "Any",
+    "protocol": "TCP",
+    "local_port": "Any",
+    "remote_port": "Any",
+    "local_address": "Any",
+    "remote_address": "Any",
+    "interface_type": "Any",
+    "icmp_type": "Any",
+    "edge_traversal": "Block",
+    "authentication": "NotRequired",
+    "encryption": "NotRequired",
+    "override_block_rules": false,
+    "required_enabled_state": false
+  },
+  "commands": {
+    "preconditions": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-tester-rule-restoration.ps1 -Mode preconditions -EvidenceRoot C:\\NoraEvidence\\Phase2 -RepositoryCommit c3b8e88beee20d247a96e327f4baecb0ab4ef05d -HelperSha256 aef1d348c0010b607b712cb67ce3c0f6644001cac799453eb1c1503b6cd3c207 -PacketId 20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318",
+    "restore": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-tester-rule-restoration.ps1 -Mode restore -EvidenceRoot C:\\NoraEvidence\\Phase2 -RepositoryCommit c3b8e88beee20d247a96e327f4baecb0ab4ef05d -HelperSha256 aef1d348c0010b607b712cb67ce3c0f6644001cac799453eb1c1503b6cd3c207 -PacketId 20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318",
+    "rollback": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-tester-rule-restoration.ps1 -Mode rollback -EvidenceRoot C:\\NoraEvidence\\Phase2 -RepositoryCommit c3b8e88beee20d247a96e327f4baecb0ab4ef05d -HelperSha256 aef1d348c0010b607b712cb67ce3c0f6644001cac799453eb1c1503b6cd3c207 -PacketId 20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318",
+    "postflight": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-tester-rule-restoration.ps1 -Mode postflight -EvidenceRoot C:\\NoraEvidence\\Phase2 -RepositoryCommit c3b8e88beee20d247a96e327f4baecb0ab4ef05d -HelperSha256 aef1d348c0010b607b712cb67ce3c0f6644001cac799453eb1c1503b6cd3c207 -PacketId 20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318"
+  },
+  "execution_status": "NOT_EXECUTED",
+  "qualification_id": "frt1r2-live-20260717T192223Z"
+}

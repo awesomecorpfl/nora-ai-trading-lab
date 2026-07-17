@@ -1,0 +1,28 @@
+{
+  "schema_version": "nora.phase2_tester_rule_restoration_manifest_v1",
+  "packet_id": "20260717T204540Z-ef08bff87ebf44e58e0bf7565ed84318",
+  "repository_commit": "c3b8e88beee20d247a96e327f4baecb0ab4ef05d",
+  "execution_status": "NOT_EXECUTED",
+  "artifacts": [
+    {
+      "path": "docs/evidence/phase2/frt1r3-tester-rule-restoration/20260717T204540Z/packet.json",
+      "size": 3809,
+      "sha256": "dde0ed58d3402f983a81aa6371e3ca9d247b6e8d977a3a22b086792afac4ba5b"
+    },
+    {
+      "path": "phase-0a-h/windows/phase2-tester-rule-restoration.ps1",
+      "size": 10438,
+      "sha256": "4a1b41ff27484ed7777aa5800e28a822f70a602abe26e9efee058115aaee0533"
+    },
+    {
+      "path": "tests/test_phase2_tester_rule_restoration_packet.py",
+      "size": 1906,
+      "sha256": "f3467149a0682180f21ea292f27f4f727c83f1a87b60a2ad20c96b5704e7d6f2"
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/accepted-baseline-reference/semantic-firewall-baseline.json",
+      "size": 14374,
+      "sha256": "366f13ed170e26d679981c8f1692325997315883891ea17eb2366daf8f4d0497"
+    }
+  ]
+}
