@@ -34,9 +34,11 @@ $intent=[ordered]@{
   submitted_command_sha256=$submitted;requested_utc=(Get-Date).ToUniversalTime().ToString('o')
 }
 Atomic (Join-Path $root 'intent.json') $intent
-$created=Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine=$command}
-if($created.ReturnValue-ne0 -or !$created.ProcessId){
-  Atomic (Join-Path $root 'failure.json') ([ordered]@{launch_id=$LaunchId;reason='PROCESS_CREATE_FAILED';return_value=$created.ReturnValue;pid=$created.ProcessId})
+$procArgs=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$WrapperPath,'-PayloadBase64',$encoded)
+$proc=Start-Process -FilePath powershell.exe -ArgumentList $procArgs -PassThru
+$created=[pscustomobject]@{ReturnValue=0;ProcessId=$proc.Id}
+if(!$created.ProcessId){
+  Atomic (Join-Path $root 'failure.json') ([ordered]@{launch_id=$LaunchId;reason='PROCESS_CREATE_FAILED';return_value=1;pid=$null})
   throw 'process creation failure'
 }
 $campaignPid=$null

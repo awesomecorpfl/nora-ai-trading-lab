@@ -31,3 +31,5 @@ def test_launcher_uses_bounded_thirty_second_ack_window():
  from pathlib import Path
  s=(Path(__file__).parents[1]/'phase-0a-h/windows/launch-phase2-firewall-campaign.ps1').read_text()
  assert 'for($i=0;$i-lt600;$i++)' in s
+ assert 'Start-Process -FilePath powershell.exe' in s
+ assert 'Invoke-CimMethod -ClassName Win32_Process' not in s
