@@ -1,4 +1,11 @@
 [CmdletBinding()]param([Parameter(Mandatory=$true)][string]$PayloadBase64)
+$ErrorActionPreference='Continue'
+Set-StrictMode -Version Latest
+$tl='C:\NoraEvidence\Phase2\wrapper-trap4.log'
+if(Test-Path $tl){Remove-Item $tl -Force}
+function TL([string]$m){[IO.File]::AppendAllText($tl,((Get-Date).ToString('HH:mm:ss.fff')+"`t"+$m+"`n"))}
+TL('START')
+try{
 Set-StrictMode -Version Latest;$ErrorActionPreference='Stop'
 function Save-Artifact([Parameter(Mandatory=$true,Position=0)][string]$Path,[Parameter(Mandatory=$true,Position=1)][object]$Value){$t=$Path+'.partial.'+[guid]::NewGuid().ToString('N');[IO.File]::WriteAllText($t,($Value|ConvertTo-Json -Depth 20 -Compress),[Text.UTF8Encoding]::new($false));if(Test-Path $Path){throw 'immutable artifact exists'};[IO.File]::Move($t,$Path)}
 function Get-SHA256([Parameter(Mandatory=$true,Position=0)][string]$LiteralPath){(Get-FileHash -LiteralPath $LiteralPath -Algorithm SHA256).Hash.ToLowerInvariant()}
@@ -29,4 +36,9 @@ for($i=0;$i-lt100;$i++){
 }
 $c.Refresh()
 Save-Artifact (Join-Path $root 'wrapper-outcome.json') ([ordered]@{state=if($c.HasExited){'CAMPAIGN_EXITED_BEFORE_OWNER'}else{'BOOTSTRAP_TIMEOUT_PROCESS_ALIVE'};campaign_pid=$c.Id;exit_code=if($c.HasExited){$c.ExitCode}else{$null};stdout_sha256=(Get-SHA256 $out);stderr_sha256=(Get-SHA256 $err);owner_present=(Test-Path $owner)})
+TL('DONE OK')
 exit 1
+}catch{
+  TL('CATCH: '+$_.Exception.Message)
+  exit 2
+}
