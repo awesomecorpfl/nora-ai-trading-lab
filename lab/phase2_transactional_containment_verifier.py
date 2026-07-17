@@ -36,12 +36,15 @@ def worktree(root, publication_id, artifact_sha=None):
         if p != STATUS_REL: bad("repository state")
         try: s=json.loads((root/STATUS_REL).read_bytes())
         except Exception: bad("status file")
-        if set(s)!={"schema_version","owner","status","acceptance_id","artifact_sha256"} or s["schema_version"]!="nora.phase2_transactional_containment_status_v1" or s["owner"]!="transactional_containment_v1" or s["status"]!=STATUS or s["acceptance_id"]!=publication_id: bad("status binding")
-        if artifact_sha is not None and s["artifact_sha256"]!=artifact_sha: bad("status artifact binding")
+        if set(s)!={"schema_version","owner","status","acceptance_id","artifact_sha256"} or s["schema_version"]!="nora.phase2_transactional_containment_status_v1" or s["owner"]!="transactional_containment_v1" or s["status"]!=STATUS: bad("status binding")
+        bound=root/f"docs/evidence/phase2/transactional-containment/{s['acceptance_id']}/acceptance.json"
+        if not bound.is_file() or sha(bound.read_bytes())!=s["artifact_sha256"]: bad("status artifact binding")
+        if artifact_sha is not None and (s["acceptance_id"]!=publication_id or s["artifact_sha256"]!=artifact_sha): bad("status artifact binding")
 def verify(path:Path,root:Path)->dict:
     d=json.loads(path.read_bytes()); required={"schema_version","acceptance_type","status","timestamp","repository","publication","implementation","prerequisites","baseline_digests","synthetic","croq","matrix","diagnostics","safety","governance","acceptance","semantic_identity"}
     if set(d)!=required or d["schema_version"]!=SCHEMA or d["acceptance_type"]!=TYPE or d["status"]!=STATUS: bad("strict header")
-    worktree(root,d["publication"]["id"])
+    canonical_path=root/d["publication"]["path"]
+    worktree(root,d["publication"]["id"],sha(path.read_bytes()) if path.resolve()==canonical_path.resolve() else None)
     if subprocess.check_output(["git","-C",str(root),"symbolic-ref","--short","HEAD"],text=True).strip()!="main": bad("repository state")
     head=subprocess.check_output(["git","-C",str(root),"rev-parse","HEAD"],text=True).strip()
     for a in ANCESTORS:
