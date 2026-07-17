@@ -33,3 +33,5 @@ def test_launcher_uses_bounded_thirty_second_ack_window():
  assert 'for($i=0;$i-lt600;$i++)' in s
  assert 'Start-Process -FilePath powershell.exe' in s
  assert 'Invoke-CimMethod -ClassName Win32_Process' not in s
+ assert '$p.submitted_command_sha256' not in s
+ assert '$payload.submitted_command_sha256' in s

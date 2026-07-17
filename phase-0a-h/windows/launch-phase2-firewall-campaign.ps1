@@ -75,13 +75,13 @@ if(!$view){
 $intent=Get-Content (Join-Path $root 'intent.json') -Raw|ConvertFrom-Json
 $o=Get-Content $owner -Raw|ConvertFrom-Json
 $wrapperStart=Get-Content (Join-Path $root 'wrapper-start.json') -Raw|ConvertFrom-Json
-if($intent.payload.submitted_command_sha256 -ne $p.submitted_command_sha256 -or $o.submitted_command_sha256 -ne $p.submitted_command_sha256 -or $wrapperStart.submitted_command_sha256 -ne $p.submitted_command_sha256){throw 'submitted command identity mismatch'}
+if($intent.payload.submitted_command_sha256 -ne $payload.submitted_command_sha256 -or $o.submitted_command_sha256 -ne $payload.submitted_command_sha256 -or $wrapperStart.submitted_command_sha256 -ne $payload.submitted_command_sha256){throw 'submitted command identity mismatch'}
 Atomic (Join-Path $root 'receipt.json') ([ordered]@{
   schema_version='nora.phase2_firewall_campaign_launch_receipt_v2'
   launch_id=$LaunchId;campaign_id=$CampaignId;intent_sha256=Hash (Join-Path $root 'intent.json')
   wrapper_process=[ordered]@{pid=[int]$wrapperStart.wrapper_process.pid;creation_time_utc=[string]$wrapperStart.wrapper_process.creation_time_utc;executable_path=[string]$wrapperStart.wrapper_process.executable_path;command_line=[string]$wrapperStart.wrapper_process.command_line;windows_user=[string]$wrapperStart.wrapper_process.windows_user;user_sid=[string]$wrapperStart.wrapper_process.user_sid}
   campaign_process=[ordered]@{pid=[int]$o.campaign_process.pid;creation_time_utc=[string]$o.campaign_process.creation_time_utc;executable_path=[string]$o.campaign_process.executable_path;command_line=[string]$o.campaign_process.command_line;windows_user=[string]$o.campaign_process.windows_user;user_sid=[string]$o.campaign_process.user_sid}
-  submitted_command_sha256=$p.submitted_command_sha256
+  submitted_command_sha256=$payload.submitted_command_sha256
   owner_path=$owner;owner_sha256=Hash $owner;stdout_path=$out;stderr_path=$err
   acknowledged_utc=(Get-Date).ToUniversalTime().ToString('o')
 })
