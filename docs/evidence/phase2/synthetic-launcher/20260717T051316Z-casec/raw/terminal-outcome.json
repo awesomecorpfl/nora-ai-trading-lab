@@ -1,0 +1,1 @@
+{"schema_version":"nora.phase2_firewall_case_c_terminal_outcome_v1","launch_id":"synlc-20260717T051316Z-casec","campaign_id":"sync-20260717T051316Z-casec","classification":"OWNER_BINDING_MISMATCH","wrapper_exit_code":1,"wrapper_outcome":"OWNER_BINDING_MISMATCH","success_receipt_present":false,"claims_count":0,"owner_present":true,"mismatch_present":true}

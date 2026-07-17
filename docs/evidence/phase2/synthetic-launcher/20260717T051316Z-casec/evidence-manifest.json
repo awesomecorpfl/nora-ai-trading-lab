@@ -1,0 +1,321 @@
+{
+  "bounded_repair_commit": "008bc62ebbc8bc754128a4c04cf3e7944516b3b1",
+  "campaign_id": "sync-20260717T051316Z-casec",
+  "cleanup_state": {
+    "campaign_id": "sync-20260717T051316Z-casec",
+    "cleaned_utc": "2026-07-17T05:13:19.2848542Z",
+    "firewall_profiles": [
+      {
+        "Enabled": 1,
+        "Name": "Domain"
+      },
+      {
+        "Enabled": 1,
+        "Name": "Private"
+      },
+      {
+        "Enabled": 1,
+        "Name": "Public"
+      }
+    ],
+    "launch_id": "synlc-20260717T051316Z-casec",
+    "nora_rules_remaining": 0,
+    "related_processes_remaining": 0,
+    "run_id": "20260717T051316Z-casec",
+    "schema_version": "nora.phase2_firewall_case_c_cleanup_v1",
+    "synthetic_campaign_directory_remaining": false,
+    "synthetic_launch_directory_remaining": false,
+    "tester_rules": [
+      {
+        "Action": 2,
+        "Direction": 1,
+        "DisplayName": "MetaTrader 5 Strategy Tester Agent",
+        "Enabled": 2
+      }
+    ]
+  },
+  "copy_method": "Windows sealed package copied with scp to Fedora staging; repository files copied with cp --preserve=mode,timestamps; cmp/hash byte-identity verification performed before staging",
+  "current_evidence_sealing_head": "008bc62ebbc8bc754128a4c04cf3e7944516b3b1",
+  "deliberate_mismatch": {
+    "actual_live_value": "4664",
+    "claimed_value": "999999",
+    "classification": "OWNER_BINDING_MISMATCH",
+    "comparison": "not equal",
+    "type": "parent_process_id"
+  },
+  "evidence_files": {
+    "case-c-qualification-report.md": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/case-c-qualification-report.md",
+        "sha256": "b190019d7ba92b86efa040c1371c720549df4496066519540c4197b620f2d79c",
+        "size": 3273
+      },
+      "source_path": "/tmp/casec-qualification-report.md",
+      "source_sha256": "b190019d7ba92b86efa040c1371c720549df4496066519540c4197b620f2d79c",
+      "source_size": 3273
+    },
+    "case-c-summary.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/case-c-summary.json",
+        "sha256": "92de98fdef964484bdd2ecdd91ec72c4b9b2cbb57025c44e5086ca37569c7c62",
+        "size": 9887
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\sealed\\casec-20260717T051316Z-casec\\case-c-summary.json",
+      "source_sha256": "92de98fdef964484bdd2ecdd91ec72c4b9b2cbb57025c44e5086ca37569c7c62",
+      "source_size": 9887
+    },
+    "cleanup-report.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/cleanup-report.json",
+        "sha256": "6731956998abd782ab1210506d25fb79d7a2c9a1555512e9cc4d5fbdcc6f52d0",
+        "size": 594
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\sealed\\casec-20260717T051316Z-casec\\cleanup-report.json",
+      "source_sha256": "6731956998abd782ab1210506d25fb79d7a2c9a1555512e9cc4d5fbdcc6f52d0",
+      "source_size": 594
+    },
+    "copy-verification.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/copy-verification.json",
+        "sha256": "c0db833367d3aff94831b3386b81426d761f3397d1956b992905617142674446",
+        "size": 8755
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\sealed\\casec-20260717T051316Z-casec\\copy-verification.json",
+      "source_sha256": "c0db833367d3aff94831b3386b81426d761f3397d1956b992905617142674446",
+      "source_size": 8755
+    },
+    "raw/campaign-stderr.txt": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/campaign-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\campaign-stderr.txt",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_size": 0
+    },
+    "raw/campaign-stdout.txt": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/campaign-stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\campaign-stdout.txt",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_size": 0
+    },
+    "raw/intent.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/intent.json",
+        "sha256": "6d67d9b2a7a5e4bc99085520a5a2abb32d3c049f8174c2f483bd2a88f6995620",
+        "size": 3655
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\intent.json",
+      "source_sha256": "6d67d9b2a7a5e4bc99085520a5a2abb32d3c049f8174c2f483bd2a88f6995620",
+      "source_size": 3655
+    },
+    "raw/live-process-observation.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/live-process-observation.json",
+        "sha256": "62055a26effdfbb30abe2d9091f96bdc10b6cc20a17a44bde25e103f10fefada",
+        "size": 1535
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\live-process-observation.json",
+      "source_sha256": "62055a26effdfbb30abe2d9091f96bdc10b6cc20a17a44bde25e103f10fefada",
+      "source_size": 1535
+    },
+    "raw/owner-binding-mismatch.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/owner-binding-mismatch.json",
+        "sha256": "56d67dee40772029fb56325305dc08313f3724abda271c8e3c44418136ee81f5",
+        "size": 2556
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\owner-binding-mismatch.json",
+      "source_sha256": "56d67dee40772029fb56325305dc08313f3724abda271c8e3c44418136ee81f5",
+      "source_size": 2556
+    },
+    "raw/owner.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/owner.json",
+        "sha256": "87178b2ae145f6b34f479ff7b452877d69b3f657cc95c7efdf53e159d2e88b71",
+        "size": 2732
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T051316Z-casec\\owner.json",
+      "source_sha256": "87178b2ae145f6b34f479ff7b452877d69b3f657cc95c7efdf53e159d2e88b71",
+      "source_size": 2732
+    },
+    "raw/synthetic-owner-mismatch.ps1": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/synthetic-owner-mismatch.ps1",
+        "sha256": "82dca8833df2b47d9fd51845755ec59b94a86f27afda27955bb3a77bdda4c146",
+        "size": 2298
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\synthetic-owner-mismatch.ps1",
+      "source_sha256": "82dca8833df2b47d9fd51845755ec59b94a86f27afda27955bb3a77bdda4c146",
+      "source_size": 2298
+    },
+    "raw/terminal-outcome.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/terminal-outcome.json",
+        "sha256": "5f4d6f1599e087499ccdd7ed133db793682fcdbfe7606f8960f9bafa456539fe",
+        "size": 356
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\terminal-outcome.json",
+      "source_sha256": "5f4d6f1599e087499ccdd7ed133db793682fcdbfe7606f8960f9bafa456539fe",
+      "source_size": 356
+    },
+    "raw/verifier-comparison.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/verifier-comparison.json",
+        "sha256": "8b0251acd393e7f40100e13d8b1da11001072e40180cbf9723ee00db7fa801a5",
+        "size": 437
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\verifier-comparison.json",
+      "source_sha256": "8b0251acd393e7f40100e13d8b1da11001072e40180cbf9723ee00db7fa801a5",
+      "source_size": 437
+    },
+    "raw/wrapper-outcome.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/wrapper-outcome.json",
+        "sha256": "25d99689d24bf34b185c55a9e58b444f7c2af82094fe5ef34bcaf07f2f19ab5c",
+        "size": 492
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\wrapper-outcome.json",
+      "source_sha256": "25d99689d24bf34b185c55a9e58b444f7c2af82094fe5ef34bcaf07f2f19ab5c",
+      "source_size": 492
+    },
+    "raw/wrapper-start.json": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/wrapper-start.json",
+        "sha256": "48287b2f03b0011cd9df0931122ff877095e7545c58c4d144b2297cbfdc9592c",
+        "size": 1080
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\wrapper-start.json",
+      "source_sha256": "48287b2f03b0011cd9df0931122ff877095e7545c58c4d144b2297cbfdc9592c",
+      "source_size": 1080
+    },
+    "raw/wrapper-stderr.txt": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/wrapper-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\wrapper-stderr.txt",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_size": 0
+    },
+    "raw/wrapper-stdout.txt": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/raw/wrapper-stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      "source_path": "C:\\NoraEvidence\\Phase2\\firewall-launches\\synlc-20260717T051316Z-casec\\wrapper-stdout.txt",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_size": 0
+    },
+    "superseded-case-c-clarification-20260717.md": {
+      "byte_identical": true,
+      "destination": {
+        "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/superseded-case-c-clarification-20260717.md",
+        "sha256": "8c139915feacabdd440ffa1be797067c64c983ea1cc16bdc495745691dbb3f0a",
+        "size": 2014
+      },
+      "source_path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-case-c-clarification-20260717.md",
+      "source_sha256": "8c139915feacabdd440ffa1be797067c64c983ea1cc16bdc495745691dbb3f0a",
+      "source_size": 2014
+    }
+  },
+  "firewall_state": [
+    {
+      "Enabled": 1,
+      "Name": "Domain"
+    },
+    {
+      "Enabled": 1,
+      "Name": "Private"
+    },
+    {
+      "Enabled": 1,
+      "Name": "Public"
+    }
+  ],
+  "launch_id": "synlc-20260717T051316Z-casec",
+  "outcomes": {
+    "bootstrap_acknowledged": false,
+    "claims_count": 0,
+    "owner_record_produced": true,
+    "success_receipt_present": false,
+    "wrapper_classification": "OWNER_BINDING_MISMATCH"
+  },
+  "phase2_status": "incomplete",
+  "phase3_authorized": false,
+  "protected_directories_accessed_or_modified": false,
+  "push_performed": false,
+  "qualification_repository_head": "008bc62ebbc8bc754128a4c04cf3e7944516b3b1",
+  "run_id": "20260717T051316Z-casec",
+  "schema_version": "nora.phase2_case_c_owner_binding_mismatch_evidence_manifest_v1",
+  "search_authorized": false,
+  "second_rerun_credit_status": "not part of this tranche; no credit claimed",
+  "starting_repository_head": "dfac6d2ee445bf01e247fd8a7d67286d9eda12ee",
+  "superseded_limitation_record": {
+    "conclusion": "prior Case-C causal evidence was not retained; superseded by this tranche",
+    "path": "/home/gasper/nora-ai-trading-lab/docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-case-c-clarification-20260717.md",
+    "sha256": "8c139915feacabdd440ffa1be797067c64c983ea1cc16bdc495745691dbb3f0a"
+  },
+  "tester_rule_state": [
+    {
+      "Action": 2,
+      "Direction": 1,
+      "DisplayName": "MetaTrader 5 Strategy Tester Agent",
+      "Enabled": 2
+    }
+  ],
+  "tool_identities": {
+    "campaign": {
+      "path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-campaign.ps1",
+      "sha256": "4ff07f32c89b4150bd35eb5f96389f3107eb13c1942deeed22666fc01271c9ee"
+    },
+    "capture": {
+      "path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\capture-phase2-firewall-inventory.ps1",
+      "sha256": "0153f6cdada06a98f7c7ae3af704a36c232bb3b2ba625640fc928a808d5cfe57"
+    },
+    "launcher": {
+      "path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\launch-phase2-firewall-campaign.ps1",
+      "sha256": "3e3bdb46c5fcf555fc3493e8cada718b7b03b2d64dbf8f17f5249ccbc4f11371"
+    },
+    "runner": {
+      "path": "C:\\NoraEvidence\\Phase2\\runner\\phase2-evidence-runner.ps1",
+      "sha256": "ce82c75ee7dbed36c5cb2d2a5b76cd35dfb7bcb8a32020e2e53b5728cb3c572e"
+    },
+    "wrapper": {
+      "path": "C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1",
+      "sha256": "48aa6336bade5ff29a801c222218969453e0108da8f18007be0ebbc79be85e9e"
+    }
+  },
+  "validation": {
+    "casec_harness_parser_errors": 0,
+    "focused_python": "6 passed",
+    "full_python": "486 passed, 1 skipped",
+    "phase0b_rust": "5 passed",
+    "rust_engine": "49 passed",
+    "wrapper_parser_errors": 0
+  }
+}
