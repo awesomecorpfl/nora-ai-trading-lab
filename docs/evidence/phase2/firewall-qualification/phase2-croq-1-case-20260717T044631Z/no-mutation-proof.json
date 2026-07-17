@@ -1,0 +1,41 @@
+{
+  "child_stdout": {
+    "campaign_identity": "phase2-croq-1-case-20260717T044631Z",
+    "captured_utc": "2026-07-17T07:47:10.4878984Z",
+    "firewall_mutation_requested": false,
+    "nora_rule_count": 0,
+    "profiles": [
+      {
+        "default_inbound": "Block",
+        "default_outbound": "Allow",
+        "enabled": true,
+        "name": "Domain"
+      },
+      {
+        "default_inbound": "Block",
+        "default_outbound": "Allow",
+        "enabled": true,
+        "name": "Private"
+      },
+      {
+        "default_inbound": "Block",
+        "default_outbound": "Allow",
+        "enabled": true,
+        "name": "Public"
+      }
+    ],
+    "schema_version": "nora.phase2_firewall_readonly_operation_v1",
+    "terminal_or_tester_process_count": 0
+  },
+  "firewall_mutation_requested": false,
+  "mutation_cmdlet_static_check": "PASS",
+  "mutation_invoked": false,
+  "no_terminal_or_tester_in_child": true,
+  "operation_child_exit": 0,
+  "operation_id": "phase2-croq-1-op-20260717T044631Z",
+  "operation_mode": "firewall-readonly",
+  "process_inventory_terminal_tester_before_after": 0,
+  "schema_version": "nora.phase2_croq_1_no_mutation_proof_v1",
+  "source_runner_sha256": "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+  "stderr_empty": true
+}

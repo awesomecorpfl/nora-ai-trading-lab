@@ -1,0 +1,7 @@
+{
+  "case_id": "phase2-croq-1-case-20260717T044631Z",
+  "envelope_sha256": "b649cddd46335e7e148d7debdddee39e5e2cafb6f42a9152af4bd4a26e4ff6a3",
+  "operation_count": 1,
+  "schema_version": "nora.phase2_case_envelope_v1",
+  "verdict": "PASS"
+}

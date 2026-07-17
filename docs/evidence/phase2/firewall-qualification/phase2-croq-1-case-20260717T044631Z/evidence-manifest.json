@@ -1,0 +1,297 @@
+{
+  "accepted_baseline_commit": "9ae03da91b5d8875e8a0766b580d382628b57beb",
+  "accepted_baseline_manifest_sha256": "7b9d79e4ec2dfea01b1c32921847cdc44b579c7837999783ca2bcebe920c80e7",
+  "accepted_campaign_reference": "sync-20260717T034100Z",
+  "artifact_count": 53,
+  "artifacts": [
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/accepted-baseline-reference/independent-fedora-verification.json",
+      "sha256": "3343d4fef7c31cf642a7becdc0cb0312c28af66ad2661b9878ae5a049202bb1e",
+      "size": 15252
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/accepted-baseline-reference/semantic-firewall-baseline.json",
+      "sha256": "366f13ed170e26d679981c8f1692325997315883891ea17eb2366daf8f4d0497",
+      "size": 14374
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/accepted-synthetic-manifest-verification.json",
+      "sha256": "00a738c8b005b234ae59ad51ec814782e53d669d7b681c4f396338df3be716dd",
+      "size": 984
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/baseline-equality-report.json",
+      "sha256": "fd13aed288820f93608c16c934d16af6f0ec13065de7f1c7f77694731f1dd4fa",
+      "size": 1613
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/baseline-invariant-report.json",
+      "sha256": "5c3e2a29b7aa1fa9e4250c55ee34703e2855d8596e6c05dc46dd768eaa8f9ba1",
+      "size": 671
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/baseline-inventory.json",
+      "sha256": "3d9a993dbb3a92f93961fdcd0c0672a282bb66d590aba3b7bd5579dd4afa91bf",
+      "size": 870649
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/case-envelope.json",
+      "sha256": "b649cddd46335e7e148d7debdddee39e5e2cafb6f42a9152af4bd4a26e4ff6a3",
+      "size": 7207
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/case-plan.json",
+      "sha256": "f0db9ebfdfbaa86e9bf7eebb60fcaaecb3475e83c923e6d00fca08e3d7acc75f",
+      "size": 4961
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/case-result.json",
+      "sha256": "36e217834841a88c425fe727531bcfe5f34e202c68c4982a0c6941c1cabe8787",
+      "size": 8726
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/cleanup-report.json",
+      "sha256": "830daef210cd2c49705268665670ddd5096dff86076fb0a85f29960784256028",
+      "size": 2749
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/cleanup.json",
+      "sha256": "b04b0aa5cc158d74fcec6675987cf7fe0cd1a4d1a45d6b4bb04d29c87435f2aa",
+      "size": 848
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/component-identities.json",
+      "sha256": "d5ea0a734ee4d908a8fcd4f436d9a41a4dfbb904762616740ada9bb7e9bc93dc",
+      "size": 4418
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/fedora-envelope-verification.json",
+      "sha256": "5dfe1c899f8365a94ab868aee79565e4334169233cece7d1e9d5ebb92b8eb9a1",
+      "size": 241
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/final-case-report.md",
+      "sha256": "67e93122deff1986087355cd93e324a5494c03e7b403234a7046dd60b29c2d4c",
+      "size": 4766
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/final-invariant-report.json",
+      "sha256": "5c3e2a29b7aa1fa9e4250c55ee34703e2855d8596e6c05dc46dd768eaa8f9ba1",
+      "size": 671
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/firewall-post.json",
+      "sha256": "108098fc4612a9400e8c0bf30cd9c663632625c40558ae021b2064f8ada68095",
+      "size": 870636
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/firewall-pre.json",
+      "sha256": "98e18e9ee981408f423572230d518fd0dd30eeab50a8a5add429a543ac07f9f1",
+      "size": 870636
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/historical-drift-report.json",
+      "sha256": "b137a4eefbe60bb0d708b89210163a7c4e2f3f878a59456ec5484f0544ea87e1",
+      "size": 317
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/no-mutation-proof.json",
+      "sha256": "ae8616ddce5acd37694baa59a861b4beb20503aac032244d542e3c3cfe9ffa0c",
+      "size": 1281
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/operation-manifest.json",
+      "sha256": "aa7e2e85e11f6d4b9a607ef00e8929f64433a8321b1d24a5eebb6e675e4ecbc6",
+      "size": 1548
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/operation-package/phase2-croq-1-op-20260717T044631Z.zip",
+      "sha256": "8fd04aa858e2e8c3c4b7f37e09be155a383cc39bb4f9cb0b39f0794b888b981e",
+      "size": 1756460
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/operation-summary.json",
+      "sha256": "66650fdcedaa4a2381761a121d00bfaf201b4d46b4df9f1d06e3a349aac4a274",
+      "size": 3879
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/post_state.json",
+      "sha256": "80d78ba691e6b8ca2ab557ebe7190e0cb42e801ab140cdb957e344b45ab3d773",
+      "size": 1196
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/pre_state.json",
+      "sha256": "4bac85969ec1b5ecf9605a5d80158a78b0bd0a6bdf33714960579c0195c63728",
+      "size": 1196
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/processes.json",
+      "sha256": "362467ee080a2127192ec369cd574531d706ee72a9298dcc931dbc505d2fbd3b",
+      "size": 4503
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/recovery.json",
+      "sha256": "733aad29a7ec03ccfd19f8bc62b9d0b73cae4fe2a1bc1175246a7220f8066070",
+      "size": 34
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-20260717T044631Z.failure.json",
+      "sha256": "bcb427012fa004cd7708f8dab23c9a39b2c05e62fd0e7d18c29b4b70260f0aa3",
+      "size": 1603
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-20260717T044631Z.ssh-stderr",
+      "sha256": "266de9b59b7d98c23ee9939a25a2944858120f18ed128abaaa75403b9e87849a",
+      "size": 413
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-final-20260717T044631Z.failure.json",
+      "sha256": "d505e7e8ca0b93f004ef74c7ef2720433f6d5e0255bf043cb72c3809238e0783",
+      "size": 1626
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-final-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-final-v2-20260717T044631Z.json",
+      "sha256": "ec1d577e497c7842434a7d627879124fb520e313c1df2f78667cc5dc1a059a34",
+      "size": 1813
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-final-v2-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-v2-20260717T044631Z.json",
+      "sha256": "17cfea2203a3520611b376a668947d6fe9b0388705bb3ee8bc709522417bece3",
+      "size": 1772
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-cleanup-retrieval-v2-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-envelope-retrieval-20260717T044631Z.json",
+      "sha256": "e27a9247fba9ca5877ef0ee8f7bf41232c670ebc089ef93f6b7bc6ad753d584e",
+      "size": 1798
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-envelope-retrieval-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-retrieval-20260717T044631Z.json",
+      "sha256": "a21958cb3cd5e2fc0b440632934492e15ff2305da89e9cbcc1627131c2a35a54",
+      "size": 1785
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-retrieval-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-retrieval-repeat-20260717T044631Z.json",
+      "sha256": "eb221d28d09c7d3e0975570b49a3060748192504bb990c127934e871eec7a833",
+      "size": 1815
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-retrieval-repeat-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-win-envelope-retrieval-20260717T044631Z.json",
+      "sha256": "eccca515a0d626287bd9ec6d2387060ec7f3adaeeebd910da8f6788c3fa46176",
+      "size": 1893
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-win-envelope-retrieval-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-win-plan-retrieval-20260717T044631Z.json",
+      "sha256": "fdd0a0abe715e602aea552d2a29478a8488c7e453dfefd880c2b594e4cbda6bd",
+      "size": 1806
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-win-plan-retrieval-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-win-receipt-retrieval-20260717T044631Z.json",
+      "sha256": "c707e9d34ef422eb2dac7450b48c689951831af0118016abcab1ea0b826425e4",
+      "size": 1864
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/phase2-croq-1-win-receipt-retrieval-20260717T044631Z.ssh-stderr",
+      "sha256": "048e2ba89ae430962e02f5341cf60c694fb7e131cb417790075a56b32ca09992",
+      "size": 222
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/windows-plan.json",
+      "sha256": "a3c472b2e666259debb5636075227956d31548ab3651a96e04331390ad10e294",
+      "size": 2758
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/windows-recompute-envelope.json",
+      "sha256": "baaf2fad58107270488162255f4a56453c769fc80e307f4959b00f2c4ae1ebfb",
+      "size": 3048
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/retrieval/windows-recompute-receipt.json",
+      "sha256": "96dc2c1fc9f277ab041621f4cf4a79a73a4d6394dc54c38a9aa41806f2b15839",
+      "size": 361
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/stdout.txt",
+      "sha256": "4efc3be5c9a5f9d8de19b54951a593b538b2106c1e3b848fef5b6bd9a9fa5509",
+      "size": 534
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/test-results.json",
+      "sha256": "49f8fcdbd7a4292abd169741e4948f2a54fd86b1156eced315846e61d997165a",
+      "size": 154
+    },
+    {
+      "path": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z/windows-package-recomputation.json",
+      "sha256": "368de97081bb4b916c7544ba3a67053cd3737607e2304f5b0a2da23a366386e8",
+      "size": 671
+    }
+  ],
+  "boundaries": {
+    "phase2_incomplete": true,
+    "phase3_unauthorized": true,
+    "push_performed": false,
+    "search_authorized": false,
+    "transactional_containment_accepted": false
+  },
+  "case_id": "phase2-croq-1-case-20260717T044631Z",
+  "cleanup_report_sha256": "830daef210cd2c49705268665670ddd5096dff86076fb0a85f29960784256028",
+  "credit": "GRANTED",
+  "envelope_sha256": "b649cddd46335e7e148d7debdddee39e5e2cafb6f42a9152af4bd4a26e4ff6a3",
+  "evidence_directory": "docs/evidence/phase2/firewall-qualification/phase2-croq-1-case-20260717T044631Z",
+  "final_case_verdict": "PASS",
+  "operation_count": 1,
+  "operation_id": "phase2-croq-1-op-20260717T044631Z",
+  "package_sha256": "8fd04aa858e2e8c3c4b7f37e09be155a383cc39bb4f9cb0b39f0794b888b981e",
+  "repository_commit": "8e2dac34acc4682c3de1b063ecc82fb17aa93e44",
+  "schema_version": "nora.phase2_croq_1_evidence_manifest_v1",
+  "semantic_digests": {
+    "canonical": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8",
+    "nora": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "profile": "209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72",
+    "unrelated": "179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8"
+  }
+}

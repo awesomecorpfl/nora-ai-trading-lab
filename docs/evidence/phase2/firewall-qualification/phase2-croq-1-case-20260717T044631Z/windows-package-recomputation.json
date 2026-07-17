@@ -1,0 +1,11 @@
+{
+  "member_recompute_verdict": "PASS",
+  "package_path": "C:\\NoraEvidence\\Phase2\\croq-1\\operation\\phase2-croq-1-op-20260717T044631Z.zip",
+  "package_sha256": "8fd04aa858e2e8c3c4b7f37e09be155a383cc39bb4f9cb0b39f0794b888b981e",
+  "package_size": 1756460,
+  "windows_envelope_path": "C:\\NoraEvidence\\Phase2\\croq-1\\windows-package-verification\\windows-package-verification-envelope.json",
+  "windows_envelope_sha256": "baaf2fad58107270488162255f4a56453c769fc80e307f4959b00f2c4ae1ebfb",
+  "windows_envelope_size": 3048,
+  "windows_envelope_verdict": "PASS",
+  "windows_recompute_receipt_sha256": "96dc2c1fc9f277ab041621f4cf4a79a73a4d6394dc54c38a9aa41806f2b15839"
+}

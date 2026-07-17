@@ -1,0 +1,42 @@
+﻿{
+    "case_id":  "phase2-croq-1-case-20260717T044631Z",
+    "case_type":  "windows_independent_package_recompute",
+    "repository_commit":  "8e2dac34acc4682c3de1b063ecc82fb17aa93e44",
+    "identities":  {
+                       "native_execution":  "cec6c3e2fe8e102fdc18008706ffc93555e81fd12d68fbfb5a06d97118373dbc",
+                       "runner":  "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+                       "containment":  "0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2",
+                       "publisher":  "00b73a7a95d5406df1faf6955b54bfb4340d042b15b1a73ff6a3cd94c16d0f6f",
+                       "verifier":  "e9349ef00390115a0a3f7769dff8c70160e5c93cdcb6e7952e5c44ee44913f18",
+                       "retrieval_wrapper":  "0000000000000000000000000000000000000000000000000000000000000000"
+                   },
+    "declared_sequence":  [
+                              "phase2-croq-1-op-20260717T044631Z"
+                          ],
+    "operations":  [
+                       {
+                           "operation_id":  "phase2-croq-1-op-20260717T044631Z",
+                           "operation_type":  "verification",
+                           "windows_path":  "C:\\NoraEvidence\\Phase2\\croq-1\\operation\\phase2-croq-1-op-20260717T044631Z.zip",
+                           "package_size":  1756460,
+                           "package_sha256":  "8fd04aa858e2e8c3c4b7f37e09be155a383cc39bb4f9cb0b39f0794b888b981e",
+                           "original_child_exit":  0,
+                           "helper_exit":  0,
+                           "expected_exit":  0,
+                           "operation_verdict":  "PASS",
+                           "predecessor_operation_id":  null,
+                           "causal_relationship":  "windows_independent_package_recompute",
+                           "cleanup_recovery_relationship":  null,
+                           "retrieval":  {
+                                             "receipt_path":  "C:\\NoraEvidence\\Phase2\\croq-1\\windows-package-verification\\retrieval-receipt.json",
+                                             "receipt_sha256":  "96dc2c1fc9f277ab041621f4cf4a79a73a4d6394dc54c38a9aa41806f2b15839",
+                                             "fedora_package_sha256":  "8fd04aa858e2e8c3c4b7f37e09be155a383cc39bb4f9cb0b39f0794b888b981e",
+                                             "verification_result":  "PASS"
+                                         }
+                       }
+                   ],
+    "case_invariants":  {
+                            "independent_package_recompute":  true
+                        },
+    "published_utc":  "2026-07-17T07:52:03.3474783Z"
+}

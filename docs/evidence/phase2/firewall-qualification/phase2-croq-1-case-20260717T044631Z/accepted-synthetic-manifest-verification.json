@@ -1,0 +1,28 @@
+{
+  "case_outcomes": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS (retained OWNER_BINDING_MISMATCH evidence in casec manifest)",
+    "D": "PASS"
+  },
+  "files": [
+    {
+      "path": "docs/evidence/phase2/synthetic-launcher/20260717T043548Z/evidence-manifest.json",
+      "sha256": "a0a5f6e4057b27b6ebb70453bb4ce9bdcb4cb8a498be146477df4548d33badf3",
+      "size": 4462
+    },
+    {
+      "path": "docs/evidence/phase2/synthetic-launcher/20260717T051316Z-casec/evidence-manifest.json",
+      "sha256": "70e6c51c9c993eff7d8e7d082b311370bd9d1257d381f4e544b982f99efb5de2",
+      "size": 14787
+    },
+    {
+      "path": "docs/evidence/phase2/synthetic-launcher/20260717T043548Z/phase2-synthetic-lifecycle-preservation-20260717T043548Z.json",
+      "sha256": "a903c3feafdb821682abd1646d38c851d79d459143782ee5d1f89cf28c877e70",
+      "size": 1012
+    }
+  ],
+  "read_only": true,
+  "rerun": false,
+  "schema_version": "nora.phase2_croq_1_accepted_synthetic_manifest_verification_v1"
+}

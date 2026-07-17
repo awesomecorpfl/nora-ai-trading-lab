@@ -1,0 +1,54 @@
+﻿{
+    "schema_version":  "nora.phase2_croq_1_cleanup_v1",
+    "case_id":  "phase2-croq-1-case-20260717T044631Z",
+    "operation_id":  "phase2-croq-1-op-20260717T044631Z",
+    "removed_mutable_paths":  [
+                                  "C:\\NoraEvidence\\Phase2\\containment-captures\\phase2-croq-1-case-20260717T044631Z\\phase2-croq-1-op-20260717T044631Z",
+                                  "C:\\NoraEvidence\\Phase2\\containment-captures\\phase2-croq-1-case-20260717T044631Z\\phase2-croq-1-op-20260717T044631Z.summary.json",
+                                  "C:\\NoraEvidence\\Phase2\\croq-1-tools",
+                                  "C:\\NoraEvidence\\Phase2\\croq-1\\windows-package-verification\\plan.json",
+                                  "C:\\NoraEvidence\\Phase2\\croq1-preflight.ps1",
+                                  "C:\\NoraEvidence\\Phase2\\croq1-run-operation.ps1",
+                                  "C:\\NoraEvidence\\Phase2\\croq1-windows-recompute.ps1",
+                                  "C:\\NoraEvidence\\Phase2\\croq1-windows-envelope-verify.ps1",
+                                  "C:\\NoraEvidence\\Phase2\\croq1-win-files.ps1"
+                              ],
+    "immutable_operation_package_present":  true,
+    "immutable_case_envelope_present":  true,
+    "capture_root_remaining":  false,
+    "related_process_count":  0,
+    "firewall_profiles":  [
+                              {
+                                  "name":  "Domain",
+                                  "enabled":  true
+                              },
+                              {
+                                  "name":  "Private",
+                                  "enabled":  true
+                              },
+                              {
+                                  "name":  "Public",
+                                  "enabled":  true
+                              }
+                          ],
+    "tester_rule":  [
+                        {
+                            "Name":  "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}",
+                            "Enabled":  2,
+                            "DisplayName":  "MetaTrader 5 Strategy Tester Agent"
+                        }
+                    ],
+    "nora_rule_count":  0,
+    "terminal_tester_process_count":  0,
+    "phase2_incomplete":  true,
+    "phase3_unauthorized":  true,
+    "search_authorized":  false,
+    "completed_utc":  "2026-07-17T07:56:46.2378988Z",
+    "post_exit_safety_observation":  true,
+    "post_exit_observed_utc":  "2026-07-17T07:57:22.2380502Z",
+    "launch_dir_remaining":  0,
+    "campaign_dir_remaining":  0,
+    "partial_count":  0,
+    "pending_count":  0,
+    "reader_removed":  true
+}
