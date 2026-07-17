@@ -1,0 +1,1 @@
+{"campaign_id":"sync-20260717T034100Z","root":"C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z","owner_present":true,"completion_present":true,"claim_count":20,"receipt_count":20,"final_count":20,"partial_count":0}

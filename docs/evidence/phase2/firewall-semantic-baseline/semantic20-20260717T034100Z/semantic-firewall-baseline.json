@@ -1,0 +1,205 @@
+{
+  "campaign_id": "sync-20260717T034100Z",
+  "campaign_process": {
+    "command_line": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-campaign.ps1 -Mode run -LaunchId synlc-20260717T034100Z -CampaignId sync-20260717T034100Z -RepositoryCommit 8e2dac34acc4682c3de1b063ecc82fb17aa93e44 -CaptureToolPath C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\capture-phase2-firewall-inventory.ps1 -CaptureToolSha256 a7d525cb75f1a61188c06b744aee72eb9b4b418b7fc9a7d6a62168d708b0f3d7 -RunnerPath C:\\NoraEvidence\\Phase2\\runner\\phase2-evidence-runner.ps1 -RunnerSha256 0cda81f5bbf4b1051f06276101975c2b44c02d9e6b14a9892c83865f4c56b5b2 -WrapperPath C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1 -WrapperSha256 77401844fef14eb354fcb682d866a68c65b23b14b23ecc6b8bb216882dbaa96d -LogicalCommandSha256 8b17e63328b2ca8f266b16c98037a7872e5460668c4a5934d8f3a28fbbfa1f6e -SubmittedCommandSha256 66f8f7e74f632e04413e1532869bf1c14a422dfda692e2fd6901fd684d00422d -WrapperPid 1984 -WrapperStartUtc 2026-07-17T06:55:10.4158300Z -EvidenceRoot C:\\NoraEvidence\\Phase2 -CaptureCount 20 ",
+    "creation_time_utc": "2026-07-17T06:55:10.9961870Z",
+    "executable_path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "pid": 1964,
+    "user_sid": "S-1-5-21-252094607-1693253197-3110782073-1001",
+    "windows_user": "DESKTOP-21I1FJP\\Gasper"
+  },
+  "completion_sha256": "f92c1458555fa3dc842a738d2c9a1ad8b493b6dda70f0055fab3982d81ddd045",
+  "digest_stability": {
+    "canonical_digest": true,
+    "nora_digest": true,
+    "profile_digest": true,
+    "unrelated_digest": true
+  },
+  "intent_sha256": "6ad9eb4732be14350d2441a1bb5e9c92797ad28d2c235b6ec54296a6c9c19662",
+  "launch_id": "synlc-20260717T034100Z",
+  "owner_sha256": "5ccf1bc8d38b34e2fdb8865b148c7f8c51257e2de876381d0a3eb944c252e954",
+  "repository_commit": "8e2dac34acc4682c3de1b063ecc82fb17aa93e44",
+  "run_id": "semantic20-20260717T034100Z",
+  "schema_version": "nora.phase2_firewall_corrected_semantic_baseline_v1",
+  "slots": [
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/01.json",
+      "sha256": "3d9a993dbb3a92f93961fdcd0c0672a282bb66d590aba3b7bd5579dd4afa91bf",
+      "size": 870649,
+      "slot": 1,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\01.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/02.json",
+      "sha256": "a1e71c644b3bbc6ac54360d5fa53b52e48fd2b6232b0030770c74b857a60e6fb",
+      "size": 870649,
+      "slot": 2,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\02.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/03.json",
+      "sha256": "3d143f2081ab482c28f76821d74b4467d2f74d97dd30c4570b1e8df70902244e",
+      "size": 870649,
+      "slot": 3,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\03.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/04.json",
+      "sha256": "72d2ce4c227c52e2ba541a11e728960e10f3275d9305173a8188e92fffcd66e3",
+      "size": 870649,
+      "slot": 4,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\04.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/05.json",
+      "sha256": "4928a88f94655ba13ab9d4b1ff06c29ad9cb19a0a9f566b85896b4ef287a42cd",
+      "size": 870649,
+      "slot": 5,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\05.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/06.json",
+      "sha256": "cca34d29899244ece7cc3a5711f20c6171b194e9370fd0694507c1240c7d1565",
+      "size": 870649,
+      "slot": 6,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\06.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/07.json",
+      "sha256": "d0be37ba3c71e7a29cf7b23ddbd787bc9207b6dba87afb93bb7357f33c48c87a",
+      "size": 870649,
+      "slot": 7,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\07.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/08.json",
+      "sha256": "771f139f65a020cfb140f28e0c4588c821f8998555d1b254b288e08f6f394287",
+      "size": 870649,
+      "slot": 8,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\08.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/09.json",
+      "sha256": "abce2736cdd16f574543e4cca64b21adff846efbe2143645bfa126359c758199",
+      "size": 870649,
+      "slot": 9,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\09.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/10.json",
+      "sha256": "66d7d946e762fad2966cacee837f53dece4b2017ad70f630c9e1b96f17dfb5b8",
+      "size": 870649,
+      "slot": 10,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\10.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/11.json",
+      "sha256": "63660f8d00aa8da00b0b22f33d8491070a2e7028d7e1243fb20bb9a481640fb0",
+      "size": 870649,
+      "slot": 11,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\11.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/12.json",
+      "sha256": "1e8181715b31ed75b2cd0df07eb60e4b6fe8abcf65be4892ad2cc45c471a8c6d",
+      "size": 870649,
+      "slot": 12,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\12.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/13.json",
+      "sha256": "73376158100aa9b8412aa71a5b7a5063d1e515d1cb1a5855ce5ab4ae6a58abcd",
+      "size": 870649,
+      "slot": 13,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\13.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/14.json",
+      "sha256": "5ef5d0cdff7775397524568b93fae50bf175a0823d45094e656e5f5aa1f96739",
+      "size": 870649,
+      "slot": 14,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\14.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/15.json",
+      "sha256": "e45113d6feaf6cbd6770ed7ea0471be72c27269571dde4719cb698b28191f7a1",
+      "size": 870649,
+      "slot": 15,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\15.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/16.json",
+      "sha256": "c578f78c937ff9e76a09ff4d09c73dda47d46c8eeccd9512443cb516c5a50247",
+      "size": 870649,
+      "slot": 16,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\16.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/17.json",
+      "sha256": "6742fd6e47b90978d3ddedf7f2680ff1efc57f3abbf9359c743e04f9ef681e43",
+      "size": 870649,
+      "slot": 17,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\17.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/18.json",
+      "sha256": "9137ddf77d6641f094b862ed863775ae06da76754299b5541080b515ad509f10",
+      "size": 870649,
+      "slot": 18,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\18.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/19.json",
+      "sha256": "a848e42a4de37753abd45d1dced3707b36dbf8b322bf219ac77d060a42f34a90",
+      "size": 870649,
+      "slot": 19,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\19.json"
+    },
+    {
+      "fedora_inventory_path": "docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/windows-package/firewall-campaigns/sync-20260717T034100Z/captures/20.json",
+      "sha256": "f2cdba0045b7d04bdd81e6a81f2e5fbe4960d730d64e78ac9f5cac71183d8520",
+      "size": 870649,
+      "slot": 20,
+      "verdict": "PASS",
+      "windows_inventory_path": "C:\\NoraEvidence\\Phase2\\firewall-campaigns\\sync-20260717T034100Z\\captures\\20.json"
+    }
+  ],
+  "submitted_command_hash_basis_sha256": "66f8f7e74f632e04413e1532869bf1c14a422dfda692e2fd6901fd684d00422d",
+  "submitted_command_sha256": "66f8f7e74f632e04413e1532869bf1c14a422dfda692e2fd6901fd684d00422d",
+  "supersedes": {
+    "path": "docs/evidence/phase2/firewall-semantic-baseline/20260717T024219Z/",
+    "preserve_unchanged": true,
+    "reasons": [
+      "mixed process identity in launch receipt",
+      "unavailable submitted-command binding",
+      "completion receipt_paths pointed to captures"
+    ]
+  },
+  "wrapper_process": {
+    "command_line": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\synthetic-lifecycle-tools\\phase2-firewall-launch-wrapper.ps1 -PayloadBase64 eyJzY2hlbWFfdmVyc2lvbiI6Im5vcmEucGhhc2UyX2ZpcmV3YWxsX2xhdW5jaF9wYXlsb2FkX3YxIiwibGF1bmNoX2lkIjoic3lubGMtMjAyNjA3MTdUMDM0MTAwWiIsImNhbXBhaWduX2lkIjoic3luYy0yMDI2MDcxN1QwMzQxMDBaIiwiZXZpZGVuY2Vfcm9vdCI6IkM6XFxOb3JhRXZpZGVuY2VcXFBoYXNlMiIsImNhbXBhaWduX3Rvb2xfcGF0aCI6IkM6XFxOb3JhRXZpZGVuY2VcXFBoYXNlMlxcc3ludGhldGljLWxpZmVjeWNsZS10b29sc1xccGhhc2UyLWZpcmV3YWxsLWNhbXBhaWduLnBzMSIsImNhbXBhaWduX3Rvb2xfc2hhMjU2IjoiY2VjNmMzZTJmZThlMTAyZmRjMTgwMDg3MDZmZmM5MzU1NWU4MWZkMTJkNjhmYmZiNWEwNmQ5NzExODM3M2RiYyIsInJ1bm5lcl9wYXRoIjoiQzpcXE5vcmFFdmlkZW5jZVxcUGhhc2UyXFxydW5uZXJcXHBoYXNlMi1ldmlkZW5jZS1ydW5uZXIucHMxIiwicnVubmVyX3NoYTI1NiI6IjBjZGE4MWY1YmJmNGIxMDUxZjA2Mjc2MTAxOTc1YzJiNDRjMDJkOWU2YjE0YTk4OTJjODM4NjVmNGM1NmI1YjIiLCJjYXB0dXJlX3Rvb2xfcGF0aCI6IkM6XFxOb3JhRXZpZGVuY2VcXFBoYXNlMlxcc3ludGhldGljLWxpZmVjeWNsZS10b29sc1xcY2FwdHVyZS1waGFzZTItZmlyZXdhbGwtaW52ZW50b3J5LnBzMSIsImNhcHR1cmVfdG9vbF9zaGEyNTYiOiJhN2Q1MjVjYjc1ZjFhNjExODhjMDZiNzQ0YWVlNzJlYjliNGI0MThiN2ZjOWE3ZDZhNjIxNjhkNzA4YjBmM2Q3Iiwid3JhcHBlcl9wYXRoIjoiQzpcXE5vcmFFdmlkZW5jZVxcUGhhc2UyXFxzeW50aGV0aWMtbGlmZWN5Y2xlLXRvb2xzXFxwaGFzZTItZmlyZXdhbGwtbGF1bmNoLXdyYXBwZXIucHMxIiwid3JhcHBlcl9zaGEyNTYiOiI3NzQwMTg0NGZlZjE0ZWIzNTRmY2I2ODJkODY2YTY4YzY1YjIzYjE0YjIzZWNjNmI4YmIyMTY4ODJkYmFhOTZkIiwicmVwb3NpdG9yeV9jb21taXQiOiI4ZTJkYWMzNGFjYzQ2ODJjM2RlMWIwNjNlY2M4MmZiMTdhYTkzZTQ0IiwiY2FwdHVyZV9jb3VudCI6MjAsInN0ZG91dF9wYXRoIjoiQzpcXE5vcmFFdmlkZW5jZVxcUGhhc2UyXFxmaXJld2FsbC1sYXVuY2hlc1xcc3lubGMtMjAyNjA3MTdUMDM0MTAwWlxcc3Rkb3V0LnR4dCIsInN0ZGVycl9wYXRoIjoiQzpcXE5vcmFFdmlkZW5jZVxcUGhhc2UyXFxmaXJld2FsbC1sYXVuY2hlc1xcc3lubGMtMjAyNjA3MTdUMDM0MTAwWlxcc3RkZXJyLnR4dCIsImxvZ2ljYWxfY29tbWFuZF9zaGEyNTYiOiI4YjE3ZTYzMzI4YjJjYThmMjY2YjE2Yzk4MDM3YTc4NzJlNTQ2MDY2OGM0YTU5MzRkOGYzYTI4ZmJiZmExZjZlIiwic3VibWl0dGVkX2NvbW1hbmRfc2hhMjU2IjoiNjZmOGY3ZTc0ZjYzMmUwNDQxM2UxNTMyODY5YmYxYzE0YTQyMmRmZGE2OTJlMmZkNjkwMWZkNjg0ZDAwNDIyZCJ9",
+    "creation_time_utc": "2026-07-17T06:55:10.4158300Z",
+    "executable_path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "pid": 1984,
+    "user_sid": "S-1-5-21-252094607-1693253197-3110782073-1001",
+    "windows_user": "DESKTOP-21I1FJP\\Gasper"
+  }
+}
