@@ -23,7 +23,8 @@ function TreeView([string]$Path){
 function CopyEvidence([string]$Source,[string]$Destination){
  if([string]::IsNullOrWhiteSpace($Source) -or !(Test-Path -LiteralPath $Source)){return $false}
  $parent=Split-Path $Destination -Parent;if(!(Test-Path -LiteralPath $parent)){New-Item -ItemType Directory -Path $parent -Force|Out-Null}
- Copy-Item -LiteralPath $Source -Destination $Destination -Recurse -Force
+ $item=Get-Item -LiteralPath $Source -Force
+ if($item.PSIsContainer){New-Item -ItemType Directory -Path $Destination -Force|Out-Null;Copy-Item -LiteralPath (Join-Path $Source '*') -Destination $Destination -Recurse -Force}else{Copy-Item -LiteralPath $Source -Destination $Destination -Force}
  return $true
 }
 function EventCapture([string]$LogName,[datetime]$Start,[datetime]$End,[int[]]$Ids=@()){

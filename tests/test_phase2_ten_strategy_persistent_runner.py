@@ -231,6 +231,7 @@ def test_legacy_prepared_job_values_are_decoded_without_replacing_raw_bytes():
 def test_forensic_capture_treats_absent_optional_paths_as_nonexistent():
     assert "[string]::IsNullOrWhiteSpace($Path) -or !(Test-Path -LiteralPath $Path)" in FORENSIC_COLLECTOR
     assert "[string]::IsNullOrWhiteSpace($Source) -or !(Test-Path -LiteralPath $Source)" in FORENSIC_COLLECTOR
+    assert "if($item.PSIsContainer){New-Item -ItemType Directory -Path $Destination -Force|Out-Null" in FORENSIC_COLLECTOR
 
 
 def test_runner_replaces_durable_job_json_and_recovers_only_verified_containment():
