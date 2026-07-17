@@ -40,7 +40,7 @@ if($created.ReturnValue-ne0 -or !$created.ProcessId){
   throw 'process creation failure'
 }
 $campaignPid=$null
-for($i=0;$i-lt200;$i++){
+for($i=0;$i-lt600;$i++){
   Start-Sleep -Milliseconds 50
   $outcome=Join-Path $root 'wrapper-outcome.json'
   if(Test-Path $outcome){

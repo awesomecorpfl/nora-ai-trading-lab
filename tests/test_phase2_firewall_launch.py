@@ -27,3 +27,7 @@ def test_wrapper_contract_contains_explicit_binding_and_no_unavailable_fallback(
  for token in ('submitted command hash missing','submitted command hash mismatch','wrapper_process','nora.phase2_firewall_wrapper_start_v2','user_sid'):
   assert token in s
  assert "$submittedSha='unavailable'" not in s
+def test_launcher_uses_bounded_thirty_second_ack_window():
+ from pathlib import Path
+ s=(Path(__file__).parents[1]/'phase-0a-h/windows/launch-phase2-firewall-campaign.ps1').read_text()
+ assert 'for($i=0;$i-lt600;$i++)' in s
