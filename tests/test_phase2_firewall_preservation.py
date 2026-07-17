@@ -42,7 +42,7 @@ def test_legacy_projection_uses_powershell_boolean_and_no_trailing_lf():
  a=inv();assert legacy_digest(a)==__import__('hashlib').sha256(b'[{"name":"safe","enabled":"True","direction":"inbound","action":"allow","profile":"any","group":"system"}]').hexdigest()
 def test_windows_capture_is_read_only_and_dual_store():
  s=(Path(__file__).parents[1]/"phase-0a-h/windows/capture-phase2-firewall-inventory.ps1").read_text()
- for x in ("ActiveStore","PersistentStore","Get-NetFirewallApplicationFilter","Get-NetFirewallSecurityFilter","mutation_cmdlets_invoked=$false","function LegacyDigest"):assert x in s
+ for x in ("ActiveStore","PersistentStore","Get-NetFirewallApplicationFilter","Get-NetFirewallSecurityFilter","mutation_cmdlets_invoked=$false","function LegacyDigest","interface_types=@(One","programs=@(One","security=@($secArr)"):assert x in s
  assert "New-NetFirewallRule" not in s and "Remove-NetFirewallRule" not in s and "Set-NetFirewall" not in s
 def test_exact_remediation_is_guid_store_and_executable_bound():
  s=(Path(__file__).parents[1]/"phase-0a-h/windows/disable-phase2-exact-firewall-rule.ps1").read_text()
