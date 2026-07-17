@@ -35,7 +35,7 @@ def encoded_powershell(script: str) -> list[str]:
 
 def main(argv=None):
     p=argparse.ArgumentParser();
-    for name in ("case-id","repository-commit","ssh-config","ssh-alias","runner-path","runner-sha256","containment-path","containment-sha256","publisher-path","publisher-sha256","reader-path","reader-sha256","verifier-sha256","retrieval-wrapper-sha256","native-execution-identity","case-builder-path","case-builder-sha256","deployment-helper"):
+    for name in ("case-id","repository-commit","ssh-config","ssh-alias","runner-path","runner-sha256","containment-path","containment-sha256","publisher-path","publisher-sha256","reader-path","reader-sha256","verifier-sha256","retrieval-wrapper-sha256","native-execution-identity","case-builder-path","case-builder-sha256","firewall-capture-path","firewall-capture-sha256","deployment-helper"):
         p.add_argument("--"+name,required=True)
     p.add_argument("--output-root",type=Path,required=True);a=p.parse_args(argv)
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{2,127}",a.case_id) or not re.fullmatch(r"[0-9a-f]{40}",a.repository_commit): raise SystemExit("invalid case identity")
@@ -50,7 +50,8 @@ def main(argv=None):
                     "-Mode","capture-containment-command","-RunId",a.case_id,"-ContainmentAction",action,
                     "-ContainmentToolPath",a.containment_path,"-ContainmentToolSha256",a.containment_sha256,
                     "-ContainmentCaseId",op_id,"-ContainmentExpectedVerdict","PASS","-RepositoryCommit",a.repository_commit,
-                    "-ContainmentDestinationPath",windows_package,"-PublisherPath",a.publisher_path,"-PublisherSha256",a.publisher_sha256]
+                    "-ContainmentDestinationPath",windows_package,"-PublisherPath",a.publisher_path,"-PublisherSha256",a.publisher_sha256,
+                    "-FirewallCaptureToolPath",a.firewall_capture_path,"-FirewallCaptureToolSha256",a.firewall_capture_sha256]
         if runner_mode: remote += ["-RunnerOperationMode",runner_mode]
         if exe: remote += ["-ContainmentExecutablePath",exe]
         out=root/f"{op_id}.helper.stdout";err=root/f"{op_id}.helper.stderr"
