@@ -54,7 +54,7 @@ function Get-ReconciledJobInventory([string]$Root){
    $reconDirectory=Join-Path $reconRoot ($id+'.published');$reconPath=Join-Path $reconDirectory 'reconciliation.json';$reconciled=$false;$binding=$null
    if([string]$n.state -eq 'prepared'){
     if(Test-Path -LiteralPath $reconPath){$binding=Read-ReconciliationBinding $reconDirectory $id;$reconciled=$true}
-   }elseif([string]$decoded.job.state -eq 'abandoned' -and $decoded.job.reconciliation_record_path){$binding=Read-ReconciliationBinding (Split-Path -Parent ([string]$decoded.job.reconciliation_record_path)) $id;$reconciled=$true}
+   }elseif([string]$n.state -eq 'abandoned' -and $decoded.job.PSObject.Properties.Name -contains 'reconciliation_record_path' -and $decoded.job.reconciliation_record_path){$binding=Read-ReconciliationBinding (Split-Path -Parent ([string]$decoded.job.reconciliation_record_path)) $id;$reconciled=$true}
    $validStates=$activeStates+@('prepared')+$terminalStates
    if([string]$n.state -notin $validStates){throw 'unknown job state'}
    $currentChanged=if($binding){$binding.original_sha256-ne(Hash-Bytes $decoded.raw)}else{$false}
