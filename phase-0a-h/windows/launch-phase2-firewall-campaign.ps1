@@ -22,9 +22,11 @@ $payload=[ordered]@{
 }
 $logical=($payload|ConvertTo-Json -Compress)
 $payload.logical_command_sha256=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($logical)))).Replace('-','').ToLowerInvariant()
-$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress)))
-$command='powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File '+$WrapperPath+' -PayloadBase64 '+$encoded
+$encodedForSubmission=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress)))
+$command='powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File '+$WrapperPath+' -PayloadBase64 '+$encodedForSubmission
 $submitted=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($command)))).Replace('-','').ToLowerInvariant()
+$payload.submitted_command_sha256=$submitted
+$encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload|ConvertTo-Json -Compress)))
 $intent=[ordered]@{
   schema_version='nora.phase2_firewall_campaign_launch_v2'
   launch_id=$LaunchId;campaign_id=$CampaignId;payload=$payload;encoded_payload=$encoded
@@ -68,11 +70,16 @@ if(!$view){
   Atomic (Join-Path $root 'failure.json') ([ordered]@{launch_id=$LaunchId;campaign_id=$CampaignId;reason='bootstrap_not_acknowledged';pid=$created.ProcessId;stdout_path=$out;stderr_path=$err})
   throw 'campaign bootstrap not acknowledged'
 }
+$intent=Get-Content (Join-Path $root 'intent.json') -Raw|ConvertFrom-Json
+$o=Get-Content $owner -Raw|ConvertFrom-Json
+$wrapperStart=Get-Content (Join-Path $root 'wrapper-start.json') -Raw|ConvertFrom-Json
+if($intent.payload.submitted_command_sha256 -ne $p.submitted_command_sha256 -or $o.submitted_command_sha256 -ne $p.submitted_command_sha256 -or $wrapperStart.submitted_command_sha256 -ne $p.submitted_command_sha256){throw 'submitted command identity mismatch'}
 Atomic (Join-Path $root 'receipt.json') ([ordered]@{
-  schema_version='nora.phase2_firewall_campaign_launch_receipt_v1'
+  schema_version='nora.phase2_firewall_campaign_launch_receipt_v2'
   launch_id=$LaunchId;campaign_id=$CampaignId;intent_sha256=Hash (Join-Path $root 'intent.json')
-  pid=$created.ProcessId;process_start_utc=([datetime]$view.CreationDate).ToUniversalTime().ToString('o')
-  executable_path=$view.ExecutablePath;command_line=$view.CommandLine
+  wrapper_process=[ordered]@{pid=[int]$wrapperStart.wrapper_process.pid;creation_time_utc=[string]$wrapperStart.wrapper_process.creation_time_utc;executable_path=[string]$wrapperStart.wrapper_process.executable_path;command_line=[string]$wrapperStart.wrapper_process.command_line;windows_user=[string]$wrapperStart.wrapper_process.windows_user;user_sid=[string]$wrapperStart.wrapper_process.user_sid}
+  campaign_process=[ordered]@{pid=[int]$o.campaign_process.pid;creation_time_utc=[string]$o.campaign_process.creation_time_utc;executable_path=[string]$o.campaign_process.executable_path;command_line=[string]$o.campaign_process.command_line;windows_user=[string]$o.campaign_process.windows_user;user_sid=[string]$o.campaign_process.user_sid}
+  submitted_command_sha256=$p.submitted_command_sha256
   owner_path=$owner;owner_sha256=Hash $owner;stdout_path=$out;stderr_path=$err
   acknowledged_utc=(Get-Date).ToUniversalTime().ToString('o')
 })
