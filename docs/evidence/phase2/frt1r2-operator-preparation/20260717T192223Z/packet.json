@@ -1,0 +1,71 @@
+{
+  "schema_version": "nora.phase2_frt1r2_operator_packet_v1",
+  "packet_id": "frt1r2-operator-20260717T192223Z",
+  "repository_commit": "a28de6df6d6fdcb38c176fb8586f492e9aa45383",
+  "proposed_qualification_id": "frt1r2-live-20260717T192223Z",
+  "deployed_root": "C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49",
+  "evidence_base": "C:\\NoraEvidence\\Phase2",
+  "credit": "NON_CREDIT_PREPARATION_ONLY",
+  "preconditions_command": "$ErrorActionPreference='Stop';$root='C:\\NoraEvidence\\Phase2';$deployed='C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49';$expected=@{'phase2-network-containment.ps1'='0bb7c7bbb447f32fc998ffb6e2030309ae6a7ca430b2b24f2e7c6f6571fa97a7';'phase2-fresh-verifier-arguments.ps1'='6481c432c071a9690e25affffb42ef42f704b7c8fee88fbeee595a156641a281';'phase2-network-containment-fresh-verify.ps1'='75d4f4a6ec6d476285be79e7ea246122eba492577879af7ca277f19a55f4fc82';'phase2-evidence-runner.ps1'='2a33b35b9d57501cec03c23e25f26de1aea68b52dd86bd0b4fb09480cd34942a';'capture-phase2-run-forensics.ps1'='3ed2f9664c731c8679deced9f70ec1718eb5fc38ce5f87ce609a815fcae83900';'phase2-frt1r2-operator-qualification.ps1'='e5dddf448d875685bab99cb4d582f3278f282b51b124bdda45753266f4254ea3'};$hashes=@{};foreach($name in $expected.Keys){$p=Join-Path $deployed $name;if(!(Test-Path -LiteralPath $p)){throw 'missing deployed file'};$hashes[$name]=(Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant();if($hashes[$name] -ne $expected[$name]){throw 'deployed hash mismatch'}};$profiles=@(Get-NetFirewallProfile -PolicyStore ActiveStore|Sort-Object Name|ForEach-Object{[ordered]@{name=$_.Name;enabled=[bool]$_.Enabled}});if($profiles.Count-ne3-or@($profiles|Where-Object{!$_.enabled}).Count-ne0){throw 'firewall profile precondition failed'};$tester=Get-NetFirewallRule -Name '{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}' -ErrorAction Stop;if($tester.Enabled){throw 'tester rule must be disabled'};$nora=@(Get-NetFirewallRule|Where-Object{$_.Name -like 'NoraPhase2Containment-*' -or $_.Group -like 'NoraPhase2Containment-*'});$proc=@(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue);$jobs=@(Get-ChildItem -LiteralPath (Join-Path $root 'jobs') -Filter '*.json' -File|ForEach-Object{Get-Content -LiteralPath $_.FullName -Raw|ConvertFrom-Json});$scheduled=@(Get-ScheduledTask|Where-Object{$_.TaskName -like '*Nora*' -or $_.TaskPath -like '*Nora*'});[ordered]@{repository_commit='a28de6df6d6fdcb38c176fb8586f492e9aa45383';deployed_hashes=$hashes;profiles=$profiles;tester_rule_enabled=[bool]$tester.Enabled;nora_rule_count=$nora.Count;terminal_tester_process_count=$proc.Count;active_job_count=@($jobs|Where-Object{$_.state -in @('launch-requested','launched','bootstrap-confirmed','running')}).Count;pending_job_count=@($jobs|Where-Object{$_.state -in @('prepared','launch-requested','launched','bootstrap-confirmed','running','contained')}).Count;prepared_job_count=@($jobs|Where-Object{$_.state -eq 'prepared'}).Count;scheduled_nora_task_count=$scheduled.Count;transactional_containment_identity='d4aa8d482658e3ce4b85e738d2e5072b74cd35b5282bee6e8ac147463b2dd4c1'}|ConvertTo-Json -Depth 12",
+  "live_qualification_command": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-frt1r2-operator-qualification.ps1 -QualificationId frt1r2-live-20260717T192223Z -DeployedRoot C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49 -EvidenceBase C:\\NoraEvidence\\Phase2",
+  "emergency_cleanup_command": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\\NoraEvidence\\Phase2\\frt1r2-inert-aa7ee49\\phase2-network-containment.ps1 -Action cleanup -CampaignId frt1r2-live-20260717T192223Z -EvidenceRoot C:\\NoraEvidence\\Phase2\\qualification-frt1r2-live-20260717T192223Z",
+  "postflight_verification_command": "$ErrorActionPreference='Stop';$root='C:\\NoraEvidence\\Phase2';$e=Join-Path $root 'qualification-frt1r2-live-20260717T192223Z';$result=Get-Content -LiteralPath (Join-Path $e 'qualification-result.json') -Raw|ConvertFrom-Json;$cleanup=Get-Content -LiteralPath (Join-Path $e 'containment-frt1r2-live-20260717T192223Z-cleanup.json') -Raw|ConvertFrom-Json;$profiles=@(Get-NetFirewallProfile -PolicyStore ActiveStore|Sort-Object Name|ForEach-Object{[ordered]@{name=$_.Name;enabled=[bool]$_.Enabled}});$tester=Get-NetFirewallRule -Name '{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}' -ErrorAction Stop;if($tester.Enabled){throw 'tester rule must be disabled'};$nora=@(Get-NetFirewallRule|Where-Object{$_.Name -like 'NoraPhase2Containment-*' -or $_.Group -like 'NoraPhase2Containment-*'});$proc=@(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue);$jobs=@(Get-ChildItem -LiteralPath (Join-Path $root 'jobs') -Filter '*.json' -File|ForEach-Object{Get-Content -LiteralPath $_.FullName -Raw|ConvertFrom-Json});if($result.native_execution_started -or $result.history_accessed -or $result.market_data_accessed){throw 'qualification boundary violation'};if(@($profiles|Where-Object{!$_.enabled}).Count -or !$tester.Enabled -or $nora.Count -or $proc.Count -or @($jobs|Where-Object{$_.state -in @('prepared','launch-requested','launched','bootstrap-confirmed','running','contained')}).Count -or !$cleanup.unrelated_rules_unchanged){throw 'postflight safety failure'};[ordered]@{profiles=$profiles;tester_rule_enabled=[bool]$tester.Enabled;nora_rule_count=$nora.Count;terminal_tester_process_count=$proc.Count;pending_job_count=@($jobs|Where-Object{$_.state -in @('prepared','launch-requested','launched','bootstrap-confirmed','running','contained')}).Count;prepared_job_count=@($jobs|Where-Object{$_.state -eq 'prepared'}).Count;unrelated_firewall_unchanged=$cleanup.unrelated_rules_unchanged;result_sha256=(Get-FileHash -LiteralPath (Join-Path $e 'qualification-result.json') -Algorithm SHA256).Hash.ToLowerInvariant()}|ConvertTo-Json -Depth 12",
+  "expected_results": {
+    "preconditions_exit_code": 0,
+    "qualification_exit_code": 0,
+    "qualification_terminal_state": "transaction_accepted_then_cleaned_preflight_only",
+    "native_execution_started": false,
+    "history_accessed": false,
+    "market_data_accessed": false,
+    "literal_path_token_count": 0,
+    "authoritative_final_record_path_parameter_count": 1,
+    "cleanup_exit_code": 0,
+    "second_cleanup": "repository-owned cleanup must return pass with removed_rule_count=0 if run manually",
+    "required_files": [
+      "containment-<qualification-id>.json",
+      "containment-<qualification-id>.transaction-accepted.json",
+      "argument-tokens.json",
+      "containment-<qualification-id>-cleanup.json",
+      "qualification-result.json"
+    ],
+    "stop_conditions": [
+      "any precondition failure",
+      "any nonzero qualification result",
+      "any terminal/tester process",
+      "any Nora rule after cleanup",
+      "any pending job",
+      "any unrelated-firewall mismatch",
+      "any prepared job"
+    ],
+    "prepared_job_count": 0
+  },
+  "manual_run_instructions": [
+    "Run the preconditions command first.",
+    "Do not continue unless every precondition passes.",
+    "Run the live qualification command exactly once.",
+    "Save the complete console output.",
+    "If qualification fails or leaves a rule, run the emergency cleanup command once.",
+    "Run the postflight verification command.",
+    "Return the complete outputs to the coordinating chat.",
+    "Never retry with the same qualification ID."
+  ],
+  "boundaries": {
+    "native_packages": false,
+    "mt5": false,
+    "history": false,
+    "market_data": false,
+    "e1_credit": false,
+    "e2_credit": false,
+    "phase2_complete": false,
+    "phase3_authorized": false,
+    "search_authorized": false,
+    "searchable_component_count": 0,
+    "bp_t1_authorized": false
+  },
+  "burned_cleanup_evidence": {
+    "classification": "NON_CREDIT_OPERATOR_ERROR",
+    "burned_qualification_id": "frt1r2-live-20260717T185409Z",
+    "path": "docs/evidence/phase2/frt1r2-operator-preparation/burned-cleanup-20260717T185409Z/containment-frt1r2-live-20260717T185409Z-cleanup.json",
+    "preserved_without_modification": true
+  }
+}
