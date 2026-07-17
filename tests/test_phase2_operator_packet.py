@@ -48,7 +48,9 @@ def test_repository_job_reader_contains_reconciliation_fail_closed_contract():
         "Read-ReconciledJobFile", "legacy job contradictory field:",
         "legacy job key/value count mismatch", "nora.phase2_prelaunch_reconciliation_v1",
         "ABANDONED_PRE_LAUNCH_NO_CONTAINMENT", "reconciliation original job mismatch",
-        "reconciliation has no source job", "published reconciliation incomplete",
+        "Read-ReconciliationBinding", "original-job.json", "reconciliation original job missing",
+        "reconciliation original job size mismatch", "reconciliation has no source job", "published reconciliation incomplete",
+        "current_job_changed_after_reconciliation", "ReadAllBytes",
         "unknown job state", "unresolved_prepared_job_count",
     ):
         assert token in source
@@ -94,5 +96,7 @@ def test_windows_powershell_job_reconciliation_harness():
     assert result.returncode == 0, result.stderr or result.stdout
     assert '"verdict":"PASS"' in result.stdout
     assert '"safe_reconciled":"PASS"' in result.stdout
+    assert '"mutation_after_publication":"PASS"' in result.stdout
+    assert '"legacy_nested_keys_values":"PASS"' in result.stdout
     assert '"unresolved_prepared":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"contradictory_reconciliation":"FAIL_AS_EXPECTED"' in result.stdout

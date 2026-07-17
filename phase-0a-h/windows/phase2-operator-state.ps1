@@ -32,7 +32,14 @@ function Read-Reconciliation([string]$Path,[string]$RunId,[byte[]]$Raw){
  $record=Get-Content -LiteralPath $Path -Raw|ConvertFrom-Json
  if($record.schema_version-ne'nora.phase2_prelaunch_reconciliation_v1' -or $record.run_identifier-ne$RunId -or $record.classification-ne'ABANDONED_PRE_LAUNCH_NO_CONTAINMENT' -or [bool]$record.accepted){throw 'untrusted reconciliation record'}
  if($record.original_job_sha256-ne(Hash-Bytes $Raw)){throw 'reconciliation original job mismatch'}
+ if($record.PSObject.Properties.Name -contains 'original_job_size' -and [int64]$record.original_job_size -ne [int64]$Raw.Length){throw 'reconciliation original job size mismatch'}
  return $record
+}
+function Read-ReconciliationBinding([string]$Directory,[string]$RunId){
+ $recordPath=Join-Path $Directory 'reconciliation.json';$originalPath=Join-Path $Directory 'original-job.json'
+ if(!(Test-Path -LiteralPath $originalPath -PathType Leaf)){throw 'reconciliation original job missing'}
+ $raw=[IO.File]::ReadAllBytes($originalPath);$record=Read-Reconciliation $recordPath $RunId $raw
+ [ordered]@{record=$record;original_path=$originalPath;original_raw=$raw;original_size=[int64]$raw.Length;original_sha256=Hash-Bytes $raw}
 }
 function Get-ReconciledJobInventory([string]$Root){
  $jobsRoot=Join-Path $Root 'jobs';$reconRoot=Join-Path $Root 'reconciliations'
@@ -44,13 +51,14 @@ function Get-ReconciledJobInventory([string]$Root){
   foreach($file in @(Get-ChildItem -LiteralPath $jobsRoot -Filter '*.json' -File|Sort-Object Name)){
    $decoded=Read-ReconciledJobFile $file.FullName;$n=$decoded.normalized;$id=[string]$n.run_identifier
    if($known.ContainsKey($id)){throw 'duplicate normalized run identifier'};$known[$id]=$true
-   $reconPath=Join-Path (Join-Path $reconRoot ($id+'.published')) 'reconciliation.json';$reconciled=$false
+   $reconDirectory=Join-Path $reconRoot ($id+'.published');$reconPath=Join-Path $reconDirectory 'reconciliation.json';$reconciled=$false;$binding=$null
    if([string]$n.state -eq 'prepared'){
-    if(Test-Path -LiteralPath $reconPath){$null=Read-Reconciliation $reconPath $id $decoded.raw;$reconciled=$true}
-   }elseif([string]$decoded.job.state -eq 'abandoned' -and $decoded.job.reconciliation_record_path){$null=Read-Reconciliation ([string]$decoded.job.reconciliation_record_path) $id $decoded.raw;$reconciled=$true}
+    if(Test-Path -LiteralPath $reconPath){$binding=Read-ReconciliationBinding $reconDirectory $id;$reconciled=$true}
+   }elseif([string]$decoded.job.state -eq 'abandoned' -and $decoded.job.reconciliation_record_path){$binding=Read-ReconciliationBinding (Split-Path -Parent ([string]$decoded.job.reconciliation_record_path)) $id;$reconciled=$true}
    $validStates=$activeStates+@('prepared')+$terminalStates
    if([string]$n.state -notin $validStates){throw 'unknown job state'}
-   $rows+=[ordered]@{run_identifier=$id;normalized_state=[string]$n.state;reconciled_historical_prepared=$reconciled}
+   $currentChanged=if($binding){$binding.original_sha256-ne(Hash-Bytes $decoded.raw)}else{$false}
+   $rows+=[ordered]@{run_identifier=$id;normalized_state=[string]$n.state;reconciled_historical_prepared=$reconciled;original_binding_path=if($binding){$binding.original_path}else{$null};original_job_size=if($binding){$binding.original_size}else{$null};original_job_sha256=if($binding){$binding.original_sha256}else{$null};current_job_changed_after_reconciliation=$currentChanged}
   }
  }
  # Every published reconciliation must have exactly one source job and matching bytes.
@@ -59,7 +67,7 @@ function Get-ReconciledJobInventory([string]$Root){
    $id=$dir.Name.Substring(0,$dir.Name.Length-10);$recordPath=Join-Path $dir.FullName 'reconciliation.json'
    if(!$known.ContainsKey($id)){throw 'reconciliation has no source job'}
    if(!(Test-Path -LiteralPath $recordPath -PathType Leaf)){throw 'published reconciliation incomplete'}
-   $source=Join-Path $jobsRoot ($id+'.json');$decoded=Read-ReconciledJobFile $source;$null=Read-Reconciliation $recordPath $id $decoded.raw
+   $source=Join-Path $jobsRoot ($id+'.json');$decoded=Read-ReconciledJobFile $source;$null=Read-ReconciliationBinding $dir.FullName $id
   }
  }
  $active=@($rows|Where-Object{$_.normalized_state -in $activeStates}).Count
