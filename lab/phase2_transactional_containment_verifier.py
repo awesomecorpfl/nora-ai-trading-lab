@@ -49,7 +49,9 @@ def verify(path:Path,root:Path)->dict:
     head=subprocess.check_output(["git","-C",str(root),"rev-parse","HEAD"],text=True).strip()
     for a in ANCESTORS:
         if subprocess.run(["git","-C",str(root),"merge-base","--is-ancestor",a,head]).returncode: bad("ancestry")
-    if d["repository"].get("head")!=head or d["repository"].get("branch")!="main" or d["repository"].get("required_ancestors")!=list(ANCESTORS): bad("head binding")
+    artifact_head=d["repository"].get("head")
+    if not isinstance(artifact_head,str) or len(artifact_head)!=40 or subprocess.run(["git","-C",str(root),"merge-base","--is-ancestor",artifact_head,head]).returncode: bad("head binding")
+    if d["repository"].get("branch")!="main" or d["repository"].get("required_ancestors")!=list(ANCESTORS): bad("head binding")
     r=d["repository"]
     if r.get("accepted_baseline_commit")!=ANCESTORS[0] or r.get("launch_id")!="synlc-20260717T034100Z" or r.get("campaign_id")!="sync-20260717T034100Z" or r.get("baseline_path")!="docs/evidence/phase2/firewall-semantic-baseline/semantic20-20260717T034100Z/semantic-firewall-baseline.json" or r.get("baseline_size")!=14374 or r.get("baseline_sha256")!="366f13ed170e26d679981c8f1692325997315883891ea17eb2366daf8f4d0497": bad("baseline identity")
     p=d["prerequisites"]

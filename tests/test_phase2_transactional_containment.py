@@ -1,4 +1,4 @@
-import copy, json, tempfile, unittest
+import copy, json, subprocess, tempfile, unittest
 from unittest.mock import patch
 from pathlib import Path
 from lab.phase2_transactional_containment import ContractError, _porcelain_rows, build_candidate, canonical, identity, verify_document, publish
@@ -65,5 +65,12 @@ class Phase2ContractCases(unittest.TestCase):
         output = " M docs/phase2_transactional_containment_status_v1.json\n?? protected/top-level/file\n"
         with patch("lab.phase2_transactional_containment.subprocess.check_output", return_value=output):
             self.assertEqual(_porcelain_rows(ROOT), output.splitlines())
+    def test_independent_verifier_accepts_bound_head_as_normal_ancestor(self):
+        d=self.candidate()
+        d["repository"]["head"] = subprocess.check_output(["git", "rev-parse", "HEAD^"], cwd=ROOT, text=True).strip()
+        d["semantic_identity"] = identity("nora.phase2-tca-1.semantic", {k:v for k,v in d.items() if k not in {"timestamp","semantic_identity"}})
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(canonical(d)); f.flush()
+            self.assertEqual(independent_verify(Path(f.name), ROOT)["verdict"], "PASS")
 
 if __name__ == "__main__": unittest.main()
