@@ -43,8 +43,9 @@ def main(argv=None):
     ssh=["ssh","-F",a.ssh_config,"-n","-o","BatchMode=yes",a.ssh_alias]
     helper=Path(__file__).with_name("phase2-exit-propagation-batch")
     retrieval=Path(__file__).with_name("phase2-retrieve-containment-evidence.py")
-    operations=[]
-    for index,(op_id,op_type,expected,action,runner_mode,exe) in enumerate(SEQUENCE):
+    operations=[];operation_ids=[]
+    for index,(label,op_type,expected,action,runner_mode,exe) in enumerate(SEQUENCE):
+        op_id=f"{a.case_id}-{label}";operation_ids.append(op_id)
         windows_package=rf"C:\NoraEvidence\Phase2\case-operations\{a.case_id}\{op_id}.zip"
         remote=ssh+["powershell.exe","-NoProfile","-NonInteractive","-ExecutionPolicy","Bypass","-File",a.runner_path,
                     "-Mode","capture-containment-command","-RunId",a.case_id,"-ContainmentAction",action,
@@ -75,13 +76,13 @@ def main(argv=None):
         verified=verify_operation(local_package,package_meta["sha256"])
         operations.append({"operation_id":op_id,"operation_type":op_type,"package_path":str(local_package),"windows_path":windows_package,
             "package_size":package_meta["size"],"package_sha256":package_meta["sha256"],"original_child_exit":expected,"helper_exit":0,
-            "expected_exit":expected,"operation_verdict":"PASS","predecessor_operation_id":None if index==0 else SEQUENCE[index-1][0],
+            "expected_exit":expected,"operation_verdict":"PASS","predecessor_operation_id":None if index==0 else operation_ids[index-1],
             "causal_relationship":"ordered_after_predecessor","cleanup_recovery_relationship":"cleanup_boundary" if op_type=="cleanup" else ("after_cleanup:cleanup" if index>3 else None),
             "retrieval":{"receipt_path":str(receipt),"receipt_sha256":file_hash(receipt),"fedora_package_sha256":verified["package_sha256"],"verification_result":"PASS"}})
     plan={"case_id":a.case_id,"case_type":"abandoned_reuse","repository_commit":a.repository_commit,
           "identities":{"native_execution":a.native_execution_identity,"runner":a.runner_sha256,"containment":a.containment_sha256,
                         "publisher":a.publisher_sha256,"verifier":a.verifier_sha256,"retrieval_wrapper":a.retrieval_wrapper_sha256},
-          "declared_sequence":[x[0] for x in SEQUENCE],"operations":operations,
+          "declared_sequence":operation_ids,"operations":operations,
           "case_invariants":{"classification":"ABANDONED_PRE_LAUNCH_NO_CONTAINMENT","non_reusable":True,"final_nora_rules":0},"published_utc":utc()}
     plan_path=root/"case-plan.json";plan_path.write_text(json.dumps(plan,sort_keys=True,separators=(",",":"))+"\n")
     windows_plan=rf"C:\NoraEvidence\Phase2\case-plans\{a.case_id}.json";plan_hash=file_hash(plan_path)
