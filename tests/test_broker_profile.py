@@ -154,3 +154,26 @@ def test_representative_instrument_families_are_derived_explicitly():
     assert {symbol for symbol, family in families.items() if family == "indices"} == {"GDAXI", "NDX", "SP500"}
     assert families["IVE"] == "equity_etf"
     assert families["XAUUSD"] == "metals_commodities"
+
+
+def test_representative_family_contracts_keep_observed_type_differences():
+    profile = load_strategyquantx_export(FIXTURE)
+    by_symbol = {item["symbol"]: item for item in profile["symbols"]}
+    eurusd = by_symbol["EURUSD"]
+    eurjpy = by_symbol["EURJPY"]
+    gdaxi = by_symbol["GDAXI"]
+    ive = by_symbol["IVE"]
+    xauusd = by_symbol["XAUUSD"]
+
+    assert eurusd["price"]["digits"] == 5
+    assert eurusd["price"]["pip_size_observed"] == 0.0001
+    assert eurusd["price"]["trade_tick_size_observed"] == 0.00001
+    assert eurjpy["price"]["digits"] == 3
+    assert eurjpy["price"]["pip_size_observed"] == 0.01
+    assert eurjpy["price"]["trade_tick_size_observed"] == 0.001
+    assert gdaxi["contract"]["contract_size_observed"] == 10.0
+    assert gdaxi["price"]["digits"] == 1
+    assert ive["contract"]["volume_min_observed"] == 1.0
+    assert ive["contract"]["volume_step_observed"] == 1.0
+    assert xauusd["contract"]["contract_size_observed"] == 100.0
+    assert xauusd["price"]["trade_tick_size_observed"] == 0.01
