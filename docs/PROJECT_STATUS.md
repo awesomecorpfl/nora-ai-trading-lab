@@ -165,7 +165,7 @@ No firewall state was changed during PI-0 reconciliation or repair validation.
 ## Frozen boundaries
 
 - Never inspect or modify the four protected untracked directories.
-- Do not confuse this repository with `/home/gasper/trading-lab`.
+- `/home/gasper/trading-lab` is retired; its useful historical assets are isolated under `research/` and are not part of the active build.
 - No search before Phase-2 completion and signed D8.
 - No hidden tolerance widening or post-result threshold changes.
 - No production-data acquisition without Gasper.

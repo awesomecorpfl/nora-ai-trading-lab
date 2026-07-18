@@ -14,3 +14,7 @@ state/*
 state.sqlite3
 
 engine/target/
+
+# Historical research outputs are preserved locally but not committed.
+research/backtests/*
+!research/backtests/.gitkeep
