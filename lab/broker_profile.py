@@ -164,6 +164,9 @@ def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
         if csv_swap_type != xml_swap_type:
             warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "swap_type"})
         commission_xml = _embedded_param(x.get("commissions", ""), "Commission")
+        commission_type_xml = _embedded_attr(x.get("commissions", ""), "type")
+        if commission_type_xml is not None and _text(row, CSV_COLUMNS["commission_type"]).lower() != commission_type_xml.lower():
+            warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "commission_type"})
         if commission_xml is not None and not math.isclose(_float(row, CSV_COLUMNS["commission_value"], "commission_value"), float(commission_xml), rel_tol=0.0, abs_tol=1e-12):
             warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "commission_value"})
         session_name = _find_session(symbol, sessions)

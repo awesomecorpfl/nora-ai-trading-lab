@@ -7,6 +7,11 @@ from lab.broker_profile import SCHEMA, load_strategyquantx_export
 FIXTURE = Path(__file__).parent / "fixtures" / "broker_profile" / "strategyquantx_export"
 
 
+def _copy_fixture(destination):
+    for source in FIXTURE.iterdir():
+        (destination / source.name).write_bytes(source.read_bytes())
+
+
 def test_strategyquantx_export_normalizes_all_symbols_and_preserves_sources():
     profile = load_strategyquantx_export(FIXTURE)
     assert profile["schema_version"] == SCHEMA
@@ -46,6 +51,17 @@ def test_source_conflicts_are_warnings_not_silent_rewrites():
     assert ("GBPJPY", "point_value") in conflicts
 
 
+def test_conflict_matrix_includes_all_overlapping_fields(tmp_path):
+    _copy_fixture(tmp_path)
+    xml = tmp_path / "updated_instrument_information.xml"
+    text = xml.read_text()
+    for old, new in (("tickSize=\"0.010\"", "tickSize=\"0.011\""), ("tickStep=\"0.001\"", "tickStep=\"0.002\""), ("decimals=\"3\"", "decimals=\"4\""), ("defaultSpread=\"1.00\"", "defaultSpread=\"1.01\""), ("defaultSlippage=\"0.00\"", "defaultSlippage=\"0.01\""), ("orderSizeStep=\"0.01\"", "orderSizeStep=\"0.02\""), ("pointValue=\"616.374608\"", "pointValue=\"617.374608\""), ("long=&quot;1.80&quot;", "long=&quot;2.80&quot;"), ("type=\"points\"", "type=\"money\""), ("type=&quot;SizeBased&quot;", "type=&quot;Other&quot;"), ("&gt;0.00&lt;/Param&gt;", "&gt;1.00&lt;/Param&gt;")):
+        text = text.replace(old, new, 1)
+    xml.write_text(text)
+    fields = {item["field"] for item in load_strategyquantx_export(tmp_path)["warnings"] if item["code"] == "SOURCE_VALUE_CONFLICT"}
+    assert {"pip_size", "trade_tick_size", "digits", "spread_pips", "slippage_pips", "volume_step", "point_value", "swap_long", "swap_type", "commission_type", "commission_value"} <= fields
+
+
 def test_wrong_header_fails_closed(tmp_path):
     for source in FIXTURE.iterdir():
         (tmp_path / source.name).write_bytes(source.read_bytes())
@@ -53,6 +69,38 @@ def test_wrong_header_fails_closed(tmp_path):
     text = csv_path.read_text(encoding="utf-8-sig").replace("Instrument,Description", "Wrong,Description", 1)
     csv_path.write_text(text, encoding="utf-8")
     with pytest.raises(ValueError, match="header"):
+        load_strategyquantx_export(tmp_path)
+
+
+def test_duplicate_csv_symbol_fails_closed(tmp_path):
+    _copy_fixture(tmp_path)
+    csv_path = tmp_path / "sample.csv"
+    csv_path.write_text(csv_path.read_text().replace("GBPUSD,", "EURUSD,", 1))
+    with pytest.raises(ValueError, match="duplicate or empty symbol"):
+        load_strategyquantx_export(tmp_path)
+
+
+def test_duplicate_xml_records_and_set_mismatch_fail_closed(tmp_path):
+    _copy_fixture(tmp_path)
+    xml_path = tmp_path / "updated_instrument_information.xml"
+    xml = xml_path.read_text()
+    first = xml.split("\n", 2)[1]
+    xml_path.write_text(xml.replace("</Instruments>", first + "\n</Instruments>", 1))
+    with pytest.raises(ValueError, match="duplicate instrument"):
+        load_strategyquantx_export(tmp_path)
+    _copy_fixture(tmp_path)
+    xml_path.write_text(xml_path.read_text().replace('instrument="GBPUSD"', 'instrument="MISSING"', 1))
+    with pytest.raises(ValueError, match="CSV/XML"):
+        load_strategyquantx_export(tmp_path)
+
+
+def test_duplicate_session_name_fails_closed(tmp_path):
+    _copy_fixture(tmp_path)
+    path = tmp_path / "Sessions.xml"
+    text = path.read_text()
+    block = text[text.index("  <Session"):text.index("  </Session>") + len("  </Session>")]
+    path.write_text(text.replace("</Sessions>", block + "\n</Sessions>", 1))
+    with pytest.raises(ValueError, match="duplicate session"):
         load_strategyquantx_export(tmp_path)
 
 
