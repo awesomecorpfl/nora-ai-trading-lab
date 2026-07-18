@@ -2,7 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from lab.broker_profile import SCHEMA, load_strategyquantx_export, write_strategyquantx_profile
+from lab.broker_profile import (
+    SCHEMA,
+    load_canonical_profile,
+    load_strategyquantx_export,
+    write_strategyquantx_profile,
+)
 from lab.core import canon
 
 FIXTURE = Path(__file__).parent / "fixtures" / "broker_profile" / "strategyquantx_export"
@@ -129,3 +134,14 @@ def test_writer_publishes_reproducible_canonical_profile(tmp_path):
     assert output.is_file()
     assert output.read_text() == canon(profile) + "\n"
     assert profile == load_strategyquantx_export(FIXTURE)
+
+
+def test_canonical_profile_loader_rejects_identity_tampering(tmp_path):
+    output = tmp_path / "broker-profile.json"
+    expected = write_strategyquantx_profile(FIXTURE, output)
+    assert load_canonical_profile(output) == expected
+    tampered = dict(expected)
+    tampered["profile_identity"] = "0" * 64
+    output.write_text(canon(tampered) + "\n")
+    with pytest.raises(ValueError, match="profile identity"):
+        load_canonical_profile(output)

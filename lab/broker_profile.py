@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import json
 import math
 import re
 import xml.etree.ElementTree as ET
@@ -225,6 +226,26 @@ def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
         "warnings": warnings,
     }
     value["profile_identity"] = hashlib.sha256(canon(value).encode()).hexdigest()
+    return value
+
+
+def load_canonical_profile(path: str | Path) -> dict[str, Any]:
+    """Load and verify one canonical normalized broker-profile artifact."""
+    path = Path(path)
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"invalid canonical profile: {path}") from exc
+    if not isinstance(value, dict) or value.get("schema_version") != SCHEMA:
+        raise ValueError("unsupported canonical profile schema")
+    actual = value.get("profile_identity")
+    if not isinstance(actual, str):
+        raise ValueError("missing profile identity")
+    body = dict(value)
+    body.pop("profile_identity", None)
+    expected = hashlib.sha256(canon(body).encode()).hexdigest()
+    if actual != expected:
+        raise ValueError("profile identity mismatch")
     return value
 
 
