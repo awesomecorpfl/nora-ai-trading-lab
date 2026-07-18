@@ -6,7 +6,9 @@ from lab.broker_profile import (
     SCHEMA,
     build_profile_boundary,
     load_canonical_profile,
+    load_profile_boundary,
     load_strategyquantx_export,
+    write_profile_boundary,
     write_strategyquantx_profile,
 )
 from lab.core import canon
@@ -204,3 +206,17 @@ def test_profile_boundary_keeps_observations_separate_from_unbound_policy():
     tampered["profile_identity"] = "0" * 64
     with pytest.raises(ValueError, match="profile identity"):
         build_profile_boundary(tampered)
+
+
+def test_profile_boundary_artifact_round_trip_rejects_policy_tampering(tmp_path):
+    profile = load_strategyquantx_export(FIXTURE)
+    output = tmp_path / "profile-boundary.json"
+    expected = write_profile_boundary(profile, output)
+    assert expected == build_profile_boundary(profile)
+    assert load_profile_boundary(output) == expected
+    tampered = dict(expected)
+    tampered["policy"] = dict(expected["policy"])
+    tampered["policy"]["bindings"] = {"spread_model": {"default": 1.0}}
+    output.write_text(canon(tampered) + "\n")
+    with pytest.raises(ValueError, match="policy boundary"):
+        load_profile_boundary(output)

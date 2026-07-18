@@ -314,3 +314,40 @@ def build_profile_boundary(profile: dict[str, Any]) -> dict[str, Any]:
             "unbound_fields": list(UNBOUND_POLICY_FIELDS),
         },
     }
+
+
+def _validate_profile_boundary(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict) or value.get("schema_version") != BOUNDARY_SCHEMA:
+        raise ValueError("unsupported policy boundary schema")
+    try:
+        expected = build_profile_boundary(value["observed_profile"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError("invalid observed profile in policy boundary") from exc
+    if value != expected:
+        raise ValueError("policy boundary mismatch")
+    return value
+
+
+def load_profile_boundary(path: str | Path) -> dict[str, Any]:
+    """Load and verify one observed/policy boundary artifact."""
+    path = Path(path)
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"invalid policy boundary: {path}") from exc
+    return _validate_profile_boundary(value)
+
+
+def write_profile_boundary(profile: dict[str, Any], output: str | Path) -> dict[str, Any]:
+    """Write one canonical observed/policy boundary artifact atomically."""
+    boundary = build_profile_boundary(profile)
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    partial = output.with_name(output.name + ".partial")
+    try:
+        partial.write_text(canon(boundary) + "\n", encoding="utf-8", newline="\n")
+        partial.replace(output)
+    finally:
+        if partial.exists():
+            partial.unlink()
+    return boundary
