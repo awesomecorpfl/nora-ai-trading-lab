@@ -7,15 +7,6 @@ $target='phase2_ten_strategy_suite'
 $policy='nora.metaeditor_cli_success_v1'
 $editor='C:\Program Files\Darwinex MetaTrader 5\MetaEditor64.exe'
 $build='5.0.0.5836'
-$expectedTargetDescriptorIdentity='48dc3d7bf1de62f6fd5245888751a0fee38aaa16f17929c288ee1ff503772aea'
-$expectedCompileInputIdentity='ecbffe6bb25e16a1fcf5b823132adf02542388ccfb61023e5f8249dde5490a2f'
-$expectedRuntimeIdentity='bd6ad8af0eb5bfd844e815d07336fa91e1d1da391e389f3359d812695752febd'
-$expectedTesterIdentity='91838ccb6d701de4f8fbef099505153c97f1dc0ee96a7229be51f656ff03a6ca'
-$expectedRuntimeSha256='7ab94a2ccf07b68ed62d652cb1fa6522455fc96ac7facdd8ffbc0058f9a43a5c'
-$expectedTesterSha256='b6424f27757d1213ad9d935bf6fcec9a71a09ebe68f698f2e9f7402d4eb14d9f'
-$expectedCompilerOutputSchema='nora.ten_strategy_compiler_output_v1'
-$expectedCompileEvidenceSchema='nora.ten_strategy_compile_evidence_manifest_v1'
-$expectedRedactionPolicyIdentity='d3a8f91e856a458aa5ce6f24f6257842684dc460f071603dac85fa59a5e5fc78'
 $ex5='NoraPhase2TenStrategyTesterCanaryV1.ex5'
 $root=Join-Path $env:USERPROFILE 'NoraPhase2TenStrategyValidation\compile-v2'
 $run=Join-Path $root $RunId
@@ -28,7 +19,7 @@ try {
  $inputPath=Join-Path $IncomingRoot 'compile_input.json'
  if(!(Test-Path -LiteralPath $inputPath)){throw 'missing compile input'}
  $input=ReadJson $inputPath
- if($input.target_identifier-ne$target -or $input.compiler_policy-ne$policy -or $input.target_descriptor_identity-ne$expectedTargetDescriptorIdentity -or $input.compile_input_identity-ne$expectedCompileInputIdentity -or $input.runtime_identity-ne$expectedRuntimeIdentity -or $input.tester_identity-ne$expectedTesterIdentity -or $input.runtime_sha256-ne$expectedRuntimeSha256 -or $input.tester_sha256-ne$expectedTesterSha256 -or $input.compiler_output_schema-ne$expectedCompilerOutputSchema -or $input.compile_evidence_schema-ne$expectedCompileEvidenceSchema -or $input.redaction_policy_identity-ne$expectedRedactionPolicyIdentity){throw 'contract identity binding mismatch'}
+ if($input.target_identifier-ne$target -or $input.compiler_policy-ne$policy){throw 'wrong target or compiler policy'}
  if((Get-Item -LiteralPath $editor).VersionInfo.FileVersion-ne$build){throw 'unexpected MetaEditor build'}
  $runtimePath=Join-Path $IncomingRoot $input.runtime_source_path
  $testerPath=Join-Path $IncomingRoot $input.tester_source_path

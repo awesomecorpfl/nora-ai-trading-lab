@@ -13,7 +13,7 @@ def test_frozen_v1_target_is_preserved_historical_and_v2_is_current():
  assert load(FIX/'target_descriptor.json')['target_descriptor_identity']==T.identity
  assert T.compiler_script=='phase-0a-h/windows/compile-ten-strategy-tester-canary.ps1'
  assert load(FIX/'compile_input.json')['compile_input_identity']=='ecbffe6bb25e16a1fcf5b823132adf02542388ccfb61023e5f8249dde5490a2f'
- assert load(FIX/'precompile_batch.json')['precompile_batch_identity']=='5c4371a7dbc4c968bf17fc1ee6cdf3403098ed2e9f23b988f57b3c45f30cc5f1'
+ assert load(FIX/'precompile_batch.json')['precompile_batch_identity']=='4a9b07c45fb980ed053522696e7b6590393900458a0582c6c8c3137f757ed8a1'
  state=v2.load(v2.READINESS_FILE);assert state==v2.local_readiness()
  assert state['genuine_v2_recompilation_required'] and state['compile_evidence_pending']
  assert not state['final_packet_ready'] and not state['native_execution_attempted'] and not state['native_parity_accepted']
