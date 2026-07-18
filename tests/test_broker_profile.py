@@ -4,6 +4,7 @@ import pytest
 
 from lab.broker_profile import (
     SCHEMA,
+    build_profile_boundary,
     load_canonical_profile,
     load_strategyquantx_export,
     write_strategyquantx_profile,
@@ -177,3 +178,29 @@ def test_representative_family_contracts_keep_observed_type_differences():
     assert ive["contract"]["volume_step_observed"] == 1.0
     assert xauusd["contract"]["contract_size_observed"] == 100.0
     assert xauusd["price"]["trade_tick_size_observed"] == 0.01
+
+
+def test_profile_boundary_keeps_observations_separate_from_unbound_policy():
+    profile = load_strategyquantx_export(FIXTURE)
+    boundary = build_profile_boundary(profile)
+    assert boundary["schema_version"] == "nora.broker_profile_boundary_v1"
+    assert boundary["source_profile_identity"] == profile["profile_identity"]
+    assert boundary["observed_profile"] == profile
+    assert boundary["policy"] == {
+        "status": "unbound",
+        "bindings": {},
+        "unbound_fields": [
+            "spread_model",
+            "commission_model",
+            "slippage_model",
+            "swap_model",
+            "account_currency",
+            "sizing",
+            "leverage_margin",
+            "session_policy",
+        ],
+    }
+    tampered = dict(profile)
+    tampered["profile_identity"] = "0" * 64
+    with pytest.raises(ValueError, match="profile identity"):
+        build_profile_boundary(tampered)

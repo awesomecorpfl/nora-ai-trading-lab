@@ -18,6 +18,17 @@ from typing import Any
 from lab.core import canon
 
 SCHEMA = "nora.broker_profile_v1"
+BOUNDARY_SCHEMA = "nora.broker_profile_boundary_v1"
+UNBOUND_POLICY_FIELDS = (
+    "spread_model",
+    "commission_model",
+    "slippage_model",
+    "swap_model",
+    "account_currency",
+    "sizing",
+    "leverage_margin",
+    "session_policy",
+)
 EXPECTED_HEADER = [
     "Instrument", "Description", "Instrument Type", "Exchange", "Country", "Sector", "Execution Type", "Trading Conditions", "---", "Last Bid Price", "HowManyTicksAreIn1Pip", "---", "Calculations are based on", "Pip (Tick Size)", "Tick (Tick Step)", "1 Pip Worth", "", "1 Tick Worth", "", "Min Lot Size", "Max Lot Size", "Min Lot Step", "Instrument's Daily ATR (In Pips)", "", "", "Leverage", "Margin Requirement", "", "AccountMarginStopOutMode", "Margin Call at", "Stop Out at", "Spread (In Pips)", "", "", "Slippage (In Pips)", "", "", "Commission Type", "Commission Value", "", "Minimum SL/TP distance from market price (STOP_LEVEL) (In Pips)", "", "", "Minimum pending order distance from market price (FREEZE_LEVEL) (In Pips)", "", "", "Maximum open pending orders allowed", "Swap Type", "Swap Long", "", "", "Swap Short", "", "", "Triple Swap on", "Trading Sessions Times (TimeOffSet=0)", "Decimals", "Contract Size", "Point Value",
 ]
@@ -279,3 +290,27 @@ def write_strategyquantx_profile(root: str | Path, output: str | Path) -> dict[s
         if partial.exists():
             partial.unlink()
     return profile
+
+
+def build_profile_boundary(profile: dict[str, Any]) -> dict[str, Any]:
+    """Separate source observations from policy decisions that remain unbound."""
+    if not isinstance(profile, dict) or profile.get("schema_version") != SCHEMA:
+        raise ValueError("unsupported observed broker profile")
+    profile_identity = profile.get("profile_identity")
+    if not isinstance(profile_identity, str) or not profile_identity:
+        raise ValueError("observed broker profile has no identity")
+    body = dict(profile)
+    body.pop("profile_identity", None)
+    expected_identity = hashlib.sha256(canon(body).encode()).hexdigest()
+    if profile_identity != expected_identity:
+        raise ValueError("profile identity mismatch")
+    return {
+        "schema_version": BOUNDARY_SCHEMA,
+        "source_profile_identity": profile_identity,
+        "observed_profile": profile,
+        "policy": {
+            "status": "unbound",
+            "bindings": {},
+            "unbound_fields": list(UNBOUND_POLICY_FIELDS),
+        },
+    }
