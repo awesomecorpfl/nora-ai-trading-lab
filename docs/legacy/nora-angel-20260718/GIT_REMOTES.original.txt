@@ -1,2 +1,0 @@
-origin	https://github.com/awesomecorpfl/Nora_Angel.git (fetch)
-origin	https://github.com/awesomecorpfl/Nora_Angel.git (push)
