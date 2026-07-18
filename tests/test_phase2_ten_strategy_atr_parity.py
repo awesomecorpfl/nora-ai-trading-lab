@@ -358,6 +358,16 @@ def test_metadata_only_maintenance_unchanged_bounds_and_contract_metadata_accept
     assert result["journal"]["local_cache_access"]
 
 
+def test_history_cache_mutation_during_sync_is_rejected():
+    evidence = _environmental_evidence()
+    evidence["raw_journal"] += "\nGDAXI: history data to synchronize in 0:00:00.000"
+    evidence["after_inventory"]["history/GDAXI/2020.hcc"] = {"size": 1001}
+    evidence["cache_mutations"] = [{"path": "history/GDAXI/2020.hcc", "classification": "cache_header_maintenance", "delta_bytes": 1}]
+    result = evaluate_environmental_acceptance(evidence)
+    assert not result["accepted"]
+    assert "HISTORY_CACHE_MUTATION_DURING_SYNC" in result["reasons"]
+
+
 @pytest.mark.parametrize("mutator, reason", [
     (lambda e: e["after_inventory"].update({"ticks/GDAXI.tkc": {"size": 1}}), "NEW_HISTORY_OR_TICK_FILE"),
     (lambda e: e.update(bar_count_after=393093), "BAR_COUNT_EXPANSION_OR_CHANGE"),
