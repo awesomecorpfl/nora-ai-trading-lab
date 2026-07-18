@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from lab.broker_profile import SCHEMA, load_strategyquantx_export
+from lab.broker_profile import SCHEMA, load_strategyquantx_export, write_strategyquantx_profile
+from lab.core import canon
 
 FIXTURE = Path(__file__).parent / "fixtures" / "broker_profile" / "strategyquantx_export"
 
@@ -120,3 +121,11 @@ def test_missing_or_ragged_source_fails_closed(tmp_path):
     (tmp_path / "sample.csv").write_text("\n".join(lines[:-1] + [lines[-1] + ",extra"]) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="ragged"):
         load_strategyquantx_export(tmp_path)
+
+
+def test_writer_publishes_reproducible_canonical_profile(tmp_path):
+    output = tmp_path / "broker-profile.json"
+    profile = write_strategyquantx_profile(FIXTURE, output)
+    assert output.is_file()
+    assert output.read_text() == canon(profile) + "\n"
+    assert profile == load_strategyquantx_export(FIXTURE)

@@ -226,3 +226,18 @@ def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
     }
     value["profile_identity"] = hashlib.sha256(canon(value).encode()).hexdigest()
     return value
+
+
+def write_strategyquantx_profile(root: str | Path, output: str | Path) -> dict[str, Any]:
+    """Write one canonical, reproducible normalized profile artifact."""
+    profile = load_strategyquantx_export(root)
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    partial = output.with_name(output.name + ".partial")
+    try:
+        partial.write_text(canon(profile) + "\n", encoding="utf-8", newline="\n")
+        partial.replace(output)
+    finally:
+        if partial.exists():
+            partial.unlink()
+    return profile
