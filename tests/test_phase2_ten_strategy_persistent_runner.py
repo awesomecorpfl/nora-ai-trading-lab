@@ -34,12 +34,14 @@ def test_detached_lifecycle_is_durable_and_ssh_independent():
     assert "ambiguous-incomplete" in RUNNER and "ambiguous-missing" in RUNNER
     assert "conflicting terminal_or_tester" in RUNNER
     assert "conflicting persistent campaign job" in RUNNER
+    assert "publish-complete" in RUNNER
+    assert "detached_post_parent_atomic_rename" in RUNNER
+    assert "[int]$ParentPid" in RUNNER
     for binding in ("pid", "start_time_utc", "executable_path", "command_line", "run_identifier"):
         assert binding in RUNNER
     assert "$root=$EvidenceRoot" in WORKER
     assert "-replace '\\.running$','.complete'" in WORKER
-    assert "Start-Sleep -Seconds 2" in WORKER
-    assert "for($attempt=0;$attempt-lt120;$attempt++)" in WORKER
+    assert "Move-Item" not in WORKER
 
 
 def test_conflict_guard_treats_every_noncurrent_prepared_record_as_pending():
