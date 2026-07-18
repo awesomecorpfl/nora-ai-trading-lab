@@ -38,7 +38,8 @@ def test_detached_lifecycle_is_durable_and_ssh_independent():
         assert binding in RUNNER
     assert "$root=$EvidenceRoot" in WORKER
     assert "-replace '\\.running$','.complete'" in WORKER
-    assert "for($attempt=0;$attempt-lt20;$attempt++)" in WORKER
+    assert "Start-Sleep -Seconds 2" in WORKER
+    assert "for($attempt=0;$attempt-lt120;$attempt++)" in WORKER
 
 
 def test_conflict_guard_treats_every_noncurrent_prepared_record_as_pending():
