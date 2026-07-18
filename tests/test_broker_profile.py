@@ -55,7 +55,7 @@ def test_conflict_matrix_includes_all_overlapping_fields(tmp_path):
     _copy_fixture(tmp_path)
     xml = tmp_path / "updated_instrument_information.xml"
     text = xml.read_text()
-    for old, new in (("tickSize=\"0.010\"", "tickSize=\"0.011\""), ("tickStep=\"0.001\"", "tickStep=\"0.002\""), ("decimals=\"3\"", "decimals=\"4\""), ("defaultSpread=\"1.00\"", "defaultSpread=\"1.01\""), ("defaultSlippage=\"0.00\"", "defaultSlippage=\"0.01\""), ("orderSizeStep=\"0.01\"", "orderSizeStep=\"0.02\""), ("pointValue=\"616.374608\"", "pointValue=\"617.374608\""), ("long=&quot;1.80&quot;", "long=&quot;2.80&quot;"), ("type=\"points\"", "type=\"money\""), ("type=&quot;SizeBased&quot;", "type=&quot;Other&quot;"), ("&gt;0.00&lt;/Param&gt;", "&gt;1.00&lt;/Param&gt;")):
+    for old, new in (("tickSize=\"0.010\"", "tickSize=\"0.011\""), ("tickStep=\"0.001\"", "tickStep=\"0.002\""), ("decimals=\"3\"", "decimals=\"4\""), ("defaultSpread=\"1.00\"", "defaultSpread=\"1.01\""), ("defaultSlippage=\"0.00\"", "defaultSlippage=\"0.01\""), ("orderSizeStep=\"0.01\"", "orderSizeStep=\"0.02\""), ("pointValue=\"616.374608\"", "pointValue=\"617.374608\""), ("long=&quot;1.80&quot;", "long=&quot;2.80&quot;"), ("type=&quot;points&quot;", "type=&quot;money&quot;"), ("type=&quot;SizeBased&quot;", "type=&quot;Other&quot;"), ("&gt;0.00&lt;/Param&gt;", "&gt;1.00&lt;/Param&gt;")):
         text = text.replace(old, new, 1)
     xml.write_text(text)
     fields = {item["field"] for item in load_strategyquantx_export(tmp_path)["warnings"] if item["code"] == "SOURCE_VALUE_CONFLICT"}
