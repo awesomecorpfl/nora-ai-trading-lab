@@ -56,6 +56,12 @@ pub enum Node {
     Ema { input: Reference, period: usize },
     Highest { input: Reference, period: usize },
     Lowest { input: Reference, period: usize },
+    Slope { input: Reference, lookback: usize },
+    Cross {
+        left: Box<Node>,
+        right: Box<Node>,
+        above: bool,
+    },
     Compare {
         op: Compare,
         left: Box<Node>,
@@ -183,6 +189,27 @@ mod more_tests {
         }
     }
     #[test]
+    fn cross_and_slope_nodes_are_strictly_typed_and_evaluable() {
+        let cross = json!({"schema_version":1,"root":{"kind":"cross","direction":"above","left":{"kind":"numeric_series","ref":{"series":"close","type":"numeric"}},"right":{"kind":"numeric_series","ref":{"series":"level","type":"numeric"}}}});
+        let slope = json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"type":"slope","input":{"type":"series","name":"close"},"lookback":1},"right":{"kind":"number","value":0}}});
+        let cross_doc = parse(&cross).unwrap();
+        let slope_doc = parse(&slope).unwrap();
+        assert_eq!(feature_plan(&cross_doc).len(), 0);
+        assert_eq!(feature_plan(&slope_doc).len(), 1);
+        let runtime = Runtime {
+            timestamps: vec!["0".into(), "1".into(), "2".into(), "3".into()],
+            numeric: HashMap::from([
+                ("close".into(), vec![Some(1.0), Some(0.9), Some(1.1), Some(1.2)]),
+                ("level".into(), vec![Some(1.0), Some(1.0), Some(1.0), Some(1.0)]),
+            ]),
+            boolean: HashMap::new(),
+            commitment: "fixture".into(),
+        };
+        assert_eq!(boolean(&cross_doc.root, &runtime).unwrap(), vec![None, Some(false), Some(true), Some(false)]);
+        assert_eq!(boolean(&slope_doc.root, &runtime).unwrap(), vec![None, Some(false), Some(true), Some(true)]);
+    }
+
+    #[test]
     fn feature_evaluation_uses_accepted_kernels() {
         let values = vec![1.1, 1.1003, 1.1009, 1.1006];
         let mut numeric_values = HashMap::new();
@@ -290,6 +317,11 @@ fn parse_node(value: &Value) -> Result<Node> {
                 let input = feature_reference(required(o, "input", "layer1 node")?)?;
                 Ok(match feature_type { "ema" => Node::Ema { input, period }, "highest" => Node::Highest { input, period }, _ => Node::Lowest { input, period } })
             }
+            "slope" => {
+                only(o, &["type", "input", "lookback"], "slope node")?;
+                let lookback = required(o, "lookback", "slope node")?.as_u64().and_then(|v| usize::try_from(v).ok()).filter(|v| *v > 0).ok_or("slope.lookback must be positive")?;
+                Ok(Node::Slope { input: feature_reference(required(o, "input", "slope node")?)?, lookback })
+            }
             _ => Err(format!("unknown feature AST node type {feature_type:?}")),
         };
     }
@@ -316,6 +348,20 @@ fn parse_node(value: &Value) -> Result<Node> {
                 required(o, "ref", "boolean_series node")?,
                 Type::Boolean,
             )?))
+        }
+        "cross" => {
+            only(o, &["kind", "direction", "left", "right"], "cross node")?;
+            let above = match string(o, "direction", "cross node")?.as_str() {
+                "above" => true,
+                "below" => false,
+                _ => return Err("cross.direction must be above or below".into()),
+            };
+            let left = parse_node(required(o, "left", "cross node")?)?;
+            let right = parse_node(required(o, "right", "cross node")?)?;
+            if left.ty() != Type::Numeric || right.ty() != Type::Numeric {
+                return Err("cross operands must be numeric".into());
+            }
+            Ok(Node::Cross { left: Box::new(left), right: Box::new(right), above })
         }
         "compare" => {
             only(o, &["kind", "op", "left", "right"], "compare node")?;
@@ -386,8 +432,10 @@ impl Node {
             | Self::DistanceAtr { .. }
             | Self::Ema { .. }
             | Self::Highest { .. }
-            | Self::Lowest { .. } => Type::Numeric,
+            | Self::Lowest { .. }
+            | Self::Slope { .. } => Type::Numeric,
             Self::BooleanSeries(_)
+            | Self::Cross { .. }
             | Self::Compare { .. }
             | Self::And(_)
             | Self::Or(_)
@@ -424,6 +472,8 @@ fn node_json(node: &Node) -> Value {
         Node::Ema { input, period } => json!({"type":"ema","input":feature_reference_json(input),"period":period}),
         Node::Highest { input, period } => json!({"type":"highest","input":feature_reference_json(input),"period":period}),
         Node::Lowest { input, period } => json!({"type":"lowest","input":feature_reference_json(input),"period":period}),
+        Node::Slope { input, lookback } => json!({"type":"slope","input":feature_reference_json(input),"lookback":lookback}),
+        Node::Cross { left, right, above } => json!({"kind":"cross","direction":if *above {"above"} else {"below"},"left":node_json(left),"right":node_json(right)}),
         Node::Compare { op, left, right } => {
             json!({"kind":"compare","op":match op{Compare::Gt=>"gt",Compare::Gte=>"gte",Compare::Lt=>"lt",Compare::Lte=>"lte"},"left":node_json(left),"right":node_json(right)})
         }
@@ -668,7 +718,7 @@ fn feature_identity(node: &Node) -> String {
 pub fn feature_plan(document: &Document) -> Vec<String> {
     fn visit(node: &Node, out: &mut BTreeMap<String, ()>) {
         match node {
-            Node::Atr { .. } | Node::DistanceAtr { .. } | Node::Ema { .. } | Node::Highest { .. } | Node::Lowest { .. } => {
+            Node::Atr { .. } | Node::DistanceAtr { .. } | Node::Ema { .. } | Node::Highest { .. } | Node::Lowest { .. } | Node::Slope { .. } => {
                 if let Node::DistanceAtr { atr, .. } = node {
                     visit(atr, out)
                 }
@@ -768,6 +818,10 @@ fn numeric_cached(
             let source=input.numeric.get(&reference.series).ok_or_else(||format!("unknown or non-numeric runtime series {:?}",reference.series))?;
             (0..source.len()).map(|i|if i+1<*period{None}else{let window=&source[i+1-*period..=i];if window.iter().any(Option::is_none){None}else if matches!(node,Node::Highest{..}){Some(window.iter().map(|x|x.unwrap()).fold(f64::NEG_INFINITY,f64::max))}else{Some(window.iter().map(|x|x.unwrap()).fold(f64::INFINITY,f64::min))}}).collect()
         }
+        Node::Slope { input: reference, lookback } => {
+            let source = input.numeric.get(&reference.series).ok_or_else(|| format!("unknown or non-numeric runtime series {:?}", reference.series))?;
+            (0..source.len()).map(|i| if i < *lookback { None } else { match (source[i], source[i - lookback]) { (Some(current), Some(previous)) => Some(current - previous), _ => None } }).collect()
+        }
         _ => return Err("AST numeric runtime type mismatch".into()),
     };
     cache.insert(key, value.clone());
@@ -786,6 +840,17 @@ fn boolean(node: &Node, input: &Runtime) -> Result<Vec<Option<bool>>> {
                         reference.series
                     )
                 })
+        }
+        Node::Cross { left, right, above } => {
+            let left = numeric(left, input)?;
+            let right = numeric(right, input)?;
+            Ok((0..left.len()).map(|i| {
+                if i == 0 { return None; }
+                match (left[i - 1], right[i - 1], left[i], right[i]) {
+                    (Some(lp), Some(rp), Some(lc), Some(rc)) => Some(if *above { lp <= rp && lc > rc } else { lp >= rp && lc < rc }),
+                    _ => None,
+                }
+            }).collect())
         }
         Node::Compare { op, left, right } => {
             let left = numeric(left, input)?;
