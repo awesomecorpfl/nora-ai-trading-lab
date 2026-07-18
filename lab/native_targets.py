@@ -56,6 +56,6 @@ TEN_STRATEGY_TARGET=NativeTargetDescriptor(
  "NoraPhase2TenStrategyRuntimeV1.mqh","NoraPhase2TenStrategyTesterCanaryV1.mq5",
  "phase2_ten_strategy_executable_package.json","NoraPhase2TenStrategyTesterCanaryV1.ex5",
  "ten_strategy_compile_input_v1.json","nora_phase2_ten_strategy_v1.csv",
- "scripts/phase2-ten-strategy-build-compile-input","scripts/phase2-ten-strategy-ingest-returned","scripts/phase2-ten-strategy-build-synthetic-package",
+ "phase-0a-h/windows/compile-ten-strategy-tester-canary.ps1","scripts/phase2-ten-strategy-ingest-returned","scripts/phase2-ten-strategy-build-synthetic-package",
  "NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1","NORA_PHASE2_TEN_STRATEGY_FAIL_V1","nora.ten_strategy_trade_reconciliation_v1",
  ("GDAXI/M1:A1","GDAXI/M1:A2","AUDCAD/M1:B1","AUDCAD/M1:B2"),MEMBERS)

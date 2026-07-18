@@ -11,8 +11,9 @@ import lab.phase2_ten_strategy_v2 as v2
 
 def test_frozen_v1_target_is_preserved_historical_and_v2_is_current():
  assert load(FIX/'target_descriptor.json')['target_descriptor_identity']==T.identity
- assert load(FIX/'compile_input.json')['compile_input_identity']=='57b8da184f4a0aeb590cfb7a613b6058ce24b0bcea1cbc1b494c9295c7556ff9'
- assert load(FIX/'precompile_batch.json')['precompile_batch_identity']=='18bd4a7fe7e797a4ea47ebb64d2d8ff837caa6bb60cb81386c643df87a157858'
+ assert T.compiler_script=='phase-0a-h/windows/compile-ten-strategy-tester-canary.ps1'
+ assert load(FIX/'compile_input.json')['compile_input_identity']=='ecbffe6bb25e16a1fcf5b823132adf02542388ccfb61023e5f8249dde5490a2f'
+ assert load(FIX/'precompile_batch.json')['precompile_batch_identity']=='5c4371a7dbc4c968bf17fc1ee6cdf3403098ed2e9f23b988f57b3c45f30cc5f1'
  state=v2.load(v2.READINESS_FILE);assert state==v2.local_readiness()
  assert state['genuine_v2_recompilation_required'] and state['compile_evidence_pending']
  assert not state['final_packet_ready'] and not state['native_execution_attempted'] and not state['native_parity_accepted']
