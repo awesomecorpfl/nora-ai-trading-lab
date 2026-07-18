@@ -1,0 +1,53 @@
+{
+  "schema_version": "nora.phase2_pi0_outgoing_review_repair_manifest_v1",
+  "repair_id": "pi0-review-repair-20260718T004745Z",
+  "created_utc": "2026-07-18T00:47:45Z",
+  "repository_commit": "f2531030b6e2c64ddca8b8d2f5a6d2e6a90df997",
+  "classification": "REPAIR_VALIDATED_NON_ACCEPTANCE",
+  "artifacts": [
+    {
+      "path": "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T004745Z/review-disposition.json",
+      "size": 3512,
+      "sha256": "43371a8d6cdc60de198309157972951afd52ae4eafc5721a6bf3bedf79b86285"
+    },
+    {
+      "path": "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T004745Z/supersession.json",
+      "size": 1084,
+      "sha256": "55bedff8196d232d9b8cc8d22f831768632674c3403c8ab279a66f195db13bf9"
+    },
+    {
+      "path": "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T004745Z/diagnostic-classification.json",
+      "size": 1463,
+      "sha256": "66d6f5ebd8a063135a2f7fd06b7ee2d08a081c3cb982e34ab72dc28df55cd12b"
+    }
+  ],
+  "implementation_bindings": [
+    {
+      "path": "phase-0a-h/windows/phase2-evidence-runner.ps1",
+      "sha256": "112e52e6b3de595ddf3c59181358026fa33e42bf73bfb5782fa46bc56b789596"
+    },
+    {
+      "path": "phase-0a-h/windows/phase2-frt1r2-operator-qualification.ps1",
+      "sha256": "92c9ed12add840147194dfc0f35cd35cda6e85c730d00a22589968a8c42d21eb"
+    },
+    {
+      "path": "phase-0a-h/windows/phase2-operator-state.ps1",
+      "sha256": "c012bb0bb06a7087c0237caf9e549d6a3a907233212693e91533afffb42a97ed"
+    },
+    {
+      "path": "phase-0a-h/windows/phase2-tester-rule-restoration.ps1",
+      "sha256": "0988789b53472e0ba9ad75fa9c33d657eebac9a4befa6a6c5238f582702ad9f8"
+    }
+  ],
+  "external_historical_bindings": [
+    {
+      "path": "docs/evidence/phase2/frt1r2-operator-preparation/20260717T192223Z/packet.json",
+      "sha256": "e6256503485fc99605e98d7dca925dc1dfbbf2dd401257f52c80211328aa68fe"
+    },
+    {
+      "path": "docs/evidence/phase2/frt1r3-reconciliation-repair/20260717T204540Z/helper-inventory.json",
+      "sha256": "418561dbbf24cb6f3ead74839488a832a1bf68386e4c52697adefa1b95d7af6c"
+    }
+  ],
+  "acceptance_credit_granted": false
+}

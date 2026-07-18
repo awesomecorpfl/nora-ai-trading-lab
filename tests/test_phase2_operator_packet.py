@@ -1,3 +1,4 @@
+import hashlib
 import json
 import shutil
 import subprocess
@@ -13,6 +14,7 @@ RUNNER = ROOT / "phase-0a-h/windows/phase2-evidence-runner.ps1"
 RESTORATION_SCRIPT = ROOT / "phase-0a-h/windows/phase2-tester-rule-restoration.ps1"
 HARNESS = ROOT / "tests/windows/phase2_operator_state_harness.ps1"
 REPAIR_HARNESS = ROOT / "tests/windows/phase2_fail_closed_repair_harness.ps1"
+REPAIR_EVIDENCE = ROOT / "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T004745Z"
 QUALIFICATION_ID = "frt1r2-live-20260717T192223Z"
 
 
@@ -152,3 +154,24 @@ def test_windows_powershell_fail_closed_repair_harness():
     assert '"restoration_self_hash":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"firewall_mutation_invoked":false' in result.stdout
     assert '"mt5_invoked":false' in result.stdout
+
+
+def test_pi0_review_repair_evidence_is_hash_bound_and_noncredit():
+    manifest = json.loads((REPAIR_EVIDENCE / "manifest.json").read_text())
+    assert manifest["repository_commit"] == "f2531030b6e2c64ddca8b8d2f5a6d2e6a90df997"
+    assert manifest["classification"] == "REPAIR_VALIDATED_NON_ACCEPTANCE"
+    assert manifest["acceptance_credit_granted"] is False
+    for artifact in manifest["artifacts"]:
+        path = ROOT / artifact["path"]
+        data = path.read_bytes()
+        assert len(data) == artifact["size"]
+        assert hashlib.sha256(data).hexdigest() == artifact["sha256"]
+    for binding in manifest["implementation_bindings"] + manifest["external_historical_bindings"]:
+        assert hashlib.sha256((ROOT / binding["path"]).read_bytes()).hexdigest() == binding["sha256"]
+    supersession = json.loads((REPAIR_EVIDENCE / "supersession.json").read_text())
+    assert supersession["superseded_packet"]["classification"] == "NON_CREDIT_SUPERSEDED_PREPARATION"
+    assert supersession["replacement_live_packet"] is None
+    assert supersession["may_execute_superseded_packet"] is False
+    diagnostic = json.loads((REPAIR_EVIDENCE / "diagnostic-classification.json").read_text())
+    assert diagnostic["classification"] == "NON_CREDIT_UNSEALED_DIAGNOSTIC"
+    assert diagnostic["acceptance_credit_granted"] is False

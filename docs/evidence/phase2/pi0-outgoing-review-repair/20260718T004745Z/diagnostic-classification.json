@@ -1,0 +1,33 @@
+{
+  "schema_version": "nora.phase2_helper_inventory_diagnostic_classification_v1",
+  "classification_id": "frt1r3-helper-inventory-classification-20260718T004745Z",
+  "created_utc": "2026-07-18T00:47:45Z",
+  "repository_commit": "f2531030b6e2c64ddca8b8d2f5a6d2e6a90df997",
+  "classification": "NON_CREDIT_UNSEALED_DIAGNOSTIC",
+  "acceptance_credit_granted": false,
+  "artifact": {
+    "path": "docs/evidence/phase2/frt1r3-reconciliation-repair/20260717T204540Z/helper-inventory.json",
+    "sha256": "418561dbbf24cb6f3ead74839488a832a1bf68386e4c52697adefa1b95d7af6c",
+    "size": 6799,
+    "source_directory_timestamp_utc": "2026-07-17T20:45:40Z"
+  },
+  "capture_context": {
+    "originating_host": "nora-win10",
+    "collector_path": "phase-0a-h/windows/phase2-operator-state.ps1",
+    "collector_sha256_at_capture": "7b693983a5ce82012c20f8ebd916ff6603426b1ab010a8cf3246fc2f39233288",
+    "capture_manifest_present": false,
+    "capture_schema_present": false
+  },
+  "self_reported_observations": {
+    "active_job_count": 0,
+    "pending_job_count": 0,
+    "unresolved_prepared_job_count": 0,
+    "reconciled_historical_prepared_count": 7,
+    "scheduled_nora_task_count": 0,
+    "verdict": "PASS"
+  },
+  "limitations": [
+    "artifact alone does not bind repository commit, host, collector bytes, capture time, or an allowlisted manifest",
+    "observations remain diagnostic and cannot prove Phase-2 acceptance, FR-T1 readiness, or search authorization"
+  ]
+}

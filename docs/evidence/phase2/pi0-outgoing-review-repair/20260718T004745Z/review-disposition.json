@@ -1,0 +1,100 @@
+{
+  "schema_version": "nora.phase2_pi0_outgoing_review_repair_v1",
+  "repair_id": "pi0-review-repair-20260718T004745Z",
+  "created_utc": "2026-07-18T00:47:45Z",
+  "repository_commit": "f2531030b6e2c64ddca8b8d2f5a6d2e6a90df997",
+  "classification": "REPAIR_VALIDATED_NON_ACCEPTANCE",
+  "original_review_verdict": "DO_NOT_PUSH",
+  "blocking_findings": [
+    {
+      "id": "B1",
+      "disposition": "REPAIRED",
+      "mechanical_control": "qualification script rejects every pre-existing EvidenceBase entry containing the qualification ID before creating the root; New-Item no longer uses -Force"
+    },
+    {
+      "id": "B2",
+      "disposition": "REPAIRED",
+      "mechanical_control": "operator-state inventory rejects every reconciliation-root entry that is not a complete *.published directory"
+    },
+    {
+      "id": "B3",
+      "disposition": "REPAIRED",
+      "mechanical_control": "NoCampaignJob allows only the exact current prepared job path and rejects every other prepared record"
+    },
+    {
+      "id": "B4",
+      "disposition": "SUPERSEDED_NOT_REISSUED",
+      "mechanical_control": "the stale 20260717T192223Z packet is explicitly non-credit superseded preparation; no replacement live packet is claimed before PI-1 deployment authorization"
+    },
+    {
+      "id": "B5",
+      "disposition": "REPAIRED",
+      "mechanical_control": "restoration script requires and verifies its own deployed SHA-256 before every mode"
+    },
+    {
+      "id": "B6",
+      "disposition": "REPAIRED",
+      "mechanical_control": "tester-rule source semantics, comprehensive unrelated-rule semantics, before/after digests, and reopened receipt/current-state comparison are bound"
+    },
+    {
+      "id": "B7",
+      "disposition": "CLASSIFIED_NON_CREDIT",
+      "mechanical_control": "the old helper inventory is hash-bound and explicitly classified as an unsealed diagnostic that grants no acceptance"
+    }
+  ],
+  "validation": {
+    "focused_pytest": {
+      "passed": 41,
+      "skipped": 2,
+      "failed": 0
+    },
+    "non_transactional_pytest_before_commit": {
+      "passed": 518,
+      "skipped": 4,
+      "failed": 0
+    },
+    "full_pytest_after_commit": {
+      "passed": 540,
+      "skipped": 4,
+      "failed": 0
+    },
+    "python_compileall": "PASS",
+    "rust_engine": {
+      "passed": 49,
+      "failed": 0
+    },
+    "rust_phase0b": {
+      "passed": 5,
+      "failed": 0
+    },
+    "windows_powershell_5_1": {
+      "staging_path": "C:/NoraEvidence/Phase2/pi0-repair-validation-20260718T004027Z-9848",
+      "parser_file_count": 4,
+      "burned_qualification_identity": "FAIL_AS_EXPECTED",
+      "qualification_root_created": false,
+      "current_prepared_job": "PASS",
+      "competing_prepared_job": "FAIL_AS_EXPECTED",
+      "unrelated_firewall_digest": "PASS",
+      "restoration_self_hash": "FAIL_AS_EXPECTED",
+      "firewall_mutation_invoked": false,
+      "mt5_invoked": false,
+      "staging_removed": true
+    },
+    "operator_state_windows_harness": {
+      "safe_reconciled": "PASS",
+      "mutation_after_publication": "PASS",
+      "legacy_nested_keys_values": "PASS",
+      "unresolved_prepared": "FAIL_AS_EXPECTED",
+      "contradictory_reconciliation": "FAIL_AS_EXPECTED",
+      "partial_reconciliation": "FAIL_AS_EXPECTED"
+    }
+  },
+  "governance": {
+    "phase2_complete": false,
+    "phase3_authorized": false,
+    "search_authorized": false,
+    "searchable_component_count": 0,
+    "native_execution_started": false,
+    "acceptance_credit_granted": false
+  }
+}
