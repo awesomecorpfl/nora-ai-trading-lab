@@ -113,6 +113,22 @@ def _day(value: str) -> str:
     return {"mon": "monday", "tue": "tuesday", "wed": "wednesday", "thu": "thursday", "fri": "friday", "sat": "saturday", "sun": "sunday"}.get(value.strip().lower(), value.strip().lower())
 
 
+def _instrument_family(source_csv: dict[str, str], source_xml: dict[str, str]) -> str:
+    """Derive a coarse family from explicit source labels, never from symbol names."""
+    sector = source_csv.get("sector", "").strip().lower()
+    csv_description = source_csv.get("description", "").strip().lower()
+    xml_description = source_xml.get("description", "").strip().lower()
+    if sector == "currency" or "fx_" in xml_description:
+        return "forex"
+    if "commodit" in sector or "gold" in csv_description or "gold" in xml_description:
+        return "metals_commodities"
+    if sector == "indexes" or xml_description.startswith("index"):
+        return "indices"
+    if "stock" in xml_description or "etf" in csv_description or sector in {"financial", "equity"}:
+        return "equity_etf"
+    return "other"
+
+
 def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
     root = Path(root)
     csv_path = root / "sample.csv"
@@ -182,6 +198,7 @@ def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
                 "broker_symbol": symbol,
                 "instrument_type": _text(row, CSV_COLUMNS["instrument_type"]) or None,
                 "sector": _text(row, CSV_COLUMNS["sector"]) or None,
+                "instrument_family": _instrument_family(source_csv, source_xml),
             },
             "price": {
                 "digits": digits,

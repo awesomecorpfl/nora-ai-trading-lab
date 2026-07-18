@@ -145,3 +145,12 @@ def test_canonical_profile_loader_rejects_identity_tampering(tmp_path):
     output.write_text(canon(tampered) + "\n")
     with pytest.raises(ValueError, match="profile identity"):
         load_canonical_profile(output)
+
+
+def test_representative_instrument_families_are_derived_explicitly():
+    profile = load_strategyquantx_export(FIXTURE)
+    families = {item["symbol"]: item["identity"]["instrument_family"] for item in profile["symbols"]}
+    assert {symbol for symbol, family in families.items() if family == "forex"} == {"EURUSD", "GBPUSD", "EURJPY", "GBPJPY", "USDJPY"}
+    assert {symbol for symbol, family in families.items() if family == "indices"} == {"GDAXI", "NDX", "SP500"}
+    assert families["IVE"] == "equity_etf"
+    assert families["XAUUSD"] == "metals_commodities"
