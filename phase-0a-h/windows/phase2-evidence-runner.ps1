@@ -120,7 +120,7 @@ function RequireSecureRoot(){
 function NoTerminal(){if(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue){throw 'conflicting terminal_or_tester'}}
 function NoCampaignJob(){
  $jobs=Join-Path $EvidenceRoot 'jobs';if(!(Test-Path -LiteralPath $jobs)){return};$currentJob=(Paths).job
- foreach($path in @(Get-ChildItem -LiteralPath $jobs -Filter '*.json' -File -ErrorAction Stop)){
+ foreach($path in @(Get-ChildItem -LiteralPath $jobs -Filter '*.json' -File -ErrorAction Stop|Where-Object{$_.Name -notlike '*.config.json' -and $_.Name -notlike '*.envelope.json'})){
   $decoded=ReadReconciliationJob $path.FullName;$normalized=$decoded.normalized;$state=[string]$normalized['state'];$jobId=[string]$normalized['run_identifier']
   if($state-eq'packaging'){throw 'conflicting persistent campaign job'}
   $isCurrent=[string]::Equals([IO.Path]::GetFullPath($path.FullName),[IO.Path]::GetFullPath($currentJob),[StringComparison]::OrdinalIgnoreCase)

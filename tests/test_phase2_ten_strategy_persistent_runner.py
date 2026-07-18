@@ -37,7 +37,8 @@ def test_detached_lifecycle_is_durable_and_ssh_independent():
     for binding in ("pid", "start_time_utc", "executable_path", "command_line", "run_identifier"):
         assert binding in RUNNER
     assert "$root=$EvidenceRoot" in WORKER
-    assert ".running$','.complete'" in WORKER
+    assert "-replace '\\.running$','.complete'" in WORKER
+    assert "for($attempt=0;$attempt-lt20;$attempt++)" in WORKER
 
 
 def test_conflict_guard_treats_every_noncurrent_prepared_record_as_pending():
@@ -47,6 +48,7 @@ def test_conflict_guard_treats_every_noncurrent_prepared_record_as_pending():
     assert "$jobId-ne$RunId" in guard
     assert "[StringComparison]::OrdinalIgnoreCase" in guard
     assert "conflicting unresolved prepared campaign job" in guard
+    assert "-notlike '*.config.json'" in guard and "-notlike '*.envelope.json'" in guard
 
 
 def test_conflict_guard_normalizes_legacy_key_value_jobs_before_pending_decision():
