@@ -1,0 +1,14 @@
+30a2368f1da2fee1a390d2c5cfd77700d1e19e2a
+Author: awesomecorpfl <awesomecorpfl@gmail.com>
+Date: 2026-07-06T22:32:10-04:00
+Subject: docs: initialize Nora_Angel repo
+
+75b48bc6635270b3e7b6967e3b6decc5b42858b9
+Author: awesomecorpfl <awesomecorpfl@gmail.com>
+Date: 2026-07-06T22:34:20-04:00
+Subject: docs: add Hermes restore notes
+
+c9bb57096bdb5a6acb4f65a3523ac2c9189508f5
+Author: awesomecorpfl <awesomecorpfl@gmail.com>
+Date: 2026-07-07T00:16:27-04:00
+Subject: docs: add browser toolshed research and index
