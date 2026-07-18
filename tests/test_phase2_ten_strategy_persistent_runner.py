@@ -43,10 +43,18 @@ def test_detached_lifecycle_is_durable_and_ssh_independent():
 def test_conflict_guard_treats_every_noncurrent_prepared_record_as_pending():
     guard = RUNNER.split("function NoCampaignJob()", 1)[1].split("function RequireWorker", 1)[0]
     assert "$currentJob=(Paths).job" in guard
-    assert "$job.state-eq'prepared'" in guard
+    assert "$state-eq'prepared'" in guard
     assert "$jobId-ne$RunId" in guard
     assert "[StringComparison]::OrdinalIgnoreCase" in guard
     assert "conflicting unresolved prepared campaign job" in guard
+
+
+def test_conflict_guard_normalizes_legacy_key_value_jobs_before_pending_decision():
+    guard = RUNNER.split("function NoCampaignJob()", 1)[1].split("function RequireWorker", 1)[0]
+    assert "$decoded=ReadReconciliationJob $path.FullName" in guard
+    decoder = RUNNER.split("function ReadReconciliationJob", 1)[1].split("function FailureDirectory", 1)[0]
+    assert "legacy job contradictory field:" in decoder
+    assert "normalized job identity/state missing" in decoder
 
 
 def test_persistent_orchestrator_uses_only_the_repository_runner_commands():

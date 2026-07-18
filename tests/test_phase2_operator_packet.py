@@ -150,6 +150,7 @@ def test_windows_powershell_fail_closed_repair_harness():
     assert '"verdict":"PASS"' in result.stdout
     assert '"burned_qualification_identity":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"competing_prepared_job":"FAIL_AS_EXPECTED"' in result.stdout
+    assert '"legacy_competing_prepared_job":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"unrelated_firewall_digest":"PASS"' in result.stdout
     assert '"restoration_self_hash":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"firewall_mutation_invoked":false' in result.stdout
@@ -166,7 +167,13 @@ def test_pi0_review_repair_evidence_is_hash_bound_and_noncredit():
         data = path.read_bytes()
         assert len(data) == artifact["size"]
         assert hashlib.sha256(data).hexdigest() == artifact["sha256"]
-    for binding in manifest["implementation_bindings"] + manifest["external_historical_bindings"]:
+    for binding in manifest["implementation_bindings"]:
+        data = subprocess.check_output(
+            ["git", "show", f'{manifest["repository_commit"]}:{binding["path"]}'],
+            cwd=ROOT,
+        )
+        assert hashlib.sha256(data).hexdigest() == binding["sha256"]
+    for binding in manifest["external_historical_bindings"]:
         assert hashlib.sha256((ROOT / binding["path"]).read_bytes()).hexdigest() == binding["sha256"]
     supersession = json.loads((REPAIR_EVIDENCE / "supersession.json").read_text())
     assert supersession["superseded_packet"]["classification"] == "NON_CREDIT_SUPERSEDED_PREPARATION"

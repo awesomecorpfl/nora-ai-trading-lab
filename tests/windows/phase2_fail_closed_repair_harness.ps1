@@ -45,9 +45,11 @@ try {
  $runnerTokens=$null;$runnerErrors=$null
  $runnerAst=[Management.Automation.Language.Parser]::ParseFile($RunnerScript,[ref]$runnerTokens,[ref]$runnerErrors)
  if(@($runnerErrors).Count-ne0){throw 'runner parser failure before guard extraction'}
- $guardAst=$runnerAst.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'NoCampaignJob'},$true)
- if($null-eq$guardAst){throw 'NoCampaignJob function missing from runner'}
- Invoke-Expression $guardAst.Extent.Text
+ foreach($functionName in @('ReadReconciliationJob','NoCampaignJob')){
+  $functionAst=$runnerAst.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $functionName},$true)
+  if($null-eq$functionAst){throw ('runner function missing: '+$functionName)}
+  Invoke-Expression $functionAst.Extent.Text
+ }
  $script:EvidenceRoot=Join-Path $base 'runner';$script:RunId='current-run'
  $jobs=Join-Path $script:EvidenceRoot 'jobs';New-Item -ItemType Directory -Path $jobs -Force|Out-Null
  function Paths(){[ordered]@{job=(Join-Path $script:EvidenceRoot ('jobs\'+$script:RunId+'.json'))}}
@@ -57,6 +59,10 @@ try {
  $competing=Join-Path $jobs 'competing-run.json';@{schema_version='nora.phase2_persistent_evidence_runner_v1';run_identifier='competing-run';state='prepared'}|ConvertTo-Json -Compress|Set-Content -LiteralPath $competing -Encoding utf8 -NoNewline
  $competingRejected=$false;try{NoCampaignJob}catch{if($_.Exception.Message-eq'conflicting unresolved prepared campaign job'){$competingRejected=$true}else{throw}}
  if(!$competingRejected){throw 'competing prepared job was not rejected'}
+ Remove-Item -LiteralPath $competing -Force
+ $legacy=Join-Path $jobs 'legacy-competing-run.json';@{Keys=@('schema_version','run_identifier','state');Values=@('nora.phase2_persistent_evidence_runner_v1','legacy-competing-run','prepared')}|ConvertTo-Json -Compress|Set-Content -LiteralPath $legacy -Encoding utf8 -NoNewline
+ $legacyRejected=$false;try{NoCampaignJob}catch{if($_.Exception.Message-eq'conflicting unresolved prepared campaign job'){$legacyRejected=$true}else{throw}}
+ if(!$legacyRejected){throw 'legacy competing prepared job was not rejected'}
 
  $zeros40='0'*40;$zeros64='0'*64
  $selfHash=Invoke-Child $RestorationScript @('-Mode','preconditions','-EvidenceRoot',$evidence,'-RepositoryCommit',$zeros40,'-HelperSha256',$zeros64,'-RestorationScriptSha256',$zeros64,'-PacketId','synthetic-self-hash')
@@ -70,6 +76,7 @@ try {
   qualification_root_created=$false
   current_prepared_job='PASS'
   competing_prepared_job='FAIL_AS_EXPECTED'
+  legacy_competing_prepared_job='FAIL_AS_EXPECTED'
   unrelated_firewall_digest='PASS'
   restoration_self_hash='FAIL_AS_EXPECTED'
   firewall_mutation_invoked=$false

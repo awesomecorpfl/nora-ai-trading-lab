@@ -58,6 +58,33 @@ def test_restoration_reopens_complete_after_receipt_and_binds_full_semantics():
     assert "Canonical $after.persistent" in postflight
 
 
+def test_restoration_semantics_include_owner_interfaces_and_user_filters():
+    text = SCRIPT.read_text()
+    semantic = text.split("function SemanticRule", 1)[1].split("function UnrelatedDigest", 1)[0]
+    for token in (
+        "owner=[string]$R.Owner",
+        "interface_alias=[string]$_.InterfaceAlias",
+        "local_user=[string]$_.LocalUser",
+        "remote_user=[string]$_.RemoteUser",
+    ):
+        assert token in semantic
+
+    target = text.split("function Rule", 1)[1].split("function Canonical", 1)[0]
+    for token in (
+        "owner=[string]$r.Owner",
+        "group=[string]$r.Group",
+        "interface_alias=[string]$ifalias[0].InterfaceAlias",
+        "local_user=[string]$sec[0].LocalUser",
+        "remote_user=[string]$sec[0].RemoteUser",
+        "$V.owner-ne''",
+        "$V.group-ne''",
+        "$V.interface_alias-ne'Any'",
+        "$V.local_user-ne'Any'",
+        "$V.remote_user-ne'Any'",
+    ):
+        assert token in target
+
+
 def test_restoration_contract_is_exact_and_fail_closed():
     contract = packet()["tester_rule_contract"]
     assert contract["display_name"] == "MetaTrader 5 Strategy Tester Agent"

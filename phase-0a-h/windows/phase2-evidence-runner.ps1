@@ -121,12 +121,12 @@ function NoTerminal(){if(Get-Process terminal64,metatester64 -ErrorAction Silent
 function NoCampaignJob(){
  $jobs=Join-Path $EvidenceRoot 'jobs';if(!(Test-Path -LiteralPath $jobs)){return};$currentJob=(Paths).job
  foreach($path in @(Get-ChildItem -LiteralPath $jobs -Filter '*.json' -File -ErrorAction Stop)){
-  $job=Get-Content -LiteralPath $path.FullName -Raw|ConvertFrom-Json
-  if($job.state-eq'packaging'){throw 'conflicting persistent campaign job'}
-  $jobId=if($job.PSObject.Properties.Name -contains 'run_identifier'){[string]$job.run_identifier}else{''}
+  $decoded=ReadReconciliationJob $path.FullName;$normalized=$decoded.normalized;$state=[string]$normalized['state'];$jobId=[string]$normalized['run_identifier']
+  if($state-eq'packaging'){throw 'conflicting persistent campaign job'}
   $isCurrent=[string]::Equals([IO.Path]::GetFullPath($path.FullName),[IO.Path]::GetFullPath($currentJob),[StringComparison]::OrdinalIgnoreCase)
-  if($job.state-eq'prepared' -and (!$isCurrent -or $jobId-ne$RunId)){throw 'conflicting unresolved prepared campaign job'}
-  if(@('launch-requested','launched','bootstrap-confirmed','running') -contains $job.state -and ((BoundProcess $job.bootstrap_binding)-or(BoundProcess $job.workload_binding))){throw 'conflicting persistent campaign job'}
+  if($state-eq'prepared' -and (!$isCurrent -or $jobId-ne$RunId)){throw 'conflicting unresolved prepared campaign job'}
+  $bootstrap=if($normalized.Contains('bootstrap_binding')){$normalized['bootstrap_binding']}else{$null};$workload=if($normalized.Contains('workload_binding')){$normalized['workload_binding']}else{$null}
+  if(@('launch-requested','launched','bootstrap-confirmed','running') -contains $state -and ((BoundProcess $bootstrap)-or(BoundProcess $workload))){throw 'conflicting persistent campaign job'}
  }
 }
 function RequireWorker([string]$Incoming){$p=Join-Path $Incoming 'phase-0a-h\windows\execute-ten-strategy-packet.ps1';if(!(Test-Path -LiteralPath $p)){throw 'missing bound packet worker'};return $p}
@@ -148,12 +148,13 @@ function ReadReconciliationJob([string]$Path){
   $keys=@($job.Keys);$values=@($job.Values);if($keys.Count-ne$values.Count){throw 'legacy job key/value count mismatch'}
   for($i=0;$i-lt$keys.Count;$i++){if([string]::IsNullOrWhiteSpace([string]$keys[$i]) -or $legacy.Contains($keys[$i])){throw 'legacy job key invalid or duplicated'};$legacy[[string]$keys[$i]]=$values[$i]}
  }
- foreach($name in @('run_identifier','state','preflight_kind','created_utc','updated_utc')){
+ foreach($name in @('run_identifier','state','preflight_kind','created_utc','updated_utc','bootstrap_binding','workload_binding')){
   $top=$null;if($job.PSObject.Properties.Name -contains $name){$top=$job.$name};$nested=if($legacy.Contains($name)){$legacy[$name]}else{$null}
   $topJson=if($null-ne$top){$top|ConvertTo-Json -Depth 20 -Compress}else{$null};$nestedJson=if($null-ne$nested){$nested|ConvertTo-Json -Depth 20 -Compress}else{$null}
   if($null-ne$top -and $null-ne$nested -and $topJson-ne$nestedJson){throw ('legacy job contradictory field:'+ $name)}
   if($null-ne$top){$legacy[$name]=$top}
  }
+ if(!$legacy.Contains('run_identifier') -or !$legacy.Contains('state') -or !$legacy['run_identifier'] -or !$legacy['state']){throw 'normalized job identity/state missing'}
  [ordered]@{raw=$raw;job=$job;normalized=$legacy}
 }
 function FailureDirectory($paths){if(Test-Path -LiteralPath $paths.running){return $paths.running};if(Test-Path -LiteralPath $paths.complete){return $paths.complete};throw 'missing failure evidence directory'}
