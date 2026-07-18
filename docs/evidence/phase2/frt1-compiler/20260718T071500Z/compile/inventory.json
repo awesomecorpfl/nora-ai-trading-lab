@@ -1,0 +1,26 @@
+﻿[
+    {
+        "path":  "compiler_record.json",
+        "sha256":  "516084e8dcecf621dd20ecf5a664f3586edcdea4ce378035b317e4d4e979b631",
+        "size":  2811,
+        "role":  "compiler_record"
+    },
+    {
+        "path":  "compile.redacted.log",
+        "sha256":  "bcf5cb21b38c1b93b417266c7165bfc1eb619fbc697f03aba6f2c47e0fda53b5",
+        "size":  3890,
+        "role":  "compiler_log"
+    },
+    {
+        "path":  "NoraPhase2TenStrategyTesterCanaryV1.ex5",
+        "sha256":  "6d53a0de2303cdc8a8e1fddd8ff658b0f8c1a4f520c7ce102663bde0d6ea3ccf",
+        "size":  23180,
+        "role":  "compiled_ex5"
+    },
+    {
+        "path":  "compile_evidence_manifest.json",
+        "sha256":  "9503546f6ec1ad97fe0d193e797e049bee8ea434f8d84988cd1dee26ac89c923",
+        "size":  308,
+        "role":  "compile_evidence_manifest"
+    }
+]
