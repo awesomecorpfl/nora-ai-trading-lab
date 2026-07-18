@@ -23,14 +23,42 @@ foreach($path in @($QualificationScript,$RunnerScript,$OperatorStateHelper,$Rest
 if(@(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue).Count-ne0){throw 'terminal_or_tester_exists_before_synthetic_validation'}
 $restorationTokens=$null;$restorationErrors=$null
 $restorationAst=[Management.Automation.Language.Parser]::ParseFile($RestorationScript,[ref]$restorationTokens,[ref]$restorationErrors)
-foreach($functionName in @('Canonical','SemanticRule','UnrelatedDigest')){
+foreach($functionName in @('Canonical','Rule','AssertRule','SemanticRule','UnrelatedDigest')){
  $functionAst=$restorationAst.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $functionName},$true)
  if($null-eq$functionAst){throw ('restoration function missing: '+$functionName)}
  Invoke-Expression $functionAst.Extent.Text
 }
-$script:Guid='{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}'
+$script:Guid='{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}';$script:DisplayName='MetaTrader 5 Strategy Tester Agent';$script:Program='C:\Program Files\Darwinex MetaTrader 5\metatester64.exe'
+$script:MockRule=[pscustomobject]@{Name='synthetic-unrelated';InstanceID='synthetic-unrelated';DisplayName='Synthetic Unrelated';Description='';Owner='';Group='';Enabled=$true;Direction='Inbound';Action='Allow';Profile='Domain, Private';EdgeTraversalPolicy='Block';PolicyStoreSource='PersistentStore';PolicyStoreSourceType='Local'}
+$script:MockInterface=[pscustomobject]@{InterfaceAlias='Any'}
+$script:MockInterfaceType=[pscustomobject]@{InterfaceType=0}
+$script:MockSecurity=[pscustomobject]@{Authentication='NotRequired';Encryption='NotRequired';OverrideBlockRules=$false;LocalUser='Any';RemoteUser='Any'}
+$script:MockApplication=[pscustomobject]@{Program='C:\synthetic.exe';Package=''}
+$script:MockService=[pscustomobject]@{Service='Any'}
+$script:MockAddress=[pscustomobject]@{LocalAddress='Any';RemoteAddress='Any'}
+$script:MockPort=[pscustomobject]@{Protocol='TCP';LocalPort='Any';RemotePort='Any';IcmpType='Any'}
+function Get-NetFirewallRule(){param($PolicyStore,$Name,$ErrorAction) @($script:MockRule)}
+function Get-NetFirewallApplicationFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockApplication)}
+function Get-NetFirewallServiceFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockService)}
+function Get-NetFirewallAddressFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockAddress)}
+function Get-NetFirewallPortFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockPort)}
+function Get-NetFirewallInterfaceFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockInterface)}
+function Get-NetFirewallInterfaceTypeFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockInterfaceType)}
+function Get-NetFirewallSecurityFilter(){param($AssociatedNetFirewallRule,$ErrorAction) @($script:MockSecurity)}
 $unrelatedDigestOne=UnrelatedDigest;$unrelatedDigestTwo=UnrelatedDigest
 if($unrelatedDigestOne-notmatch'^[0-9a-f]{64}$'-or$unrelatedDigestOne-ne$unrelatedDigestTwo){throw 'unrelated firewall semantic digest is not deterministic'}
+$mutationCount=0
+foreach($case in @(
+ @($script:MockRule,'Owner','S-1-5-18',''),@($script:MockRule,'Group','ChangedGroup',''),@($script:MockInterface,'InterfaceAlias','Ethernet','Any'),@($script:MockInterfaceType,'InterfaceType','Wireless','Any'),@($script:MockSecurity,'LocalUser','D:(A;;CC;;;SY)','Any'),@($script:MockSecurity,'RemoteUser','D:(A;;CC;;;BA)','Any'),@($script:MockApplication,'Program','C:\changed.exe','C:\synthetic.exe'),@($script:MockService,'Service','ChangedService','Any'),@($script:MockAddress,'RemoteAddress','10.0.0.1','Any'),@($script:MockPort,'LocalPort','443','Any'),@($script:MockSecurity,'Authentication','Required','NotRequired')
+)){
+ $object=$case[0];$property=[string]$case[1];$changed=$case[2];$original=$case[3];$object.$property=$changed;if((UnrelatedDigest)-eq$unrelatedDigestOne){throw ('unrelated semantic mutation not bound: '+$property)};$object.$property=$original;$mutationCount++
+}
+$script:MockRule.Name=$script:Guid;$script:MockRule.InstanceID=$script:Guid;$script:MockRule.DisplayName=$script:DisplayName;$script:MockRule.Enabled=$false;$script:MockApplication.Program=$script:Program
+AssertRule (Rule 'PersistentStore') $false
+$targetRejectCount=0
+foreach($case in @(@($script:MockRule,'Owner','S-1-5-18',''),@($script:MockRule,'Group','ChangedGroup',''),@($script:MockInterface,'InterfaceAlias','Ethernet','Any'),@($script:MockInterfaceType,'InterfaceType','Wireless','Any'),@($script:MockSecurity,'LocalUser','ChangedLocalUser','Any'),@($script:MockSecurity,'RemoteUser','ChangedRemoteUser','Any'))){
+ $object=$case[0];$property=[string]$case[1];$changed=$case[2];$original=$case[3];$object.$property=$changed;$rejected=$false;try{AssertRule (Rule 'PersistentStore') $false}catch{if($_.Exception.Message-eq'tester rule semantic mismatch'){$rejected=$true}else{throw}};$object.$property=$original;if(!$rejected){throw ('target semantic mutation not rejected: '+$property)};$targetRejectCount++
+}
 $base=Join-Path $env:TEMP ('nora-pi0-repair-'+[guid]::NewGuid().ToString('N'))
 try {
  $qualificationId='synthetic-repair-identity'
@@ -78,6 +106,8 @@ try {
   competing_prepared_job='FAIL_AS_EXPECTED'
   legacy_competing_prepared_job='FAIL_AS_EXPECTED'
   unrelated_firewall_digest='PASS'
+  unrelated_semantic_mutation_count=$mutationCount
+  target_semantic_rejection_count=$targetRejectCount
   restoration_self_hash='FAIL_AS_EXPECTED'
   firewall_mutation_invoked=$false
   mt5_invoked=$false

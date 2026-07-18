@@ -153,6 +153,8 @@ def test_windows_powershell_fail_closed_repair_harness():
     assert '"competing_prepared_job":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"legacy_competing_prepared_job":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"unrelated_firewall_digest":"PASS"' in result.stdout
+    assert '"unrelated_semantic_mutation_count":11' in result.stdout
+    assert '"target_semantic_rejection_count":6' in result.stdout
     assert '"restoration_self_hash":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"firewall_mutation_invoked":false' in result.stdout
     assert '"mt5_invoked":false' in result.stdout

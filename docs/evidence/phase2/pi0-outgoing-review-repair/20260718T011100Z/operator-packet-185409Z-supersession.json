@@ -1,0 +1,19 @@
+{
+  "schema_version": "nora.phase2_frt1r2_operator_packet_supersession_v1",
+  "supersession_id": "frt1r2-supersession-20260718T020500Z",
+  "created_utc": "2026-07-18T02:05:00Z",
+  "repository_commit": "92b2dde13950a05cef9a276d3fe770e21c6b8502",
+  "superseded_packet": {
+    "path": "docs/evidence/phase2/frt1r2-operator-preparation/20260717T185409Z/packet.json",
+    "sha256": "01badb352d58a05cde3e84eb03d3a024f9a428f4c1bba5b53de24e3259576f19",
+    "packet_id": "frt1r2-operator-20260717T185409Z",
+    "repository_commit": "aa7ee49502edad3b7a1c015dec8ef25deb4c805c",
+    "classification": "NON_CREDIT_SUPERSEDED_PREPARATION"
+  },
+  "reason": "implementation and helper bytes changed after fail-closed independent review; the old command hashes, qualification guards, and deployment are not current",
+  "replacement_live_packet": null,
+  "replacement_state": "NOT_PREPARED_NOT_DEPLOYED",
+  "next_boundary": "PI-1 must authorize Windows deployment and tester-rule mutation design before a fresh live operator packet is issued",
+  "may_execute_superseded_packet": false,
+  "acceptance_credit_granted": false
+}
