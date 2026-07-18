@@ -132,6 +132,8 @@ def test_forensic_collector_is_copy_only_for_the_source_run_and_atomic():
 def test_containment_is_executable_scoped_durable_and_cleanup_is_explicit():
     for token in ("terminal64.exe", "metatester64.exe", "-Direction Outbound", "-Action Block", "-Profile Any", "Get-NetFirewallApplicationFilter", "Get-NetTCPConnection", "stale or incomplete containment transaction requires recovery"):
         assert token in CONTAINMENT
+    assert "-RemoteAddress Internet" in CONTAINMENT
+    assert "remote_addresses" in CONTAINMENT
     assert "Remove-NetFirewallRule" in CONTAINMENT
     assert "function Get-NoraContainmentGroup" in CONTAINMENT
     assert "-Group (Group)" not in CONTAINMENT
