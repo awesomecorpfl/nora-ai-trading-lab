@@ -15,6 +15,7 @@ RESTORATION_SCRIPT = ROOT / "phase-0a-h/windows/phase2-tester-rule-restoration.p
 HARNESS = ROOT / "tests/windows/phase2_operator_state_harness.ps1"
 REPAIR_HARNESS = ROOT / "tests/windows/phase2_fail_closed_repair_harness.ps1"
 REPAIR_EVIDENCE = ROOT / "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T004745Z"
+REPAIR_FOLLOWUP_EVIDENCE = ROOT / "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T011100Z"
 QUALIFICATION_ID = "frt1r2-live-20260717T192223Z"
 
 
@@ -182,3 +183,34 @@ def test_pi0_review_repair_evidence_is_hash_bound_and_noncredit():
     diagnostic = json.loads((REPAIR_EVIDENCE / "diagnostic-classification.json").read_text())
     assert diagnostic["classification"] == "NON_CREDIT_UNSEALED_DIAGNOSTIC"
     assert diagnostic["acceptance_credit_granted"] is False
+
+
+def test_pi0_review_followup_supersedes_restoration_packet_and_seals_windows_result():
+    manifest = json.loads((REPAIR_FOLLOWUP_EVIDENCE / "manifest.json").read_text())
+    assert manifest["repository_commit"] == "a64bc607cc97d1178e5e479bfbfa4d2b8af38dd2"
+    assert manifest["acceptance_credit_granted"] is False
+    for artifact in manifest["artifacts"]:
+        data = (ROOT / artifact["path"]).read_bytes()
+        assert len(data) == artifact["size"]
+        assert hashlib.sha256(data).hexdigest() == artifact["sha256"]
+    for binding in manifest["implementation_bindings"]:
+        data = subprocess.check_output(
+            ["git", "show", f'{manifest["repository_commit"]}:{binding["path"]}'],
+            cwd=ROOT,
+        )
+        assert len(data) == binding["size"]
+        assert hashlib.sha256(data).hexdigest() == binding["sha256"]
+
+    supersession = json.loads((REPAIR_FOLLOWUP_EVIDENCE / "restoration-packet-supersession.json").read_text())
+    assert supersession["classification"] == "NON_CREDIT_SUPERSEDED_PREPARATION"
+    assert supersession["accepted"] is False
+    assert supersession["may_execute"] is False
+    assert supersession["replacement_packet"] is None
+
+    windows = json.loads((REPAIR_FOLLOWUP_EVIDENCE / "windows-harness-result.json").read_text())
+    assert windows["process_exit_code"] == 0
+    assert windows["cleanup_verdict"] == "PASS"
+    assert windows["result"]["verdict"] == "PASS"
+    assert windows["result"]["legacy_competing_prepared_job"] == "FAIL_AS_EXPECTED"
+    assert windows["result"]["firewall_mutation_invoked"] is False
+    assert windows["result"]["mt5_invoked"] is False

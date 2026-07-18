@@ -1,0 +1,46 @@
+{
+  "schema_version": "nora.phase2_pi0_review_followup_v1",
+  "review_id": "pi0-review-followup-20260718T011100Z",
+  "repository_commit": "a64bc607cc97d1178e5e479bfbfa4d2b8af38dd2",
+  "classification": "REPAIR_VALIDATED_NON_ACCEPTANCE",
+  "acceptance_credit_granted": false,
+  "triggering_review": {
+    "head": "5ea5c88e9fd63f068857c25a5bd80740f0a84d5b",
+    "verdict": "DO_NOT_PUSH",
+    "blocking_ids": [
+      "B3_NOT_FULLY_RESOLVED",
+      "B5_STALE_UNSUPERSEDED_RESTORATION_PACKET",
+      "B6_INCOMPLETE_FIREWALL_SEMANTICS"
+    ]
+  },
+  "dispositions": [
+    {
+      "id": "B3_NOT_FULLY_RESOLVED",
+      "status": "REPAIRED_PENDING_INDEPENDENT_REVIEW",
+      "mechanical_boundary": "NoCampaignJob uses ReadReconciliationJob normalized top-level/legacy Keys/Values state and bindings; contradictory or missing identity/state fails closed",
+      "windows_negative": "legacy competing prepared job = FAIL_AS_EXPECTED"
+    },
+    {
+      "id": "B5_STALE_UNSUPERSEDED_RESTORATION_PACKET",
+      "status": "SUPERSEDED_NON_EXECUTABLE",
+      "boundary": "restoration-packet-supersession.json sets may_execute=false and binds stale packet/manifest hashes; no replacement executable packet exists"
+    },
+    {
+      "id": "B6_INCOMPLETE_FIREWALL_SEMANTICS",
+      "status": "REPAIRED_PENDING_INDEPENDENT_REVIEW",
+      "mechanical_boundary": "target and unrelated semantics now bind owner, group, interface alias/type, local/remote users, application, service, address, port, security, policy source, and rule identity"
+    }
+  ],
+  "validation": {
+    "focused_pytest": "44 passed, 2 skipped",
+    "windows_powershell_5_1_harness": "PASS",
+    "firewall_mutation_invoked": false,
+    "mt5_invoked": false,
+    "temporary_remote_staging_removed": true
+  },
+  "phase_state": {
+    "phase2_complete": false,
+    "phase3_authorized": false,
+    "search_authorized": false
+  }
+}

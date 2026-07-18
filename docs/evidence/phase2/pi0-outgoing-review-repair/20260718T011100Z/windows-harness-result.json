@@ -1,0 +1,27 @@
+{
+  "schema_version": "nora.phase2_pi0_windows_harness_result_v1",
+  "validation_id": "pi0-repair-validation-20260718T010400Z",
+  "host": "nora-win10",
+  "powershell_version": "5.1.19041.7548",
+  "repository_commit": "a64bc607cc97d1178e5e479bfbfa4d2b8af38dd2",
+  "remote_staging_path": "C:\\NoraEvidence\\Phase2\\pi0-repair-validation-20260718T010400Z",
+  "process_exit_code": 0,
+  "cleanup_verdict": "PASS",
+  "temporary_staging_present_after_cleanup": false,
+  "result": {
+    "schema_version": "nora.phase2_pi0_fail_closed_repair_harness_v1",
+    "verdict": "PASS",
+    "parser_file_count": 4,
+    "burned_qualification_identity": "FAIL_AS_EXPECTED",
+    "qualification_root_created": false,
+    "current_prepared_job": "PASS",
+    "competing_prepared_job": "FAIL_AS_EXPECTED",
+    "legacy_competing_prepared_job": "FAIL_AS_EXPECTED",
+    "unrelated_firewall_digest": "PASS",
+    "restoration_self_hash": "FAIL_AS_EXPECTED",
+    "firewall_mutation_invoked": false,
+    "mt5_invoked": false
+  },
+  "transport_note": "Result object is the exact final JSON object emitted by Windows PowerShell. Progress-stream CLIXML was transport noise and is not represented as test output.",
+  "acceptance_credit_granted": false
+}

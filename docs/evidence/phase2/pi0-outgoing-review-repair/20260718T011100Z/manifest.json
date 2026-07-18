@@ -1,0 +1,41 @@
+{
+  "schema_version": "nora.phase2_pi0_review_followup_manifest_v1",
+  "review_id": "pi0-review-followup-20260718T011100Z",
+  "repository_commit": "a64bc607cc97d1178e5e479bfbfa4d2b8af38dd2",
+  "classification": "REPAIR_VALIDATED_NON_ACCEPTANCE",
+  "acceptance_credit_granted": false,
+  "artifacts": [
+    {
+      "path": "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T011100Z/review-followup.json",
+      "sha256": "e98648eba03c42c84a6b1aa31674d99c17ef3e7e1e39494978425df9ffdef26b",
+      "size": 1874
+    },
+    {
+      "path": "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T011100Z/restoration-packet-supersession.json",
+      "sha256": "b9eda5d216ce9619c9b1e42afe2871acf46de315f91f3ce556867a0d3bc9c8ba",
+      "size": 1244
+    },
+    {
+      "path": "docs/evidence/phase2/pi0-outgoing-review-repair/20260718T011100Z/windows-harness-result.json",
+      "sha256": "173e985ea4fb3c70753f3a01c95487ca09acea980863b1c3b4a65bbf74dde213",
+      "size": 1218
+    }
+  ],
+  "implementation_bindings": [
+    {
+      "path": "phase-0a-h/windows/phase2-evidence-runner.ps1",
+      "sha256": "f3ee41a3acd5c4c34e697291ed9c5336cf3ea5f527174a4bb1f268cc4f4479bb",
+      "size": 74843
+    },
+    {
+      "path": "phase-0a-h/windows/phase2-tester-rule-restoration.ps1",
+      "sha256": "3d298e29351480d43fe4dc598c2f062f2bb8285d218c29e08e6a5319d0d068a4",
+      "size": 14384
+    },
+    {
+      "path": "tests/windows/phase2_fail_closed_repair_harness.ps1",
+      "sha256": "73f2c5804bd4cbeb9c87e7f884f4f171fb250fe63729144027b96533924f28af",
+      "size": 6451
+    }
+  ]
+}

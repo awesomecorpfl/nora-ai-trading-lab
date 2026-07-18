@@ -1,0 +1,22 @@
+{
+  "schema_version": "nora.phase2_restoration_packet_supersession_v1",
+  "supersession_id": "frt1r3-restoration-supersession-20260718T011100Z",
+  "created_utc": "2026-07-18T01:11:00Z",
+  "repository_commit": "a64bc607cc97d1178e5e479bfbfa4d2b8af38dd2",
+  "classification": "NON_CREDIT_SUPERSEDED_PREPARATION",
+  "accepted": false,
+  "may_execute": false,
+  "superseded_packet": {
+    "path": "docs/evidence/phase2/frt1r3-tester-rule-restoration/20260717T204540Z/packet.json",
+    "sha256": "dde0ed58d3402f983a81aa6371e3ca9d247b6e8d977a3a22b086792afac4ba5b",
+    "manifest_path": "docs/evidence/phase2/frt1r3-tester-rule-restoration/20260717T204540Z/manifest.json",
+    "manifest_sha256": "12b9b7cb7f7dcfc8111b38bf25bd5dbea0b94257f801908a6744655f9c3b61a3"
+  },
+  "reasons": [
+    "retained commands omit mandatory RestorationScriptSha256",
+    "packet binds superseded restoration script bytes and old deployment",
+    "packet assumes an absent target rule and is not applicable to the latest unsealed present-enabled observation"
+  ],
+  "replacement_packet": null,
+  "replacement_policy": "Only issue after fresh manifest-bound read-only state observation, applicable branch selection, authorized deployment, and deployed-byte verification."
+}
