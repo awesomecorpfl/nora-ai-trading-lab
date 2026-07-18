@@ -9,6 +9,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import math
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,9 @@ from typing import Any
 from lab.core import canon
 
 SCHEMA = "nora.broker_profile_v1"
+EXPECTED_HEADER = [
+    "Instrument", "Description", "Instrument Type", "Exchange", "Country", "Sector", "Execution Type", "Trading Conditions", "---", "Last Bid Price", "HowManyTicksAreIn1Pip", "---", "Calculations are based on", "Pip (Tick Size)", "Tick (Tick Step)", "1 Pip Worth", "", "1 Tick Worth", "", "Min Lot Size", "Max Lot Size", "Min Lot Step", "Instrument's Daily ATR (In Pips)", "", "", "Leverage", "Margin Requirement", "", "AccountMarginStopOutMode", "Margin Call at", "Stop Out at", "Spread (In Pips)", "", "", "Slippage (In Pips)", "", "", "Commission Type", "Commission Value", "", "Minimum SL/TP distance from market price (STOP_LEVEL) (In Pips)", "", "", "Minimum pending order distance from market price (FREEZE_LEVEL) (In Pips)", "", "", "Maximum open pending orders allowed", "Swap Type", "Swap Long", "", "", "Swap Short", "", "", "Triple Swap on", "Trading Sessions Times (TimeOffSet=0)", "Decimals", "Contract Size", "Point Value",
+]
 CSV_COLUMNS = {
     "symbol": 0, "description": 1, "instrument_type": 2, "exchange": 3,
     "country": 4, "sector": 5, "execution_type": 6, "trading_conditions": 7,
@@ -69,6 +73,8 @@ def _session_map(path: Path) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for session in root.findall("Session"):
         name = session.attrib["name"]
+        if name in result:
+            raise ValueError(f"duplicate session name: {name}")
         elements = [dict(item.attrib) for item in session.findall("Element")]
         result[name] = {"name": name, "elements": elements}
     return result
@@ -76,14 +82,34 @@ def _session_map(path: Path) -> dict[str, dict[str, Any]]:
 
 def _xml_map(path: Path) -> dict[str, dict[str, str]]:
     root = _safe_xml_root(path)
-    return {item.attrib["instrument"]: dict(item.attrib) for item in root.findall("InstrumentInfo")}
+    result: dict[str, dict[str, str]] = {}
+    for item in root.findall("InstrumentInfo"):
+        symbol = item.attrib["instrument"]
+        if symbol in result:
+            raise ValueError(f"duplicate instrument name: {symbol}")
+        result[symbol] = dict(item.attrib)
+    return result
 
 
 def _find_session(symbol: str, sessions: dict[str, dict[str, Any]]) -> str | None:
-    matches = [name for name in sessions if symbol in name]
+    matches = [name for name in sessions if symbol in name.split("_")]
     if len(matches) > 1:
         raise ValueError(f"ambiguous session mapping for {symbol}")
     return matches[0] if matches else None
+
+
+def _embedded_attr(value: str, attribute: str) -> str | None:
+    match = re.search(rf'{re.escape(attribute)}="([^"]*)"', value)
+    return match.group(1) if match else None
+
+
+def _embedded_param(value: str, key: str) -> str | None:
+    match = re.search(rf'key="{re.escape(key)}"[^>]*>([^<]*)<', value)
+    return match.group(1) if match else None
+
+
+def _day(value: str) -> str:
+    return {"mon": "monday", "tue": "tuesday", "wed": "wednesday", "thu": "thursday", "fri": "friday", "sat": "saturday", "sun": "sunday"}.get(value.strip().lower(), value.strip().lower())
 
 
 def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
@@ -97,9 +123,9 @@ def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
 
     with csv_path.open(newline="", encoding="utf-8-sig") as handle:
         rows = list(csv.reader(handle))
-    if len(rows) < 2 or len(rows[0]) != 59:
-        raise ValueError("unsupported StrategyQuantX CSV layout")
-    if any(len(row) != len(rows[0]) for row in rows[1:]):
+    if len(rows) < 2 or rows[0] != EXPECTED_HEADER:
+        raise ValueError("unsupported StrategyQuantX CSV header")
+    if any(len(row) != len(EXPECTED_HEADER) for row in rows[1:]):
         raise ValueError("ragged StrategyQuantX CSV")
 
     sessions = _session_map(sessions_path)
@@ -114,18 +140,39 @@ def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
             raise ValueError(f"CSV/XML symbol mismatch: {symbol}")
         x = xml_rows[symbol]
         digits = int(_float(row, CSV_COLUMNS["digits"], "digits"))
-        csv_point_value = _float(row, CSV_COLUMNS["point_value"], "point_value")
-        xml_point_value = float(x["pointValue"])
-        if not math.isclose(csv_point_value, xml_point_value, rel_tol=0.0, abs_tol=1e-12):
-            warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "point_value"})
+        source_csv = {name: _text(row, index) for name, index in CSV_COLUMNS.items()}
+        conflict_pairs = (
+            ("pip_size", "tickSize"), ("trade_tick_size", "tickStep"),
+            ("digits", "decimals"), ("spread_pips", "defaultSpread"),
+            ("slippage_pips", "defaultSlippage"), ("volume_step", "orderSizeStep"),
+            ("point_value", "pointValue"),
+        )
+        for csv_field, xml_field in conflict_pairs:
+            csv_value = _float(row, CSV_COLUMNS[csv_field], csv_field)
+            xml_value = float(x[xml_field])
+            if not math.isclose(csv_value, xml_value, rel_tol=0.0, abs_tol=1e-12):
+                warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": csv_field})
+        swap_xml = x.get("swap", "")
+        swap_pairs = (("swap_long", "long"), ("swap_short", "short"), ("triple_swap_day", "tripleSwapOn"))
+        for csv_field, xml_field in swap_pairs:
+            csv_value = _day(_text(row, CSV_COLUMNS[csv_field])) if csv_field == "triple_swap_day" else _text(row, CSV_COLUMNS[csv_field]).lower()
+            xml_value = (_embedded_attr(swap_xml, xml_field) or "").lower()
+            if csv_value != (_day(xml_value) if csv_field == "triple_swap_day" else xml_value):
+                warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": csv_field})
+        csv_swap_type = _text(row, CSV_COLUMNS["swap_type"]).lower().removeprefix("in ")
+        xml_swap_type = (_embedded_attr(swap_xml, "type") or "").lower()
+        if csv_swap_type != xml_swap_type:
+            warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "swap_type"})
+        commission_xml = _embedded_param(x.get("commissions", ""), "Commission")
+        if commission_xml is not None and not math.isclose(_float(row, CSV_COLUMNS["commission_value"], "commission_value"), float(commission_xml), rel_tol=0.0, abs_tol=1e-12):
+            warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "commission_value"})
         session_name = _find_session(symbol, sessions)
         if session_name is None:
             warnings.append({"code": "MISSING_SESSION_MAPPING", "symbol": symbol, "field": "sessions"})
-        source_csv = {name: _text(row, index) for name, index in CSV_COLUMNS.items()}
         source_xml = x
         symbols.append({
             "symbol": symbol,
-            "source_values": {"csv": source_csv, "instrument_xml": source_xml},
+            "source_values": {"csv": source_csv, "csv_header": list(EXPECTED_HEADER), "csv_row": list(row), "instrument_xml": source_xml},
             "identity": {
                 "canonical_symbol": symbol,
                 "broker_symbol": symbol,

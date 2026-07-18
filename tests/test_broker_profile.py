@@ -19,10 +19,24 @@ def test_strategyquantx_export_normalizes_all_symbols_and_preserves_sources():
     assert eurusd["price"]["point_size_derived"] == 0.00001
     assert eurusd["contract"]["volume_min_observed"] == 0.01
     assert eurusd["costs"]["spread_pips_observed"] == 0.4
+    assert len(eurusd["source_values"]["csv_header"]) == 59
+    assert len(eurusd["source_values"]["csv_row"]) == 59
     assert eurusd["source_values"]["csv"]["point_value"] == "100000.0"
     assert eurusd["source_values"]["instrument_xml"]["tickStep"] == "0.00001"
     assert eurusd["session_name"] == "FX_Currency1_EURJPY_GBPJPY_USDJPY_EURUSD_GBPUSD"
     assert profile["profile_identity"]
+
+
+def test_all_symbols_join_to_xml_and_sessions_and_identity_is_stable(tmp_path):
+    profile = load_strategyquantx_export(FIXTURE)
+    assert all(item["source_values"]["instrument_xml"] for item in profile["symbols"])
+    assert all(item["session_name"] in profile["sessions"] for item in profile["symbols"])
+    assert profile["profile_identity"] == load_strategyquantx_export(FIXTURE)["profile_identity"]
+    for source in FIXTURE.iterdir():
+        (tmp_path / source.name).write_bytes(source.read_bytes())
+    csv_path = tmp_path / "sample.csv"
+    csv_path.write_text(csv_path.read_text(encoding="utf-8-sig").replace("1.14194", "1.14195", 1), encoding="utf-8")
+    assert load_strategyquantx_export(tmp_path)["profile_identity"] != profile["profile_identity"]
 
 
 def test_source_conflicts_are_warnings_not_silent_rewrites():
@@ -30,6 +44,16 @@ def test_source_conflicts_are_warnings_not_silent_rewrites():
     conflicts = {(item["symbol"], item["field"]) for item in profile["warnings"] if item["code"] == "SOURCE_VALUE_CONFLICT"}
     assert ("EURJPY", "point_value") in conflicts
     assert ("GBPJPY", "point_value") in conflicts
+
+
+def test_wrong_header_fails_closed(tmp_path):
+    for source in FIXTURE.iterdir():
+        (tmp_path / source.name).write_bytes(source.read_bytes())
+    csv_path = tmp_path / "sample.csv"
+    text = csv_path.read_text(encoding="utf-8-sig").replace("Instrument,Description", "Wrong,Description", 1)
+    csv_path.write_text(text, encoding="utf-8")
+    with pytest.raises(ValueError, match="header"):
+        load_strategyquantx_export(tmp_path)
 
 
 def test_rejects_unsafe_xml_declarations(tmp_path):
