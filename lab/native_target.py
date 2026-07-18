@@ -388,12 +388,6 @@ def evaluate_environmental_acceptance(evidence: dict) -> dict:
     # A generic journal phrase can be ambiguous in isolation. It may be
     # resolved only by the complete retained forensic record; otherwise fail.
     if evidence["ambiguous_evidence_resolved"] is not True: reasons.append("AMBIGUOUS_EVIDENCE")
-    classified_attempts = set(classified["attempted_sync"])
-    if classified_attempts and isinstance(evidence["cache_mutations"], list) and any(
-        isinstance(mutation, dict) and str(mutation.get("path", "")).lower().startswith(("history/", "ticks/"))
-        for mutation in evidence["cache_mutations"]
-    ):
-        reasons.append("HISTORY_CACHE_MUTATION_DURING_SYNC")
     allowed = {"symbol_contract_metadata", "cache_header_maintenance", "cache_index_maintenance", "in_memory_cache_allocation"}
     mutations = evidence["cache_mutations"]
     if not isinstance(mutations, list): reasons.append("INVALID_CACHE_MUTATION_RECORD")

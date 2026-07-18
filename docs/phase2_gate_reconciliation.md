@@ -17,9 +17,11 @@ The machine-readable matrix is `tests/fixtures/phase2_gate_reconciliation.json`.
 
 The remaining Layer-1 indicators are implemented in Rust where recorded by the source inventory, but have no complete MQL5/native parity chain and remain non-searchable. Execution simulator semantics are native-reconciled only for the exact embedded twelve-scenario contract; this does not establish broker-clock, strategy, or broader grammar coverage.
 
-## Execution-canary local readiness
+## Embedded smoke and broker-native validation
 
-The execution canary has genuine compiler evidence, a sealed final packet, and four independently fresh returned packages. A1/A2 and B1/B2 are repeatable, GDAXI/M1 and AUDCAD/M1 are semantically identical, all decision and price fields reconcile exactly, and parity is accepted narrowly. Grammar and searchability remain false.
+The embedded ten-strategy smoke canary is a narrow exact-reconciliation contract: it validates compile/load/tester/EA lifecycle and execution of synthetic fixtures. It must not be used as a broker-native performance verdict.
+
+The broker-native tranche is a separate similarity/edge-survival gate. It compares native MT5 metrics to Python/Rust references under declared broker data, timezone, spread, slippage, and cost assumptions using a pre-frozen budget map. Exact trade-ledger equality is not required across engines.
 
 ## Binding gate matrix
 
@@ -28,7 +30,8 @@ The execution canary has genuine compiler evidence, a sealed final packet, and f
 | Synthetic execution fixtures: next-open, signal exit, time exit, combined precedence, determinism | ACCEPTED | Frozen Rust and native fixed-path ledgers reconcile exactly in four independent host-context runs | None for this restricted contract |
 | Layer-1 indicator/transform coverage | PARTIAL | MACD and Percentile are now accepted narrowly; ATR/Distance-ATR, slope, SMA/cross, and condition evidence do not complete the all-Layer-1 gate | Reconcile remaining Layer-1 contracts and typed AST admission boundaries |
 | Declared strategy/session/broker clock; broker fixtures; DST spring/fall; Friday close; parameterized rollover/Monday/ORB; derived timeframe anchoring | ACCEPTED | Exact 18-scenario time-rule canary, four independent host-neutral packages | Holiday calendars and universal production window defaults remain unsupported |
-| Ten hand-designed strategies, initial-v1 grammar coverage, trade-by-trade reconciliation, parity budget | BLOCKED | Zero completed durable strategy reconciliations | One strategy canary after execution semantics are native-reconciled |
+| Ten hand-designed strategies: embedded smoke execution health | PENDING | Corrected compiler evidence exists; fresh native smoke must confirm compile/load/tester/EA lifecycle and embedded fixture execution | One bounded smoke package |
+| Ten hand-designed strategies: broker-native edge survival | BLOCKED | No frozen broker-native cost/timezone/budget decision and no similarity report | Freeze D1–D7 assumptions and run one native symbol tranche |
 | Repeated Linux experiment replay: trades, metrics, simulator outcomes, canonical hashes | PARTIAL | Component-level deterministic tests exist; no complete experiment replay bundle | One repeated experiment artifact binding all outputs and hashes |
 | Placebo/scrambled-data edge destruction | BLOCKED | No known-edge scramble fixture or destruction statistic | Define one deterministic scramble and expected edge-destruction measure |
 
@@ -44,4 +47,4 @@ Superseded identities cannot be selected as current: current package/source bind
 
 ## Next critical path
 
-Continue remaining Layer-1 native parity and the ten hand-designed trade-by-trade strategy reconciliations. Deterministic Linux replay, placebo/scrambled-data edge destruction, and parity-budget decisions remain open. This remains before search and Phase 3.
+Run one bounded embedded smoke package first. Separately resolve D1–D7 broker-native data/timezone/cost/budget decisions, then run one native symbol tranche and evaluate edge survival with `nora.phase2_broker_native_similarity_v1`. This remains before search and Phase 3.

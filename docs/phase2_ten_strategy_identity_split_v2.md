@@ -13,8 +13,9 @@ the v2 compile-input identity.
 The separate native-execution contract binds the genuine EX5, Windows launcher,
 tester configuration builder, forensic collector, environmental evaluator,
 marker contract, CSV producer, atomic package builder, Fedora transfer/retrieval
-orchestrator, genuine importer, and exact reconciliation implementation.
-Synthetic tooling is typed as fixture-only and cannot fill a genuine role.
+orchestrator, and genuine importer. Exact reconciliation remains a role only for
+the embedded synthetic smoke canary. Broker-native validation uses the separate
+`nora.phase2_broker_native_similarity_v1` report and its pre-frozen budget map.
 
 The identity graph is:
 
@@ -29,7 +30,8 @@ compiled EX5 identity + native-execution role contract
   + suite/fixture/environmental contracts
   -> execution packet -> final batch -> staged inventory
   -> atomic native run package -> genuine importer
-  -> exact reconciliation -> native acceptance
+  -> embedded smoke exact reconciliation
+  -> broker-native similarity report + edge-survival gate
 ```
 
 Compiler evidence never depends on launcher, collection, transfer, ingestion, or
