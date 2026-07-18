@@ -62,9 +62,13 @@ function Get-ReconciledJobInventory([string]$Root){
    $rows+=[ordered]@{run_identifier=$id;normalized_state=[string]$n['state'];reconciled_historical_prepared=$reconciled;original_binding_path=if($binding){$binding.original_path}else{$null};original_job_size=if($binding){$binding.original_size}else{$null};original_job_sha256=if($binding){$binding.original_sha256}else{$null};current_job_changed_after_reconciliation=$currentChanged}
   }
  }
- # Every published reconciliation must have exactly one source job and matching bytes.
+ # Every reconciliation entry must be a complete published directory, and each
+ # published reconciliation must have exactly one source job and matching bytes.
  if(Test-Path -LiteralPath $reconRoot -PathType Container){
-  foreach($dir in @(Get-ChildItem -LiteralPath $reconRoot -Directory -Filter '*.published'|Sort-Object Name)){
+  $reconciliationEntries=@(Get-ChildItem -LiteralPath $reconRoot -Force -ErrorAction Stop)
+  $orphanEntries=@($reconciliationEntries|Where-Object{!$_.PSIsContainer -or $_.Name -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]{2,127}\.published$'})
+  if($orphanEntries.Count-ne0){throw 'reconciliation partial or orphan entry'}
+  foreach($dir in @($reconciliationEntries|Sort-Object Name)){
    $id=$dir.Name.Substring(0,$dir.Name.Length-10);$recordPath=Join-Path $dir.FullName 'reconciliation.json'
    if(!$known.ContainsKey($id)){throw 'reconciliation has no source job'}
    if(!(Test-Path -LiteralPath $recordPath -PathType Leaf)){throw 'published reconciliation incomplete'}

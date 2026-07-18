@@ -118,7 +118,17 @@ function RequireSecureRoot(){
  return [ordered]@{volume_health=[string]$volume.HealthStatus;free_bytes=[int64]$volume.SizeRemaining;acl=(AclView $EvidenceRoot);secured_path_count=$tree.Count;identity=Identity}
 }
 function NoTerminal(){if(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue){throw 'conflicting terminal_or_tester'}}
-function NoCampaignJob(){ $jobs=Join-Path $EvidenceRoot 'jobs';if(!(Test-Path -LiteralPath $jobs)){return};foreach($path in @(Get-ChildItem -LiteralPath $jobs -Filter '*.json' -File -ErrorAction Stop)){ $job=Get-Content -LiteralPath $path.FullName -Raw|ConvertFrom-Json;if($job.state-eq'packaging'){throw 'conflicting persistent campaign job'};if(@('launch-requested','launched','bootstrap-confirmed','running') -contains $job.state -and ((BoundProcess $job.bootstrap_binding)-or(BoundProcess $job.workload_binding))){throw 'conflicting persistent campaign job'} } }
+function NoCampaignJob(){
+ $jobs=Join-Path $EvidenceRoot 'jobs';if(!(Test-Path -LiteralPath $jobs)){return};$currentJob=(Paths).job
+ foreach($path in @(Get-ChildItem -LiteralPath $jobs -Filter '*.json' -File -ErrorAction Stop)){
+  $job=Get-Content -LiteralPath $path.FullName -Raw|ConvertFrom-Json
+  if($job.state-eq'packaging'){throw 'conflicting persistent campaign job'}
+  $jobId=if($job.PSObject.Properties.Name -contains 'run_identifier'){[string]$job.run_identifier}else{''}
+  $isCurrent=[string]::Equals([IO.Path]::GetFullPath($path.FullName),[IO.Path]::GetFullPath($currentJob),[StringComparison]::OrdinalIgnoreCase)
+  if($job.state-eq'prepared' -and (!$isCurrent -or $jobId-ne$RunId)){throw 'conflicting unresolved prepared campaign job'}
+  if(@('launch-requested','launched','bootstrap-confirmed','running') -contains $job.state -and ((BoundProcess $job.bootstrap_binding)-or(BoundProcess $job.workload_binding))){throw 'conflicting persistent campaign job'}
+ }
+}
 function RequireWorker([string]$Incoming){$p=Join-Path $Incoming 'phase-0a-h\windows\execute-ten-strategy-packet.ps1';if(!(Test-Path -LiteralPath $p)){throw 'missing bound packet worker'};return $p}
 function RequireCachePreflightWorker([string]$Incoming){$p=Join-Path $Incoming 'phase-0a-h\windows\execute-phase2-offline-cache-probe.ps1';$resolver=Join-Path $Incoming 'phase-0a-h\windows\resolve-phase2-mt5-server-scope.ps1';if(!(Test-Path -LiteralPath $p) -or !(Test-Path -LiteralPath $resolver)){throw 'missing bound server-scoped cache preflight role'};return $p}
 function ProcessView([int]$ProcessId){

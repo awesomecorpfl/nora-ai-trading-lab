@@ -25,6 +25,39 @@ def test_restoration_packet_is_hash_bound_and_unexecuted():
     assert "-DisplayName $DisplayName" not in SCRIPT.read_text().split("Remove-NetFirewallRule", 1)[1]
 
 
+def test_restoration_script_authenticates_its_deployed_bytes_before_any_mode():
+    source = SCRIPT.read_text()
+    assert "[Parameter(Mandatory=$true)][string]$RestorationScriptSha256" in source
+    assert "(Hash $PSCommandPath)-ne$RestorationScriptSha256" in source
+    assert "deployed restoration script hash mismatch" in source
+    assert source.index("deployed restoration script hash mismatch") < source.index("if($Mode-eq'preconditions')")
+
+
+def test_restoration_reopens_complete_after_receipt_and_binds_full_semantics():
+    source = SCRIPT.read_text()
+    for token in (
+        "policy_store_source-ne'PersistentStore'",
+        "policy_store_source_type-ne'Local'",
+        "Get-NetFirewallAddressFilter",
+        "Get-NetFirewallServiceFilter",
+        "Get-NetFirewallApplicationFilter",
+        "Get-NetFirewallPortFilter",
+        "Get-NetFirewallInterfaceFilter",
+        "Get-NetFirewallInterfaceTypeFilter",
+        "Get-NetFirewallSecurityFilter",
+        "before_unrelated_digest",
+        "after_unrelated_digest",
+        "restoration after receipt identity mismatch",
+        "restoration after receipt semantic mismatch",
+    ):
+        assert token in source
+    postflight = source.split("if($Mode-eq'postflight')", 1)[1]
+    assert "after.json" in postflight
+    assert "ConvertFrom-Json" in postflight
+    assert "Canonical $persistent" in postflight
+    assert "Canonical $after.persistent" in postflight
+
+
 def test_restoration_contract_is_exact_and_fail_closed():
     contract = packet()["tester_rule_contract"]
     assert contract["display_name"] == "MetaTrader 5 Strategy Tester Agent"

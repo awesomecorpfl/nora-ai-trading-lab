@@ -40,6 +40,15 @@ def test_detached_lifecycle_is_durable_and_ssh_independent():
     assert ".running$','.complete'" in WORKER
 
 
+def test_conflict_guard_treats_every_noncurrent_prepared_record_as_pending():
+    guard = RUNNER.split("function NoCampaignJob()", 1)[1].split("function RequireWorker", 1)[0]
+    assert "$currentJob=(Paths).job" in guard
+    assert "$job.state-eq'prepared'" in guard
+    assert "$jobId-ne$RunId" in guard
+    assert "[StringComparison]::OrdinalIgnoreCase" in guard
+    assert "conflicting unresolved prepared campaign job" in guard
+
+
 def test_persistent_orchestrator_uses_only_the_repository_runner_commands():
     for mode in ("harden-acl", "recover-acl", "prepare", "launch", "status", "retrieve", "package-persistent", "record-import"):
         assert f"$mode == {mode}" in ORCHESTRATOR

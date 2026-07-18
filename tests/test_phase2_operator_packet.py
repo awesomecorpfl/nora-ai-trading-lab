@@ -8,7 +8,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/evidence/phase2/frt1r2-operator-preparation/20260717T192223Z/packet.json"
 HELPER = ROOT / "phase-0a-h/windows/phase2-operator-state.ps1"
+QUALIFICATION_SCRIPT = ROOT / "phase-0a-h/windows/phase2-frt1r2-operator-qualification.ps1"
+RUNNER = ROOT / "phase-0a-h/windows/phase2-evidence-runner.ps1"
+RESTORATION_SCRIPT = ROOT / "phase-0a-h/windows/phase2-tester-rule-restoration.ps1"
 HARNESS = ROOT / "tests/windows/phase2_operator_state_harness.ps1"
+REPAIR_HARNESS = ROOT / "tests/windows/phase2_fail_closed_repair_harness.ps1"
 QUALIFICATION_ID = "frt1r2-live-20260717T192223Z"
 
 
@@ -40,6 +44,26 @@ def test_packet_is_fail_closed_and_uses_repository_state_reader():
     assert "tester rule must be disabled" in pre
     assert "qualification-specific containment state unresolved" in post
     assert "unrelated firewall mismatch" not in post or "unrelated_firewall_unchanged" in post
+
+
+def test_qualification_rejects_every_existing_identity_artifact_before_creating_root():
+    source = QUALIFICATION_SCRIPT.read_text()
+    collision_guard = "Get-ChildItem -LiteralPath $EvidenceBase -Force -ErrorAction Stop"
+    rejection = "NORA_QUALIFICATION_IDENTITY_REUSE_REJECTED"
+    create_root = "New-Item -ItemType Directory -Path $evidence -ErrorAction Stop"
+    assert collision_guard in source
+    assert "('*'+$QualificationId+'*')" in source
+    assert rejection in source
+    assert create_root in source
+    assert source.index(collision_guard) < source.index(rejection) < source.index(create_root)
+    assert "New-Item -ItemType Directory -Path $evidence -Force" not in source
+
+
+def test_repository_job_reader_rejects_every_partial_or_orphan_reconciliation_entry():
+    source = HELPER.read_text()
+    assert "Get-ChildItem -LiteralPath $reconRoot -Force -ErrorAction Stop" in source
+    assert "reconciliation partial or orphan entry" in source
+    assert "-notmatch '^[A-Za-z0-9][A-Za-z0-9._-]{2,127}\\.published$'" in source
 
 
 def test_repository_job_reader_contains_reconciliation_fail_closed_contract():
@@ -89,6 +113,7 @@ def test_windows_powershell_job_reconciliation_harness():
     powershell = shutil.which("powershell") or shutil.which("pwsh")
     if not powershell:
         pytest.skip("PowerShell 5.1 unavailable on this Linux host")
+    assert powershell is not None
     result = subprocess.run(
         [powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", str(HARNESS), "-HelperPath", str(HELPER)],
         cwd=ROOT, capture_output=True, text=True, check=False,
@@ -100,3 +125,30 @@ def test_windows_powershell_job_reconciliation_harness():
     assert '"legacy_nested_keys_values":"PASS"' in result.stdout
     assert '"unresolved_prepared":"FAIL_AS_EXPECTED"' in result.stdout
     assert '"contradictory_reconciliation":"FAIL_AS_EXPECTED"' in result.stdout
+    assert '"partial_reconciliation":"FAIL_AS_EXPECTED"' in result.stdout
+
+
+def test_windows_powershell_fail_closed_repair_harness():
+    powershell = shutil.which("powershell") or shutil.which("pwsh")
+    if not powershell:
+        pytest.skip("PowerShell 5.1 unavailable on this Linux host")
+    assert powershell is not None
+    result = subprocess.run(
+        [
+            powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+            "-File", str(REPAIR_HARNESS),
+            "-QualificationScript", str(QUALIFICATION_SCRIPT),
+            "-RunnerScript", str(RUNNER),
+            "-OperatorStateHelper", str(HELPER),
+            "-RestorationScript", str(RESTORATION_SCRIPT),
+        ],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert '"verdict":"PASS"' in result.stdout
+    assert '"burned_qualification_identity":"FAIL_AS_EXPECTED"' in result.stdout
+    assert '"competing_prepared_job":"FAIL_AS_EXPECTED"' in result.stdout
+    assert '"unrelated_firewall_digest":"PASS"' in result.stdout
+    assert '"restoration_self_hash":"FAIL_AS_EXPECTED"' in result.stdout
+    assert '"firewall_mutation_invoked":false' in result.stdout
+    assert '"mt5_invoked":false' in result.stdout

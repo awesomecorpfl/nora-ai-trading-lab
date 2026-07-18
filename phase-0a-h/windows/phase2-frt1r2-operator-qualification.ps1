@@ -13,7 +13,10 @@ function Hash([string]$Path){(Get-FileHash -LiteralPath $Path -Algorithm SHA256)
 function AtomicJson([string]$Path,$Value){if(Test-Path -LiteralPath $Path){throw 'immutable qualification artifact exists'};$tmp=$Path+'.partial.'+[guid]::NewGuid().ToString('N');$Value|ConvertTo-Json -Depth 20 -Compress|Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline;[IO.File]::Move($tmp,$Path)}
 foreach($path in @($containment,$helper,$verifier)){if(!(Test-Path -LiteralPath $path -PathType Leaf)){throw 'missing deployed qualification component'}}
 if(@(Get-Process terminal64,metatester64 -ErrorAction SilentlyContinue).Count){throw 'terminal_or_tester_exists_before_qualification'}
-$evidence=Join-Path $EvidenceBase ('qualification-'+$QualificationId);New-Item -ItemType Directory -Path $evidence -Force|Out-Null
+if(!(Test-Path -LiteralPath $EvidenceBase -PathType Container)){throw 'missing qualification evidence base'}
+$identityCollisions=@(Get-ChildItem -LiteralPath $EvidenceBase -Force -ErrorAction Stop|Where-Object{$_.Name -like ('*'+$QualificationId+'*')})
+if($identityCollisions.Count-ne0){throw 'NORA_QUALIFICATION_IDENTITY_REUSE_REJECTED'}
+$evidence=Join-Path $EvidenceBase ('qualification-'+$QualificationId);New-Item -ItemType Directory -Path $evidence -ErrorAction Stop|Out-Null
 $final=Join-Path $evidence ('containment-'+$QualificationId+'.json');$accepted=Join-Path $evidence ('containment-'+$QualificationId+'.transaction-accepted.json');$cleanup=Join-Path $evidence ('containment-'+$QualificationId+'-cleanup.json');$tokenRecord=Join-Path $evidence 'argument-tokens.json';$result=Join-Path $evidence 'qualification-result.json';$staged=$false
 try {
  & $containment -Action stage -CampaignId $QualificationId -EvidenceRoot $evidence|Out-Null;$staged=$true
