@@ -4,7 +4,7 @@
 
 The ten-strategy suite has two different native validation jobs. The embedded MT5 smoke canary validates compilation, EX5 loading, tester startup, EA lifecycle, and execution of synthetic embedded OHLC fixtures. It uses exact fixture reconciliation.
 
-This document defines the separate broker-native validation job. Its question is:
+This document defines the future finalist-stage broker-native validation job. It is intentionally not required for the current ten-strategy system-test fixtures. Its question is:
 
 > Does the strategy's edge survive the move to native MT5 and broker-native data despite legitimate differences from Python/Rust research?
 

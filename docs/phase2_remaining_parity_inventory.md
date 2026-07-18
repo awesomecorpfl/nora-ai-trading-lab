@@ -20,7 +20,7 @@ Phase 2N accepts the fixed 12-row slope canary with semantic identity `221f85942
 | Layer-1 indicator parity | partial | J/L/N accept the frozen condition, SMA3/cross, and slope canaries; all other primitives lack complete MQL5/native proof | Phase 2P ATR + Distance/ATR local generator contract |
 | Strategy/session/time/DST parity | accepted (narrow) | Fixed 18-scenario native clock/DST/session/anchoring canary; holiday calendars and universal production defaults remain unsupported | Preserve the accepted contract while advancing remaining Layer-1 and strategy gates |
 | Ten hand-designed strategies: embedded smoke | pending | Fresh native confirmation of compile/load/tester/EA lifecycle and embedded fixture execution | Run one bounded smoke package |
-| Ten hand-designed strategies: broker-native edge survival | blocked | No frozen broker-native data/timezone/cost/budget decision or similarity report | Freeze D1–D7 assumptions and run one native symbol tranche |
+| Ten hand-designed strategies: broker-native edge survival | deferred | These are system-test fixtures, not finalist strategies; no edge claim is intended here | Revisit only for a selected finalist with frozen native data/cost/budget decisions |
 | Repeated Linux semantic determinism | partial | Components replay deterministically, but no whole-experiment replay bundle | Add one complete replay fixture |
 | Placebo/scrambled edge destruction | blocked | No known-edge scramble fixture | Specify deterministic scramble and required edge-destruction measure |
 
@@ -47,4 +47,4 @@ Accepted Phase-2Q commits are `a73ed6912c8dc354c36a7475dfe595d622e66d01` (Phase 
 
 ## Remaining critical gates
 
-Time-rule parity is accepted narrowly. Phase 2 remains incomplete: remaining Layer-1 native parity, the embedded ten-strategy smoke, broker-native edge-survival validation, a complete deterministic Linux experiment replay, placebo/scrambled-data edge-destruction evidence, and D1–D7 similarity-budget decisions are still binding gaps. Search and Phase 3 remain explicitly closed.
+Time-rule parity is accepted narrowly. Phase 2 remains incomplete: remaining Layer-1 native parity, the embedded ten-strategy system smoke, a complete deterministic Linux experiment replay, placebo/scrambled-data edge-destruction evidence, and later finalist-stage broker-native edge validation remain separate gaps. Search and Phase 3 remain explicitly closed.

@@ -21,7 +21,7 @@ The remaining Layer-1 indicators are implemented in Rust where recorded by the s
 
 The embedded ten-strategy smoke canary is a narrow exact-reconciliation contract: it validates compile/load/tester/EA lifecycle and execution of synthetic fixtures. It must not be used as a broker-native performance verdict.
 
-The broker-native tranche is a separate similarity/edge-survival gate. It compares native MT5 metrics to Python/Rust references under declared broker data, timezone, spread, slippage, and cost assumptions using a pre-frozen budget map. Exact trade-ledger equality is not required across engines.
+The ten-strategy smoke canary is a system-validation fixture, not a claim that the hand-designed strategies have a meaningful edge. It validates compile/load/tester/EA lifecycle, embedded fixture execution, durable publication, and evidence integrity. Broker-native similarity and edge-survival tooling is retained for a later finalist-stage campaign, where strategy quality—not merely system health—will be the question.
 
 ## Binding gate matrix
 
@@ -31,7 +31,7 @@ The broker-native tranche is a separate similarity/edge-survival gate. It compar
 | Layer-1 indicator/transform coverage | PARTIAL | MACD and Percentile are now accepted narrowly; ATR/Distance-ATR, slope, SMA/cross, and condition evidence do not complete the all-Layer-1 gate | Reconcile remaining Layer-1 contracts and typed AST admission boundaries |
 | Declared strategy/session/broker clock; broker fixtures; DST spring/fall; Friday close; parameterized rollover/Monday/ORB; derived timeframe anchoring | ACCEPTED | Exact 18-scenario time-rule canary, four independent host-neutral packages | Holiday calendars and universal production window defaults remain unsupported |
 | Ten hand-designed strategies: embedded smoke execution health | PENDING | Corrected compiler evidence exists; fresh native smoke must confirm compile/load/tester/EA lifecycle and embedded fixture execution | One bounded smoke package |
-| Ten hand-designed strategies: broker-native edge survival | BLOCKED | No frozen broker-native cost/timezone/budget decision and no similarity report | Freeze D1–D7 assumptions and run one native symbol tranche |
+| Ten hand-designed strategies: broker-native edge survival | DEFERRED | These are system-test fixtures, not finalist strategies; no edge claim is intended here | Revisit only for a selected finalist with frozen native data/cost/budget decisions |
 | Repeated Linux experiment replay: trades, metrics, simulator outcomes, canonical hashes | PARTIAL | Component-level deterministic tests exist; no complete experiment replay bundle | One repeated experiment artifact binding all outputs and hashes |
 | Placebo/scrambled-data edge destruction | BLOCKED | No known-edge scramble fixture or destruction statistic | Define one deterministic scramble and expected edge-destruction measure |
 
@@ -47,4 +47,4 @@ Superseded identities cannot be selected as current: current package/source bind
 
 ## Next critical path
 
-Run one bounded embedded smoke package first. Separately resolve D1–D7 broker-native data/timezone/cost/budget decisions, then run one native symbol tranche and evaluate edge survival with `nora.phase2_broker_native_similarity_v1`. This remains before search and Phase 3.
+Run one bounded embedded smoke package first. Its acceptance question is system health, not strategy quality. Broker-native edge-survival work belongs to a later finalist-stage tranche with its own human decisions. This remains before search and Phase 3.
