@@ -1,0 +1,54 @@
+{
+  "schema_version": "nora.phase2_pi1_containment_evidence_manifest_v1",
+  "qualification_id": "pi1-containment-20260718T055000Z",
+  "classification": "REPAIR_VALIDATED_NON_ACCEPTANCE",
+  "accepted": false,
+  "repository_commit": "50aabe23dc5ba8ffdc2b95e95e2e949080c16acc",
+  "windows_evidence_root": "C:/NoraEvidence/Phase2/qualification-pi1-containment-20260718T055000Z",
+  "sealed_utc": "2026-07-18T05:50:00Z",
+  "native_execution_started": false,
+  "history_accessed": false,
+  "market_data_accessed": false,
+  "firewall_mutation_scope": "temporary exact-owner Nora containment rules only; cleanup PASS",
+  "artifacts": [
+    {
+      "path": "argument-tokens.json",
+      "bytes": 928,
+      "sha256": "b2c8c6e2102a7ea48fe8bfaa6f36e2fd230fe6af74bba90dba891c986bd20f74"
+    },
+    {
+      "path": "containment-pi1-containment-20260718T055000Z-cleanup.json",
+      "bytes": 764,
+      "sha256": "6859edf772a065848265fe1d83bcdb62e101645b468d0784c0aa8268c78b5a6a"
+    },
+    {
+      "path": "containment-pi1-containment-20260718T055000Z.intent.json",
+      "bytes": 1092,
+      "sha256": "51d0fd3aec0f80c0874a19c21c0f8d5ec125d77585b1fa541dabedf2ab86797d"
+    },
+    {
+      "path": "containment-pi1-containment-20260718T055000Z.json",
+      "bytes": 1939,
+      "sha256": "d705d3aa32a4843edc33f7c36d4b34802f68a52a11ca7d152bcea6c01cdfe17f"
+    },
+    {
+      "path": "containment-pi1-containment-20260718T055000Z.transaction-accepted.json",
+      "bytes": 1827,
+      "sha256": "97d2fd506253354e3a82c4827cba55cad7ea2406b606c2d2b83d8241dac43995"
+    },
+    {
+      "path": "independent-postflight.json",
+      "bytes": 795,
+      "sha256": "1ad7b14c51b2dd61df6b9a6bc621e1f7363a868df4b26c309669d436ccabe016"
+    },
+    {
+      "path": "qualification-result.json",
+      "bytes": 990,
+      "sha256": "87b742a6ce5ddb6b6fa105715adbf7d5e432b238f7d6c811aeaef0e0ce9918af"
+    }
+  ],
+  "limitations": [
+    "containment-only qualification; no native MT5 execution",
+    "not Phase-2 completion or native parity acceptance"
+  ]
+}

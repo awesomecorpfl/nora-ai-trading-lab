@@ -1,0 +1,42 @@
+{
+  "captured_utc": "2026-07-18T05:50:57.8529306Z",
+  "active": [
+    {
+      "enabled": "False",
+      "name": "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}"
+    }
+  ],
+  "persistent": [
+    {
+      "enabled": "False",
+      "name": "{AE6A1199-33B0-4109-B850-F1BB61AF0F6B}"
+    }
+  ],
+  "profiles": [
+    {
+      "name": "Domain",
+      "enabled": "True",
+      "default_inbound": "Block"
+    },
+    {
+      "name": "Private",
+      "enabled": "True",
+      "default_inbound": "Block"
+    },
+    {
+      "name": "Public",
+      "enabled": "True",
+      "default_inbound": "Block"
+    }
+  ],
+  "nora_rule_count": 0,
+  "terminal_tester_process_count": 0,
+  "ssh": [
+    {
+      "name": "OpenSSH-Server-In-TCP",
+      "enabled": "True",
+      "direction": "Inbound",
+      "action": "Allow"
+    }
+  ]
+}
