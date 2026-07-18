@@ -1,0 +1,178 @@
+"""Strict intake for StrategyQuantX broker/symbol exports.
+
+The legacy export is treated as observed source material. Conflicting derived
+values are retained under ``source_values`` and surfaced as warnings rather
+than silently reconciled.
+"""
+from __future__ import annotations
+
+import csv
+import hashlib
+import math
+import xml.etree.ElementTree as ET
+from pathlib import Path
+from typing import Any
+
+from lab.core import canon
+
+SCHEMA = "nora.broker_profile_v1"
+CSV_COLUMNS = {
+    "symbol": 0, "description": 1, "instrument_type": 2, "exchange": 3,
+    "country": 4, "sector": 5, "execution_type": 6, "trading_conditions": 7,
+    "last_bid": 9, "pip_size": 13, "trade_tick_size": 14, "min_volume": 19,
+    "max_volume": 20, "volume_step": 21, "leverage": 25,
+    "margin_requirement": 26, "margin_call": 29, "stop_out": 30,
+    "spread_pips": 31, "slippage_pips": 34, "commission_type": 37,
+    "commission_value": 38, "stops_level_pips": 40, "freeze_level_pips": 43,
+    "max_pending_orders": 46, "swap_type": 47, "swap_long": 48,
+    "swap_short": 51, "triple_swap_day": 54, "sessions": 55, "digits": 56,
+    "contract_size": 57, "point_value": 58,
+}
+
+
+def _sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _float(row: list[str], index: int, field: str) -> float:
+    try:
+        value = float(row[index].replace("_", ""))
+    except (IndexError, ValueError) as exc:
+        raise ValueError(f"invalid {field}") from exc
+    if not math.isfinite(value):
+        raise ValueError(f"non-finite {field}")
+    return value
+
+
+def _text(row: list[str], index: int) -> str:
+    try:
+        return row[index].strip()
+    except IndexError as exc:
+        raise ValueError(f"missing CSV column {index}") from exc
+
+
+def _safe_xml_root(path: Path) -> ET.Element:
+    """Parse the fixed export grammar after rejecting entity/doctype constructs.
+
+    StrategyQuantX exports are simple local XML files; external entities and
+    DTDs are not part of the accepted grammar and are rejected fail-closed.
+    """
+    raw = path.read_bytes()
+    upper = raw.upper()
+    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper or b"SYSTEM" in upper:
+        raise ValueError(f"unsafe XML construct in {path.name}")
+    return ET.fromstring(raw)
+
+
+def _session_map(path: Path) -> dict[str, dict[str, Any]]:
+    root = _safe_xml_root(path)
+    result: dict[str, dict[str, Any]] = {}
+    for session in root.findall("Session"):
+        name = session.attrib["name"]
+        elements = [dict(item.attrib) for item in session.findall("Element")]
+        result[name] = {"name": name, "elements": elements}
+    return result
+
+
+def _xml_map(path: Path) -> dict[str, dict[str, str]]:
+    root = _safe_xml_root(path)
+    return {item.attrib["instrument"]: dict(item.attrib) for item in root.findall("InstrumentInfo")}
+
+
+def _find_session(symbol: str, sessions: dict[str, dict[str, Any]]) -> str | None:
+    matches = [name for name in sessions if symbol in name]
+    if len(matches) > 1:
+        raise ValueError(f"ambiguous session mapping for {symbol}")
+    return matches[0] if matches else None
+
+
+def load_strategyquantx_export(root: str | Path) -> dict[str, Any]:
+    root = Path(root)
+    csv_path = root / "sample.csv"
+    sessions_path = root / "Sessions.xml"
+    xml_path = root / "updated_instrument_information.xml"
+    for path in (csv_path, sessions_path, xml_path):
+        if not path.is_file():
+            raise ValueError(f"missing export file: {path.name}")
+
+    with csv_path.open(newline="", encoding="utf-8-sig") as handle:
+        rows = list(csv.reader(handle))
+    if len(rows) < 2 or len(rows[0]) != 59:
+        raise ValueError("unsupported StrategyQuantX CSV layout")
+    if any(len(row) != len(rows[0]) for row in rows[1:]):
+        raise ValueError("ragged StrategyQuantX CSV")
+
+    sessions = _session_map(sessions_path)
+    xml_rows = _xml_map(xml_path)
+    symbols: list[dict[str, Any]] = []
+    warnings: list[dict[str, str]] = []
+    for row in rows[1:]:
+        symbol = _text(row, CSV_COLUMNS["symbol"])
+        if not symbol or symbol in {item["symbol"] for item in symbols}:
+            raise ValueError(f"duplicate or empty symbol: {symbol!r}")
+        if symbol not in xml_rows:
+            raise ValueError(f"CSV/XML symbol mismatch: {symbol}")
+        x = xml_rows[symbol]
+        digits = int(_float(row, CSV_COLUMNS["digits"], "digits"))
+        csv_point_value = _float(row, CSV_COLUMNS["point_value"], "point_value")
+        xml_point_value = float(x["pointValue"])
+        if not math.isclose(csv_point_value, xml_point_value, rel_tol=0.0, abs_tol=1e-12):
+            warnings.append({"code": "SOURCE_VALUE_CONFLICT", "symbol": symbol, "field": "point_value"})
+        session_name = _find_session(symbol, sessions)
+        if session_name is None:
+            warnings.append({"code": "MISSING_SESSION_MAPPING", "symbol": symbol, "field": "sessions"})
+        source_csv = {name: _text(row, index) for name, index in CSV_COLUMNS.items()}
+        source_xml = x
+        symbols.append({
+            "symbol": symbol,
+            "source_values": {"csv": source_csv, "instrument_xml": source_xml},
+            "identity": {
+                "canonical_symbol": symbol,
+                "broker_symbol": symbol,
+                "instrument_type": _text(row, CSV_COLUMNS["instrument_type"]) or None,
+                "sector": _text(row, CSV_COLUMNS["sector"]) or None,
+            },
+            "price": {
+                "digits": digits,
+                "point_size_derived": 10.0 ** -digits,
+                "pip_size_observed": _float(row, CSV_COLUMNS["pip_size"], "pip_size"),
+                "trade_tick_size_observed": _float(row, CSV_COLUMNS["trade_tick_size"], "trade_tick_size"),
+                "last_bid_observed": _float(row, CSV_COLUMNS["last_bid"], "last_bid"),
+            },
+            "contract": {
+                "contract_size_observed": _float(row, CSV_COLUMNS["contract_size"], "contract_size"),
+                "volume_min_observed": _float(row, CSV_COLUMNS["min_volume"], "min_volume"),
+                "volume_max_observed": _float(row, CSV_COLUMNS["max_volume"], "max_volume"),
+                "volume_step_observed": _float(row, CSV_COLUMNS["volume_step"], "volume_step"),
+            },
+            "execution": {
+                "execution_type": _text(row, CSV_COLUMNS["execution_type"]),
+                "trading_conditions": _text(row, CSV_COLUMNS["trading_conditions"]),
+                "stops_level_pips_observed": _float(row, CSV_COLUMNS["stops_level_pips"], "stops_level_pips"),
+                "freeze_level_pips_observed": _float(row, CSV_COLUMNS["freeze_level_pips"], "freeze_level_pips"),
+            },
+            "costs": {
+                "spread_pips_observed": _float(row, CSV_COLUMNS["spread_pips"], "spread_pips"),
+                "slippage_pips_observed": _float(row, CSV_COLUMNS["slippage_pips"], "slippage_pips"),
+                "commission_type_observed": _text(row, CSV_COLUMNS["commission_type"]),
+                "commission_value_observed": _float(row, CSV_COLUMNS["commission_value"], "commission_value"),
+                "swap_type_observed": _text(row, CSV_COLUMNS["swap_type"]),
+                "swap_long_observed": _float(row, CSV_COLUMNS["swap_long"], "swap_long"),
+                "swap_short_observed": _float(row, CSV_COLUMNS["swap_short"], "swap_short"),
+                "triple_swap_day_observed": _text(row, CSV_COLUMNS["triple_swap_day"]),
+            },
+            "session_name": session_name,
+        })
+
+    if set(xml_rows) != {item["symbol"] for item in symbols}:
+        raise ValueError("CSV/XML instrument sets differ")
+    files = [{"path": path.name, "sha256": _sha(path), "bytes": path.stat().st_size} for path in (csv_path, sessions_path, xml_path)]
+    value = {
+        "schema_version": SCHEMA,
+        "provenance": {"format": "StrategyQuantX_export", "files": files, "raw_preserved": True},
+        "symbols": symbols,
+        "sessions": sessions,
+        "warnings": warnings,
+    }
+    value["profile_identity"] = hashlib.sha256(canon(value).encode()).hexdigest()
+    return value

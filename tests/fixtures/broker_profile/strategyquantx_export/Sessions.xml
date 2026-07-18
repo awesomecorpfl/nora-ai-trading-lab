@@ -1,0 +1,38 @@
+<Sessions>
+  <Session name="FX_Currency1_EURJPY_GBPJPY_USDJPY_EURUSD_GBPUSD">
+    <Element dayFrom="Mon" dayTo="Mon" timeFrom="00:05" timeTo="00:00" eod="true" />
+    <Element dayFrom="Tue" dayTo="Tue" timeFrom="00:04" timeTo="00:00" eod="true" />
+    <Element dayFrom="Wed" dayTo="Wed" timeFrom="00:04" timeTo="00:00" eod="true" />
+    <Element dayFrom="Thu" dayTo="Thu" timeFrom="00:04" timeTo="00:00" eod="true" />
+    <Element dayFrom="Fri" dayTo="Fri" timeFrom="00:04" timeTo="23:55" eod="true" />
+  </Session>
+  <Session name="Index1_GDAXI">
+    <Element dayFrom="Mon" dayTo="Mon" timeFrom="03:30" timeTo="22:59" eod="true" />
+    <Element dayFrom="Tue" dayTo="Tue" timeFrom="03:30" timeTo="22:59" eod="true" />
+    <Element dayFrom="Wed" dayTo="Wed" timeFrom="03:30" timeTo="22:59" eod="true" />
+    <Element dayFrom="Thu" dayTo="Thu" timeFrom="03:30" timeTo="22:59" eod="true" />
+    <Element dayFrom="Fri" dayTo="Fri" timeFrom="03:30" timeTo="22:59" eod="true" />
+  </Session>
+  <Session name="Index1_NDX_SP500">
+    <Element dayFrom="Mon" dayTo="Mon" timeFrom="01:00" timeTo="00:00" eod="true" />
+    <Element dayFrom="Tue" dayTo="Tue" timeFrom="01:00" timeTo="00:00" eod="true" />
+    <Element dayFrom="Wed" dayTo="Wed" timeFrom="01:00" timeTo="00:00" eod="true" />
+    <Element dayFrom="Thu" dayTo="Thu" timeFrom="01:00" timeTo="00:00" eod="true" />
+    <Element dayFrom="Fri" dayTo="Fri" timeFrom="01:00" timeTo="23:55" eod="true" />
+  </Session>
+  <Session name="Stocks_USA_Financial1_IVE">
+    <Element dayFrom="Mon" dayTo="Mon" timeFrom="16:32" timeTo="22:59" eod="true" />
+    <Element dayFrom="Tue" dayTo="Tue" timeFrom="16:32" timeTo="22:59" eod="true" />
+    <Element dayFrom="Wed" dayTo="Wed" timeFrom="16:32" timeTo="22:59" eod="true" />
+    <Element dayFrom="Thu" dayTo="Thu" timeFrom="16:32" timeTo="22:59" eod="true" />
+    <Element dayFrom="Fri" dayTo="Fri" timeFrom="16:32" timeTo="22:59" eod="true" />
+  </Session>
+  <Session name="CFD_Commodities1_XAUUSD">
+    <Element dayFrom="Mon" dayTo="Mon" timeFrom="01:01" timeTo="23:59" eod="true" />
+    <Element dayFrom="Tue" dayTo="Tue" timeFrom="01:01" timeTo="23:59" eod="true" />
+    <Element dayFrom="Wed" dayTo="Wed" timeFrom="01:01" timeTo="23:59" eod="true" />
+    <Element dayFrom="Thu" dayTo="Thu" timeFrom="01:01" timeTo="23:59" eod="true" />
+    <Element dayFrom="Fri" dayTo="Fri" timeFrom="01:01" timeTo="23:55" eod="true" />
+  </Session>
+</Sessions>
+
