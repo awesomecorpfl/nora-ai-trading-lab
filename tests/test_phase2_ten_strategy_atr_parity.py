@@ -185,7 +185,15 @@ def test_helper_wilder_matches_real_rust_engine_for_all_strategies():
 
 
 def test_helper_ema_matches_accepted_native_csv_for_all_strategies():
-    # The defective EMA-ATR is exactly what the preserved native CSV encodes.
+    # The defective EMA-ATR comparison requires the historical raw native CSV.
+    # That artifact lived under pre-reboot /tmp and is not present in the
+    # committed evidence packages. Do not fabricate or substitute a manifest:
+    # skip explicitly until an authorized rerun produces durable raw evidence.
+    if not NATIVE_CSV.is_file():
+        pytest.skip(
+            "historical raw ten-strategy native CSV is absent; "
+            "authorized durable native rerun required for EMA comparison"
+        )
     real = _native_real()
     for ident in ORDER:
         got = [(t["signal_index"], t["exit_index"], t["exit_reason"]) for t in simulate(ident, "ema")["trades"]]
