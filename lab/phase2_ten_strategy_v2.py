@@ -154,6 +154,8 @@ def native_execution_contract() -> dict:
         _role("firewall_campaign_owner", "phase-0a-h/windows/phase2-firewall-campaign.ps1", "nora.phase2_firewall_campaign_v1"),
         _role("firewall_campaign_fedora_verifier", "lab/phase2_firewall_campaign.py", "nora.phase2_firewall_campaign_verifier_v1"),
         _role("mt5_network_containment", "phase-0a-h/windows/phase2-network-containment.ps1", "nora.phase2_mt5_network_containment_v1"),
+        _role("mt5_network_containment_fresh_verifier", "phase-0a-h/windows/phase2-network-containment-fresh-verify.ps1", "nora.phase2_mt5_network_containment_fresh_verifier_v1"),
+        _role("mt5_fresh_verifier_arguments", "phase-0a-h/windows/phase2-fresh-verifier-arguments.ps1", "nora.phase2_fresh_verifier_arguments_v1"),
         _role("mt5_cache_inventory", "phase-0a-h/windows/phase2-cache-inventory.ps1", "nora.phase2_mt5_cache_inventory_v2"),
         _role("mt5_server_scope_resolver", "phase-0a-h/windows/resolve-phase2-mt5-server-scope.ps1", "nora.phase2_mt5_server_scoped_cache_v2"),
         _role("mt5_cache_probe_worker", "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps1", "nora.phase2_offline_cache_preflight_v2"),

@@ -111,6 +111,8 @@ NATIVE_EXECUTION_REQUIRED_ROLES = (
     "firewall_campaign_owner",
     "firewall_campaign_fedora_verifier",
     "mt5_network_containment",
+    "mt5_network_containment_fresh_verifier",
+    "mt5_fresh_verifier_arguments",
     "mt5_cache_inventory",
     "mt5_server_scope_resolver",
     "mt5_cache_probe_worker",
