@@ -1585,21 +1585,22 @@
       },
       "native": {
         "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
+          "tests/fixtures/phase2r_mql5_condition_native/compile/compile_manifest.json"
         ],
         "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
+          "tests/fixtures/phase2r_mql5_condition_native/run1/execution_manifest.json",
+          "tests/fixtures/phase2r_mql5_condition_native/run2/execution_manifest.json"
         ]
       },
       "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
       "evidence_paths": [
-        "tests/fixtures/phase2j_mql5_condition_tester/NoraPhase2ConditionTesterCanaryV1.manifest.json"
+        "tests/fixtures/phase2r_mql5_condition_native/native_evidence_manifest.json"
       ],
       "commits": [
-        "b1791fe5601a585e0975bb72c25f31be84807fcc"
+        "c37f0edfc4218e00850550f3670f86c545d84877"
       ],
       "searchable": false,
-      "missing_gate": "commit raw compile/run evidence or rerun under durable evidence contract"
+      "missing_gate": "complete Phase-2 admission gate"
     },
     {
       "id": "canary.sma_cross_native",
