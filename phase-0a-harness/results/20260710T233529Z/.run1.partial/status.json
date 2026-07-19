@@ -1,0 +1,11 @@
+﻿{
+    "run_id":  "run1",
+    "status":  "completed",
+    "started_utc":  "2026-07-11T02:35:29.2517053Z",
+    "terminal":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe",
+    "build":  "5.0.0.5836",
+    "ea_sha256":  "DDCC401D64F75ED41364D752FD1813581390E1EECD40410FAD7D7B3120FBF41C",
+    "config_sha256":  "653349C0900A190873F341450AC1905DC731161D35D2BBE930372C9D48D331DD",
+    "exit_code":  0,
+    "completed_utc":  "2026-07-11T02:37:03.3493476Z"
+}
