@@ -1876,18 +1876,19 @@
       "id": "determinism.linux_replay",
       "category": "deterministic_replay_case",
       "name": "full Linux experiment semantic replay",
-      "status": "partially_proven",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
+          "lab/phase2_linux_replay.py",
           "engine/labengine/src/ast.rs",
           "engine/labengine/src/simulator.rs",
           "engine/labengine/src/rng_stream.rs"
         ],
         "identity": null,
         "tests": [
-          "tests/test_phase1.py",
-          "tests/test_phase2e_rng.py"
+          "tests/test_phase2_linux_replay.py",
+          "tests/test_phase2t_linux_replay_acceptance.py"
         ]
       },
       "mql5": {
@@ -1898,15 +1899,17 @@
         "compile_evidence_paths": [],
         "execution_evidence_paths": []
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "c1bbff436e18344e258c51f6c239275fc60ba5b21baf51020d71616229cce889",
       "evidence_paths": [
-        "docs/phase2e_deterministic_rng_streams.md"
+        "tests/fixtures/phase2_linux_replay_fixture.json",
+        "tests/fixtures/phase2_linux_replay_m1.parquet",
+        "lab/phase2_linux_replay.py"
       ],
       "commits": [
-        "df058c0a3b0bae9918b53c1c44087714a158a293"
+        "33cc9e67fd0e264bb0a13cf0cad6128af24aca71"
       ],
       "searchable": false,
-      "missing_gate": "one complete experiment replay fixture binding trades, metrics, simulator, and content hashes"
+      "missing_gate": "complete Phase-2 admission gate"
     },
     {
       "id": "integrity.placebo_scrambled_edge",
@@ -2006,8 +2009,8 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-      "accepted": 25,
-      "partially_proven": 9,
+      "accepted": 26,
+      "partially_proven": 8,
       "implemented_but_unproved": 15,
       "absent": 1,
       "deferred": 1,
