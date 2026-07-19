@@ -1,0 +1,14 @@
+record_type,row_index,actual_sma,expected_sma,actual_cross_above,expected_cross_above,actual_cross_below,expected_cross_below,actual_nullable,expected_nullable,actual_trigger,expected_trigger,row_pass,row_count,passed_rows,failed_rows,overall_pass
+row,0,null,null,null,null,null,null,null,null,false,false,true,,,,
+row,1,null,null,null,null,null,null,null,null,false,false,true,,,,
+row,2,1.1006000000000000,1.1006000000000000,null,null,null,null,false,false,false,false,true,,,,
+row,3,1.1009333333333335,1.1009333333333335,true,true,true,true,true,true,true,true,true,,,,
+row,4,1.1009666666666667,1.1009666666666667,false,false,false,false,true,true,true,true,true,,,,
+row,5,1.1013333333333335,1.1013333333333335,false,false,false,false,true,true,true,true,true,,,,
+row,6,1.1013666666666666,1.1013666666666666,false,false,false,false,true,true,true,true,true,,,,
+row,7,1.1017333333333335,1.1017333333333335,false,false,false,false,true,true,true,true,true,,,,
+row,8,1.1017666666666666,1.1017666666666666,false,false,false,false,true,true,true,true,true,,,,
+row,9,1.1021333333333334,1.1021333333333334,false,false,false,false,true,true,true,true,true,,,,
+row,10,1.1021666666666665,1.1021666666666665,false,false,false,false,true,true,true,true,true,,,,
+row,11,1.1025333333333334,1.1025333333333334,false,false,false,false,true,true,true,true,true,,,,
+summary,-1,,,,,,,,,,,true,12,12,0,true

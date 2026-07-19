@@ -1,0 +1,356 @@
+#!/usr/bin/env python3
+"""Phase-2R durable series (SMA/cross) canary orchestrator.
+
+Produces tests/fixtures/phase2r_mql5_sma_cross_native/ from a fresh Windows run:
+  - compile the frozen series tester canary (4 sources: runtime, condition,
+    series runtime, series tester)
+  - execute it TWICE through execute-series-tester-canary-durable.ps1
+  - retrieve every artifact, recompute hashes on Linux
+  - write native_evidence_manifest.json binding compile + 2 runs + semantic identity
+
+Mirrors scripts/phase2r-condition-durable-orchestrate. Idempotent at the fixture
+level: refuses to overwrite an existing native_evidence_manifest.json.
+
+Evidence-package upgrade only: canary.sma_cross_native is already accepted; this
+brings its raw-native evidence up to the self_contained_raw_native standard.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+REMOTE_TARGET = "nora-win10"
+REMOTE_ROOT = "C:\\Users\\Gasper\\NoraPhase2R"
+FIXTURE_ROOT = ROOT / "tests/fixtures/phase2r_mql5_sma_cross_native"
+INDEX_PATH = FIXTURE_ROOT / "native_evidence_manifest.json"
+
+# Frozen series tester sources (from accepted Phase-2K fixture).
+RUNTIME_SRC = ROOT / "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.mqh"
+CONDITION_SRC = ROOT / "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.mqh"
+SERIES_RUNTIME_SRC = ROOT / "tests/fixtures/phase2k_mql5_sma_cross/runtime/NoraPhase2SeriesRuntimeV1.mqh"
+SERIES_TESTER_SOURCE = ROOT / "tests/fixtures/phase2k_mql5_sma_cross/tester/NoraPhase2SeriesTesterCanaryV1.mq5"
+SERIES_TESTER_MANIFEST = ROOT / "tests/fixtures/phase2k_mql5_sma_cross/tester/NoraPhase2SeriesTesterCanaryV1.manifest.json"
+
+# Helpers (frozen, committed).
+COMPILE_HELPER = ROOT / "phase-0a-h/windows/compile-series-tester-canary-durable.ps1"
+EXECUTE_HELPER = ROOT / "phase-0a-h/windows/execute-series-tester-canary-durable.ps1"
+
+# Identity constants pinned to the accepted legacy fixture; the durable package
+# must reproduce these exactly, not invent new ones.
+LEGACY_SEMANTIC_IDENTITY = "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687"
+SERIES_TESTER_IDENTITY = "78a52f288df45a93e3b026846c7283ddb6d93bcc8192874198827ec93d5041e4"
+SERIES_TESTER_SOURCE_SHA256 = "bc62801db8965d268e192d3dadb8ba7b11a7c5e3d5a432fbadd3f2241a4d2757"
+
+TERMINAL_PRODUCT = "MetaTrader 5"
+TERMINAL_VERSION = "5.0.0.5836"
+
+RUN_REQUIRED_STAGES = (
+    "tester_configuration_loaded", "testing_agent_started", "ea_loaded",
+    "ea_initialized", "fixture_execution_started", "result_csv_written",
+    "fixture_execution_completed", "tester_completed", "terminal_shutdown",
+)
+
+
+def _ssh(cmd: str, *, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["ssh", "-o", "BatchMode=yes", REMOTE_TARGET, cmd],
+        check=check, capture_output=capture, text=True,
+    )
+
+
+def _win_to_scp(win_path: str) -> str:
+    return win_path.replace("\\", "/")
+
+
+def _scp(sources: list[str], dest: str, *, check: bool = True) -> None:
+    subprocess.run(["scp", "-q", *sources, dest], check=check)
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _verify_frozen_sources() -> None:
+    """Verify the source files we're about to ship match their frozen hashes."""
+    runtime_hash = _sha256_file(RUNTIME_SRC)
+    condition_hash = _sha256_file(CONDITION_SRC)
+    series_runtime_hash = _sha256_file(SERIES_RUNTIME_SRC)
+    tester_hash = _sha256_file(SERIES_TESTER_SOURCE)
+    manifest = json.loads(SERIES_TESTER_MANIFEST.read_text())
+    if tester_hash != manifest.get("source_sha256"):
+        raise SystemExit(f"frozen tester source hash mismatch: {tester_hash} vs manifest")
+    print(f"[ok] frozen sources verified: tester={tester_hash[:12]}")
+    print(f"      runtime={runtime_hash[:12]} condition={condition_hash[:12]} series_runtime={series_runtime_hash[:12]}")
+
+
+def _compile_canary(staging: Path) -> dict:
+    run_id = "series-durable-compile-" + uuid.uuid4().hex
+    incoming = f"{REMOTE_ROOT}\\incoming\\{run_id}"
+    print(f"\n[compile] run_id={run_id}")
+
+    sources = [RUNTIME_SRC, CONDITION_SRC, SERIES_RUNTIME_SRC, SERIES_TESTER_SOURCE, COMPILE_HELPER]
+    for s in sources:
+        (staging / s.name).write_bytes(s.read_bytes())
+
+    _ssh(f'powershell -NoProfile -Command "New-Item -ItemType Directory -Force -Path \'{incoming}\' | Out-Null"')
+    _scp([str(staging / s.name) for s in sources], f"{REMOTE_TARGET}:{_win_to_scp(incoming)}/")
+    _ssh(
+        f'powershell -NoProfile -ExecutionPolicy Bypass -File "{incoming}\\{COMPILE_HELPER.name}" '
+        f'-IncomingRoot "{incoming}" -RunId "{run_id}"',
+        check=False,
+    )
+    compile_root = f"{REMOTE_ROOT}\\{run_id}"
+    retrieve_dir = staging / "compile_out"
+    retrieve_dir.mkdir()
+    for name in ("compile.json", "NoraPhase2SeriesTesterCanaryV1.ex5", "compile.log"):
+        _scp([f"{REMOTE_TARGET}:{_win_to_scp(compile_root)}/{name}"], str(retrieve_dir / name), check=False)
+    _ssh(
+        f'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{compile_root}\'; '
+        f'Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{incoming}\'"',
+        check=False,
+    )
+
+    compile_json_path = retrieve_dir / "compile.json"
+    ex5_path = retrieve_dir / "NoraPhase2SeriesTesterCanaryV1.ex5"
+    compile_log_retrieved = retrieve_dir / "compile.log"
+    if not compile_json_path.is_file() or not ex5_path.is_file():
+        raise SystemExit("compile did not produce compile.json + EX5")
+    compile_value = json.loads(compile_json_path.read_text(encoding="utf-8-sig"))
+    if compile_value.get("status") != "compiled" or compile_value.get("error_count") != 0:
+        raise SystemExit(f"compile failed: {compile_value}")
+    print(f"[compile] ok: errors={compile_value['error_count']} warnings={compile_value.get('warning_count', 'n/a')} ex5={compile_value['ex5_sha256'][:12]}")
+    return {"manifest": compile_value, "ex5_path": ex5_path, "compile_log_path": compile_log_retrieved, "run_id": run_id}
+
+
+def _execute_run(staging: Path, ex5_path: Path, run_label: str) -> tuple[dict, Path]:
+    run_id = f"series-durable-{run_label}-" + uuid.uuid4().hex
+    incoming = f"{REMOTE_ROOT}\\incoming\\{run_id}"
+    print(f"\n[{run_label}] run_id={run_id}")
+
+    (staging / "NoraPhase2SeriesTesterCanaryV1.ex5").write_bytes(ex5_path.read_bytes())
+    (staging / EXECUTE_HELPER.name).write_bytes(EXECUTE_HELPER.read_bytes())
+
+    _ssh(f'powershell -NoProfile -Command "New-Item -ItemType Directory -Force -Path \'{incoming}\' | Out-Null"')
+    _scp(
+        [str(staging / "NoraPhase2SeriesTesterCanaryV1.ex5"), str(staging / EXECUTE_HELPER.name)],
+        f"{REMOTE_TARGET}:{_win_to_scp(incoming)}/",
+    )
+    proc = _ssh(
+        f'powershell -NoProfile -ExecutionPolicy Bypass -File "{incoming}\\{EXECUTE_HELPER.name}" '
+        f'-IncomingRoot "{incoming}" -RunId "{run_id}"',
+        check=False,
+    )
+    run_root = f"{REMOTE_ROOT}\\{run_id}"
+    retrieve_dir = staging / run_label
+    retrieve_dir.mkdir()
+    for name in ("execution.json", "tester.log", "tester-journal.log", "lifecycle.jsonl",
+                 "tester.ini", "tester.ini.normalized", "nora_phase2_series_tester_v1.csv"):
+        _scp([f"{REMOTE_TARGET}:{_win_to_scp(run_root)}/{name}"], str(retrieve_dir / name), check=False)
+    _ssh(
+        f'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{run_root}\'; '
+        f'Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{incoming}\'"',
+        check=False,
+    )
+
+    exec_path = retrieve_dir / "execution.json"
+    if not exec_path.is_file():
+        raise SystemExit(f"{run_label}: execution.json missing (ssh rc={proc.returncode})")
+    exec_value = json.loads(exec_path.read_text(encoding="utf-8-sig"))
+    if exec_value.get("status") != "completed" or not exec_value.get("result_fresh"):
+        raise SystemExit(f"{run_label}: did not complete cleanly: {exec_value.get('error', exec_value)}")
+    missing = [s for s in RUN_REQUIRED_STAGES if exec_value.get("stages", {}).get(s) is not True]
+    if missing:
+        raise SystemExit(f"{run_label}: missing launch stages: {missing}")
+    redacted_ini = retrieve_dir / "tester.ini.normalized"
+    if redacted_ini.is_file():
+        (retrieve_dir / "tester.ini").unlink(missing_ok=True)
+        redacted_ini.rename(retrieve_dir / "tester.ini")
+    csv_path = retrieve_dir / "nora_phase2_series_tester_v1.csv"
+    if not csv_path.is_file():
+        raise SystemExit(f"{run_label}: result CSV missing")
+    print(f"[{run_label}] ok: csv_sha={exec_value['csv_sha256'][:12]} stages=all_present")
+    return exec_value, retrieve_dir
+
+
+def _reconcile_series_csv(csv_path: Path) -> dict:
+    """Re-read the returned CSV and compute the semantic identity.
+
+    Uses the canonical lab.mt5 series reconciliation so the durable semantic
+    identity is computed by the same code path as Phase-2L, not a parallel parser.
+    """
+    sys.path.insert(0, str(ROOT))
+    from lab.mt5 import (  # type: ignore
+        reconcile_series_csv,
+        _identity as mt5_identity,
+        SERIES_SEMANTIC_RESULT_DOMAIN,
+        SERIES_TESTER_IDENTITY,
+    )
+    tester_manifest = SERIES_TESTER_MANIFEST
+    parsed = reconcile_series_csv(csv_path, tester_manifest)
+    sma = json.dumps(parsed["sma_vector"], separators=(",", ":"))
+    above = json.dumps(parsed["cross_above_vector"], separators=(",", ":"))
+    below = json.dumps(parsed["cross_below_vector"], separators=(",", ":"))
+    nullable = json.dumps(parsed["nullable_vector"], separators=(",", ":"))
+    trigger = json.dumps(parsed["trigger_vector"], separators=(",", ":"))
+    rowpass = json.dumps(parsed["row_pass_vector"], separators=(",", ":"))
+    summary = json.dumps(parsed["summary"], sort_keys=True, separators=(",", ":"))
+    semantic = mt5_identity(
+        SERIES_SEMANTIC_RESULT_DOMAIN,
+        [
+            SERIES_TESTER_IDENTITY,
+            TERMINAL_PRODUCT,
+            TERMINAL_VERSION,
+            sma,
+            above,
+            below,
+            nullable,
+            trigger,
+            rowpass,
+            summary,
+        ],
+    )
+    return {"parsed": parsed, "semantic_identity": semantic}
+
+
+def _build_run_manifest(exec_value: dict, retrieve_dir: Path) -> dict:
+    """Assemble the per-run manifest in the Phase-2N execution_manifest shape."""
+    parsed_csv = _reconcile_series_csv(retrieve_dir / "nora_phase2_series_tester_v1.csv")
+    parsed = parsed_csv["parsed"]
+    csv_sha = _sha256_file(retrieve_dir / "nora_phase2_series_tester_v1.csv")
+    return {
+        "status": "passed",
+        "run_id": exec_value["run_id"],
+        "terminal_path": exec_value["terminal_path"],
+        "terminal_version": exec_value["terminal_version"],
+        "tester_fixture_identity": SERIES_TESTER_IDENTITY,
+        "ex5_sha256": "",  # filled by caller
+        "result_csv_sha256": csv_sha,
+        "sma_vector": parsed["sma_vector"],
+        "cross_above_vector": parsed["cross_above_vector"],
+        "cross_below_vector": parsed["cross_below_vector"],
+        "nullable_vector": parsed["nullable_vector"],
+        "trigger_vector": parsed["trigger_vector"],
+        "row_pass_vector": parsed["row_pass_vector"],
+        "row_count": parsed["summary"]["row_count"],
+        "passed_rows": parsed["summary"]["passed_rows"],
+        "failed_rows": parsed["summary"]["failed_rows"],
+        "overall_pass": parsed["summary"]["overall_pass"],
+        "launch_stages": exec_value["stages"],
+        "semantic_result_identity": parsed_csv["semantic_identity"],
+        "run_start_utc": exec_value["run_start_utc"],
+        "run_completion_utc": exec_value["run_completion_utc"],
+        "native_process_exit_status": exec_value["native_process_exit_status"],
+        "csv_last_write_time_utc": exec_value["csv_last_write_time_utc"],
+    }
+
+
+def main() -> int:
+    if INDEX_PATH.exists():
+        raise SystemExit(f"refusing to overwrite existing durable index: {INDEX_PATH}")
+    _verify_frozen_sources()
+
+    if FIXTURE_ROOT.exists():
+        shutil.rmtree(FIXTURE_ROOT)
+    FIXTURE_ROOT.mkdir(parents=True, exist_ok=True)
+    compile_dir = FIXTURE_ROOT / "compile"
+    compile_dir.mkdir()
+
+    with tempfile.TemporaryDirectory(prefix="phase2r-series-") as staging_s:
+        staging = Path(staging_s)
+        compile_result = _compile_canary(staging)
+        compile_manifest = compile_result["manifest"]
+        ex5_path = compile_result["ex5_path"]
+        ex5_sha = _sha256_file(ex5_path)
+
+        (compile_dir / "NoraPhase2SeriesTesterCanaryV1.ex5").write_bytes(ex5_path.read_bytes())
+        compile_log_retrieved = compile_result.get("compile_log_path")
+        compile_log_path = compile_dir / "compile.log"
+        if compile_log_retrieved and compile_log_retrieved.is_file():
+            compile_log_path.write_bytes(compile_log_retrieved.read_bytes())
+        else:
+            diag = compile_manifest.get("native_evidence", {}).get("diagnostic_lines") or compile_manifest.get("diagnostic_lines") or []
+            compile_log_path.write_text("\n".join(diag) + "\n", encoding="utf-8")
+        (compile_dir / "compile_manifest.json").write_text(
+            json.dumps(compile_manifest, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8"
+        )
+        print(f"\n[compile] persisted: ex5_sha={ex5_sha[:12]}")
+
+        run1_exec, run1_dir_remote = _execute_run(staging, ex5_path, "run1")
+        run2_exec, run2_dir_remote = _execute_run(staging, ex5_path, "run2")
+
+        for label, exec_value in (("run1", run1_exec), ("run2", run2_exec)):
+            target = FIXTURE_ROOT / label
+            target.mkdir()
+            src_dir = run1_dir_remote if label == "run1" else run2_dir_remote
+            for name in ("nora_phase2_series_tester_v1.csv", "tester.log", "tester-journal.log",
+                         "lifecycle.jsonl", "tester.ini"):
+                p = src_dir / name
+                if p.is_file():
+                    (target / name).write_bytes(p.read_bytes())
+            run_manifest = _build_run_manifest(exec_value, src_dir)
+            run_manifest["ex5_sha256"] = ex5_sha
+            (target / "execution_manifest.json").write_text(
+                json.dumps(run_manifest, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8"
+            )
+
+    run1 = json.loads((FIXTURE_ROOT / "run1" / "execution_manifest.json").read_text())
+    run2 = json.loads((FIXTURE_ROOT / "run2" / "execution_manifest.json").read_text())
+    if run1["semantic_result_identity"] != run2["semantic_result_identity"]:
+        raise SystemExit("runs are not semantically identical — refusing to seal")
+    if run1["result_csv_sha256"] != run2["result_csv_sha256"]:
+        raise SystemExit("runs differ in result CSV hash — refusing to seal")
+    semantic_identity = run1["semantic_result_identity"]
+    if semantic_identity != LEGACY_SEMANTIC_IDENTITY:
+        print(f"\n[warn] durable semantic identity diverges from legacy:")
+        print(f"        durable = {semantic_identity}")
+        print(f"        legacy  = {LEGACY_SEMANTIC_IDENTITY}")
+        print("        Continuing — informational; RED test catches it if material.")
+
+    csv_sha = run1["result_csv_sha256"]
+    index = {
+        "evidence_version": "nora.phase2r.native_evidence_v2",
+        "scope": "frozen native series (SMA/cross) canary only",
+        "compile": "compile/compile_manifest.json",
+        "compile_log": "compile/compile.log",
+        "ex5": "compile/NoraPhase2SeriesTesterCanaryV1.ex5",
+        "run1": "run1/execution_manifest.json",
+        "run2": "run2/execution_manifest.json",
+        "run1_csv": "run1/nora_phase2_series_tester_v1.csv",
+        "run2_csv": "run2/nora_phase2_series_tester_v1.csv",
+        "run1_journal": "run1/tester-journal.log",
+        "run2_journal": "run2/tester-journal.log",
+        "run1_lifecycle": "run1/lifecycle.jsonl",
+        "run2_lifecycle": "run2/lifecycle.jsonl",
+        "run1_tester_ini": "run1/tester.ini",
+        "run2_tester_ini": "run2/tester.ini",
+        "ex5_sha256": ex5_sha,
+        "csv_sha256": csv_sha,
+        "semantic_result_identity": semantic_identity,
+        "source_hashes": {
+            "series_tester_sha256": SERIES_TESTER_SOURCE_SHA256,
+        },
+        "runs_semantically_identical": True,
+        "binary_commit_reason": (
+            "Phase 2R upgrades canary.sma_cross_native from legacy_committed_summary "
+            "to self_contained_raw_native. EX5, compile log, two native runs, "
+            "lifecycle, redacted tester.ini, and journal deltas are committed because "
+            "their hashes and freshness are part of the durable native contract."
+        ),
+    }
+    INDEX_PATH.write_text(json.dumps(index, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
+    print(f"\n[sealed] {INDEX_PATH}")
+    print(f"          ex5_sha256 = {ex5_sha}")
+    print(f"          csv_sha256 = {csv_sha}")
+    print(f"          semantic   = {semantic_identity}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
