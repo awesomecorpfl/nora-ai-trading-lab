@@ -1912,12 +1912,17 @@
       "id": "integrity.placebo_scrambled_edge",
       "category": "placebo_scrambled_integrity_case",
       "name": "scrambled-data edge destruction",
-      "status": "absent",
+      "status": "accepted",
       "rust": {
-        "implementation": "planned",
-        "source_paths": [],
+        "implementation": "implemented",
+        "source_paths": [
+          "lab/phase2_placebo.py"
+        ],
         "identity": null,
-        "tests": []
+        "tests": [
+          "tests/test_phase2_numeric_parity.py",
+          "tests/test_phase2t_placebo_acceptance.py"
+        ]
       },
       "mql5": {
         "generation": "out_of_scope",
@@ -1927,14 +1932,16 @@
         "compile_evidence_paths": [],
         "execution_evidence_paths": []
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "79fa75f756642936ee824472dffab7dbf2905dcc06911692c4cfcd363c409b23",
       "evidence_paths": [
-        "architecture-lock/BUILD_ROADMAP.md",
-        "architecture-lock/ARCHITECTURE_DECISIONS.md"
+        "tests/fixtures/phase2_placebo_edge_fixture.json",
+        "lab/phase2_placebo.py"
       ],
-      "commits": [],
+      "commits": [
+        "6fc8784d1577b5a5e73629e1bde6916dee3c5580"
+      ],
       "searchable": false,
-      "missing_gate": "define known canary edge and deterministic scramble/placebo fixture"
+      "missing_gate": "complete Phase-2 admission gate"
     },
     {
       "id": "strategy.hand_designed_suite_10",
@@ -1999,10 +2006,10 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-      "accepted": 24,
+      "accepted": 25,
       "partially_proven": 9,
       "implemented_but_unproved": 15,
-      "absent": 2,
+      "absent": 1,
       "deferred": 1,
       "out_of_scope": 0
     },
