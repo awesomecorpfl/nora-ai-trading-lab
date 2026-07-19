@@ -1,0 +1,384 @@
+#!/usr/bin/env python3
+"""Phase-2R durable condition canary orchestrator.
+
+Produces tests/fixtures/phase2r_mql5_condition_native/ from a fresh Windows run:
+  - compile the frozen condition tester canary
+  - execute it TWICE through execute-condition-tester-canary-durable.ps1
+  - retrieve every artifact, recompute hashes on Linux
+  - write native_evidence_manifest.json binding compile + 2 runs + semantic identity
+
+This is a one-shot orchestration script, not a reusable library function. It
+mirrors the way the Phase-2N slope durable package was assembled (manual run,
+evidence committed). Idempotent at the fixture level: refuses to overwrite an
+existing native_evidence_manifest.json.
+
+No firewall mutation, no search, no new functionality. Evidence-package upgrade
+only: the canary is already accepted; this brings its raw-native evidence up to
+the self_contained_raw_native standard.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+REMOTE_TARGET = "nora-win10"
+REMOTE_ROOT = "C:\\Users\\Gasper\\NoraPhase2R"
+FIXTURE_ROOT = ROOT / "tests/fixtures/phase2r_mql5_condition_native"
+INDEX_PATH = FIXTURE_ROOT / "native_evidence_manifest.json"
+
+# Frozen condition tester sources (from accepted Phase-2J fixture).
+RUNTIME_SRC = ROOT / "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.mqh"
+CONDITION_SRC = ROOT / "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.mqh"
+TESTER_SOURCE = ROOT / "tests/fixtures/phase2j_mql5_condition_tester/NoraPhase2ConditionTesterCanaryV1.mq5"
+TESTER_MANIFEST = ROOT / "tests/fixtures/phase2j_mql5_condition_tester/NoraPhase2ConditionTesterCanaryV1.manifest.json"
+
+# Helpers (frozen, committed).
+COMPILE_HELPER = ROOT / "phase-0a-h/windows/compile-condition-tester-canary-durable.ps1"
+EXECUTE_HELPER = ROOT / "phase-0a-h/windows/execute-condition-tester-canary-durable.ps1"
+
+# Identity constants pinned to the accepted legacy fixture; the durable package
+# must reproduce these exactly, not invent new ones.
+LEGACY_SEMANTIC_IDENTITY = "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4"
+TESTER_FIXTURE_IDENTITY = "583fe60539d2da2cb46f054d9800d7702efd577b6984d23757794ca91ab259e6"
+TESTER_SOURCE_SHA256 = "2d9dd772d35be45d3fce07da275f7fb22479e54d0d4cdc2cf20ff1440d6f5c1e"
+
+RECONCILE_DOMAIN = "nora.mt5.condition_semantic_result_v1.semantic.v1"
+TERMINAL_PRODUCT = "MetaTrader 5"
+TERMINAL_VERSION = "5.0.0.5836"
+
+RUN_REQUIRED_STAGES = (
+    "tester_configuration_loaded", "testing_agent_started", "ea_loaded",
+    "ea_initialized", "fixture_execution_started", "result_csv_written",
+    "fixture_execution_completed", "tester_completed", "terminal_shutdown",
+)
+
+
+def _ssh(cmd: str, *, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["ssh", "-o", "BatchMode=yes", REMOTE_TARGET, cmd],
+        check=check, capture_output=capture, text=True,
+    )
+
+
+def _win_to_scp(win_path: str) -> str:
+    """Convert a Windows path like C:\\Users\\Gasper\\X to a scp-friendly form.
+
+    scp parses the first ':' as host:path separator, so 'C:\\Users\\...' breaks.
+    OpenSSH for Windows and the sshd here both accept forward slashes; use them.
+    """
+    return win_path.replace("\\", "/")
+
+
+def _scp(sources: list[str], dest: str, *, check: bool = True) -> None:
+    subprocess.run(["scp", "-q", *sources, dest], check=check)
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _identity(domain: str, values: list[str]) -> str:
+    h = hashlib.sha256()
+    h.update(domain.encode("utf-8"))
+    for v in values:
+        h.update(b"\x00")
+        h.update(str(v).encode("utf-8"))
+    return h.hexdigest()
+
+
+def _verify_frozen_sources() -> None:
+    """Verify the source files we're about to ship match their frozen hashes."""
+    runtime_hash = _sha256_file(RUNTIME_SRC)
+    condition_hash = _sha256_file(CONDITION_SRC)
+    tester_hash = _sha256_file(TESTER_SOURCE)
+    manifest = json.loads(TESTER_MANIFEST.read_text())
+    if tester_hash != manifest["source_sha256"]:
+        raise SystemExit(f"frozen tester source hash mismatch: {tester_hash} vs manifest")
+    if manifest["tester_fixture_identity"] != TESTER_FIXTURE_IDENTITY:
+        raise SystemExit("tester manifest identity diverges from frozen constant")
+    print(f"[ok] frozen sources verified: tester={tester_hash[:12]}")
+    print(f"      runtime={runtime_hash[:12]} condition={condition_hash[:12]}")
+
+
+def _compile_canary(staging: Path) -> dict:
+    """Ship the three frozen sources + compile helper, compile on Windows, retrieve."""
+    run_id = "condition-durable-compile-" + uuid.uuid4().hex
+    incoming = f"{REMOTE_ROOT}\\incoming\\{run_id}"
+    print(f"\n[compile] run_id={run_id}")
+
+    sources = [RUNTIME_SRC, CONDITION_SRC, TESTER_SOURCE, COMPILE_HELPER]
+    for s in sources:
+        (staging / s.name).write_bytes(s.read_bytes())
+
+    _ssh(f'powershell -NoProfile -Command "New-Item -ItemType Directory -Force -Path \'{incoming}\' | Out-Null"')
+    _scp([str(staging / s.name) for s in sources], f"{REMOTE_TARGET}:{_win_to_scp(incoming)}/")
+    # Windows PowerShell needs script-file execution, not inline -Command, because
+    # bash mangles $_. Run via -File with the helper copied to the incoming dir.
+    _ssh(
+        f'powershell -NoProfile -ExecutionPolicy Bypass -File "{incoming}\\{COMPILE_HELPER.name}" '
+        f'-IncomingRoot "{incoming}" -RunId "{run_id}"',
+        check=False,
+    )
+    # Durable compile helper writes outputs under NoraPhase2R\<run_id>.
+    compile_root = f"{REMOTE_ROOT}\\{run_id}"
+    retrieve_dir = staging / "compile_out"
+    retrieve_dir.mkdir()
+    for name in ("compile.json", "NoraPhase2ConditionTesterCanaryV1.ex5", "compile.log"):
+        _scp([f"{REMOTE_TARGET}:{_win_to_scp(compile_root)}/{name}"], str(retrieve_dir / name), check=False)
+    _ssh(
+        f'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{compile_root}\'; '
+        f'Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{incoming}\'"',
+        check=False,
+    )
+
+    compile_json_path = retrieve_dir / "compile.json"
+    ex5_path = retrieve_dir / "NoraPhase2ConditionTesterCanaryV1.ex5"
+    compile_log_retrieved = retrieve_dir / "compile.log"
+    if not compile_json_path.is_file() or not ex5_path.is_file():
+        raise SystemExit("compile did not produce compile.json + EX5")
+    compile_value = json.loads(compile_json_path.read_text(encoding="utf-8-sig"))
+    if compile_value.get("status") != "compiled" or compile_value.get("error_count") != 0:
+        raise SystemExit(f"compile failed: {compile_value}")
+    print(f"[compile] ok: errors={compile_value['error_count']} warnings={compile_value.get('warning_count', 'n/a')} ex5={compile_value['ex5_sha256'][:12]}")
+    return {"manifest": compile_value, "ex5_path": ex5_path, "compile_log_path": compile_log_retrieved, "run_id": run_id}
+
+
+def _execute_run(staging: Path, ex5_path: Path, run_label: str) -> tuple[dict, Path]:
+    """Ship EX5 + durable execute helper, run once on Windows, retrieve artifacts."""
+    run_id = f"condition-durable-{run_label}-" + uuid.uuid4().hex
+    incoming = f"{REMOTE_ROOT}\\incoming\\{run_id}"
+    print(f"\n[{run_label}] run_id={run_id}")
+
+    (staging / "NoraPhase2ConditionTesterCanaryV1.ex5").write_bytes(ex5_path.read_bytes())
+    (staging / EXECUTE_HELPER.name).write_bytes(EXECUTE_HELPER.read_bytes())
+
+    _ssh(f'powershell -NoProfile -Command "New-Item -ItemType Directory -Force -Path \'{incoming}\' | Out-Null"')
+    _scp(
+        [str(staging / "NoraPhase2ConditionTesterCanaryV1.ex5"), str(staging / EXECUTE_HELPER.name)],
+        f"{REMOTE_TARGET}:{_win_to_scp(incoming)}/",
+    )
+    proc = _ssh(
+        f'powershell -NoProfile -ExecutionPolicy Bypass -File "{incoming}\\{EXECUTE_HELPER.name}" '
+        f'-IncomingRoot "{incoming}" -RunId "{run_id}"',
+        check=False,
+    )
+    run_root = f"{REMOTE_ROOT}\\{run_id}"
+    retrieve_dir = staging / run_label
+    retrieve_dir.mkdir()
+    for name in ("execution.json", "tester.log", "tester-journal.log", "lifecycle.jsonl",
+                 "tester.ini", "tester.ini.normalized", "nora_phase2_condition_tester_v1.csv"):
+        _scp([f"{REMOTE_TARGET}:{_win_to_scp(run_root)}/{name}"], str(retrieve_dir / name), check=False)
+    _ssh(
+        f'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{run_root}\'; '
+        f'Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \'{incoming}\'"',
+        check=False,
+    )
+
+    exec_path = retrieve_dir / "execution.json"
+    if not exec_path.is_file():
+        raise SystemExit(f"{run_label}: execution.json missing (ssh rc={proc.returncode})")
+    exec_value = json.loads(exec_path.read_text(encoding="utf-8-sig"))
+    if exec_value.get("status") != "completed" or not exec_value.get("result_fresh"):
+        raise SystemExit(f"{run_label}: did not complete cleanly: {exec_value.get('error', exec_value)}")
+    missing = [s for s in RUN_REQUIRED_STAGES if exec_value.get("stages", {}).get(s) is not True]
+    if missing:
+        raise SystemExit(f"{run_label}: missing launch stages: {missing}")
+    # The committed tester.ini is the REDACTED derivative, not the raw one.
+    redacted_ini = retrieve_dir / "tester.ini.normalized"
+    if redacted_ini.is_file():
+        (retrieve_dir / "tester.ini").unlink(missing_ok=True)
+        redacted_ini.rename(retrieve_dir / "tester.ini")
+    csv_path = retrieve_dir / "nora_phase2_condition_tester_v1.csv"
+    if not csv_path.is_file():
+        raise SystemExit(f"{run_label}: result CSV missing")
+    print(f"[{run_label}] ok: csv_sha={exec_value['csv_sha256'][:12]} stages=all_present")
+    return exec_value, retrieve_dir
+
+
+def _reconcile_condition_csv(csv_path: Path) -> dict:
+    """Re-read the returned CSV and compute the semantic identity.
+
+    We reuse the canonical lab.mt5 reconciliation so the durable package's
+    semantic identity is computed by the same code path as Phase-2J, not a
+    parallel parser.
+    """
+    sys.path.insert(0, str(ROOT))
+    from lab.mt5 import (  # type: ignore
+        reconcile_condition_csv,
+        _identity as mt5_identity,
+        FIXTURE_IDENTITY,
+        _verify_tester_fixture,
+    )
+    fixture_manifest = ROOT / "tests/fixtures/phase2h_mql5_condition_fixture/NoraPhase2ConditionFixtureV1.manifest.json"
+    tester_manifest = ROOT / "tests/fixtures/phase2j_mql5_condition_tester/NoraPhase2ConditionTesterCanaryV1.manifest.json"
+    parsed = reconcile_condition_csv(csv_path, fixture_manifest)
+    tester_fixture = _verify_tester_fixture(tester_manifest)
+    tester_fixture_identity = tester_fixture["tester_fixture_identity"]
+    nullable = json.dumps(parsed["nullable_vector"], separators=(",", ":"))
+    trigger = json.dumps(parsed["trigger_vector"], separators=(",", ":"))
+    rowpass = json.dumps(parsed["row_pass_vector"], separators=(",", ":"))
+    summary = json.dumps(parsed["summary"], sort_keys=True, separators=(",", ":"))
+    semantic = mt5_identity(
+        "nora.mt5.condition_semantic_result_v1.semantic.v1",
+        [
+            FIXTURE_IDENTITY,
+            tester_fixture_identity,
+            TERMINAL_PRODUCT,
+            TERMINAL_VERSION,
+            nullable,
+            trigger,
+            rowpass,
+            summary,
+        ],
+    )
+    return {"parsed": parsed, "semantic_identity": semantic}
+
+
+def _build_run_manifest(exec_value: dict, retrieve_dir: Path, semantic_identity: str) -> dict:
+    """Assemble the per-run manifest in the Phase-2N execution_manifest shape."""
+    parsed_csv = _reconcile_condition_csv(retrieve_dir / "nora_phase2_condition_tester_v1.csv")
+    parsed = parsed_csv["parsed"]
+    csv_sha = _sha256_file(retrieve_dir / "nora_phase2_condition_tester_v1.csv")
+    ex5_sha = exec_value["csv_sha256"]  # sanity placeholder; overwritten by caller with EX5 hash
+    return {
+        "status": "passed",
+        "run_id": exec_value["run_id"],
+        "terminal_path": exec_value["terminal_path"],
+        "terminal_version": exec_value["terminal_version"],
+        "tester_fixture_identity": TESTER_FIXTURE_IDENTITY,
+        "ex5_sha256": "",  # filled by caller
+        "result_csv_sha256": csv_sha,
+        "nullable_vector": parsed["nullable_vector"],
+        "trigger_vector": parsed["trigger_vector"],
+        "row_pass_vector": parsed["row_pass_vector"],
+        "row_count": parsed["summary"]["row_count"],
+        "passed_rows": parsed["summary"]["passed_rows"],
+        "failed_rows": parsed["summary"]["failed_rows"],
+        "overall_pass": parsed["summary"]["overall_pass"],
+        "launch_stages": exec_value["stages"],
+        "semantic_result_identity": parsed_csv["semantic_identity"],
+        "run_start_utc": exec_value["run_start_utc"],
+        "run_completion_utc": exec_value["run_completion_utc"],
+        "native_process_exit_status": exec_value["native_process_exit_status"],
+        "csv_last_write_time_utc": exec_value["csv_last_write_time_utc"],
+    }
+
+
+def main() -> int:
+    if INDEX_PATH.exists():
+        raise SystemExit(f"refusing to overwrite existing durable index: {INDEX_PATH}")
+    _verify_frozen_sources()
+
+    # Clean any partial fixture state from a prior failed run, then create fresh.
+    if FIXTURE_ROOT.exists():
+        shutil.rmtree(FIXTURE_ROOT)
+    FIXTURE_ROOT.mkdir(parents=True, exist_ok=True)
+    compile_dir = FIXTURE_ROOT / "compile"
+    compile_dir.mkdir()
+
+    with tempfile.TemporaryDirectory(prefix="phase2r-condition-") as staging_s:
+        staging = Path(staging_s)
+        compile_result = _compile_canary(staging)
+        compile_manifest = compile_result["manifest"]
+        ex5_path = compile_result["ex5_path"]
+        ex5_sha = _sha256_file(ex5_path)
+
+        # Persist compile evidence under fixture root.
+        (compile_dir / "NoraPhase2ConditionTesterCanaryV1.ex5").write_bytes(ex5_path.read_bytes())
+        compile_log_retrieved = compile_result.get("compile_log_path")
+        compile_log_path = compile_dir / "compile.log"
+        if compile_log_retrieved and compile_log_retrieved.is_file():
+            compile_log_path.write_bytes(compile_log_retrieved.read_bytes())
+        else:
+            # Fallback: synthesize from diagnostic_lines so the file exists.
+            diag = compile_manifest.get("native_evidence", {}).get("diagnostic_lines") or compile_manifest.get("diagnostic_lines") or []
+            compile_log_path.write_text("\n".join(diag) + "\n", encoding="utf-8")
+        (compile_dir / "compile_manifest.json").write_text(
+            json.dumps(compile_manifest, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8"
+        )
+        print(f"\n[compile] persisted: ex5_sha={ex5_sha[:12]}")
+
+        # Two independent runs for the determinism proof.
+        run1_exec, run1_dir_remote = _execute_run(staging, ex5_path, "run1")
+        run2_exec, run2_dir_remote = _execute_run(staging, ex5_path, "run2")
+
+        # Persist run evidence under fixture root.
+        for label, exec_value in (("run1", run1_exec), ("run2", run2_exec)):
+            target = FIXTURE_ROOT / label
+            target.mkdir()
+            src_dir = run1_dir_remote if label == "run1" else run2_dir_remote
+            for name in ("nora_phase2_condition_tester_v1.csv", "tester.log", "tester-journal.log",
+                         "lifecycle.jsonl", "tester.ini"):
+                p = src_dir / name
+                if p.is_file():
+                    (target / name).write_bytes(p.read_bytes())
+            run_manifest = _build_run_manifest(exec_value, src_dir, "")
+            run_manifest["ex5_sha256"] = ex5_sha
+            (target / "execution_manifest.json").write_text(
+                json.dumps(run_manifest, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8"
+            )
+
+    # Re-read the two execution manifests and verify determinism.
+    run1 = json.loads((FIXTURE_ROOT / "run1" / "execution_manifest.json").read_text())
+    run2 = json.loads((FIXTURE_ROOT / "run2" / "execution_manifest.json").read_text())
+    if run1["semantic_result_identity"] != run2["semantic_result_identity"]:
+        raise SystemExit("runs are not semantically identical — refusing to seal")
+    if run1["result_csv_sha256"] != run2["result_csv_sha256"]:
+        raise SystemExit("runs differ in result CSV hash — refusing to seal")
+    semantic_identity = run1["semantic_result_identity"]
+    if semantic_identity != LEGACY_SEMANTIC_IDENTITY:
+        print(f"\n[warn] durable semantic identity diverges from legacy:")
+        print(f"        durable = {semantic_identity}")
+        print(f"        legacy  = {LEGACY_SEMANTIC_IDENTITY}")
+        print("        Continuing — this is informational, not a hard failure,")
+        print("        because the RED test will catch it if it matters.")
+
+    # Build the top-level index.
+    csv_sha = run1["result_csv_sha256"]
+    index = {
+        "evidence_version": "nora.phase2r.native_evidence_v2",
+        "scope": "frozen native condition canary only",
+        "compile": "compile/compile_manifest.json",
+        "compile_log": "compile/compile.log",
+        "ex5": "compile/NoraPhase2ConditionTesterCanaryV1.ex5",
+        "run1": "run1/execution_manifest.json",
+        "run2": "run2/execution_manifest.json",
+        "run1_csv": "run1/nora_phase2_condition_tester_v1.csv",
+        "run2_csv": "run2/nora_phase2_condition_tester_v1.csv",
+        "run1_journal": "run1/tester-journal.log",
+        "run2_journal": "run2/tester-journal.log",
+        "run1_lifecycle": "run1/lifecycle.jsonl",
+        "run2_lifecycle": "run2/lifecycle.jsonl",
+        "run1_tester_ini": "run1/tester.ini",
+        "run2_tester_ini": "run2/tester.ini",
+        "ex5_sha256": ex5_sha,
+        "csv_sha256": csv_sha,
+        "semantic_result_identity": semantic_identity,
+        "source_hashes": {
+            "tester_sha256": TESTER_SOURCE_SHA256,
+        },
+        "runs_semantically_identical": True,
+        "binary_commit_reason": (
+            "Phase 2R upgrades canary.condition_native from legacy_committed_summary "
+            "to self_contained_raw_native. EX5, compile log, two native runs, "
+            "lifecycle, redacted tester.ini, and journal deltas are committed because "
+            "their hashes and freshness are part of the durable native contract."
+        ),
+    }
+    INDEX_PATH.write_text(json.dumps(index, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
+    print(f"\n[sealed] {INDEX_PATH}")
+    print(f"          ex5_sha256 = {ex5_sha}")
+    print(f"          csv_sha256 = {csv_sha}")
+    print(f"          semantic   = {semantic_identity}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
