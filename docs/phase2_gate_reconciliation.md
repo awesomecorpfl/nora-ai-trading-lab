@@ -30,8 +30,8 @@ The ten-strategy smoke canary is a system-validation fixture, not a claim that t
 | Synthetic execution fixtures: next-open, signal exit, time exit, combined precedence, determinism | ACCEPTED | Frozen Rust and native fixed-path ledgers reconcile exactly in four independent host-context runs | None for this restricted contract |
 | Layer-1 indicator/transform coverage | PARTIAL | MACD and Percentile are now accepted narrowly; ATR/Distance-ATR, slope, SMA/cross, and condition evidence do not complete the all-Layer-1 gate | Reconcile remaining Layer-1 contracts and typed AST admission boundaries |
 | Declared strategy/session/broker clock; broker fixtures; DST spring/fall; Friday close; parameterized rollover/Monday/ORB; derived timeframe anchoring | ACCEPTED | Exact 18-scenario time-rule canary, four independent host-neutral packages | Holiday calendars and universal production window defaults remain unsupported |
-| Ten hand-designed strategies: embedded smoke execution health | PENDING | Corrected compiler evidence exists; fresh native smoke must confirm compile/load/tester/EA lifecycle and embedded fixture execution | One bounded smoke package |
-| Ten hand-designed strategies: broker-native edge survival | DEFERRED | These are system-test fixtures, not finalist strategies; no edge claim is intended here | Revisit only for a selected finalist with frozen native data/cost/budget decisions |
+| Ten hand-designed strategies: embedded smoke execution health | **ACCEPTED** | Four independent host-context runs (A1/A2 GDAXI/M1, B1/B2 AUDCAD/M1) each passed detached lifecycle, environmental acceptance, PASS_EXACT CSV reconciliation (15 rows × 10 strategy identities), and genuine returned-package ingestion. Commits `29ad3ec`, `70513f5`. | None for the embedded-fixture contract |
+| Ten hand-designed strategies: broker-native edge survival | DEFERRED (scaffolding committed) | System-test fixtures are not finalists; no edge claim is intended. Process scaffolding (reference/budget freeze ceremony, provenance binding, non-strategic EA skeleton) committed as `b640a6b` and ready for a future finalist. | Revisit only for a selected finalist with frozen native data/cost/budget decisions |
 | Repeated Linux experiment replay: trades, metrics, simulator outcomes, canonical hashes | PARTIAL | Component-level deterministic tests exist; no complete experiment replay bundle | One repeated experiment artifact binding all outputs and hashes |
 | Placebo/scrambled-data edge destruction | BLOCKED | No known-edge scramble fixture or destruction statistic | Define one deterministic scramble and expected edge-destruction measure |
 
@@ -47,4 +47,8 @@ Superseded identities cannot be selected as current: current package/source bind
 
 ## Next critical path
 
-Run one bounded embedded smoke package first. Its acceptance question is system health, not strategy quality. Broker-native edge-survival work belongs to a later finalist-stage tranche with its own human decisions. This remains before search and Phase 3.
+The embedded ten-strategy smoke canary is now **accepted** across four independent host-context runs (A1/A2 GDAXI/M1, B1/B2 AUDCAD/M1). Its acceptance question was system health, not strategy quality, and that question is answered.
+
+The broker-native edge-survival scaffolding is committed (`b640a6b`): reference-freeze, budget-freeze, provenance-binding, and a non-strategic broker-data EA skeleton. It is deliberately not exercised against the ten fixtures, because the fixtures are not finalists. The scaffolding waits for a genuine finalist produced by authorized research.
+
+The remaining Phase-2 critical path is: remaining Layer-1 native parity chains (Phase 2R condition/SMA/cross durable repair), a complete deterministic Linux experiment replay bundle, and placebo/scrambled-data edge-destruction evidence. Search and Phase 3 remain explicitly closed.

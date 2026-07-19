@@ -16,11 +16,11 @@ Phase 2N accepts the fixed 12-row slope canary with semantic identity `221f85942
 
 | Requirement | State | Blocking evidence gap | Smallest advance |
 |---|---|---|---|
-| Synthetic execution fixtures | partial | No native reconciliation of next-open/bracket/time behavior | Freeze one local execution-parity contract |
+| Synthetic execution fixtures | accepted | — | None for this restricted contract |
 | Layer-1 indicator parity | partial | J/L/N accept the frozen condition, SMA3/cross, and slope canaries; all other primitives lack complete MQL5/native proof | Phase 2P ATR + Distance/ATR local generator contract |
 | Strategy/session/time/DST parity | accepted (narrow) | Fixed 18-scenario native clock/DST/session/anchoring canary; holiday calendars and universal production defaults remain unsupported | Preserve the accepted contract while advancing remaining Layer-1 and strategy gates |
-| Ten hand-designed strategies: embedded smoke | pending | Fresh native confirmation of compile/load/tester/EA lifecycle and embedded fixture execution | Run one bounded smoke package |
-| Ten hand-designed strategies: broker-native edge survival | deferred | These are system-test fixtures, not finalist strategies; no edge claim is intended here | Revisit only for a selected finalist with frozen native data/cost/budget decisions |
+| Ten hand-designed strategies: embedded smoke | **accepted** | None for the embedded-fixture contract | — |
+| Ten hand-designed strategies: broker-native edge survival | deferred; **scaffolding committed** | These are system-test fixtures, not finalist strategies; no edge claim is intended here. Process scaffolding (reference/budget freeze ceremony, provenance binding, non-strategic EA skeleton) committed as `b640a6b` and ready for a future finalist. | Revisit only for a selected finalist with frozen native data/cost/budget decisions |
 | Repeated Linux semantic determinism | partial | Components replay deterministically, but no whole-experiment replay bundle | Add one complete replay fixture |
 | Placebo/scrambled edge destruction | blocked | No known-edge scramble fixture | Specify deterministic scramble and required edge-destruction measure |
 
@@ -47,4 +47,4 @@ Accepted Phase-2Q commits are `a73ed6912c8dc354c36a7475dfe595d622e66d01` (Phase 
 
 ## Remaining critical gates
 
-Time-rule parity is accepted narrowly. Phase 2 remains incomplete: remaining Layer-1 native parity, the embedded ten-strategy system smoke, a complete deterministic Linux experiment replay, placebo/scrambled-data edge-destruction evidence, and later finalist-stage broker-native edge validation remain separate gaps. Search and Phase 3 remain explicitly closed.
+Time-rule parity is accepted narrowly. The embedded ten-strategy system smoke is now accepted across four independent host-context runs (A1/A2 GDAXI/M1, B1/B2 AUDCAD/M1). The broker-native edge-survival scaffolding is committed (`b640a6b`) and waits for a genuine finalist. Phase 2 remains incomplete: remaining Layer-1 native parity (Phase 2R condition/SMA/cross durable repair), a complete deterministic Linux experiment replay, and placebo/scrambled-data edge-destruction evidence remain separate gaps. Search and Phase 3 remain explicitly closed.

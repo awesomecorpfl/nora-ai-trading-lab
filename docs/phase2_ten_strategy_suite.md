@@ -22,3 +22,16 @@ The historical native parity diagnosis is preserved as embedded-canary evidence:
 The source correction (Wilder ATR recurrence) invalidated the prior compilation. The historical genuine compiler output `0c17b9052b006074cdc3dde1fd70bcc244c558fed546720e5c8b9ef25ea5541d`, EX5 `75dedb5d0a272e793d17e5ae92dc8419a50ff6fd1c186434fdd35ff92581d18d`, execution packet `a2f2982eeff45e6c567d14ad9673f0ce8d9741ed19b60dead1043ba155ea17ec`, and final batch `d22f21f876b52e32acbcd6274c491797b7d6df2eabf9820e4145ae828760249c` remain preserved as historical failure evidence under `tests/fixtures/phase2_ten_strategy_suite/native_final/` and cannot be reused.
 
 The corrected Wilder source was genuinely compiled with MetaEditor build 5.0.0.5836 at zero errors and zero warnings. The current acceptance target is the embedded smoke canary: fresh native confirmation of compile/load/tester/EA lifecycle, embedded fixture execution, durable publication, and evidence integrity. Broker-native edge-survival validation is deferred to finalist-stage work and is not a gate on these test strategies. Synchronization or cache-access wording is not independently fatal; actual price acquisition, history expansion, unclassified mutation, missing evidence, or unresolved ambiguity remains fail-closed. Grammar admission and searchability remain false, and Phase 2 remains incomplete.
+
+## Four-context embedded smoke acceptance (2026-07-19)
+
+The embedded smoke canary is accepted across four independent host-context runs. Each context independently passed detached MT5 lifecycle (exit `0`, atomic `.running` → `.complete` publication), environmental acceptance (bar count `393092` unchanged, history range stable, no price payload, classified MT5 history synchronization), CSV reconciliation (`PASS_EXACT`, 15 rows × 10 strategy identities, zero ULP distance on all numeric fields), and genuine returned-package ingestion.
+
+| Context | Symbol | Run identifier | Ingestion identity |
+|---|---|---|---|
+| A1 | GDAXI/M1 | `a1-system-smoke-final2-20260719` | `6afcb6ce…` |
+| A2 | GDAXI/M1 | `a2-system-smoke-20260719` | `75a0b15c…` |
+| B1 | AUDCAD/M1 | `b1-system-smoke-retry-20260719` | `9c3d5a1d…` |
+| B2 | AUDCAD/M1 | `b2-system-smoke-20260719` | `d3730ce5…` |
+
+Sealed EX5 (`23874` bytes, commit `29ad3ec`) reused across all four contexts. Full Python suite: `603 passed, 4 skipped`. Commits: `29ad3ec` (smoke output contract), `70513f5` (containment verifier dependencies), `b640a6b` (edge-survival scaffolding). No finalist was promoted, no broker-data run occurred, and no budget was frozen for any fixture. The ten fixtures remain system-test fixtures, not edge claims.
