@@ -48,6 +48,7 @@ def _write_inputs(root: Path) -> dict[str, str]:
         "open": pa.array([bar["open"] for bar in CASE["bars"]], type=pa.float64()),
         "high": pa.array([bar["high"] for bar in CASE["bars"]], type=pa.float64()),
         "low": pa.array([bar["low"] for bar in CASE["bars"]], type=pa.float64()),
+        "close": pa.array([bar["close"] for bar in CASE["bars"]], type=pa.float64()),
     }), root / "market.parquet")
     pq.write_table(pa.table({"timestamp": ts, "entry_intent": pa.array(CASE["entry_signal"], type=pa.bool_())}), root / "entry.parquet")
     pq.write_table(pa.table({"timestamp": ts, "exit_intent": pa.array(CASE["exit_signal"], type=pa.bool_())}), root / "exit.parquet")
