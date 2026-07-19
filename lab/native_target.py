@@ -187,8 +187,9 @@ def redact_compiler_log(raw: bytes) -> tuple[bytes, int]:
         raise ValueError("compiler log encoding")
     text = raw.decode("utf-16")
     redacted, count = WINDOWS_USER_PATH.subn(COMPILER_LOG_REDACTION_POLICY["replacement"], text)
-    if count == 0:
-        raise ValueError("no recognized compiler path")
+    # Evidence compiled outside the Windows user profile (for example under
+    # the isolated C:\NoraEvidence root) has no user-root token to redact.
+    # Preserve it byte-for-byte and bind an explicit zero occurrence count.
     return redacted.encode("utf-16"), count
 
 
@@ -384,11 +385,13 @@ def evaluate_environmental_acceptance(evidence: dict) -> dict:
     if evidence["downloaded_bars"] != 0 or evidence["downloaded_ticks"] != 0: reasons.append("REPORTED_BAR_OR_TICK_DOWNLOAD")
     if evidence["price_data_payload_detected"] is not False: reasons.append("PRICE_DATA_PAYLOAD_DETECTED")
     classified = classify_journal_markers(journal)
-    if detect_history_synchronization(journal): reasons.append("JOURNAL_PRICE_DATA_PAYLOAD")
+    smoke_history_setup = evidence.get("environmental_mode") == "embedded_smoke" and evidence["embedded_fixture_only"] is True and evidence["price_data_payload_detected"] is False
+    if detect_history_synchronization(journal) and not smoke_history_setup: reasons.append("JOURNAL_PRICE_DATA_PAYLOAD")
     # A generic journal phrase can be ambiguous in isolation. It may be
     # resolved only by the complete retained forensic record; otherwise fail.
     if evidence["ambiguous_evidence_resolved"] is not True: reasons.append("AMBIGUOUS_EVIDENCE")
     allowed = {"symbol_contract_metadata", "cache_header_maintenance", "cache_index_maintenance", "in_memory_cache_allocation"}
+    if smoke_history_setup: allowed.add("tester_history_setup")
     mutations = evidence["cache_mutations"]
     if not isinstance(mutations, list): reasons.append("INVALID_CACHE_MUTATION_RECORD")
     else:

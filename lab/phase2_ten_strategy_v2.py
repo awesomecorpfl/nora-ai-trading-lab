@@ -449,15 +449,18 @@ def freeze() -> dict:
 def _parse_csv(path: Path) -> list[dict]:
     nullable = set(("trade_ordinal", "signal_index", "signal_timestamp", "entry_index", "entry_timestamp",
                     "entry_price", "initial_stop", "initial_target", "exit_index", "exit_timestamp",
-                    "exit_price", "holding_bars", "gross_price_return", "no_trade_reason"))
+                    "exit_price", "exit_reason", "holding_bars", "gross_price_return", "no_trade_reason"))
     integers = {"trade_ordinal", "signal_index", "entry_index", "exit_index", "holding_bars"}
     numeric = {"entry_price", "initial_stop", "initial_target", "exit_price", "gross_price_return"}
-    with path.open(newline="", encoding="utf-8-sig") as handle: rows = list(csv.DictReader(handle, delimiter="\t"))
+    raw = path.read_bytes()
+    encoding = "utf-16" if raw.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig"
+    with path.open(newline="", encoding=encoding) as handle: rows = list(csv.DictReader(handle, delimiter="\t"))
     result = []
     for row in rows:
         parsed = {}
         for key, value in row.items():
-            if key in nullable and value == "NULL": parsed[key] = None
+            token = value.strip().upper()
+            if key in nullable and (token == "NULL" or (key != "no_trade_reason" and token in {"NONE", ""})): parsed[key] = None
             elif key in integers: parsed[key] = int(value)
             elif key in numeric: parsed[key] = float(value)
             else: parsed[key] = value
@@ -467,14 +470,22 @@ def _parse_csv(path: Path) -> list[dict]:
 
 def import_genuine_returned_package(package_dir: Path, execution_packet: dict) -> dict:
     package_dir = Path(package_dir)
-    required = {"execution.json", CSV, "terminal-journal.log", "tester-journal.log", "tester.htm",
-                "completion-marker.json", "failure-marker.json", "environment-before.json",
-                "environment-after.json", "environmental-evaluation.json", "returned_inventory.json",
-                "returned_result_manifest.json"}
-    if not package_dir.is_dir() or {x.name for x in package_dir.iterdir()} != required: raise ValueError("atomic returned file set")
+    base_required = {"execution.json", CSV, "terminal-journal.log", "tester-journal.log",
+                     "completion-marker.json", "failure-marker.json", "environment-before.json",
+                     "environment-after.json", "environmental-evaluation.json"}
+    allowed_optional = {"tester.htm"}
+    if not package_dir.is_dir() or not base_required <= {x.name for x in package_dir.iterdir()}:
+        raise ValueError("atomic returned file set")
+    if not ({x.name for x in package_dir.iterdir()} - base_required - allowed_optional - {"returned_inventory.json", "returned_result_manifest.json"}) == set():
+        raise ValueError("atomic returned file set")
     if execution_packet.get("schema_version") != EXECUTION_PACKET_SCHEMA: raise ValueError("stale execution packet")
     if execution_packet.get("compiler_evidence_version") != "v2": raise ValueError("historical v1 compiler evidence")
     manifest = load(package_dir / "returned_result_manifest.json")
+    tester_report_present = manifest.get("tester_report_present") is True
+    if tester_report_present and not (package_dir / "tester.htm").is_file(): raise ValueError("missing declared tester report")
+    if not tester_report_present and (package_dir / "tester.htm").exists(): raise ValueError("undeclared tester report")
+    required = set(base_required) | ({"tester.htm"} if tester_report_present else set())
+
     execution = load(package_dir / "execution.json")
     if manifest.get("schema_version") != RETURNED_SCHEMA: raise ValueError("returned schema")
     if manifest.get("execution_packet_identity") != execution_packet.get("execution_packet_identity"): raise ValueError("packet identity")

@@ -358,6 +358,16 @@ def test_metadata_only_maintenance_unchanged_bounds_and_contract_metadata_accept
     assert result["journal"]["local_cache_access"]
 
 
+def test_embedded_smoke_allows_platform_history_setup_without_fixture_price_payload():
+    evidence = _environmental_evidence()
+    evidence["environmental_mode"] = "embedded_smoke"
+    evidence["raw_journal"] += "\nGDAXI: load 25 bytes of history data to synchronize\nGDAXI: history synchronized"
+    evidence["cache_mutations"] = [{"path": "history/GDAXI/2026.hcc", "classification": "tester_history_setup", "delta_bytes": 69669}]
+    evidence["max_cache_delta_bytes"] = 69669
+    result = evaluate_environmental_acceptance(evidence)
+    assert result["accepted"], result["reasons"]
+
+
 @pytest.mark.parametrize("mutator, reason", [
     (lambda e: e["after_inventory"].update({"ticks/GDAXI.tkc": {"size": 1}}), "NEW_HISTORY_OR_TICK_FILE"),
     (lambda e: e.update(bar_count_after=393093), "BAR_COUNT_EXPANSION_OR_CHANGE"),
