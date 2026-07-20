@@ -13,6 +13,7 @@ CACHE_WORKER = (ROOT / "phase-0a-h/windows/execute-phase2-offline-cache-probe.ps
 CACHE_PROBE = (ROOT / "phase-0a-h/windows/NoraPhase2OfflineCacheProbeV1.mq5").read_text()
 DETACHED_CANARY = (ROOT / "phase-0a-h/windows/phase2-detached-canary.ps1").read_text()
 FORENSIC_COLLECTOR = (ROOT / "phase-0a-h/windows/capture-phase2-run-forensics.ps1").read_text()
+WARM_CACHE_WORKER = (ROOT / "phase-0a-h/windows/execute-phase2-warm-cache-non-credit.ps1").read_text()
 
 
 def test_runner_uses_the_persistent_evidence_root_and_sid_acl_contract():
@@ -275,7 +276,7 @@ def test_cache_probe_is_nontrading_exact_range_and_rejects_history_changes():
         assert token in CACHE_PROBE
     for forbidden in ("OrderSend", "CTrade", "PositionOpen", "OrderClose"):
         assert forbidden not in CACHE_PROBE
-    for token in ("CompareCache", "strict_no_history_mutation_subset", "successful_connection_observed", "blocked_attempt_observed", "offline-cache-preflight.json"):
+    for token in ("CompareCache", "strict_no_history_mutation_subset", "successful_connection_observed", "blocked_attempt_observed", "offline-cache-preflight.json", "cache_probe_timeout", "AddSeconds(180)"):
         assert token in CACHE_WORKER
     assert "server_scope" in CACHE_INVENTORY and "empty_relevant_inventory" in CACHE_INVENTORY
     assert "server_binding_identity" in CACHE_WORKER and "renamed" in CACHE_WORKER
@@ -290,3 +291,36 @@ def test_server_scoped_inventory_is_template_bound_and_fails_closed_on_path_ambi
     for token in ("creation_utc", "acl", "object_type", "absolute_canonical_path",
                   "missing_directory", "filename_year_candidate_only", "relevant_file_count"):
         assert token in CACHE_INVENTORY
+
+
+def test_warm_cache_non_credit_worker_is_isolated_durable_and_non_credit():
+    # Schema identity: must declare itself non-credit and isolated, and never re-use
+    # offline-cache-preflight output paths or schemas.
+    for token in (
+        "nora.phase2_warm_cache_non_credit_v1",
+        "credit_classification",
+        "NON_CREDIT_AUTHORIZED_HISTORY_ACQUISITION",
+        "non-credit warm-cache acquisition; not admissible as native evidence",
+        "warm-cache",
+    ):
+        assert token in WARM_CACHE_WORKER
+    # Non-trading boundary: the warmup EA must not trade or send orders.
+    for forbidden in ("OrderSend", "CTrade", "PositionOpen", "OrderClose"):
+        assert forbidden not in WARM_CACHE_WORKER
+    # Bound to the same server-scoped inventory as the offline probe so the resulting
+    # cache state is directly comparable.
+    for token in ("phase2-cache-inventory.ps1", "resolve-phase2-mt5-server-scope.ps1",
+                  "cache-before.json", "cache-after.json", "CompareCache",
+                  "server_binding_identity"):
+        assert token in WARM_CACHE_WORKER
+    # Network acquisition must be captured for the non-credit record.
+    for token in ("established_connections", "successful_connection_observed",
+                  "warm-cache-non-credit.json"):
+        assert token in WARM_CACHE_WORKER
+    # Timeout bounded: never hangs.
+    assert "AddSeconds(300)" in WARM_CACHE_WORKER and "warm_cache_timeout" in WARM_CACHE_WORKER
+
+
+def test_runner_supports_warm_cache_modes():
+    for mode in ("cache-warmup-prepare", "cache-warmup-launch", "cache-warmup-cleanup"):
+        assert mode in RUNNER and mode in ORCHESTRATOR
