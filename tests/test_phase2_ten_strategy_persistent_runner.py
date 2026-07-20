@@ -317,8 +317,10 @@ def test_warm_cache_non_credit_worker_is_isolated_durable_and_non_credit():
     for token in ("established_connections", "successful_connection_observed",
                   "warm-cache-non-credit.json"):
         assert token in WARM_CACHE_WORKER
-    # Timeout bounded: never hangs.
-    assert "AddSeconds(300)" in WARM_CACHE_WORKER and "warm_cache_timeout" in WARM_CACHE_WORKER
+    # Completion-aware watchdog: a finished job cancels/silences the safety path.
+    for token in ("warm-cache-state.json", "completed", "watchdog_timeout", "completion_observed", "CompareExchange", "watchdog cancelled"):
+        assert token in WARM_CACHE_WORKER
+    assert "AddSeconds(7200)" in WARM_CACHE_WORKER
 
 
 def test_runner_supports_warm_cache_modes():
