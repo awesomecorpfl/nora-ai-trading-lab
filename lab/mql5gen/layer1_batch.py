@@ -33,8 +33,18 @@ def _nulls(values): return ",".join("true" if x is None else "false" for x in va
 def _strings(values): return ",".join('"'+x+'"' for x in values)
 
 
-def runtime()->str:
-    return '''#ifndef NORA_PHASE2_LAYER1_BATCH_RUNTIME_V1_MQH
+def rsi_runtime()->str:
+    return '''#ifndef NORA_PHASE2_RSI_RUNTIME_V1_MQH
+#define NORA_PHASE2_RSI_RUNTIME_V1_MQH
+bool NoraRsiCompute(const double &source[],const bool &source_null[],const int count,const int period,double &out[],bool &out_null[]){
+ if(period<1)return false;ArrayResize(out,count);ArrayResize(out_null,count);for(int i=0;i<count;i++){out[i]=0.0;out_null[i]=true;}
+ if(count<=period)return true;double gain=0.0,loss=0.0;for(int i=1;i<=period;i++){if(source_null[i]||source_null[i-1])return false;double d=source[i]-source[i-1];gain+=MathMax(d,0.0);loss+=MathMax(-d,0.0);}gain/=period;loss/=period;
+ for(int i=period;i<count;i++){if(i>period){if(source_null[i]||source_null[i-1])return false;double d=source[i]-source[i-1];gain=(gain*(period-1)+MathMax(d,0.0))/period;loss=(loss*(period-1)+MathMax(-d,0.0))/period;}out[i]=(loss==0.0?(gain==0.0?50.0:100.0):100.0-100.0/(1.0+gain/loss));out_null[i]=false;}return true;}
+#endif
+'''
+
+
+def runtime()->str:    return '''#ifndef NORA_PHASE2_LAYER1_BATCH_RUNTIME_V1_MQH
 #define NORA_PHASE2_LAYER1_BATCH_RUNTIME_V1_MQH
 bool NoraLayer1Compute(const int kind,const double &source[],const bool &source_null[],const int count,const int period,double &out[],bool &out_null[]){
  if(period<1)return false;ArrayResize(out,count);ArrayResize(out_null,count);for(int i=0;i<count;i++){out[i]=0.0;out_null[i]=true;}

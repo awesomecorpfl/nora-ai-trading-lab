@@ -1,7 +1,7 @@
 import json,subprocess,tempfile
 from pathlib import Path
 import pytest
-from lab.mql5gen.layer1_batch import FAIL,MARKER,RUNTIME,TESTER,translate_feature_node
+from lab.mql5gen.layer1_batch import FAIL,MARKER,RUNTIME,TESTER,rsi_runtime,translate_feature_node
 from lab.phase2_layer1_native import FIX,generated
 
 ROOT=Path(__file__).resolve().parents[1];ENGINE=ROOT/'engine/target/debug/labengine'
@@ -37,7 +37,13 @@ def test_translation_is_strict_deterministic_typed_and_nonsearchable():
  for bad in ({'type':'ema','input':{'type':'series','name':'close'},'period':0},{'type':'ema','input':{'type':'boolean','name':'x'},'period':3},{'type':'ema','input':{'type':'series','name':'x'},'period':3,'extra':1}):
   with pytest.raises(ValueError):translate_feature_node(bad)
 
-def test_generated_sources_are_deterministic_embedded_and_static_safe():
+def test_rsi_runtime_source_is_static_and_matches_wilder_contract():
+ source=rsi_runtime()
+ for required in ('NoraRsiCompute','period-1','gain','loss','50.0','100.0','out_null'):
+  assert required in source
+ for forbidden in ('TimeCurrent','CopyRates','CopyBuffer','OrderSend','CTrade','MathRand'):
+  assert forbidden not in source
+
  p1,d1=generated();p2,d2=generated();assert p1==p2 and d1==d2
  source=(d1[RUNTIME]+d1[TESTER]).decode()
  for required in ('NoraLayer1Compute','EMA','Highest','Lowest',MARKER,FAIL):assert required in source
