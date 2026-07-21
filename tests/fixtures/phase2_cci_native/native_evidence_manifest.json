@@ -1,0 +1,79 @@
+{
+  "acceptance": "PASS_EXACT",
+  "compiled": {
+    "compile_log_sha256": "b6f151f6bbbb8a0ed27d08a93964b332261bceb23ff6f63dc29403eb0335d68c",
+    "errors": 0,
+    "ex5_path": "NoraPhase2CCITesterV1.ex5",
+    "ex5_sha256": "1e492d7753f79386769e978189e224d2aaec374f5e08776c4b256d3d9062818c",
+    "warnings": 0
+  },
+  "contexts": {
+    "A1": {
+      "completion_marker": "NORA_PHASE2_CCI_COMPLETE_V1",
+      "completion_marker_present": true,
+      "csv_rows": 11,
+      "csv_sha256": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
+      "execution_sha256": "d39148a4da8b9a83ebb111d07cd4cade3dc58fec57e2050d712f74891aed8848",
+      "failure_marker": "NORA_PHASE2_CCI_FAIL_V1",
+      "failure_marker_present": false,
+      "native_process_exit_status": 0,
+      "run_id": "CCI-A1-12518876e6ef4887a0252a8876a4b7e0",
+      "status": "completed",
+      "symbol": "GDAXI"
+    },
+    "A2": {
+      "completion_marker": "NORA_PHASE2_CCI_COMPLETE_V1",
+      "completion_marker_present": true,
+      "csv_rows": 11,
+      "csv_sha256": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
+      "execution_sha256": "d39148a4da8b9a83ebb111d07cd4cade3dc58fec57e2050d712f74891aed8848",
+      "failure_marker": "NORA_PHASE2_CCI_FAIL_V1",
+      "failure_marker_present": false,
+      "native_process_exit_status": 0,
+      "run_id": "CCI-A2-e2f52c5512564f269e86f172753bf3a9",
+      "status": "completed",
+      "symbol": "GDAXI"
+    },
+    "B1": {
+      "completion_marker": "NORA_PHASE2_CCI_COMPLETE_V1",
+      "completion_marker_present": true,
+      "csv_rows": 11,
+      "csv_sha256": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
+      "execution_sha256": "1b46351120db82780a3d367627176ca5f51ea0b56d67b84f7a322730f41010dc",
+      "failure_marker": "NORA_PHASE2_CCI_FAIL_V1",
+      "failure_marker_present": false,
+      "native_process_exit_status": 0,
+      "run_id": "CCI-B1-ebbe6cc161a04290b666d980b85d9f0d",
+      "status": "completed",
+      "symbol": "AUDCAD"
+    },
+    "B2": {
+      "completion_marker": "NORA_PHASE2_CCI_COMPLETE_V1",
+      "completion_marker_present": true,
+      "csv_rows": 11,
+      "csv_sha256": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
+      "execution_sha256": "1b46351120db82780a3d367627176ca5f51ea0b56d67b84f7a322730f41010dc",
+      "failure_marker": "NORA_PHASE2_CCI_FAIL_V1",
+      "failure_marker_present": false,
+      "native_process_exit_status": 0,
+      "run_id": "CCI-B2-72362ea5c5d341f587278d44b1f51d9c",
+      "status": "completed",
+      "symbol": "AUDCAD"
+    }
+  },
+  "cross_context_csv_sha256_equal": true,
+  "expected_vector_identity": "f2a99a5eb59ef38b0bbcfaa3447d2b535def18b7b5bafecfc2798c0dd599ed7f",
+  "grammar_admitted": false,
+  "journal_completion_marker_count": 8,
+  "journal_path": "tester-journal.log",
+  "journal_sha256": "7fab41aaef2a46a0dd98f84e36b15c308e3f46550834df14d79c4f82759dde38",
+  "max_abs_error": 0.0,
+  "mismatch_count": 0,
+  "native_parity_accepted": true,
+  "package_identity": "1b2824cf6df13d72d0a79481b31fc1af665f6509fab3b56a9bcf2fbae9d38fee",
+  "rust_evidence_identity": "23eeef6a0a3dbac17bd9409b227fab987e6bb19a74136cad301a17f1e7afca08",
+  "schema_version": "nora.phase2_cci_native_evidence_manifest_v1",
+  "searchable": false,
+  "shared_csv_sha256": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
+  "target_identifier": "layer1.cci"
+}

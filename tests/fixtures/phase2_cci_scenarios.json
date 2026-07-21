@@ -1,0 +1,9 @@
+{
+  "schema_version":"nora.phase2_cci_scenarios_v1",
+  "contract":{"algorithm":"typical price rolling CCI: (TP-mean)/(0.015*mean absolute deviation)","typical_price":"(high+low+close)/3","warmup":"NULL through period-2","zero_deviation":"0.0","invalid_period":"period 0"},
+  "scenarios":[
+    {"id":"linear_typical_price","node":"CCI","output":"value","period":3,"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-01T00:03:00Z","2026-06-01T00:04:00Z","2026-06-01T00:05:00Z"],"high":[11,12,13,14,15,16],"low":[9,10,11,12,13,14],"close":[10,11,12,13,14,15]},
+    {"id":"flat_market","node":"CCI","output":"value","period":3,"timestamps":["2026-06-02T00:00:00Z","2026-06-02T00:01:00Z","2026-06-02T00:02:00Z","2026-06-02T00:03:00Z"],"high":[7,7,7,7],"low":[7,7,7,7],"close":[7,7,7,7]},
+    {"id":"invalid_period","node":"CCI","output":"value","period":0,"timestamps":["2026-06-03T00:00:00Z"],"high":[10],"low":[9],"close":[9.5]}
+  ]
+}

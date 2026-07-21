@@ -148,21 +148,38 @@
       "status": "accepted",
       "rust": {
         "implementation": "implemented",
-        "source_paths": ["engine/labengine/src/indicators.rs", "engine/labengine/src/task.rs"],
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
         "identity": "5ca60a497a58dc17d933a793b54b1bcc5ce7e754aaf22ed909c81f8d7d1568f5",
-        "tests": ["tests/test_phase2_er_local_evidence.py"]
+        "tests": [
+          "tests/test_phase2_er_local_evidence.py"
+        ]
       },
       "mql5": {
         "generation": "deterministic",
         "source_identity": "b41e78c103febb8cdd4306982f1e95bddc7837827689ec3684adeee2c1f5e2a3"
       },
       "native": {
-        "compile_evidence_paths": ["tests/fixtures/phase2_er_native/compile/er-compile.log", "tests/fixtures/phase2_er_native/compile/NoraPhase2ErTesterV1.ex5"],
-        "execution_evidence_paths": ["tests/fixtures/phase2_er_native/native_evidence_manifest.json", "tests/fixtures/phase2_er_native/runs/"]
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_er_native/compile/er-compile.log",
+          "tests/fixtures/phase2_er_native/compile/NoraPhase2ErTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_er_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_er_native/runs/"
+        ]
       },
       "parity_result_identity": "4cf1c7ccb7e7087ff6af007ddce1faf369a305a337eac133366290dbd2de8618",
-      "evidence_paths": ["tests/fixtures/phase2_er_scenarios.json", "tests/fixtures/phase2_er_local_evidence/rust_evidence.json", "tests/test_phase2_er_native.py"],
-      "commits": ["829f1293c34bf55b72fbe5908b71f94bfd80f852"],
+      "evidence_paths": [
+        "tests/fixtures/phase2_er_scenarios.json",
+        "tests/fixtures/phase2_er_local_evidence/rust_evidence.json",
+        "tests/test_phase2_er_native.py"
+      ],
+      "commits": [
+        "829f1293c34bf55b72fbe5908b71f94bfd80f852"
+      ],
       "searchable": false,
       "missing_gate": "complete Phase-2 gate; preserve narrow ER parity acceptance only"
     },
@@ -173,21 +190,38 @@
       "status": "accepted",
       "rust": {
         "implementation": "implemented",
-        "source_paths": ["engine/labengine/src/indicators.rs", "engine/labengine/src/task.rs"],
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
         "identity": "0f9e5dc1d7f6226cbed0c98817d4da2c20ae3367cbc1ef13c44ad97e93a9a69c",
-        "tests": ["tests/test_phase2_kama_local_evidence.py"]
+        "tests": [
+          "tests/test_phase2_kama_local_evidence.py"
+        ]
       },
       "mql5": {
         "generation": "deterministic",
         "source_identity": "33d4fde7695446556e92c917a4434eaf17c57d288b5a5f01856a7ea66470182a"
       },
       "native": {
-        "compile_evidence_paths": ["tests/fixtures/phase2_kama_native/compile/kama-compile.log", "tests/fixtures/phase2_kama_native/compile/NoraPhase2KamaTesterV1.ex5"],
-        "execution_evidence_paths": ["tests/fixtures/phase2_kama_native/native_evidence_manifest.json", "tests/fixtures/phase2_kama_native/runs/"]
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_kama_native/compile/kama-compile.log",
+          "tests/fixtures/phase2_kama_native/compile/NoraPhase2KamaTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_kama_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_kama_native/runs/"
+        ]
       },
       "parity_result_identity": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
-      "evidence_paths": ["tests/fixtures/phase2_kama_scenarios.json", "tests/fixtures/phase2_kama_local_evidence/rust_evidence.json", "tests/test_phase2_kama_native.py"],
-      "commits": ["36d3d51a0be0a17f05ef1a6603654dd2b819bf31"],
+      "evidence_paths": [
+        "tests/fixtures/phase2_kama_scenarios.json",
+        "tests/fixtures/phase2_kama_local_evidence/rust_evidence.json",
+        "tests/test_phase2_kama_native.py"
+      ],
+      "commits": [
+        "36d3d51a0be0a17f05ef1a6603654dd2b819bf31"
+      ],
       "searchable": false,
       "missing_gate": "complete Phase-2 gate; preserve narrow KAMA parity acceptance only"
     },
@@ -253,21 +287,38 @@
       "status": "accepted",
       "rust": {
         "implementation": "implemented",
-        "source_paths": ["engine/labengine/src/indicators.rs", "engine/labengine/src/task.rs"],
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
         "identity": "689aa7cb8c58d905eb704ac05bab25a81985fd7b9871807ed2f704c69cbcf35b",
-        "tests": ["tests/test_phase2_linear_regression_local_evidence.py"]
+        "tests": [
+          "tests/test_phase2_linear_regression_local_evidence.py"
+        ]
       },
       "mql5": {
         "generation": "deterministic",
         "source_identity": "d8a446472c703247acd28e34f9c7df65b972994b4b92744c92563988759cdfbb"
       },
       "native": {
-        "compile_evidence_paths": ["tests/fixtures/phase2_linear_regression_native/compile/linear-regression-compile.log", "tests/fixtures/phase2_linear_regression_native/compile/NoraPhase2LinearRegressionTesterV1.ex5"],
-        "execution_evidence_paths": ["tests/fixtures/phase2_linear_regression_native/native_evidence_manifest.json", "tests/fixtures/phase2_linear_regression_native/runs/"]
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_linear_regression_native/compile/linear-regression-compile.log",
+          "tests/fixtures/phase2_linear_regression_native/compile/NoraPhase2LinearRegressionTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_linear_regression_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_linear_regression_native/runs/"
+        ]
       },
       "parity_result_identity": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
-      "evidence_paths": ["tests/fixtures/phase2_linear_regression_scenarios.json", "tests/fixtures/phase2_linear_regression_local_evidence/rust_evidence.json", "tests/test_phase2_linear_regression_native.py"],
-      "commits": ["d79025e6efa0839eafcac43634e7e36d73aa6ae6"],
+      "evidence_paths": [
+        "tests/fixtures/phase2_linear_regression_scenarios.json",
+        "tests/fixtures/phase2_linear_regression_local_evidence/rust_evidence.json",
+        "tests/test_phase2_linear_regression_native.py"
+      ],
+      "commits": [
+        "d79025e6efa0839eafcac43634e7e36d73aa6ae6"
+      ],
       "searchable": false,
       "missing_gate": "complete Phase-2 gate; preserve narrow Linear Regression parity acceptance only"
     },
@@ -324,7 +375,7 @@
       "id": "layer1.cci",
       "category": "layer1_indicator",
       "name": "CCI",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -336,20 +387,32 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "deterministic_batch_generator",
+        "source_identity": "1b2824cf6df13d72a0d79481b31fc1af665f6509fab3b56a9bcf2fbae9d38fee"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_cci_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_cci_native/compile.log",
+          "tests/fixtures/phase2_cci_native/NoraPhase2CCITesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_cci_native/runs/CCI-A1-12518876e6ef4887a0252a8876a4b7e0",
+          "tests/fixtures/phase2_cci_native/runs/CCI-A2-e2f52c5512564f269e86f172753bf3a9",
+          "tests/fixtures/phase2_cci_native/runs/CCI-B1-ebbe6cc161a04290b666d980b85d9f0d",
+          "tests/fixtures/phase2_cci_native/runs/CCI-B2-72362ea5c5d341f587278d44b1f51d9c"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
+      "evidence_paths": [
+        "tests/fixtures/phase2_cci_local_evidence/rust_evidence.json",
+        "tests/fixtures/phase2_cci_native/native_evidence_manifest.json"
+      ],
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": null
     },
     {
       "id": "layer1.roc",
@@ -2104,12 +2167,12 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 37,
-    "partially_proven": 8,
-    "implemented_but_unproved": 5,
-    "absent": 0,
-    "deferred": 1,
-    "out_of_scope": 0
+      "accepted": 38,
+      "partially_proven": 8,
+      "implemented_but_unproved": 4,
+      "absent": 0,
+      "deferred": 1,
+      "out_of_scope": 0
     },
     "accepted_native_canary_count": 6,
     "grammar_admitted_node_count": 2,
@@ -2204,15 +2267,7 @@
     "2U native hand-designed strategy cases, session/time/DST cases, Linux replay, and placebo integrity fixtures",
     "2V complete Phase-2 gate audit before any Phase-3 authorization"
   ],
-  "next_task": {
-    "task_id": "remaining_layer1_native_parity",
-    "phase_label": "Phase 2",
-    "scope": "Complete the remaining Layer-1 native-parity chains without grammar admission, search, or Phase 3.",
-    "why_next": "The execution and narrow time-rule canaries are native-reconciled; remaining Layer-1 parity is now the highest-dependency unproved implementation gate.",
-    "execution_boundary": "local native parity preparation and validation",
-    "search_authorized": false,
-    "phase3_authorized": false
-  },
+  "next_task": "next unproved Layer-1 family after CCI",
   "evidence_package_completeness": {
     "canary.condition_native": "legacy_committed_summary",
     "canary.sma_cross_native": "legacy_committed_summary",
