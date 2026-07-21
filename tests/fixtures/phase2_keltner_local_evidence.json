@@ -1,0 +1,363 @@
+{
+  "schema_version": "nora.phase2_keltner_rust_evidence_v1",
+  "rust_evidence_identity": "c6ca2b2d206ddc280ee615748d6e8ae21fff3da24d704220dcd12ad0e884c1f9",
+  "expected_vector_identity": "c6ca2b2d206ddc280ee615748d6e8ae21fff3da24d704220dcd12ad0e884c1f9",
+  "output": {
+    "ok": true,
+    "rows": [
+      {
+        "classification": "warmup_or_null",
+        "node": "Keltner",
+        "null": true,
+        "output": "middle",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Keltner",
+        "null": true,
+        "output": "middle",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 11.666666666666666
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 13.333333333333332
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 14.666666666666666
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:05:00Z",
+        "value": 16.333333333333332
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Keltner",
+        "null": true,
+        "output": "upper",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Keltner",
+        "null": true,
+        "output": "upper",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 17.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 18.888888888888886
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 20.370370370370367
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:05:00Z",
+        "value": 22.1358024691358
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Keltner",
+        "null": true,
+        "output": "lower",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Keltner",
+        "null": true,
+        "output": "lower",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 6.333333333333333
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 7.777777777777778
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 8.962962962962964
+      },
+      {
+        "classification": "steady_state",
+        "node": "Keltner",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "channel_rising",
+        "timestamp": "2026-06-01T00:05:00Z",
+        "value": 10.530864197530864
+      },
+      {
+        "classification": "invalid_input",
+        "node": "Keltner",
+        "null": true,
+        "output": "middle",
+        "reason_code": "invalid_period",
+        "row": null,
+        "scenario_id": "invalid_period",
+        "timestamp": null,
+        "value": null
+      }
+    ],
+    "schema_version": "nora.layer1_rust_output_v1",
+    "task_type": "layer1_parity_v1"
+  },
+  "task": {
+    "task_version": 1,
+    "task_type": "layer1_parity_v1",
+    "scenarios": [
+      {
+        "id": "channel_rising",
+        "node": "Keltner",
+        "output": "middle",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z",
+          "2026-06-01T00:05:00Z"
+        ],
+        "high": [
+          11,
+          13,
+          14,
+          16,
+          17,
+          19
+        ],
+        "low": [
+          9,
+          10,
+          11,
+          13,
+          14,
+          16
+        ],
+        "close": [
+          10,
+          12,
+          13,
+          15,
+          16,
+          18
+        ]
+      },
+      {
+        "id": "channel_rising",
+        "node": "Keltner",
+        "output": "upper",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z",
+          "2026-06-01T00:05:00Z"
+        ],
+        "high": [
+          11,
+          13,
+          14,
+          16,
+          17,
+          19
+        ],
+        "low": [
+          9,
+          10,
+          11,
+          13,
+          14,
+          16
+        ],
+        "close": [
+          10,
+          12,
+          13,
+          15,
+          16,
+          18
+        ]
+      },
+      {
+        "id": "channel_rising",
+        "node": "Keltner",
+        "output": "lower",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z",
+          "2026-06-01T00:05:00Z"
+        ],
+        "high": [
+          11,
+          13,
+          14,
+          16,
+          17,
+          19
+        ],
+        "low": [
+          9,
+          10,
+          11,
+          13,
+          14,
+          16
+        ],
+        "close": [
+          10,
+          12,
+          13,
+          15,
+          16,
+          18
+        ]
+      },
+      {
+        "id": "invalid_period",
+        "node": "Keltner",
+        "output": "middle",
+        "period": 0,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-02T00:00:00Z"
+        ],
+        "high": [
+          2
+        ],
+        "low": [
+          1
+        ],
+        "close": [
+          1.5
+        ]
+      }
+    ]
+  }
+}

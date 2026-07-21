@@ -609,7 +609,7 @@
       "id": "layer1.keltner",
       "category": "layer1_indicator",
       "name": "Keltner Channel",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -621,20 +621,32 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
+        "generation": "deterministic_batch_generator",
         "source_identity": null
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_keltner_native/compile.log",
+          "tests/fixtures/phase2_keltner_native/NoraPhase2KeltnerTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_keltner_native/runs/KELT-A1-1947296179",
+          "tests/fixtures/phase2_keltner_native/runs/KELT-A2-2007337771",
+          "tests/fixtures/phase2_keltner_native/runs/KELT-B1-1327534501",
+          "tests/fixtures/phase2_keltner_native/runs/KELT-B2-1852244555"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
+      "evidence_paths": [
+        "tests/fixtures/phase2_keltner_local_evidence.json",
+        "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json"
+      ],
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": null
     },
     {
       "id": "layer1.highest",
@@ -2180,9 +2192,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-      "accepted": 39,
+      "accepted": 40,
       "partially_proven": 8,
-      "implemented_but_unproved": 3,
+      "implemented_but_unproved": 2,
       "absent": 0,
       "deferred": 1,
       "out_of_scope": 0

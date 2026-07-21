@@ -1,0 +1,63 @@
+{
+  "schema_version": "nora.phase2_keltner_native_evidence_v1",
+  "compile": {
+    "status": "compiled",
+    "error_count": 0,
+    "warning_count": 0,
+    "ex5_size_bytes": 14338
+  },
+  "journal_completion_marker_count": 4,
+  "failure_marker_count": 0,
+  "contexts": [
+    {
+      "run_id": "KELT-A1-1947296179",
+      "symbol": "GDAXI",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 19,
+      "csv_sha256": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
+      "execution_sha256": "366026f6b681a72e28c723d170b1b420568036d9d78bda6a79ae1eecebbaa294"
+    },
+    {
+      "run_id": "KELT-A2-2007337771",
+      "symbol": "GDAXI",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 19,
+      "csv_sha256": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
+      "execution_sha256": "8d6a8a5a79a4d9b74474f0aeb9c328f59eee9ec7a677342fd5921052c265bfc3"
+    },
+    {
+      "run_id": "KELT-B1-1327534501",
+      "symbol": "AUDCAD",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 19,
+      "csv_sha256": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
+      "execution_sha256": "e33c3c6366c81347d28e83174a51cda74526addd7a321d645f6c034f6ccb823e"
+    },
+    {
+      "run_id": "KELT-B2-1852244555",
+      "symbol": "AUDCAD",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 19,
+      "csv_sha256": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
+      "execution_sha256": "e0febdef58d17ecad905b5b233577d05103792a61381827fb54d3e8679870ccf"
+    }
+  ],
+  "cross_context_csv_identity": true,
+  "rust_native_reconciliation": "exact",
+  "native_parity_accepted": true,
+  "searchable": false,
+  "grammar_admitted": false,
+  "manifest_identity": "76047d6b381175229ba0e9d7e77bc7927ffbeaf500265f085a3a124940f60aeb"
+}
