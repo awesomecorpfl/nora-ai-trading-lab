@@ -288,32 +288,50 @@
       "id": "layer1.rsi",
       "category": "layer1_indicator",
       "name": "RSI",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
         ],
-        "identity": null,
+        "identity": "897290757d5898fd0a5edcc41fc6b2f24af2ec9d851bef9cbeb9e8d2d283dfe5",
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2_rsi_local_evidence.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated_isolated_native_target",
+        "source_identity": "4f8c8d9ad4d05654fceab878f6bd7691f919a741776141166e93116f6ba3bdc6"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_rsi_native/rsi-compile.log",
+          "tests/fixtures/phase2_rsi_native/NoraPhase2RsiTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_rsi_native/native_acceptance.json",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-A1/nora_phase2_rsi_v1.csv",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-A2/nora_phase2_rsi_v1.csv",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-B1/nora_phase2_rsi_v1.csv",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-B2/nora_phase2_rsi_v1.csv"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "b01e98c070edc3dcd8aaa1a0aa78b17c6ddf5860fb73a5e497e109deb80b62c1",
+      "evidence_paths": [
+        "tests/fixtures/phase2_rsi_local_evidence/rust_evidence.json",
+        "tests/fixtures/phase2_rsi_native/native_acceptance.json"
+      ],
       "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
+        "90377cc6eb5159e314ab8f9c87cb916125802335",
+        "0fcff2acf2752c148295838e4e51274e2d502e4b",
+        "6e17889968e44dab378cb2b125df41d0ae3b72f3",
+        "2facc2ec6555e179ebd8d00c9c581e17c49769b2"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "grammar admission and search remain closed until complete Phase 2"
     },
     {
       "id": "layer1.cci",
@@ -2071,9 +2089,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 30,
+    "accepted": 31,
     "partially_proven": 8,
-    "implemented_but_unproved": 12,
+    "implemented_but_unproved": 11,
     "absent": 0,
     "deferred": 1,
     "out_of_scope": 0

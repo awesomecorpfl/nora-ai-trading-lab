@@ -1,0 +1,14 @@
+scenario_id	node	output	row	timestamp	value	null	classification	reason_code
+rsi_ordinary_p3	RSI	value	0	2042-01-01 00:00	NULL	true	warmup_or_null	warmup
+rsi_ordinary_p3	RSI	value	1	2042-01-01 00:01	NULL	true	warmup_or_null	warmup
+rsi_ordinary_p3	RSI	value	2	2042-01-01 00:02	NULL	true	warmup_or_null	warmup
+rsi_ordinary_p3	RSI	value	3	2042-01-01 00:03	75.0000000000000000	false	steady_state	ok
+rsi_ordinary_p3	RSI	value	4	2042-01-01 00:04	81.8181818181818131	false	steady_state	ok
+rsi_ordinary_p3	RSI	value	5	2042-01-01 00:05	58.0645161290322562	false	steady_state	ok
+rsi_ordinary_p3	RSI	value	6	2042-01-01 00:06	40.4494382022471939	false	steady_state	ok
+rsi_flat_p3	RSI	value	0	2042-01-02 00:00	NULL	true	warmup_or_null	warmup
+rsi_flat_p3	RSI	value	1	2042-01-02 00:01	NULL	true	warmup_or_null	warmup
+rsi_flat_p3	RSI	value	2	2042-01-02 00:02	NULL	true	warmup_or_null	warmup
+rsi_flat_p3	RSI	value	3	2042-01-02 00:03	50.0000000000000000	false	steady_state	ok
+rsi_flat_p3	RSI	value	4	2042-01-02 00:04	50.0000000000000000	false	steady_state	ok
+rsi_invalid_period	RSI	value	NULL	NULL	NULL	true	invalid_input	invalid_period
