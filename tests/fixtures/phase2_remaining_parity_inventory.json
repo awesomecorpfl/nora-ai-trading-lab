@@ -1,124 +1,907 @@
 {
-  "schema_version": 1,
-  "layer1_authority": "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
-  "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
-  "phase": "2",
-  "search_authorized": false,
-  "status_values": [
-    "accepted",
-    "partially_proven",
-    "implemented_but_unproved",
-    "absent",
-    "deferred",
-    "out_of_scope"
+  "acceptance_requirements": [
+    {
+      "accepted_evidence": [
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "blocks_phase2": false,
+      "id": "synthetic_execution_fixtures",
+      "missing_evidence": "none for the frozen twelve-scenario execution contract",
+      "smallest_next_task": "none; preserve narrow contract while advancing broker-clock fixtures",
+      "status": "accepted"
+    },
+    {
+      "accepted_evidence": [
+        "docs/phase2j_mql5_condition_tester_canary.md",
+        "docs/phase2l_mql5_sma_cross_native_canary.md",
+        "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json"
+      ],
+      "blocks_phase2": true,
+      "id": "layer1_indicator_parity",
+      "missing_evidence": "ATR and Distance/ATR native parity is accepted, but typed AST registration, canonicalization/hashing, and MQL5 translation are not admitted; remaining primitives lack matched MQL5/native parity",
+      "smallest_next_task": "local-only typed AST admission for ATR and Distance/ATR",
+      "status": "partial"
+    },
+    {
+      "accepted_evidence": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
+      "blocks_phase2": false,
+      "id": "strategy_session_time_dst_parity",
+      "missing_evidence": "parameterized frozen canary only; holiday calendars and universal production window defaults remain unsupported",
+      "smallest_next_task": "preserve the narrow accepted clock contract while advancing remaining Layer-1 and strategy reconciliation gates",
+      "status": "accepted"
+    },
+    {
+      "accepted_evidence": [
+        "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json"
+      ],
+      "blocks_phase2": true,
+      "id": "ten_hand_designed_strategies",
+      "missing_evidence": "Four-context embedded system smoke is accepted, but trade-by-trade strategy reconciliation, provisional parity budget, and finalist edge-survival evidence are still absent",
+      "smallest_next_task": "select one non-search finalist contract and produce a deterministic trade-by-trade reconciliation with frozen cost and parity budget",
+      "status": "partial"
+    },
+    {
+      "accepted_evidence": [
+        "tests/fixtures/phase2_linux_replay_fixture.json"
+      ],
+      "blocks_phase2": false,
+      "id": "linux_semantic_determinism",
+      "missing_evidence": "none for the committed six-stage Linux experiment replay contract; broader experiment families remain outside this narrow fixture",
+      "smallest_next_task": "preserve the narrow replay contract while advancing remaining strategy and Layer-1 gates",
+      "status": "accepted"
+    },
+    {
+      "accepted_evidence": [
+        "tests/fixtures/phase2_placebo_edge_fixture.json"
+      ],
+      "blocks_phase2": false,
+      "id": "placebo_scrambled_edge",
+      "missing_evidence": "none for the committed known-edge scramble contract; this does not establish a finalist's broker-native edge survival",
+      "smallest_next_task": "preserve the narrow placebo contract while advancing finalist edge-survival gates",
+      "status": "accepted"
+    }
   ],
+  "evidence_package_completeness": {
+    "canary.atr_distance_native": "self_contained_raw_native",
+    "canary.condition_native": "legacy_committed_summary",
+    "canary.execution_model_native": "self_contained_raw_native_returned_contract_v2",
+    "canary.slope_native": "self_contained_raw_native",
+    "canary.sma_cross_native": "legacy_committed_summary"
+  },
+  "grammar_admission_rule": {
+    "phase3_authorized": false,
+    "required_fields": [
+      "typed_ast_schema_node_registration",
+      "rust_evaluation_path",
+      "canonicalization_support",
+      "hashing_support",
+      "mql5_translation",
+      "native_parity_fixture"
+    ],
+    "search_authorized": false
+  },
+  "historical_label_discrepancies": [
+    "Phase 2J and 2L documentation records native success, but durable raw compile/run evidence is committed only for Phase 2N.",
+    "Phase 2N commit 29be0d0 documented ignored artifacts; f201077 is the durable evidence repair.",
+    "The Phase 2A-B-C labels include substantial implementation and local acceptance but do not establish the roadmap's full Rust-to-MT5 parity gate."
+  ],
+  "inventory_summary": {
+    "accepted_native_canary_count": 6,
+    "grammar_admitted_node_count": 2,
+    "item_count": 51,
+    "phase2_acceptance_gate": "blocked",
+    "status_counts": {
+      "absent": 0,
+      "accepted": 41,
+      "deferred": 1,
+      "implemented_but_unproved": 0,
+      "out_of_scope": 0,
+      "partially_proven": 8
+    }
+  },
   "items": [
     {
-      "id": "layer1.sma",
-      "category": "layer1_indicator",
-      "name": "SMA",
-      "status": "accepted",
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_translation_evidence.json"
+      ],
+      "id": "ast.and",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "and",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
       "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
+      ],
+      "id": "ast.boolean_series",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "boolean_series",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_translation_evidence.json"
+      ],
+      "id": "ast.compare",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "compare gt/gte/lt/lte",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_translation_evidence.json"
+      ],
+      "id": "ast.not",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "not",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
+      ],
+      "id": "ast.number",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "number",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
+      ],
+      "id": "ast.numeric_series",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "numeric_series",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "ast_node",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_translation_evidence.json"
+      ],
+      "id": "ast.or",
+      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "or",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "fixed_data_native_canary",
+      "commits": [
+        "c37f0edfc4218e00850550f3670f86c545d84877"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2r_mql5_condition_native/native_evidence_manifest.json"
+      ],
+      "id": "canary.condition_native",
+      "missing_gate": "complete Phase-2 admission gate",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "583fe60539d2da2cb46f054d9800d7702efd577b6984d23757794ca91ab259e6"
+      },
+      "name": "nullable condition tester",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2r_mql5_condition_native/compile/compile_manifest.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2r_mql5_condition_native/run1/execution_manifest.json",
+          "tests/fixtures/phase2r_mql5_condition_native/run2/execution_manifest.json"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "tests/test_phase2j_tester_canary.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "fixed_data_native_canary",
+      "commits": [
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "grammar_admitted": false,
+      "id": "canary.execution_model_native",
+      "missing_gate": "fixed embedded execution semantics only; complete Phase-2 gate remains false",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
+      },
+      "name": "frozen execution-model tester",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "rust": {
+        "identity": "597e997b0a7af9cf6feba56766cc48b52d7a42df67c2cd0226ed178f039b60a5",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/simulator.rs",
+          "lab/phase2_execution.py"
+        ],
+        "tests": [
+          "tests/test_phase2_execution_returned.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "fixed_data_native_canary",
+      "commits": [
+        "f2010773ec3cd47e8d1f5c74512e45b12b970786"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json"
+      ],
+      "id": "canary.slope_native",
+      "missing_gate": "complete Phase-2 admission gate",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "a25fe8a6b459499debdbc9d48c8d4dd498a9684bf67b196501ebed743b48b54d"
+      },
+      "name": "slope tester",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2n_mql5_slope_native/compile/compile_manifest.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2n_mql5_slope_native/run1/execution_manifest.json",
+          "tests/fixtures/phase2n_mql5_slope_native/run2/execution_manifest.json"
+        ]
+      },
+      "parity_result_identity": "221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f",
+      "rust": {
+        "identity": "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs"
         ],
-        "identity": null,
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "tests/test_phase2n_mql5_slope_native.py"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "fixed_data_native_canary",
+      "commits": [
+        "fec9fd2fab926f69720407f48c1737e533f732d0"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2r_mql5_sma_cross_native/native_evidence_manifest.json"
+      ],
+      "id": "canary.sma_cross_native",
+      "missing_gate": "complete Phase-2 admission gate",
       "mql5": {
         "generation": "generated",
-        "source_identity": "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
+        "source_identity": "78a52f288df45a93e3b026846c7283ddb6d93bcc8192874198827ec93d5041e4"
       },
+      "name": "SMA/cross/condition tester",
       "native": {
         "compile_evidence_paths": [
-          "docs/phase2l_mql5_sma_cross_native_canary.md"
+          "tests/fixtures/phase2r_mql5_sma_cross_native/compile/compile_manifest.json"
         ],
         "execution_evidence_paths": [
-          "docs/phase2l_mql5_sma_cross_native_canary.md"
+          "tests/fixtures/phase2r_mql5_sma_cross_native/run1/execution_manifest.json",
+          "tests/fixtures/phase2r_mql5_sma_cross_native/run2/execution_manifest.json"
         ]
       },
       "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
-      "evidence_paths": [
-        "tests/fixtures/phase2k_mql5_sma_cross/runtime/NoraPhase2SeriesRuntimeV1.manifest.json",
-        "tests/fixtures/phase2k_mql5_sma_cross/series_evidence.json"
-      ],
-      "commits": [
-        "c489f83d092a7a33414b9dd4debf3e320607da0c",
-        "92851bf3431dcb6cd67392843aa8d73f6298e1c6"
-      ],
-      "searchable": false,
-      "missing_gate": "commit durable raw native compile/run evidence and include SMA in a broader parity dataset"
-    },
-    {
-      "id": "layer1.ema",
-      "category": "layer1_indicator",
-      "name": "EMA",
-      "status": "accepted",
       "rust": {
+        "identity": null,
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/ast.rs",
-          "engine/labengine/src/task.rs"
+          "engine/labengine/src/ast.rs"
         ],
-        "identity": "8d9c826fbf38563a96fcce863882f11209839cde55849e78410656f3323ccaab",
         "tests": [
-          "tests/test_phase2_layer1_ast_mql5.py",
-          "tests/test_phase2_layer1_native.py",
-          "tests/test_phase2_layer1_inventory.py"
+          "tests/test_phase2l_series_tester_canary.py"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "deterministic_replay_case",
+      "commits": [
+        "cc7e1d751f70f74f306ed51e6375891ed737e928"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_linux_replay_fixture.json",
+        "tests/fixtures/phase2_linux_replay_m1.parquet",
+        "lab/phase2_linux_replay.py"
+      ],
+      "id": "determinism.linux_replay",
+      "missing_gate": "complete Phase-2 admission gate",
+      "mql5": {
+        "generation": "out_of_scope",
+        "source_identity": null
+      },
+      "name": "full Linux experiment semantic replay",
+      "native": {
+        "compile_evidence_paths": [],
+        "execution_evidence_paths": []
+      },
+      "parity_result_identity": "c1bbff436e18344e258c51f6c239275fc60ba5b21baf51020d71616229cce889",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "lab/phase2_linux_replay.py",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/simulator.rs",
+          "engine/labengine/src/rng_stream.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_linux_replay.py",
+          "tests/test_phase2t_linux_replay_acceptance.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "execution_simulator",
+      "commits": [
+        "d3859319a732d3f45f45b1ce0e2967bef2089606",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "id": "execution.gap_open_brackets",
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary",
       "mql5": {
         "generation": "generated",
-        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
       },
+      "name": "gap-open bracket fills",
       "native": {
         "compile_evidence_paths": [
-          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
         ],
+        "execution_attempted": true,
         "execution_evidence_paths": [
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
-        ]
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
       },
-      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
-      "evidence_paths": [
-        "docs/phase2_layer1_batch_one_native_acceptance.md",
-        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
-        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow EMA/value acceptance only"
-    },
-    {
-      "id": "layer1.adx",
-      "category": "layer1_indicator",
-      "name": "ADX",
-      "status": "accepted",
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
       "rust": {
+        "identity": null,
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/task.rs"
+          "engine/labengine/src/simulator.rs"
         ],
-        "identity": "c038ae3a3a309d46493496e219d644c55a4e6ac045aeeadb168133869aedc899",
         "tests": [
-          "tests/test_phase2_adx_local_evidence.py"
+          "tests/test_phase1.py"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "execution_simulator",
+      "commits": [
+        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2_initial_bracket_long_task.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "id": "execution.initial_brackets",
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
+      },
+      "name": "initial SL/TP brackets",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/simulator.rs"
+        ],
+        "tests": [
+          "tests/test_phase1.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "execution_simulator",
+      "commits": [
+        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2_time_exit_long_task.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "id": "execution.maximum_bars_exit",
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
+      },
+      "name": "maximum-bars time exit",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/simulator.rs"
+        ],
+        "tests": [
+          "tests/test_phase1.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "execution_simulator",
+      "commits": [
+        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
+        "ef32a87e3bf89c9e0ce7f8206607cdd72fd20f85",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_execution_rust_evidence.json",
+        "tests/fixtures/phase2x_native_batch_v4.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "id": "execution.next_open_entry",
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
+      },
+      "name": "next-open entry and typed intents",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/simulator.rs"
+        ],
+        "tests": [
+          "tests/test_phase1.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "execution_simulator",
+      "commits": [
+        "d3859319a732d3f45f45b1ce0e2967bef2089606",
+        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2_initial_bracket_collision_task.json",
+        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
+      ],
+      "id": "execution.pessimistic_ambiguity",
+      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
+        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
+      },
+      "name": "pessimistic intrabar ambiguity",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
+          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
+          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/simulator.rs"
+        ],
+        "tests": [
+          "tests/test_phase1.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "grammar_admission",
+      "commits": [],
+      "evidence_paths": [
+        "architecture-lock/FINAL_ARCHITECTURE.md",
+        "architecture-lock/ARCHITECTURE_DECISIONS.md"
+      ],
+      "id": "grammar.search_admission",
+      "missing_gate": "complete grammar admission rule for every node and indicator plus Phase-2 gate",
+      "mql5": {
+        "generation": "partial",
+        "source_identity": null
+      },
+      "name": "searchable initial v1 grammar",
+      "native": {
+        "compile_evidence_paths": [],
+        "execution_evidence_paths": []
+      },
+      "parity_result_identity": null,
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/ast.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "deferred"
+    },
+    {
+      "category": "placebo_scrambled_integrity_case",
+      "commits": [
+        "d650f6a86786e78f11e99c1d914bc89b0f8b4d52"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_placebo_edge_fixture.json",
+        "lab/phase2_placebo.py"
+      ],
+      "id": "integrity.placebo_scrambled_edge",
+      "missing_gate": "complete Phase-2 admission gate",
+      "mql5": {
+        "generation": "out_of_scope",
+        "source_identity": null
+      },
+      "name": "scrambled-data edge destruction",
+      "native": {
+        "compile_evidence_paths": [],
+        "execution_evidence_paths": []
+      },
+      "parity_result_identity": "79fa75f756642936ee824472dffab7dbf2905dcc06911692c4cfcd363c409b23",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "lab/phase2_placebo.py"
+        ],
+        "tests": [
+          "tests/test_phase2_numeric_parity.py",
+          "tests/test_phase2t_placebo_acceptance.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "3de3891c94c20011d7196a654c1ace716bfbb1a9"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_adx_scenarios.json",
+        "tests/fixtures/phase2_adx_local_evidence/rust_evidence.json",
+        "tests/test_phase2_adx_native.py"
+      ],
+      "id": "layer1.adx",
+      "missing_gate": "complete Phase-2 gate; preserve narrow ADX parity acceptance only",
       "mql5": {
         "generation": "deterministic",
         "source_identity": "200bb9ec70eb6a58ae5f804b07ac66845c380a2422a7606ac706edc48ecf29df"
       },
+      "name": "ADX",
       "native": {
         "compile_evidence_paths": [
           "tests/fixtures/phase2_adx_native/compile/adx-compile.log",
@@ -130,266 +913,137 @@
         ]
       },
       "parity_result_identity": "4fb70e05b617c401b9e088b3d0257c6d8d4e0a5ddefc0f7b8d18763bfbc0abfa",
-      "evidence_paths": [
-        "tests/fixtures/phase2_adx_scenarios.json",
-        "tests/fixtures/phase2_adx_local_evidence/rust_evidence.json",
-        "tests/test_phase2_adx_native.py"
-      ],
-      "commits": [
-        "3de3891c94c20011d7196a654c1ace716bfbb1a9"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow ADX parity acceptance only"
-    },
-    {
-      "id": "layer1.er",
-      "category": "layer1_indicator",
-      "name": "Efficiency Ratio",
-      "status": "accepted",
       "rust": {
+        "identity": "c038ae3a3a309d46493496e219d644c55a4e6ac045aeeadb168133869aedc899",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs",
           "engine/labengine/src/task.rs"
         ],
-        "identity": "5ca60a497a58dc17d933a793b54b1bcc5ce7e754aaf22ed909c81f8d7d1568f5",
         "tests": [
-          "tests/test_phase2_er_local_evidence.py"
+          "tests/test_phase2_adx_local_evidence.py"
         ]
       },
-      "mql5": {
-        "generation": "deterministic",
-        "source_identity": "b41e78c103febb8cdd4306982f1e95bddc7837827689ec3684adeee2c1f5e2a3"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_er_native/compile/er-compile.log",
-          "tests/fixtures/phase2_er_native/compile/NoraPhase2ErTesterV1.ex5"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_er_native/native_evidence_manifest.json",
-          "tests/fixtures/phase2_er_native/runs/"
-        ]
-      },
-      "parity_result_identity": "4cf1c7ccb7e7087ff6af007ddce1faf369a305a337eac133366290dbd2de8618",
-      "evidence_paths": [
-        "tests/fixtures/phase2_er_scenarios.json",
-        "tests/fixtures/phase2_er_local_evidence/rust_evidence.json",
-        "tests/test_phase2_er_native.py"
-      ],
-      "commits": [
-        "829f1293c34bf55b72fbe5908b71f94bfd80f852"
-      ],
       "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow ER parity acceptance only"
+      "status": "accepted"
     },
     {
-      "id": "layer1.kama",
       "category": "layer1_indicator",
-      "name": "KAMA",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/task.rs"
-        ],
-        "identity": "0f9e5dc1d7f6226cbed0c98817d4da2c20ae3367cbc1ef13c44ad97e93a9a69c",
-        "tests": [
-          "tests/test_phase2_kama_local_evidence.py"
-        ]
-      },
-      "mql5": {
-        "generation": "deterministic",
-        "source_identity": "33d4fde7695446556e92c917a4434eaf17c57d288b5a5f01856a7ea66470182a"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_kama_native/compile/kama-compile.log",
-          "tests/fixtures/phase2_kama_native/compile/NoraPhase2KamaTesterV1.ex5"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_kama_native/native_evidence_manifest.json",
-          "tests/fixtures/phase2_kama_native/runs/"
-        ]
-      },
-      "parity_result_identity": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
-      "evidence_paths": [
-        "tests/fixtures/phase2_kama_scenarios.json",
-        "tests/fixtures/phase2_kama_local_evidence/rust_evidence.json",
-        "tests/test_phase2_kama_native.py"
-      ],
       "commits": [
-        "36d3d51a0be0a17f05ef1a6603654dd2b819bf31"
+        "a73ed6912c8dc354c36a7475dfe595d622e66d01",
+        "021ac6d45e0624dd379be79a099022d22c12abd9",
+        "fc363988af9ee7b80f9ad4f071868a922628ccd6"
       ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow KAMA parity acceptance only"
-    },
-    {
-      "id": "layer1.macd",
-      "category": "layer1_indicator",
-      "name": "MACD",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/indicators.rs"
-        ]
-      },
+      "evidence_paths": [
+        "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json"
+      ],
+      "grammar_admitted": true,
+      "id": "layer1.atr",
+      "missing_gate": "complete Phase-2 gate; ATR grammar admission is limited to period 3 Wilder with typed high/low/close series",
       "mql5": {
         "generation": "generated",
-        "source_identity": "893820984f8ad8291c5ae1a8de2b3a654c2fca21aaf7d4f64dda5490d7172b6b",
-        "historical_scaffold_identities": {
-          "runtime": "5b78e5c7e4f8f0e7ce72e5aff72d930139e0e6f9050d8900cfa1564be9c136ee",
-          "tester": "4b2a22a94539d6c989e93173c581ae71963a0ad7896cdca36b00e6abba957ffc",
-          "package": "52d53fc3300eca2db3646eaab52ddaa2d0ae862632f60e6dac42c3ad5e6ac7ca"
-        },
-        "executable_translation_generated": true
+        "source_identity": "80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194"
       },
+      "name": "ATR",
       "native": {
         "compile_evidence_paths": [
-          "tests/fixtures/phase2u_macd_native/compile/compile.json",
-          "tests/fixtures/phase2u_macd_native/compile/compile.log"
+          "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile.log"
         ],
         "execution_evidence_paths": [
-          "tests/fixtures/phase2u_macd_native/gdaxi_m1_1/execution.json",
-          "tests/fixtures/phase2u_macd_native/gdaxi_m1_2/execution.json",
-          "tests/fixtures/phase2u_macd_native/audcad_m1_1/execution.json",
-          "tests/fixtures/phase2u_macd_native/audcad_m1_2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/lifecycle.jsonl",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/nora_phase2_atr_distance_tester_v1.csv",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester.ini",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester-journal.log",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester.log",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/lifecycle.jsonl",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/nora_phase2_atr_distance_tester_v1.csv",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.ini",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester-journal.log",
+          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.log"
+        ]
       },
-      "parity_result_identity": "353c0406e4c62c256cc6525e2fdc429bb740f075e3badde9f0c19b14da0d0df7",
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_macd_slope_task.json"
-      ],
-      "commits": [
-        "58e29e51a27edf37c62a9734034c9e7864f976a9",
-        "c3d3048cd4105422d34902e7b4668ac98a141300",
-        "23ddd31d47c2d24e27da73249d20a94760fed91e"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; accepted parity is restricted to close/EMA2/EMA4/signal3 arithmetic-seed committed-recurrence compact-signal CSV V3 contracts on GDAXI/M1 and AUDCAD/M1"
-    },
-    {
-      "id": "layer1.linear_regression",
-      "category": "layer1_indicator",
-      "name": "Linear Regression",
-      "status": "accepted",
+      "parity_result_identity": "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2",
       "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/task.rs"
-        ],
-        "identity": "689aa7cb8c58d905eb704ac05bab25a81985fd7b9871807ed2f704c69cbcf35b",
-        "tests": [
-          "tests/test_phase2_linear_regression_local_evidence.py"
-        ]
-      },
-      "mql5": {
-        "generation": "deterministic",
-        "source_identity": "d8a446472c703247acd28e34f9c7df65b972994b4b92744c92563988759cdfbb"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_linear_regression_native/compile/linear-regression-compile.log",
-          "tests/fixtures/phase2_linear_regression_native/compile/NoraPhase2LinearRegressionTesterV1.ex5"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_linear_regression_native/native_evidence_manifest.json",
-          "tests/fixtures/phase2_linear_regression_native/runs/"
-        ]
-      },
-      "parity_result_identity": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
-      "evidence_paths": [
-        "tests/fixtures/phase2_linear_regression_scenarios.json",
-        "tests/fixtures/phase2_linear_regression_local_evidence/rust_evidence.json",
-        "tests/test_phase2_linear_regression_native.py"
-      ],
-      "commits": [
-        "d79025e6efa0839eafcac43634e7e36d73aa6ae6"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow Linear Regression parity acceptance only"
-    },
-    {
-      "id": "layer1.rsi",
-      "category": "layer1_indicator",
-      "name": "RSI",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/ast.rs",
-          "engine/labengine/src/task.rs"
-        ],
-        "identity": "897290757d5898fd0a5edcc41fc6b2f24af2ec9d851bef9cbeb9e8d2d283dfe5",
-        "tests": [
-          "engine/labengine/src/indicators.rs",
-          "tests/test_phase2_rsi_local_evidence.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated_isolated_native_target",
-        "source_identity": "4f8c8d9ad4d05654fceab878f6bd7691f919a741776141166e93116f6ba3bdc6"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_rsi_native/rsi-compile.log",
-          "tests/fixtures/phase2_rsi_native/NoraPhase2RsiTesterV1.ex5"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_rsi_native/native_acceptance.json",
-          "tests/fixtures/phase2_rsi_native/runs/RSI-A1/nora_phase2_rsi_v1.csv",
-          "tests/fixtures/phase2_rsi_native/runs/RSI-A2/nora_phase2_rsi_v1.csv",
-          "tests/fixtures/phase2_rsi_native/runs/RSI-B1/nora_phase2_rsi_v1.csv",
-          "tests/fixtures/phase2_rsi_native/runs/RSI-B2/nora_phase2_rsi_v1.csv"
-        ]
-      },
-      "parity_result_identity": "b01e98c070edc3dcd8aaa1a0aa78b17c6ddf5860fb73a5e497e109deb80b62c1",
-      "evidence_paths": [
-        "tests/fixtures/phase2_rsi_local_evidence/rust_evidence.json",
-        "tests/fixtures/phase2_rsi_native/native_acceptance.json"
-      ],
-      "commits": [
-        "90377cc6eb5159e314ab8f9c87cb916125802335",
-        "0fcff2acf2752c148295838e4e51274e2d502e4b",
-        "6e17889968e44dab378cb2b125df41d0ae3b72f3",
-        "2facc2ec6555e179ebd8d00c9c581e17c49769b2"
-      ],
-      "searchable": false,
-      "missing_gate": "grammar admission and search remain closed until complete Phase 2"
-    },
-    {
-      "id": "layer1.cci",
-      "category": "layer1_indicator",
-      "name": "CCI",
-      "status": "accepted",
-      "rust": {
+        "identity": "26363cfb22ba13fdd5f922173373d56f6aff5b57c3e66604dbec28908b68708d",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs"
         ],
+        "tests": [
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2p_mql5_atr_distance.py",
+          "tests/test_phase2q_mql5_atr_distance_native.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "25b4982df42e05f639c682c583d315b721225674"
+      ],
+      "evidence": "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json",
+      "evidence_paths": [
+        "tests/fixtures/phase2_bollinger_local_evidence/rust_evidence.json",
+        "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json"
+      ],
+      "id": "layer1.bollinger",
+      "missing_gate": null,
+      "mql5": {
+        "generation": "deterministic_batch_generator",
+        "source_identity": null
+      },
+      "name": "Bollinger Bands and Width",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_bollinger_native/compile.log",
+          "tests/fixtures/phase2_bollinger_native/NoraPhase2BollingerTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-A1-587368613",
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-A2-1339446223",
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-B1-1606153262",
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-B2-1738925356"
+        ]
+      },
+      "parity_result_identity": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
+      "rust": {
         "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
         "tests": [
           "engine/labengine/src/indicators.rs"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "25b4982df42e05f639c682c583d315b721225674"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_cci_local_evidence/rust_evidence.json",
+        "tests/fixtures/phase2_cci_native/native_evidence_manifest.json"
+      ],
+      "id": "layer1.cci",
+      "missing_gate": null,
       "mql5": {
         "generation": "deterministic_batch_generator",
         "source_identity": "1b2824cf6df13d72a0d79481b31fc1af665f6509fab3b56a9bcf2fbae9d38fee"
       },
+      "name": "CCI",
       "native": {
         "compile_evidence_paths": [
           "tests/fixtures/phase2_cci_native/native_evidence_manifest.json",
@@ -404,38 +1058,400 @@
         ]
       },
       "parity_result_identity": "ad2809515618d25d44f54e5dc37fd34b5dcd56f4e557f9792fd74bf93543b21e",
-      "evidence_paths": [
-        "tests/fixtures/phase2_cci_local_evidence/rust_evidence.json",
-        "tests/fixtures/phase2_cci_native/native_evidence_manifest.json"
-      ],
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
-      "searchable": false,
-      "missing_gate": null
-    },
-    {
-      "id": "layer1.roc",
-      "category": "layer1_indicator",
-      "name": "ROC",
-      "status": "accepted",
+      "evidence_paths": [
+        "docs/phase2_layer1_batch_one_native_acceptance.md",
+        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
+      ],
+      "id": "layer1.ema",
+      "missing_gate": "complete Phase-2 gate; preserve narrow EMA/value acceptance only",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
+      },
+      "name": "EMA",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
+        ]
+      },
+      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
       "rust": {
+        "identity": "8d9c826fbf38563a96fcce863882f11209839cde55849e78410656f3323ccaab",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs",
           "engine/labengine/src/ast.rs",
           "engine/labengine/src/task.rs"
         ],
-        "identity": "b436ec060f1e8efe28805a3f63a28793f6afa63ea53659fac0b15ed4df2fa8f3",
         "tests": [
-          "engine/labengine/src/indicators.rs",
-          "tests/test_phase2_roc_local_evidence.py"
+          "tests/test_phase2_layer1_ast_mql5.py",
+          "tests/test_phase2_layer1_native.py",
+          "tests/test_phase2_layer1_inventory.py"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "829f1293c34bf55b72fbe5908b71f94bfd80f852"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_er_scenarios.json",
+        "tests/fixtures/phase2_er_local_evidence/rust_evidence.json",
+        "tests/test_phase2_er_native.py"
+      ],
+      "id": "layer1.er",
+      "missing_gate": "complete Phase-2 gate; preserve narrow ER parity acceptance only",
+      "mql5": {
+        "generation": "deterministic",
+        "source_identity": "b41e78c103febb8cdd4306982f1e95bddc7837827689ec3684adeee2c1f5e2a3"
+      },
+      "name": "Efficiency Ratio",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_er_native/compile/er-compile.log",
+          "tests/fixtures/phase2_er_native/compile/NoraPhase2ErTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_er_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_er_native/runs/"
+        ]
+      },
+      "parity_result_identity": "4cf1c7ccb7e7087ff6af007ddce1faf369a305a337eac133366290dbd2de8618",
+      "rust": {
+        "identity": "5ca60a497a58dc17d933a793b54b1bcc5ce7e754aaf22ed909c81f8d7d1568f5",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_er_local_evidence.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "25b4982df42e05f639c682c583d315b721225674"
+      ],
+      "evidence_paths": [
+        "docs/phase2_layer1_batch_one_native_acceptance.md",
+        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
+      ],
+      "id": "layer1.highest",
+      "missing_gate": "complete Phase-2 gate; preserve narrow Highest/value acceptance only",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
+      },
+      "name": "Highest",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
+        ]
+      },
+      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
+      "rust": {
+        "identity": "3f3c32a76f0a5fe6fc9e6bc9993397d9c71ba290f52ae616895d5d265843ee2b",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_layer1_ast_mql5.py",
+          "tests/test_phase2_layer1_native.py",
+          "tests/test_phase2_layer1_inventory.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "36d3d51a0be0a17f05ef1a6603654dd2b819bf31"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_kama_scenarios.json",
+        "tests/fixtures/phase2_kama_local_evidence/rust_evidence.json",
+        "tests/test_phase2_kama_native.py"
+      ],
+      "id": "layer1.kama",
+      "missing_gate": "complete Phase-2 gate; preserve narrow KAMA parity acceptance only",
+      "mql5": {
+        "generation": "deterministic",
+        "source_identity": "33d4fde7695446556e92c917a4434eaf17c57d288b5a5f01856a7ea66470182a"
+      },
+      "name": "KAMA",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_kama_native/compile/kama-compile.log",
+          "tests/fixtures/phase2_kama_native/compile/NoraPhase2KamaTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_kama_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_kama_native/runs/"
+        ]
+      },
+      "parity_result_identity": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
+      "rust": {
+        "identity": "0f9e5dc1d7f6226cbed0c98817d4da2c20ae3367cbc1ef13c44ad97e93a9a69c",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_kama_local_evidence.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "25b4982df42e05f639c682c583d315b721225674"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_keltner_local_evidence.json",
+        "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json"
+      ],
+      "id": "layer1.keltner",
+      "missing_gate": null,
+      "mql5": {
+        "generation": "deterministic_batch_generator",
+        "source_identity": null
+      },
+      "name": "Keltner Channel",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_keltner_native/compile.log",
+          "tests/fixtures/phase2_keltner_native/NoraPhase2KeltnerTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_keltner_native/runs/KELT-A1-1947296179",
+          "tests/fixtures/phase2_keltner_native/runs/KELT-A2-2007337771",
+          "tests/fixtures/phase2_keltner_native/runs/KELT-B1-1327534501",
+          "tests/fixtures/phase2_keltner_native/runs/KELT-B2-1852244555"
+        ]
+      },
+      "parity_result_identity": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "d79025e6efa0839eafcac43634e7e36d73aa6ae6"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_linear_regression_scenarios.json",
+        "tests/fixtures/phase2_linear_regression_local_evidence/rust_evidence.json",
+        "tests/test_phase2_linear_regression_native.py"
+      ],
+      "id": "layer1.linear_regression",
+      "missing_gate": "complete Phase-2 gate; preserve narrow Linear Regression parity acceptance only",
+      "mql5": {
+        "generation": "deterministic",
+        "source_identity": "d8a446472c703247acd28e34f9c7df65b972994b4b92744c92563988759cdfbb"
+      },
+      "name": "Linear Regression",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_linear_regression_native/compile/linear-regression-compile.log",
+          "tests/fixtures/phase2_linear_regression_native/compile/NoraPhase2LinearRegressionTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_linear_regression_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_linear_regression_native/runs/"
+        ]
+      },
+      "parity_result_identity": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
+      "rust": {
+        "identity": "689aa7cb8c58d905eb704ac05bab25a81985fd7b9871807ed2f704c69cbcf35b",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_linear_regression_local_evidence.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "25b4982df42e05f639c682c583d315b721225674"
+      ],
+      "evidence_paths": [
+        "docs/phase2_layer1_batch_one_native_acceptance.md",
+        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
+      ],
+      "id": "layer1.lowest",
+      "missing_gate": "complete Phase-2 gate; preserve narrow Lowest/value acceptance only",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
+      },
+      "name": "Lowest",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
+        ]
+      },
+      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
+      "rust": {
+        "identity": "81badad2583b1701408a63ed41d89382d70723eac585cdbe1275fb078835f5c3",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_layer1_ast_mql5.py",
+          "tests/test_phase2_layer1_native.py",
+          "tests/test_phase2_layer1_inventory.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "58e29e51a27edf37c62a9734034c9e7864f976a9",
+        "c3d3048cd4105422d34902e7b4668ac98a141300",
+        "23ddd31d47c2d24e27da73249d20a94760fed91e"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2_macd_slope_task.json"
+      ],
+      "id": "layer1.macd",
+      "missing_gate": "complete Phase-2 gate; accepted parity is restricted to close/EMA2/EMA4/signal3 arithmetic-seed committed-recurrence compact-signal CSV V3 contracts on GDAXI/M1 and AUDCAD/M1",
+      "mql5": {
+        "executable_translation_generated": true,
+        "generation": "generated",
+        "historical_scaffold_identities": {
+          "package": "52d53fc3300eca2db3646eaab52ddaa2d0ae862632f60e6dac42c3ad5e6ac7ca",
+          "runtime": "5b78e5c7e4f8f0e7ce72e5aff72d930139e0e6f9050d8900cfa1564be9c136ee",
+          "tester": "4b2a22a94539d6c989e93173c581ae71963a0ad7896cdca36b00e6abba957ffc"
+        },
+        "source_identity": "893820984f8ad8291c5ae1a8de2b3a654c2fca21aaf7d4f64dda5490d7172b6b"
+      },
+      "name": "MACD",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2u_macd_native/compile/compile.json",
+          "tests/fixtures/phase2u_macd_native/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2u_macd_native/gdaxi_m1_1/execution.json",
+          "tests/fixtures/phase2u_macd_native/gdaxi_m1_2/execution.json",
+          "tests/fixtures/phase2u_macd_native/audcad_m1_1/execution.json",
+          "tests/fixtures/phase2u_macd_native/audcad_m1_2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "353c0406e4c62c256cc6525e2fdc429bb740f075e3badde9f0c19b14da0d0df7",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "9dad122577b5310f2cd17c27e8c9fca92255fd25"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_roc_local_evidence/rust_output.json",
+        "tests/fixtures/phase2_roc_native"
+      ],
+      "id": "layer1.roc",
+      "missing_gate": "grammar admission and search authorization",
       "mql5": {
         "generation": "isolated_executable_package",
         "source_identity": "570727eb7203b5f15dfbb5b276fe9b8e3ec363810ee8cafadc9be591bf79b3bd"
       },
+      "name": "ROC",
       "native": {
         "compile_evidence_paths": [
           "tests/fixtures/phase2_roc_native/roc-compile.log",
@@ -446,38 +1462,125 @@
         ]
       },
       "parity_result_identity": "8a2bc285d8994550d24f59c225b5649635474563b39cd90f7e4d3755568fbf36",
-      "evidence_paths": [
-        "tests/fixtures/phase2_roc_local_evidence/rust_output.json",
-        "tests/fixtures/phase2_roc_native"
-      ],
-      "commits": [
-        "9dad122577b5310f2cd17c27e8c9fca92255fd25"
-      ],
-      "searchable": false,
-      "missing_gate": "grammar admission and search authorization"
-    },
-    {
-      "id": "layer1.stochastic",
-      "category": "layer1_indicator",
-      "name": "Stochastic",
-      "status": "accepted",
       "rust": {
+        "identity": "b436ec060f1e8efe28805a3f63a28793f6afa63ea53659fac0b15ed4df2fa8f3",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
           "engine/labengine/src/task.rs"
         ],
-        "identity": null,
         "tests": [
           "engine/labengine/src/indicators.rs",
-          "tests/test_phase2_stochastic_local_evidence.py",
-          "tests/test_phase2_stochastic_native.py"
+          "tests/test_phase2_roc_local_evidence.py"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "90377cc6eb5159e314ab8f9c87cb916125802335",
+        "0fcff2acf2752c148295838e4e51274e2d502e4b",
+        "6e17889968e44dab378cb2b125df41d0ae3b72f3",
+        "2facc2ec6555e179ebd8d00c9c581e17c49769b2"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_rsi_local_evidence/rust_evidence.json",
+        "tests/fixtures/phase2_rsi_native/native_acceptance.json"
+      ],
+      "id": "layer1.rsi",
+      "missing_gate": "grammar admission and search remain closed until complete Phase 2",
+      "mql5": {
+        "generation": "generated_isolated_native_target",
+        "source_identity": "4f8c8d9ad4d05654fceab878f6bd7691f919a741776141166e93116f6ba3bdc6"
+      },
+      "name": "RSI",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_rsi_native/rsi-compile.log",
+          "tests/fixtures/phase2_rsi_native/NoraPhase2RsiTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_rsi_native/native_acceptance.json",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-A1/nora_phase2_rsi_v1.csv",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-A2/nora_phase2_rsi_v1.csv",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-B1/nora_phase2_rsi_v1.csv",
+          "tests/fixtures/phase2_rsi_native/runs/RSI-B2/nora_phase2_rsi_v1.csv"
+        ]
+      },
+      "parity_result_identity": "b01e98c070edc3dcd8aaa1a0aa78b17c6ddf5860fb73a5e497e109deb80b62c1",
+      "rust": {
+        "identity": "897290757d5898fd0a5edcc41fc6b2f24af2ec9d851bef9cbeb9e8d2d283dfe5",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2_rsi_local_evidence.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "c489f83d092a7a33414b9dd4debf3e320607da0c",
+        "92851bf3431dcb6cd67392843aa8d73f6298e1c6"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2k_mql5_sma_cross/runtime/NoraPhase2SeriesRuntimeV1.manifest.json",
+        "tests/fixtures/phase2k_mql5_sma_cross/series_evidence.json"
+      ],
+      "id": "layer1.sma",
+      "missing_gate": "commit durable raw native compile/run evidence and include SMA in a broader parity dataset",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
+      },
+      "name": "SMA",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2l_mql5_sma_cross_native_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2l_mql5_sma_cross_native_canary.md"
+        ]
+      },
+      "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "a592d425c85c91f876c6ed7c572cac67099243d8"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_stochastic_native/native_evidence_manifest.json"
+      ],
+      "id": "layer1.stochastic",
+      "missing_gate": "grammar admission and search authorization",
       "mql5": {
         "generation": "generated",
         "source_identity": "cbe733484749e64d84333409acc1e110d38b97b5a1c1e0d9b5ef969e4fe9f8bb"
       },
+      "name": "Stochastic",
       "native": {
         "compile_evidence_paths": [
           "tests/fixtures/phase2_stochastic_native/compile/compile.log",
@@ -495,36 +1598,517 @@
         ]
       },
       "parity_result_identity": "4e8ac3322f0ba95790d76da77c8e36490f00065623f0bb202a03fe48000ef2a9",
-      "evidence_paths": [
-        "tests/fixtures/phase2_stochastic_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "a592d425c85c91f876c6ed7c572cac67099243d8"
-      ],
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2_stochastic_local_evidence.py",
+          "tests/test_phase2_stochastic_native.py"
+        ]
+      },
       "searchable": false,
-      "missing_gate": "grammar admission and search authorization"
+      "status": "accepted"
     },
     {
-      "id": "layer1.atr",
       "category": "layer1_indicator",
-      "name": "ATR",
-      "status": "accepted",
+      "commits": [
+        "25b4982df42e05f639c682c583d315b721225674"
+      ],
+      "evidence_paths": [],
+      "id": "layer1.vwap",
+      "missing_gate": "session-clock fixture, MQL5 generation, and native parity",
+      "mql5": {
+        "generation": "absent",
+        "source_identity": null
+      },
+      "name": "VWAP",
+      "native": {
+        "compile_evidence_paths": [],
+        "execution_evidence_paths": []
+      },
+      "not_needed_before_first_ten": true,
+      "parity_result_identity": null,
       "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/time.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "metrics_component",
+      "commits": [
+        "d268a3641108ad8ac5b913547f94889e8e460cac"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2d_closed_trade_metrics_mixed.parquet"
+      ],
+      "id": "metrics.closed_trade_baseline",
+      "missing_gate": "strategy-trade parity must precede metric parity",
+      "mql5": {
+        "generation": "out_of_scope",
+        "source_identity": null
+      },
+      "name": "closed-trade metrics",
+      "native": {
+        "compile_evidence_paths": [],
+        "execution_evidence_paths": []
+      },
+      "parity_result_identity": null,
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/closed_trade_metrics.rs"
+        ],
+        "tests": [
+          "tests/test_phase1.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "mql5_translator",
+      "commits": [
+        "e98ce30a14006bdb8566530b4d03799e45649cc5"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
+      ],
+      "id": "mql5.condition_translator",
+      "missing_gate": "durable raw native condition evidence and broader grammar coverage",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
+      },
+      "name": "typed AST condition translation",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2j_mql5_condition_tester_canary.md"
+        ]
+      },
+      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+      "rust": {
+        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "tests/test_phase2g_mql5_translation.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "mql5_runtime",
+      "commits": [
+        "8628cbf6f27381541ae5ec6033f3d3ff078cee06"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.manifest.json"
+      ],
+      "id": "mql5.nullable_runtime",
+      "missing_gate": "durable native semantic fixture across all nullable operations",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d"
+      },
+      "name": "nullable numeric and tri-boolean runtime",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2i_repaired_compile_evidence.json"
+        ],
+        "execution_evidence_paths": []
+      },
+      "parity_result_identity": null,
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/ast.rs"
+        ],
+        "tests": [
+          "tests/test_phase2f_mql5.py"
+        ]
+      },
+      "searchable": false,
+      "status": "partially_proven"
+    },
+    {
+      "category": "mql5_runtime",
+      "commits": [
+        "c489f83d092a7a33414b9dd4debf3e320607da0c",
+        "92851bf3431dcb6cd67392843aa8d73f6298e1c6"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2k_mql5_sma_cross/runtime/NoraPhase2SeriesRuntimeV1.manifest.json"
+      ],
+      "id": "mql5.series_runtime",
+      "missing_gate": "durable raw native evidence",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
+      },
+      "name": "SMA3 and cross runtime",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2l_mql5_sma_cross_native_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2l_mql5_sma_cross_native_canary.md"
+        ]
+      },
+      "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
+      "rust": {
+        "identity": null,
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs"
         ],
-        "identity": "26363cfb22ba13fdd5f922173373d56f6aff5b57c3e66604dbec28908b68708d",
         "tests": [
-          "engine/labengine/src/indicators.rs",
-          "tests/test_phase2p_mql5_atr_distance.py",
-          "tests/test_phase2q_mql5_atr_distance_native.py"
+          "tests/test_phase2k_mql5_sma_cross.py"
         ]
       },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "mql5_runtime",
+      "commits": [
+        "610232153faaa5a8117d2b605098d119c15f9b84",
+        "f2010773ec3cd47e8d1f5c74512e45b12b970786"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2m_mql5_slope/NoraPhase2SlopeRuntimeV1.manifest.json"
+      ],
+      "id": "mql5.slope_runtime",
+      "missing_gate": "complete Phase-2 admission gate",
       "mql5": {
         "generation": "generated",
-        "source_identity": "80445d259d9ac9bcf3a15bf6ec12a160594237ee469b2ee53c46d22f99370194"
+        "source_identity": "cb9eee8e4c03d6c6d95c6ba384701187c93730f77fafe3a22a2f8902410c68ae"
       },
+      "name": "slope runtime",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2n_mql5_slope_native/compile/compile_manifest.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2n_mql5_slope_native/run1/execution_manifest.json",
+          "tests/fixtures/phase2n_mql5_slope_native/run2/execution_manifest.json"
+        ]
+      },
+      "parity_result_identity": "221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f",
+      "rust": {
+        "identity": "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
+        "tests": [
+          "tests/test_phase2m_mql5_slope.py",
+          "tests/test_phase2n_mql5_slope_native.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "rng_component",
+      "commits": [
+        "df058c0a3b0bae9918b53c1c44087714a158a293"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2e_rng_stream_task.json"
+      ],
+      "id": "rng.named_streams",
+      "missing_gate": "not an MT5 grammar node; include in Linux replay gate",
+      "mql5": {
+        "generation": "out_of_scope",
+        "source_identity": null
+      },
+      "name": "named ChaCha20 RNG streams",
+      "native": {
+        "compile_evidence_paths": [],
+        "execution_evidence_paths": []
+      },
+      "parity_result_identity": null,
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/rng_stream.rs"
+        ],
+        "tests": [
+          "tests/test_phase2e_rng.py",
+          "engine/labengine/src/rng_stream.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "hand_designed_strategy_parity_case",
+      "commits": [],
+      "evidence_paths": [
+        "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json"
+      ],
+      "id": "strategy.hand_designed_suite_10",
+      "missing_gate": "complete Phase-2 gate; system smoke is not an edge-survival or performance claim",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "c95985619fb0fea544e5a8f424ee1921d49e9def1af951f6a00eed241953cd8a"
+      },
+      "name": "ten initial-v1 grammar strategy reconciliations",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compiler_record.json"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/a1",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/a2",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/b1",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/b2"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true
+      },
+      "parity_result_identity": "7b06b6054e89c6ab0404bf85eee81ddcce40f46d9fbef5573d7cca15a7b02145",
+      "rust": {
+        "identity": "1a13fc46bbc8fd305bd7e3adff8d334de742578307ade2799ddc4379f6751368",
+        "implementation": "implemented",
+        "source_paths": [
+          "lab/phase2_ten_strategy.py"
+        ],
+        "tests": [
+          "tests/test_phase2t_hand_designed_acceptance.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "time_session_dst_rule",
+      "commits": [
+        "1e5c7f610503287b9557b8046dff50404d30eaf3"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
+      "id": "time.dst_gap_fold",
+      "missing_gate": "frozen spring-gap and autumn-fold scenarios only; no holiday calendar semantics",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
+        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
+      },
+      "name": "DST gap and fold failure behavior",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
+        ],
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
+      "rust": {
+        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/time.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/time.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "time_session_dst_rule",
+      "commits": [
+        "1e5c7f610503287b9557b8046dff50404d30eaf3"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
+      "id": "time.strategy_session_rules",
+      "missing_gate": "Friday cutoff, rollover, Monday delay, ORB, and resets are fixture parameters; no global production or holiday-calendar defaults are accepted",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
+        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
+      },
+      "name": "Friday close, ORB, rollover, daily reset, Monday open",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
+        ],
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
+      "rust": {
+        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/time.rs",
+          "engine/labengine/src/aggregation.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/time.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "time_session_dst_rule",
+      "commits": [
+        "1e5c7f610503287b9557b8046dff50404d30eaf3"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
+      ],
+      "id": "time.trading_clock",
+      "missing_gate": "frozen 18-scenario contract only; holiday calendars and universal production defaults remain unsupported",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
+        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
+      },
+      "name": "declared strategy and trading-day clocks",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
+          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
+        ],
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
+      "rust": {
+        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/time.rs",
+          "engine/labengine/src/aggregation.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/time.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "typed_transform",
+      "commits": [
+        "c489f83d092a7a33414b9dd4debf3e320607da0c",
+        "92851bf3431dcb6cd67392843aa8d73f6298e1c6"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2k_mql5_sma_cross/series_evidence.json"
+      ],
+      "id": "transform.cross",
+      "missing_gate": "durable raw native evidence and broader parity dataset",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
+      },
+      "name": "Cross above/below",
+      "native": {
+        "compile_evidence_paths": [
+          "docs/phase2l_mql5_sma_cross_native_canary.md"
+        ],
+        "execution_evidence_paths": [
+          "docs/phase2l_mql5_sma_cross_native_canary.md"
+        ]
+      },
+      "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
+      "rust": {
+        "identity": null,
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
+        "tests": [
+          "engine/labengine/src/indicators.rs"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "typed_transform",
+      "commits": [
+        "a73ed6912c8dc354c36a7475dfe595d622e66d01",
+        "021ac6d45e0624dd379be79a099022d22c12abd9",
+        "fc363988af9ee7b80f9ad4f071868a922628ccd6"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
+        "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json"
+      ],
+      "grammar_admitted": true,
+      "id": "transform.distance_atr",
+      "missing_gate": "complete Phase-2 gate; Distance/ATR grammar admission is limited to same-row value/reference with an admitted ATR3/Wilder denominator",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12"
+      },
+      "name": "Distance/ATR",
       "native": {
         "compile_evidence_paths": [
           "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
@@ -546,325 +2130,97 @@
         ]
       },
       "parity_result_identity": "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2",
-      "evidence_paths": [
-        "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json"
-      ],
-      "commits": [
-        "a73ed6912c8dc354c36a7475dfe595d622e66d01",
-        "021ac6d45e0624dd379be79a099022d22c12abd9",
-        "fc363988af9ee7b80f9ad4f071868a922628ccd6"
-      ],
-      "searchable": false,
-      "grammar_admitted": true,
-      "missing_gate": "complete Phase-2 gate; ATR grammar admission is limited to period 3 Wilder with typed high/low/close series"
-    },
-    {
-      "id": "layer1.bollinger",
-      "category": "layer1_indicator",
-      "name": "Bollinger Bands and Width",
-      "status": "accepted",
       "rust": {
+        "identity": "f4964fe1ecba67ab79654e59069ca5110e8330956b02b381517cf37bccf17f1f",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs"
         ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/indicators.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "deterministic_batch_generator",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json",
-          "tests/fixtures/phase2_bollinger_native/compile.log",
-          "tests/fixtures/phase2_bollinger_native/NoraPhase2BollingerTesterV1.ex5"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_bollinger_native/runs/BOLL-A1-587368613",
-          "tests/fixtures/phase2_bollinger_native/runs/BOLL-A2-1339446223",
-          "tests/fixtures/phase2_bollinger_native/runs/BOLL-B1-1606153262",
-          "tests/fixtures/phase2_bollinger_native/runs/BOLL-B2-1738925356"
-        ]
-      },
-      "parity_result_identity": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
-      "evidence_paths": [
-        "tests/fixtures/phase2_bollinger_local_evidence/rust_evidence.json",
-        "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
-      "searchable": false,
-      "missing_gate": null,
-      "evidence": "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json"
-    },
-    {
-      "id": "layer1.keltner",
-      "category": "layer1_indicator",
-      "name": "Keltner Channel",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/indicators.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "deterministic_batch_generator",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json",
-          "tests/fixtures/phase2_keltner_native/compile.log",
-          "tests/fixtures/phase2_keltner_native/NoraPhase2KeltnerTesterV1.ex5"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_keltner_native/runs/KELT-A1-1947296179",
-          "tests/fixtures/phase2_keltner_native/runs/KELT-A2-2007337771",
-          "tests/fixtures/phase2_keltner_native/runs/KELT-B1-1327534501",
-          "tests/fixtures/phase2_keltner_native/runs/KELT-B2-1852244555"
-        ]
-      },
-      "parity_result_identity": "211364cbcdaa1e2c4dbc21863288a79ebf2ea6394ef98ac045663cdd74254a33",
-      "evidence_paths": [
-        "tests/fixtures/phase2_keltner_local_evidence.json",
-        "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
-      "searchable": false,
-      "missing_gate": null
-    },
-    {
-      "id": "layer1.highest",
-      "category": "layer1_indicator",
-      "name": "Highest",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/ast.rs",
-          "engine/labengine/src/task.rs"
-        ],
-        "identity": "3f3c32a76f0a5fe6fc9e6bc9993397d9c71ba290f52ae616895d5d265843ee2b",
-        "tests": [
-          "tests/test_phase2_layer1_ast_mql5.py",
-          "tests/test_phase2_layer1_native.py",
-          "tests/test_phase2_layer1_inventory.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
-        ]
-      },
-      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
-      "evidence_paths": [
-        "docs/phase2_layer1_batch_one_native_acceptance.md",
-        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
-        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow Highest/value acceptance only"
-    },
-    {
-      "id": "layer1.lowest",
-      "category": "layer1_indicator",
-      "name": "Lowest",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/ast.rs",
-          "engine/labengine/src/task.rs"
-        ],
-        "identity": "81badad2583b1701408a63ed41d89382d70723eac585cdbe1275fb078835f5c3",
-        "tests": [
-          "tests/test_phase2_layer1_ast_mql5.py",
-          "tests/test_phase2_layer1_native.py",
-          "tests/test_phase2_layer1_inventory.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
-          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
-        ]
-      },
-      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
-      "evidence_paths": [
-        "docs/phase2_layer1_batch_one_native_acceptance.md",
-        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
-        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; preserve narrow Lowest/value acceptance only"
-    },
-    {
-      "id": "layer1.session_ohlc",
-      "category": "layer1_indicator",
-      "name": "Session OHLC",
-      "status": "implemented_but_unproved",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/time.rs"
-        ],
-        "identity": null,
         "tests": [
           "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/time.rs"
+          "tests/test_phase2p_mql5_atr_distance.py",
+          "tests/test_phase2q_mql5_atr_distance_native.py"
         ]
       },
-      "mql5": {
-        "generation": "absent",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": null,
-      "evidence_paths": [],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
       "searchable": false,
-      "missing_gate": "session-clock fixture, MQL5 generation, and native parity"
+      "status": "accepted"
     },
     {
-      "id": "layer1.vwap",
-      "category": "layer1_indicator",
-      "name": "VWAP",
-      "status": "implemented_but_unproved",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/time.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/indicators.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "absent",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": null,
-      "evidence_paths": [],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
-      "searchable": false,
-      "missing_gate": "session-clock fixture, MQL5 generation, and native parity"
-    },
-    {
-      "id": "transform.cross",
       "category": "typed_transform",
-      "name": "Cross above/below",
-      "status": "accepted",
+      "commits": [
+        "f56681271b72e30dbc7904e2e41d69a9fd3aa857",
+        "939297b9d40b6cc441719ae9a56206bf8b6c73e9",
+        "3820eab68711366e7b33f92b06793cf26c1a3bb1",
+        "23ddd31d47c2d24e27da73249d20a94760fed91e"
+      ],
+      "evidence_paths": [
+        "engine/labengine/tests/fixtures/phase2_percentile_task.json",
+        "tests/fixtures/phase2w_percentile/phase2w_percentile_package.json",
+        "tests/fixtures/phase2w_percentile/phase2w_percentile_rust_evidence.json"
+      ],
+      "id": "transform.percentile",
+      "missing_gate": "complete Phase-2 gate; accepted parity is restricted to nullable aligned finite input/lookback4 average-rank committed-null-window CSV V3 contracts on GDAXI/M1 and AUDCAD/M1; AST admission and search remain closed",
+      "mql5": {
+        "executable_translation_generated": true,
+        "generation": "generated",
+        "historical_scaffold_identities": {
+          "package": "9872eb22d8647546a0253d706454453847ad7e87489dbede3a0a3c51117f9fcd",
+          "runtime": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644",
+          "tester": "d1410d4c3789f7fd8753a564debc272ca215ffd332e5ed4c278d3ec9f4cb4f39"
+        },
+        "source_identity": "d727c93b192979af6cf44b978d487a2bcef923eb801d14372d17651ab6b0d840"
+      },
+      "name": "Rolling percentile",
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2w_percentile_native/compile/compile.json",
+          "tests/fixtures/phase2w_percentile_native/compile/compile.log"
+        ],
+        "execution_attempted": true,
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2w_percentile_native/gdaxi_m1_1/execution.json",
+          "tests/fixtures/phase2w_percentile_native/gdaxi_m1_2/execution.json",
+          "tests/fixtures/phase2w_percentile_native/audcad_m1_1/execution.json",
+          "tests/fixtures/phase2w_percentile_native/audcad_m1_2/execution.json"
+        ],
+        "handoff_ready": true,
+        "parity_accepted": true,
+        "parity_evidence_available": true,
+        "reconciliation_passed": true,
+        "result_returned": true
+      },
+      "parity_result_identity": "5ba578e6f15e3e627c7640e261ed6341d9bebf6cdb2a580b87fa36389b88c34c",
       "rust": {
+        "identity": "3e05d035eed7e607a8107c3e2c66b54c386da9adb4bf0f213a19dc5e6e8193f8",
         "implementation": "implemented",
         "source_paths": [
           "engine/labengine/src/indicators.rs"
         ],
-        "identity": null,
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2w_percentile.py"
         ]
       },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2l_mql5_sma_cross_native_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2l_mql5_sma_cross_native_canary.md"
-        ]
-      },
-      "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
-      "evidence_paths": [
-        "tests/fixtures/phase2k_mql5_sma_cross/series_evidence.json"
-      ],
-      "commits": [
-        "c489f83d092a7a33414b9dd4debf3e320607da0c",
-        "92851bf3431dcb6cd67392843aa8d73f6298e1c6"
-      ],
       "searchable": false,
-      "missing_gate": "durable raw native evidence and broader parity dataset"
+      "status": "accepted"
     },
     {
+      "category": "typed_transform",
+      "commits": [
+        "610232153faaa5a8117d2b605098d119c15f9b84",
+        "d7fada68f7b77be594e441311efddeb9b88a2588",
+        "f2010773ec3cd47e8d1f5c74512e45b12b970786"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json"
+      ],
       "id": "transform.slope",
-      "category": "typed_transform",
-      "name": "Slope lookback 1",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499",
-        "tests": [
-          "engine/labengine/src/indicators.rs",
-          "tests/test_phase2n_mql5_slope_native.py"
-        ]
-      },
+      "missing_gate": "broader indicator/strategy gate; this fixed canary alone does not admit search",
       "mql5": {
         "generation": "generated",
         "source_identity": "cb9eee8e4c03d6c6d95c6ba384701187c93730f77fafe3a22a2f8902410c68ae"
       },
+      "name": "Slope lookback 1",
       "native": {
         "compile_evidence_paths": [
           "tests/fixtures/phase2n_mql5_slope_native/compile/compile_manifest.json",
@@ -876,1415 +2232,25 @@
         ]
       },
       "parity_result_identity": "221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f",
-      "evidence_paths": [
-        "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "610232153faaa5a8117d2b605098d119c15f9b84",
-        "d7fada68f7b77be594e441311efddeb9b88a2588",
-        "f2010773ec3cd47e8d1f5c74512e45b12b970786"
-      ],
-      "searchable": false,
-      "missing_gate": "broader indicator/strategy gate; this fixed canary alone does not admit search"
-    },
-    {
-      "id": "transform.distance_atr",
-      "category": "typed_transform",
-      "name": "Distance/ATR",
-      "status": "accepted",
       "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": "f4964fe1ecba67ab79654e59069ca5110e8330956b02b381517cf37bccf17f1f",
-        "tests": [
-          "engine/labengine/src/indicators.rs",
-          "tests/test_phase2p_mql5_atr_distance.py",
-          "tests/test_phase2q_mql5_atr_distance_native.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "008c2f3a1824a8a22b03c6b447e3ae1a06cdd6c852381d96c8ca7eefba730c12"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/lifecycle.jsonl",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/nora_phase2_atr_distance_tester_v1.csv",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester.ini",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester-journal.log",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run1/tester.log",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/lifecycle.jsonl",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/nora_phase2_atr_distance_tester_v1.csv",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.ini",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester-journal.log",
-          "tests/fixtures/phase2q_mql5_atr_distance_native/run2/tester.log"
-        ]
-      },
-      "parity_result_identity": "8a912bd9152d16c8e94b1a96210d2cc6917c5b2639f615b0ecd4931dac2669f2",
-      "evidence_paths": [
-        "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/compile/compile_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/run1/execution_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/run2/execution_manifest.json"
-      ],
-      "commits": [
-        "a73ed6912c8dc354c36a7475dfe595d622e66d01",
-        "021ac6d45e0624dd379be79a099022d22c12abd9",
-        "fc363988af9ee7b80f9ad4f071868a922628ccd6"
-      ],
-      "searchable": false,
-      "grammar_admitted": true,
-      "missing_gate": "complete Phase-2 gate; Distance/ATR grammar admission is limited to same-row value/reference with an admitted ATR3/Wilder denominator"
-    },
-    {
-      "id": "transform.percentile",
-      "category": "typed_transform",
-      "name": "Rolling percentile",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": "3e05d035eed7e607a8107c3e2c66b54c386da9adb4bf0f213a19dc5e6e8193f8",
-        "tests": [
-          "engine/labengine/src/indicators.rs",
-          "tests/test_phase2w_percentile.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "d727c93b192979af6cf44b978d487a2bcef923eb801d14372d17651ab6b0d840",
-        "historical_scaffold_identities": {
-          "runtime": "d8e8f9657f4a24c47706ed2eae87b725b3a867720404626e4425471cbb820644",
-          "tester": "d1410d4c3789f7fd8753a564debc272ca215ffd332e5ed4c278d3ec9f4cb4f39",
-          "package": "9872eb22d8647546a0253d706454453847ad7e87489dbede3a0a3c51117f9fcd"
-        },
-        "executable_translation_generated": true
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2w_percentile_native/compile/compile.json",
-          "tests/fixtures/phase2w_percentile_native/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2w_percentile_native/gdaxi_m1_1/execution.json",
-          "tests/fixtures/phase2w_percentile_native/gdaxi_m1_2/execution.json",
-          "tests/fixtures/phase2w_percentile_native/audcad_m1_1/execution.json",
-          "tests/fixtures/phase2w_percentile_native/audcad_m1_2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "5ba578e6f15e3e627c7640e261ed6341d9bebf6cdb2a580b87fa36389b88c34c",
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_percentile_task.json",
-        "tests/fixtures/phase2w_percentile/phase2w_percentile_package.json",
-        "tests/fixtures/phase2w_percentile/phase2w_percentile_rust_evidence.json"
-      ],
-      "commits": [
-        "f56681271b72e30dbc7904e2e41d69a9fd3aa857",
-        "939297b9d40b6cc441719ae9a56206bf8b6c73e9",
-        "3820eab68711366e7b33f92b06793cf26c1a3bb1",
-        "23ddd31d47c2d24e27da73249d20a94760fed91e"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; accepted parity is restricted to nullable aligned finite input/lookback4 average-rank committed-null-window CSV V3 contracts on GDAXI/M1 and AUDCAD/M1; AST admission and search remain closed"
-    },
-    {
-      "id": "ast.numeric_series",
-      "category": "ast_node",
-      "name": "numeric_series",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "ast.number",
-      "category": "ast_node",
-      "name": "number",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "ast.boolean_series",
-      "category": "ast_node",
-      "name": "boolean_series",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "ast.compare",
-      "category": "ast_node",
-      "name": "compare gt/gte/lt/lte",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_translation_evidence.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "ast.and",
-      "category": "ast_node",
-      "name": "and",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_translation_evidence.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "ast.or",
-      "category": "ast_node",
-      "name": "or",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_translation_evidence.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "ast.not",
-      "category": "ast_node",
-      "name": "not",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_translation_evidence.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native condition evidence and strategy-level parity"
-    },
-    {
-      "id": "execution.next_open_entry",
-      "category": "execution_simulator",
-      "name": "next-open entry and typed intents",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs",
-          "engine/labengine/src/simulator.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase1.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
-        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
-          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
-      "evidence_paths": [
-        "tests/fixtures/phase2_execution_rust_evidence.json",
-        "tests/fixtures/phase2x_native_batch_v4.json",
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
-        "ef32a87e3bf89c9e0ce7f8206607cdd72fd20f85",
-        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
-      ],
-      "searchable": false,
-      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
-    },
-    {
-      "id": "execution.initial_brackets",
-      "category": "execution_simulator",
-      "name": "initial SL/TP brackets",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/simulator.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase1.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
-        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
-          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_initial_bracket_long_task.json",
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
-        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
-      ],
-      "searchable": false,
-      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
-    },
-    {
-      "id": "execution.pessimistic_ambiguity",
-      "category": "execution_simulator",
-      "name": "pessimistic intrabar ambiguity",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/simulator.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase1.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
-        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
-          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_initial_bracket_collision_task.json",
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "d3859319a732d3f45f45b1ce0e2967bef2089606",
-        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
-      ],
-      "searchable": false,
-      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
-    },
-    {
-      "id": "execution.gap_open_brackets",
-      "category": "execution_simulator",
-      "name": "gap-open bracket fills",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/simulator.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase1.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
-        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
-          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
-      "evidence_paths": [
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "d3859319a732d3f45f45b1ce0e2967bef2089606",
-        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
-      ],
-      "searchable": false,
-      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
-    },
-    {
-      "id": "execution.maximum_bars_exit",
-      "category": "execution_simulator",
-      "name": "maximum-bars time exit",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/simulator.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase1.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
-        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
-          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_time_exit_long_task.json",
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "f15df875e34c7ebe3f8e31ec3c3f8371a4112414",
-        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
-      ],
-      "searchable": false,
-      "missing_gate": "complete remaining Phase-2 clock, strategy, determinism, integrity, and node coverage gates; no grammar or search admission follows from this fixed execution canary"
-    },
-    {
-      "id": "metrics.closed_trade_baseline",
-      "category": "metrics_component",
-      "name": "closed-trade metrics",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/closed_trade_metrics.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase1.py"
-        ]
-      },
-      "mql5": {
-        "generation": "out_of_scope",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": null,
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2d_closed_trade_metrics_mixed.parquet"
-      ],
-      "commits": [
-        "d268a3641108ad8ac5b913547f94889e8e460cac"
-      ],
-      "searchable": false,
-      "missing_gate": "strategy-trade parity must precede metric parity"
-    },
-    {
-      "id": "rng.named_streams",
-      "category": "rng_component",
-      "name": "named ChaCha20 RNG streams",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/rng_stream.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase2e_rng.py",
-          "engine/labengine/src/rng_stream.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "out_of_scope",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": null,
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2e_rng_stream_task.json"
-      ],
-      "commits": [
-        "df058c0a3b0bae9918b53c1c44087714a158a293"
-      ],
-      "searchable": false,
-      "missing_gate": "not an MT5 grammar node; include in Linux replay gate"
-    },
-    {
-      "id": "mql5.nullable_runtime",
-      "category": "mql5_runtime",
-      "name": "nullable numeric and tri-boolean runtime",
-      "status": "partially_proven",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase2f_mql5.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2i_repaired_compile_evidence.json"
-        ],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": null,
-      "evidence_paths": [
-        "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.manifest.json"
-      ],
-      "commits": [
-        "8628cbf6f27381541ae5ec6033f3d3ff078cee06"
-      ],
-      "searchable": false,
-      "missing_gate": "durable native semantic fixture across all nullable operations"
-    },
-    {
-      "id": "mql5.condition_translator",
-      "category": "mql5_translator",
-      "name": "typed AST condition translation",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "tests/test_phase2g_mql5_translation.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2j_mql5_condition_tester_canary.md"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
-      ],
-      "commits": [
-        "e98ce30a14006bdb8566530b4d03799e45649cc5"
-      ],
-      "searchable": false,
-      "missing_gate": "durable raw native condition evidence and broader grammar coverage"
-    },
-    {
-      "id": "mql5.series_runtime",
-      "category": "mql5_runtime",
-      "name": "SMA3 and cross runtime",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase2k_mql5_sma_cross.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "4102f23095201f5c37e8a6737d32f22eb31713f4f0ec9cae68803e6d3efbce8e"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "docs/phase2l_mql5_sma_cross_native_canary.md"
-        ],
-        "execution_evidence_paths": [
-          "docs/phase2l_mql5_sma_cross_native_canary.md"
-        ]
-      },
-      "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
-      "evidence_paths": [
-        "tests/fixtures/phase2k_mql5_sma_cross/runtime/NoraPhase2SeriesRuntimeV1.manifest.json"
-      ],
-      "commits": [
-        "c489f83d092a7a33414b9dd4debf3e320607da0c",
-        "92851bf3431dcb6cd67392843aa8d73f6298e1c6"
-      ],
-      "searchable": false,
-      "missing_gate": "durable raw native evidence"
-    },
-    {
-      "id": "mql5.slope_runtime",
-      "category": "mql5_runtime",
-      "name": "slope runtime",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
         "identity": "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/indicators.rs"
+        ],
         "tests": [
-          "tests/test_phase2m_mql5_slope.py",
+          "engine/labengine/src/indicators.rs",
           "tests/test_phase2n_mql5_slope_native.py"
         ]
       },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "cb9eee8e4c03d6c6d95c6ba384701187c93730f77fafe3a22a2f8902410c68ae"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2n_mql5_slope_native/compile/compile_manifest.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2n_mql5_slope_native/run1/execution_manifest.json",
-          "tests/fixtures/phase2n_mql5_slope_native/run2/execution_manifest.json"
-        ]
-      },
-      "parity_result_identity": "221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f",
-      "evidence_paths": [
-        "tests/fixtures/phase2m_mql5_slope/NoraPhase2SlopeRuntimeV1.manifest.json"
-      ],
-      "commits": [
-        "610232153faaa5a8117d2b605098d119c15f9b84",
-        "f2010773ec3cd47e8d1f5c74512e45b12b970786"
-      ],
       "searchable": false,
-      "missing_gate": "complete Phase-2 admission gate"
-    },
-    {
-      "id": "canary.condition_native",
-      "category": "fixed_data_native_canary",
-      "name": "nullable condition tester",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
-        "tests": [
-          "tests/test_phase2j_tester_canary.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "583fe60539d2da2cb46f054d9800d7702efd577b6984d23757794ca91ab259e6"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2r_mql5_condition_native/compile/compile_manifest.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2r_mql5_condition_native/run1/execution_manifest.json",
-          "tests/fixtures/phase2r_mql5_condition_native/run2/execution_manifest.json"
-        ]
-      },
-      "parity_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
-      "evidence_paths": [
-        "tests/fixtures/phase2r_mql5_condition_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "c37f0edfc4218e00850550f3670f86c545d84877"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 admission gate"
-    },
-    {
-      "id": "canary.sma_cross_native",
-      "category": "fixed_data_native_canary",
-      "name": "SMA/cross/condition tester",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs",
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase2l_series_tester_canary.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "78a52f288df45a93e3b026846c7283ddb6d93bcc8192874198827ec93d5041e4"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2r_mql5_sma_cross_native/compile/compile_manifest.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2r_mql5_sma_cross_native/run1/execution_manifest.json",
-          "tests/fixtures/phase2r_mql5_sma_cross_native/run2/execution_manifest.json"
-        ]
-      },
-      "parity_result_identity": "ff48ba25e9bcf6bd82d1f30977c5196f18f8f66c9a68c0b1b23b37787a8bf687",
-      "evidence_paths": [
-        "tests/fixtures/phase2r_mql5_sma_cross_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "fec9fd2fab926f69720407f48c1737e533f732d0"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 admission gate"
-    },
-    {
-      "id": "canary.slope_native",
-      "category": "fixed_data_native_canary",
-      "name": "slope tester",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": "45859444114338fbddcc0be2c6962ba5972adf1b9bb09c3fb7418388dce92499",
-        "tests": [
-          "tests/test_phase2n_mql5_slope_native.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "a25fe8a6b459499debdbc9d48c8d4dd498a9684bf67b196501ebed743b48b54d"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2n_mql5_slope_native/compile/compile_manifest.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2n_mql5_slope_native/run1/execution_manifest.json",
-          "tests/fixtures/phase2n_mql5_slope_native/run2/execution_manifest.json"
-        ]
-      },
-      "parity_result_identity": "221f85942998674cd79537ce0e1396535361f7159f931fc2507e2f3b7f4f033f",
-      "evidence_paths": [
-        "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json"
-      ],
-      "commits": [
-        "f2010773ec3cd47e8d1f5c74512e45b12b970786"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 admission gate"
-    },
-    {
-      "id": "canary.execution_model_native",
-      "category": "fixed_data_native_canary",
-      "name": "frozen execution-model tester",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/simulator.rs",
-          "lab/phase2_execution.py"
-        ],
-        "identity": "597e997b0a7af9cf6feba56766cc48b52d7a42df67c2cd0226ed178f039b60a5",
-        "tests": [
-          "tests/test_phase2_execution_returned.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "8d911b007638c8cecf61cb0fa1722f1783c1c0e4d2a72020339de067c2391534",
-        "tester_identity": "24c6f824e261f0027d5d660a4f71495c2d472d667d8fbcf1ff6aeafecebc09df"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/compile/compiler_record.json",
-          "tests/fixtures/phase2_execution_native_accepted/compile/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_execution_native_accepted/a1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/a2/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b1/execution.json",
-          "tests/fixtures/phase2_execution_native_accepted/b2/execution.json"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "2e8312d5a1ffca744f916982376cfab6fec2c167b1d349b749fe09b057252029",
-      "evidence_paths": [
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "0c1377123b0c021e03cdf2c5eaa206265c58b084"
-      ],
-      "grammar_admitted": false,
-      "searchable": false,
-      "missing_gate": "fixed embedded execution semantics only; complete Phase-2 gate remains false"
-    },
-    {
-      "id": "time.trading_clock",
-      "category": "time_session_dst_rule",
-      "name": "declared strategy and trading-day clocks",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/time.rs",
-          "engine/labengine/src/aggregation.rs"
-        ],
-        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
-        "tests": [
-          "engine/labengine/src/time.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
-        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
-        ],
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
-      "evidence_paths": [
-        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "1e5c7f610503287b9557b8046dff50404d30eaf3"
-      ],
-      "searchable": false,
-      "missing_gate": "frozen 18-scenario contract only; holiday calendars and universal production defaults remain unsupported"
-    },
-    {
-      "id": "time.dst_gap_fold",
-      "category": "time_session_dst_rule",
-      "name": "DST gap and fold failure behavior",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/time.rs"
-        ],
-        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
-        "tests": [
-          "engine/labengine/src/time.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
-        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
-        ],
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
-      "evidence_paths": [
-        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "1e5c7f610503287b9557b8046dff50404d30eaf3"
-      ],
-      "searchable": false,
-      "missing_gate": "frozen spring-gap and autumn-fold scenarios only; no holiday calendar semantics"
-    },
-    {
-      "id": "time.strategy_session_rules",
-      "category": "time_session_dst_rule",
-      "name": "Friday close, ORB, rollover, daily reset, Monday open",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/time.rs",
-          "engine/labengine/src/aggregation.rs"
-        ],
-        "identity": "10784f3cbf34a4eeebc95354a34f96427fab619b16918b401910fe56fdc63a84",
-        "tests": [
-          "engine/labengine/src/time.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "51e89919807794c5a51fcc9474a95fb302bc48210693132b3214dbcbefba92e0",
-        "tester_identity": "983a28e2b9398d750fdcbdc941fdc6cb1b19f0459f55f04f8a9673596b4d3412"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/compile.log"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A1/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-A2/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B1/execution.json",
-          "tests/fixtures/phase2_time_rule_native_accepted/time-rule-b4c1d2c-B2/execution.json"
-        ],
-        "execution_attempted": true,
-        "result_returned": true,
-        "reconciliation_passed": true,
-        "parity_evidence_available": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "4e780427cffdd67a546200911721e74b8e50c1501c50d5e3bec028971ca81f21",
-      "evidence_paths": [
-        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
-      ],
-      "commits": [
-        "1e5c7f610503287b9557b8046dff50404d30eaf3"
-      ],
-      "searchable": false,
-      "missing_gate": "Friday cutoff, rollover, Monday delay, ORB, and resets are fixture parameters; no global production or holiday-calendar defaults are accepted"
-    },
-    {
-      "id": "determinism.linux_replay",
-      "category": "deterministic_replay_case",
-      "name": "full Linux experiment semantic replay",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "lab/phase2_linux_replay.py",
-          "engine/labengine/src/ast.rs",
-          "engine/labengine/src/simulator.rs",
-          "engine/labengine/src/rng_stream.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase2_linux_replay.py",
-          "tests/test_phase2t_linux_replay_acceptance.py"
-        ]
-      },
-      "mql5": {
-        "generation": "out_of_scope",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": "c1bbff436e18344e258c51f6c239275fc60ba5b21baf51020d71616229cce889",
-      "evidence_paths": [
-        "tests/fixtures/phase2_linux_replay_fixture.json",
-        "tests/fixtures/phase2_linux_replay_m1.parquet",
-        "lab/phase2_linux_replay.py"
-      ],
-      "commits": [
-        "cc7e1d751f70f74f306ed51e6375891ed737e928"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 admission gate"
-    },
-    {
-      "id": "integrity.placebo_scrambled_edge",
-      "category": "placebo_scrambled_integrity_case",
-      "name": "scrambled-data edge destruction",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "lab/phase2_placebo.py"
-        ],
-        "identity": null,
-        "tests": [
-          "tests/test_phase2_numeric_parity.py",
-          "tests/test_phase2t_placebo_acceptance.py"
-        ]
-      },
-      "mql5": {
-        "generation": "out_of_scope",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": "79fa75f756642936ee824472dffab7dbf2905dcc06911692c4cfcd363c409b23",
-      "evidence_paths": [
-        "tests/fixtures/phase2_placebo_edge_fixture.json",
-        "lab/phase2_placebo.py"
-      ],
-      "commits": [
-        "d650f6a86786e78f11e99c1d914bc89b0f8b4d52"
-      ],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 admission gate"
-    },
-    {
-      "id": "strategy.hand_designed_suite_10",
-      "category": "hand_designed_strategy_parity_case",
-      "name": "ten initial-v1 grammar strategy reconciliations",
-      "status": "accepted",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "lab/phase2_ten_strategy.py"
-        ],
-        "identity": "1a13fc46bbc8fd305bd7e3adff8d334de742578307ade2799ddc4379f6751368",
-        "tests": [
-          "tests/test_phase2t_hand_designed_acceptance.py"
-        ]
-      },
-      "mql5": {
-        "generation": "generated",
-        "source_identity": "c95985619fb0fea544e5a8f424ee1921d49e9def1af951f6a00eed241953cd8a"
-      },
-      "native": {
-        "compile_evidence_paths": [
-          "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compile_evidence_manifest.json",
-          "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compiler_record.json"
-        ],
-        "execution_evidence_paths": [
-          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json",
-          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/a1",
-          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/a2",
-          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/b1",
-          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/b2"
-        ],
-        "handoff_ready": true,
-        "execution_attempted": true,
-        "parity_accepted": true
-      },
-      "parity_result_identity": "7b06b6054e89c6ab0404bf85eee81ddcce40f46d9fbef5573d7cca15a7b02145",
-      "evidence_paths": [
-        "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json"
-      ],
-      "commits": [],
-      "searchable": false,
-      "missing_gate": "complete Phase-2 gate; system smoke is not an edge-survival or performance claim"
-    },
-    {
-      "id": "grammar.search_admission",
-      "category": "grammar_admission",
-      "name": "searchable initial v1 grammar",
-      "status": "deferred",
-      "rust": {
-        "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/ast.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/ast.rs"
-        ]
-      },
-      "mql5": {
-        "generation": "partial",
-        "source_identity": null
-      },
-      "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
-      },
-      "parity_result_identity": null,
-      "evidence_paths": [
-        "architecture-lock/FINAL_ARCHITECTURE.md",
-        "architecture-lock/ARCHITECTURE_DECISIONS.md"
-      ],
-      "commits": [],
-      "searchable": false,
-      "missing_gate": "complete grammar admission rule for every node and indicator plus Phase-2 gate"
+      "status": "accepted"
     }
   ],
-  "inventory_summary": {
-    "item_count": 51,
-    "status_counts": {
-      "accepted": 40,
-      "partially_proven": 8,
-      "implemented_but_unproved": 2,
-      "absent": 0,
-      "deferred": 1,
-      "out_of_scope": 0
-    },
-    "accepted_native_canary_count": 6,
-    "grammar_admitted_node_count": 2,
-    "phase2_acceptance_gate": "blocked"
-  },
-  "grammar_admission_rule": {
-    "required_fields": [
-      "typed_ast_schema_node_registration",
-      "rust_evaluation_path",
-      "canonicalization_support",
-      "hashing_support",
-      "mql5_translation",
-      "native_parity_fixture"
-    ],
-    "search_authorized": false,
-    "phase3_authorized": false
-  },
-  "acceptance_requirements": [
-    {
-      "id": "synthetic_execution_fixtures",
-      "status": "accepted",
-      "accepted_evidence": [
-        "tests/fixtures/phase2_execution_native_accepted/native_acceptance.json"
-      ],
-      "missing_evidence": "none for the frozen twelve-scenario execution contract",
-      "blocks_phase2": false,
-      "smallest_next_task": "none; preserve narrow contract while advancing broker-clock fixtures"
-    },
-    {
-      "id": "layer1_indicator_parity",
-      "status": "partial",
-      "accepted_evidence": [
-        "docs/phase2j_mql5_condition_tester_canary.md",
-        "docs/phase2l_mql5_sma_cross_native_canary.md",
-        "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json",
-        "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json"
-      ],
-      "missing_evidence": "ATR and Distance/ATR native parity is accepted, but typed AST registration, canonicalization/hashing, and MQL5 translation are not admitted; remaining primitives lack matched MQL5/native parity",
-      "blocks_phase2": true,
-      "smallest_next_task": "local-only typed AST admission for ATR and Distance/ATR"
-    },
-    {
-      "id": "strategy_session_time_dst_parity",
-      "status": "accepted",
-      "accepted_evidence": [
-        "tests/fixtures/phase2_time_rule_native_accepted/native_acceptance.json"
-      ],
-      "missing_evidence": "parameterized frozen canary only; holiday calendars and universal production window defaults remain unsupported",
-      "blocks_phase2": false,
-      "smallest_next_task": "preserve the narrow accepted clock contract while advancing remaining Layer-1 and strategy reconciliation gates"
-    },
-    {
-      "id": "ten_hand_designed_strategies",
-      "status": "partial",
-      "accepted_evidence": [
-        "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json"
-      ],
-      "missing_evidence": "Four-context embedded system smoke is accepted, but trade-by-trade strategy reconciliation, provisional parity budget, and finalist edge-survival evidence are still absent",
-      "blocks_phase2": true,
-      "smallest_next_task": "select one non-search finalist contract and produce a deterministic trade-by-trade reconciliation with frozen cost and parity budget"
-    },
-    {
-      "id": "linux_semantic_determinism",
-      "status": "accepted",
-      "accepted_evidence": [
-        "tests/fixtures/phase2_linux_replay_fixture.json"
-      ],
-      "missing_evidence": "none for the committed six-stage Linux experiment replay contract; broader experiment families remain outside this narrow fixture",
-      "blocks_phase2": false,
-      "smallest_next_task": "preserve the narrow replay contract while advancing remaining strategy and Layer-1 gates"
-    },
-    {
-      "id": "placebo_scrambled_edge",
-      "status": "accepted",
-      "accepted_evidence": [
-        "tests/fixtures/phase2_placebo_edge_fixture.json"
-      ],
-      "missing_evidence": "none for the committed known-edge scramble contract; this does not establish a finalist's broker-native edge survival",
-      "blocks_phase2": false,
-      "smallest_next_task": "preserve the narrow placebo contract while advancing finalist edge-survival gates"
-    }
-  ],
-  "historical_label_discrepancies": [
-    "Phase 2J and 2L documentation records native success, but durable raw compile/run evidence is committed only for Phase 2N.",
-    "Phase 2N commit 29be0d0 documented ignored artifacts; f201077 is the durable evidence repair.",
-    "The Phase 2A-B-C labels include substantial implementation and local acceptance but do not establish the roadmap's full Rust-to-MT5 parity gate."
-  ],
+  "layer1_authority": "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+  "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
+  "next_task": "next unproved Layer-1 family after CCI",
+  "phase": "2",
   "recommended_sequence": [
     "2R accepted Phase-2Q evidence and ATR/Distance-ATR grammar-admission inventory",
     "2S local typed AST admission for ATR and Distance/ATR",
@@ -2292,12 +2258,18 @@
     "2U native hand-designed strategy cases, session/time/DST cases, Linux replay, and placebo integrity fixtures",
     "2V complete Phase-2 gate audit before any Phase-3 authorization"
   ],
-  "next_task": "next unproved Layer-1 family after CCI",
-  "evidence_package_completeness": {
-    "canary.condition_native": "legacy_committed_summary",
-    "canary.sma_cross_native": "legacy_committed_summary",
-    "canary.slope_native": "self_contained_raw_native",
-    "canary.atr_distance_native": "self_contained_raw_native",
-    "canary.execution_model_native": "self_contained_raw_native_returned_contract_v2"
+  "schema_version": 1,
+  "search_authorized": false,
+  "status_values": [
+    "accepted",
+    "partially_proven",
+    "implemented_but_unproved",
+    "absent",
+    "deferred",
+    "out_of_scope"
+  ],
+  "summary": {
+    "accepted": 41,
+    "implemented_but_unproved": 0
   }
 }

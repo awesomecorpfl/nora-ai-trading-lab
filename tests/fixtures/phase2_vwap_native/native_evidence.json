@@ -1,0 +1,28 @@
+{
+  "schema_version": "nora.phase2_vwap_native_evidence_v1",
+  "compile": {
+    "status": "compiled",
+    "error_count": 0,
+    "warning_count": 0,
+    "ex5_size_bytes": 9882
+  },
+  "run_ids": [
+    "VWAP-A1-1",
+    "VWAP-A2-2",
+    "VWAP-B1-3",
+    "VWAP-B2-4"
+  ],
+  "run_rows": {
+    "VWAP-A1-1": 5,
+    "VWAP-A2-2": 5,
+    "VWAP-B1-3": 5,
+    "VWAP-B2-4": 5
+  },
+  "csv_sha256": "4b5dad0574b3ad0f32e09a6f76e6c5e94c50c6443e657b3c4152ba68f1d4c88e",
+  "completion_count": 4,
+  "failure_count": 0,
+  "rust_evidence_identity": "3d7ff009aa97b5842c54517f073c81301e3da617bd43c8ea0058f940b3edd607",
+  "expected_vector_identity": "3d7ff009aa97b5842c54517f073c81301e3da617bd43c8ea0058f940b3edd607",
+  "parity": "exact",
+  "native_evidence_identity": "d3601a23a31ae01943fd05e5255e007df793e469274775197dcc115ffef47521"
+}

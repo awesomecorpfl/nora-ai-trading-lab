@@ -1,0 +1,6 @@
+scenario_id	node	output	row	timestamp	value	null	classification	reason_code
+two_sessions	VWAP	value	0	2026-06-01T00:00:00Z	10.3333333333333340	false	steady_state	ok
+two_sessions	VWAP	value	1	2026-06-01T00:01:00Z	11.0000000000000000	false	steady_state	ok
+two_sessions	VWAP	value	2	2026-06-01T00:02:00Z	10.5000000000000000	false	steady_state	ok
+two_sessions	VWAP	value	3	2026-06-02T00:00:00Z	20.3333333333333322	false	steady_state	ok
+two_sessions	VWAP	value	4	2026-06-02T00:01:00Z	21.1111111111111107	false	steady_state	ok

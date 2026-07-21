@@ -1,0 +1,5 @@
+{
+ "schema_version":"nora.phase2_vwap_scenarios_v1",
+ "contract":{"algorithm":"session-reset cumulative typical-price volume weighted average","typical_price":"(high+low+close)/3","zero_volume":"output 0.0 when cumulative session volume is zero","session_boundary":"explicit session_id changes reset state"},
+ "scenarios":[{"id":"two_sessions","node":"VWAP","output":"value","session_id":["A","A","A","B","B"],"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"],"high":[12,14,13,22,25],"low":[8,10,7,18,19],"close":[11,13,10,21,24],"volume":[2,1,3,4,2]}]
+}
