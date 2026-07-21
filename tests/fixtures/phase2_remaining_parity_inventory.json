@@ -2084,11 +2084,13 @@
     },
     {
       "id": "ten_hand_designed_strategies",
-      "status": "blocked",
-      "accepted_evidence": [],
-      "missing_evidence": "zero durable strategy trade-by-trade reconciliations",
+      "status": "partial",
+      "accepted_evidence": [
+        "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json"
+      ],
+      "missing_evidence": "Four-context embedded system smoke is accepted, but trade-by-trade strategy reconciliation, provisional parity budget, and finalist edge-survival evidence are still absent",
       "blocks_phase2": true,
-      "smallest_next_task": "complete one execution-model strategy canary after local generator support"
+      "smallest_next_task": "select one non-search finalist contract and produce a deterministic trade-by-trade reconciliation with frozen cost and parity budget"
     },
     {
       "id": "linux_semantic_determinism",
