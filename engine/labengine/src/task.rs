@@ -16,10 +16,39 @@ pub fn run_cli(args:Vec<String>)->Result<Value>{if args.len()!=1{return Err("usa
 pub fn dispatch(value:&Value)->Result<Value>{let obj=object(value)?;version(obj)?;match string(obj,"task_type")?.as_str(){"validate_dataset"=>validate(obj),"aggregate_m1"=>aggregate(obj),"compute_indicators"=>compute(obj),"layer1_parity_v1"=>layer1_parity(obj),"time_rules_v1"=>time_rules(obj),"phase2_ten_strategy_suite_v1"=>crate::strategy_suite::task(obj),"canonicalize_ast"=>crate::ast::task(obj),"evaluate_ast"=>crate::ast::evaluate_task(obj),"build_entry_intents"=>crate::ast::entry_intents_task(obj),"build_exit_intents"=>crate::ast::exit_intents_task(obj),"simulate_market_v1"=>crate::simulator::task(obj),"compute_closed_trade_metrics_v1"=>crate::closed_trade_metrics::task(obj),"generate_named_rng_stream_v1"=>crate::rng_stream::task(obj),other=>Err(format!("unsupported task_type {other:?}"))}}
 
 fn layer1_parity(o:&Map<String,Value>)->Result<Value>{
- only(o,&["task_version","task_type","scenarios"])?;let scenarios=o.get("scenarios").and_then(Value::as_array).filter(|x|!x.is_empty()).ok_or("scenarios must be non-empty")?;let mut rows=Vec::new();
- for scenario in scenarios{let s=scenario.as_object().ok_or("scenario must be object")?;only(s,&["id","node","output","period","timestamps","values"])?;let id=string(s,"id")?;let node=string(s,"node")?;let output=string(s,"output")?;if !matches!(node.as_str(),"RSI"|"ROC"|"EMA"|"Highest"|"Lowest"){return Err("layer1 parity node must be RSI, ROC, EMA, Highest, or Lowest".into())}let stamps=s.get("timestamps").and_then(Value::as_array).ok_or("timestamps must be array")?;let values=s.get("values").and_then(Value::as_array).ok_or("values must be array")?;if stamps.len()!=values.len(){return Err("timestamp/value length mismatch".into())}let period=s.get("period").and_then(Value::as_u64).and_then(|v|usize::try_from(v).ok()).unwrap_or(0);if period==0{rows.push(json!({"scenario_id":id,"node":node,"output":output,"row":null,"timestamp":null,"value":null,"null":true,"classification":"invalid_input","reason_code":"invalid_period"}));continue}let mut source=Vec::new();for value in values{source.push(match value{Value::Null=>None,_=>Some(value.as_f64().filter(|v|v.is_finite()).ok_or("values must be finite numbers or null")?)})}let mut result=vec![None;source.len()];
-  if node=="RSI"{let values=source.iter().map(|v|v.ok_or("RSI values must be non-null".to_string())).collect::<Result<Vec<_>>>()?;result=indicators::rsi(&values,period)?;}else if node=="ROC"{let values=source.iter().map(|v|v.ok_or("ROC values must be non-null".to_string())).collect::<Result<Vec<_>>>()?;result=indicators::roc(&values,period)?;}else if node=="EMA"{let mut seed=Vec::new();let mut state:Option<f64>=None;let alpha=2.0/(period as f64+1.0);for(i,value)in source.iter().enumerate(){match value{None=>{seed.clear();state=None},Some(v)=>if let Some(e)=state{let next=e+alpha*(*v-e);state=Some(next);result[i]=Some(next)}else{seed.push(*v);if seed.len()==period{let e=seed.iter().sum::<f64>()/period as f64;state=Some(e);result[i]=Some(e)}}}}}else{for i in period-1..source.len(){let window=&source[i+1-period..=i];if window.iter().all(Option::is_some){result[i]=Some(if node=="Highest"{window.iter().map(|x|x.unwrap()).fold(f64::NEG_INFINITY,f64::max)}else{window.iter().map(|x|x.unwrap()).fold(f64::INFINITY,f64::min)})}}}
-  for(i,value)in result.iter().enumerate(){let stamp=stamps[i].as_str().filter(|x|!x.is_empty()).ok_or("timestamps must be non-empty strings")?;rows.push(json!({"scenario_id":id,"node":node,"output":output,"row":i,"timestamp":stamp,"value":value,"null":value.is_none(),"classification":if value.is_some(){"steady_state"}else{"warmup_or_null"},"reason_code":if value.is_some(){"ok"}else if source[i].is_none(){"null_input"}else if node=="ROC"&&i>=period&&source[i-period]==Some(0.0){"zero_baseline"}else{"warmup"}}))}}
+ only(o,&["task_version","task_type","scenarios"])?;
+ let scenarios=o.get("scenarios").and_then(Value::as_array).filter(|x|!x.is_empty()).ok_or("scenarios must be non-empty")?;
+ let mut rows=Vec::new();
+ for scenario in scenarios {
+  let s=scenario.as_object().ok_or("scenario must be object")?;
+  only(s,&["id","node","output","period","d_period","timestamps","values","high","low","close"])?;
+  let id=string(s,"id")?;let node=string(s,"node")?;let output=string(s,"output")?;
+  let stamps=s.get("timestamps").and_then(Value::as_array).ok_or("timestamps must be array")?;
+  let period=s.get("period").and_then(Value::as_u64).and_then(|v|usize::try_from(v).ok()).unwrap_or(0);
+  let d_period=s.get("d_period").and_then(Value::as_u64).and_then(|v|usize::try_from(v).ok()).unwrap_or(0);
+  if node=="Stochastic" {
+   let high=s.get("high").and_then(Value::as_array).ok_or("high must be array")?;
+   let low=s.get("low").and_then(Value::as_array).ok_or("low must be array")?;
+   let close=s.get("close").and_then(Value::as_array).ok_or("close must be array")?;
+   if stamps.len()!=high.len()||high.len()!=low.len()||low.len()!=close.len(){return Err("Stochastic input length mismatch".into())}
+   let parse=|values:&Vec<Value>|->Result<Vec<f64>>{values.iter().map(|v|v.as_f64().filter(|x|x.is_finite()).ok_or("Stochastic values must be finite numbers".into())).collect()};
+   if period==0||d_period==0 { for name in ["k","d"] { rows.push(json!({"scenario_id":id,"node":node,"output":name,"row":null,"timestamp":null,"value":null,"null":true,"classification":"invalid_input","reason_code":"invalid_period"})); } continue }
+   let (k_values,d_values)=indicators::stochastic(&parse(high)?,&parse(low)?,&parse(close)?,period,d_period)?;
+   for (name,result) in [("k",k_values),("d",d_values)] { for (i,value) in result.iter().enumerate() { let stamp=stamps[i].as_str().filter(|x|!x.is_empty()).ok_or("timestamps must be non-empty strings")?; rows.push(json!({"scenario_id":id,"node":node,"output":name,"row":i,"timestamp":stamp,"value":value,"null":value.is_none(),"classification":if value.is_some(){"steady_state"}else{"warmup_or_null"},"reason_code":if value.is_some(){"ok"}else{"warmup"} })); } }
+   continue
+  }
+  if !matches!(node.as_str(),"RSI"|"ROC"|"EMA"|"Highest"|"Lowest"){return Err("layer1 parity node must be RSI, ROC, EMA, Highest, Lowest, or Stochastic".into())}
+  let values=s.get("values").and_then(Value::as_array).ok_or("values must be array")?;
+  if stamps.len()!=values.len(){return Err("timestamp/value length mismatch".into())}
+  if period==0 { rows.push(json!({"scenario_id":id,"node":node,"output":output,"row":null,"timestamp":null,"value":null,"null":true,"classification":"invalid_input","reason_code":"invalid_period"})); continue }
+  let source=values.iter().map(|value|match value{Value::Null=>Ok(None),_=>value.as_f64().filter(|v|v.is_finite()).map(Some).ok_or("values must be finite numbers or null".into())}).collect::<Result<Vec<_>>>()?;
+  let mut result=vec![None;source.len()];
+  if node=="RSI" { result=indicators::rsi(&source.iter().map(|v|v.ok_or("RSI values must be non-null".to_string())).collect::<Result<Vec<_>>>()?,period)?; }
+  else if node=="ROC" { result=indicators::roc(&source.iter().map(|v|v.ok_or("ROC values must be non-null".to_string())).collect::<Result<Vec<_>>>()?,period)?; }
+  else if node=="EMA" { let mut seed=Vec::new();let mut state:Option<f64>=None;let alpha=2.0/(period as f64+1.0);for(i,value)in source.iter().enumerate(){match value{None=>{seed.clear();state=None},Some(v)=>if let Some(e)=state{let next=e+alpha*(*v-e);state=Some(next);result[i]=Some(next)}else{seed.push(*v);if seed.len()==period{let e=seed.iter().sum::<f64>()/period as f64;state=Some(e);result[i]=Some(e)}}}} }
+  else { for i in period-1..source.len(){let window=&source[i+1-period..=i];if window.iter().all(Option::is_some){result[i]=Some(if node=="Highest"{window.iter().map(|x|x.unwrap()).fold(f64::NEG_INFINITY,f64::max)}else{window.iter().map(|x|x.unwrap()).fold(f64::INFINITY,f64::min)})}} }
+  for(i,value)in result.iter().enumerate(){let stamp=stamps[i].as_str().filter(|x|!x.is_empty()).ok_or("timestamps must be non-empty strings")?;rows.push(json!({"scenario_id":id,"node":node,"output":output,"row":i,"timestamp":stamp,"value":value,"null":value.is_none(),"classification":if value.is_some(){"steady_state"}else{"warmup_or_null"},"reason_code":if value.is_some(){"ok"}else if source[i].is_none(){"null_input"}else if node=="ROC"&&i>=period&&source[i-period]==Some(0.0){"zero_baseline"}else{"warmup"}}))}
+ }
  Ok(json!({"ok":true,"task_type":"layer1_parity_v1","schema_version":"nora.layer1_rust_output_v1","rows":rows}))
 }
 
