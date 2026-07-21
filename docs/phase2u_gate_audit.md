@@ -20,7 +20,7 @@ Status: **bounded audit complete; overall Phase 2 remains blocked**
 
 | Gate | State | What is missing |
 |---|---|---|
-| Layer-1 indicator parity | partial / blocking | Remaining Rust/MQL5/native parity chains and typed AST admission for unadmitted primitives |
+| Layer-1 indicator parity | partial / blocking | 12 Layer-1 families remain implemented but unproved after EMA, Highest, and Lowest batch-one acceptance; remaining families require their own deterministic MQL5/native evidence |
 | Ten strategy finalist proof | partial / blocking | Trade-by-trade reconciliation, frozen provisional parity budget, and finalist edge-survival evidence |
 | Linux experiment determinism | accepted narrowly | Committed six-stage replay fixture; broader experiment families remain outside this contract |
 | Placebo/scrambled edge destruction | accepted narrowly | Known-edge scramble contract passes; this does not establish finalist broker-native edge survival |
