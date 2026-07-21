@@ -45,7 +45,7 @@ def tester() -> str:
         blocks.append(
             f'''double h{index}[{n}]={{{_array(scenario["high"])}}};double l{index}[{n}]={{{_array(scenario["low"])}}};double c{index}[{n}]={{{_array(scenario["close"])}}};bool n{index}[{n}]={{{_nulls(scenario["close"])}}};string t{index}[{n}]={{{_strings(scenario["timestamps"])}}};double k{index}[];double d{index}[];bool kn{index}[];bool dn{index}[];
 if(!NoraStochasticCompute(h{index},l{index},c{index},n{index},{n},{p},{dp},k{index},d{index},kn{index},dn{index})){{FileClose(f);Print("{FAIL}");return INIT_FAILED;}}
-for(int i=0;i<{n};i++){{FileWrite(f,"{scenario["id"]}","Stochastic","k",i,t{index}[i],kn{index}[i]?"NULL":DoubleToString(k{index}[i],17),kn{index}[i]?"true":"false",kn{index}[i]?"warmup_or_null":"steady_state",kn{index}[i]?"warmup":"ok");FileWrite(f,"{scenario["id"]}","Stochastic","d",i,t{index}[i],dn{index}[i]?"NULL":DoubleToString(d{index}[i],17),dn{index}[i]?"true":"false",dn{index}[i]?"warmup_or_null":"steady_state",dn{index}[i]?"warmup":"ok");}}'''
+for(int i=0;i<{n};i++){{FileWrite(f,"{scenario["id"]}","Stochastic","k",i,t{index}[i],kn{index}[i]?"NULL":DoubleToString(k{index}[i],17),kn{index}[i]?"true":"false",kn{index}[i]?"warmup_or_null":"steady_state",kn{index}[i]?"warmup":"ok");}}for(int i=0;i<{n};i++){{FileWrite(f,"{scenario["id"]}","Stochastic","d",i,t{index}[i],dn{index}[i]?"NULL":DoubleToString(d{index}[i],17),dn{index}[i]?"true":"false",dn{index}[i]?"warmup_or_null":"steady_state",dn{index}[i]?"warmup":"ok");}}'''
         )
     return f'''#property strict
 #include "{RUNTIME}"

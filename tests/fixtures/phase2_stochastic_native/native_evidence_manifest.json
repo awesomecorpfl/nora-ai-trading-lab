@@ -1,0 +1,22 @@
+{
+  "acceptance": "PASS_EXACT",
+  "compiled": {
+    "compile_log_sha256": "9c5d2e4de90b94302a88fb425376090090632443902145763bcba22745f20735",
+    "errors": 0,
+    "ex5_path": "compile/NoraPhase2StochasticTesterV1.ex5",
+    "ex5_sha256": "bced6fbd0734e1c9344cb202c867f7ea77942ac36e0eb6a7cbcaf559a7f0636e",
+    "status": "compiled",
+    "warnings": 0
+  },
+  "contexts": {
+    "A1": {"completion_marker_present": true, "csv_sha256": "4e8ac3322f0ba95790d76da77c8e36490f00065623f0bb202a03fe48000ef2a9", "exact_reconciliation": true, "execution_sha256": "9a3fe9225a419ea156b1feaf06bf2d9fc452a73aded069636c067c4fa46efb55", "expected_rows": 18, "failure_marker_present": false, "native_exit": 0, "rows": 18, "run_id": "20260721T121500Z-STOCH-A1", "status": "completed", "symbol": "GDAXI", "tester_ini_normalized_sha256": "b68b96c46a3812972831a3e2800adde4d4b163872e94aad5153be0df386a82c8"},
+    "A2": {"completion_marker_present": true, "csv_sha256": "4e8ac3322f0ba95790d76da77c8e36490f00065623f0bb202a03fe48000ef2a9", "exact_reconciliation": true, "execution_sha256": "d8f1c80cb1c1a1e77b23441d64ffd2afdb9c19bf16be8d512406da62686c004f", "expected_rows": 18, "failure_marker_present": false, "native_exit": 0, "rows": 18, "run_id": "20260721T121500Z-STOCH-A2", "status": "completed", "symbol": "GDAXI", "tester_ini_normalized_sha256": "09fb34e609fdc72ddf63ef29ce1834ecf861dd9794e341863f414df0f664cd6c"},
+    "B1": {"completion_marker_present": true, "csv_sha256": "4e8ac3322f0ba95790d76da77c8e36490f00065623f0bb202a03fe48000ef2a9", "exact_reconciliation": true, "execution_sha256": "83e46fd47a2e4d6e6a35bd21087ab5cacb7e043c07d865b649813002942a7d09", "expected_rows": 18, "failure_marker_present": false, "native_exit": 0, "rows": 18, "run_id": "20260721T121500Z-STOCH-B1", "status": "completed", "symbol": "AUDCAD", "tester_ini_normalized_sha256": "24565712583c64ef950e5b0eb9ed786a767bf3bc7776e73934365fa5233d0089"},
+    "B2": {"completion_marker_present": true, "csv_sha256": "4e8ac3322f0ba95790d76da77c8e36490f00065623f0bb202a03fe48000ef2a9", "exact_reconciliation": true, "execution_sha256": "95c30661cfacb9fe4156dd68a960694ec3a175933f59a82dfb6dd7e72c48d989", "expected_rows": 18, "failure_marker_present": false, "native_exit": 0, "rows": 18, "run_id": "20260721T121500Z-STOCH-B2", "status": "completed", "symbol": "AUDCAD", "tester_ini_normalized_sha256": "8c100b2582496fd663d373987f5b6ba0f87dd29987ea0573cc7c62d117d66f25"}
+  },
+  "cross_context_csv_sha256_equal": true,
+  "native_parity_accepted": true,
+  "package_identity": "cbe733484749e64d84333409acc1e110d38b97b5a1c1e0d9b5ef969e4fe9f8bb",
+  "schema_version": "nora.phase2_stochastic_native_evidence_v1",
+  "target": "layer1_stochastic"
+}

@@ -410,32 +410,49 @@
       "id": "layer1.stochastic",
       "category": "layer1_indicator",
       "name": "Stochastic",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
         ],
         "identity": null,
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "tests/test_phase2_stochastic_local_evidence.py",
+          "tests/test_phase2_stochastic_native.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "cbe733484749e64d84333409acc1e110d38b97b5a1c1e0d9b5ef969e4fe9f8bb"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_stochastic_native/compile/compile.log",
+          "tests/fixtures/phase2_stochastic_native/compile/NoraPhase2StochasticTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_stochastic_native/runs/A1/execution.json",
+          "tests/fixtures/phase2_stochastic_native/runs/A1/nora_phase2_stochastic_v1.csv",
+          "tests/fixtures/phase2_stochastic_native/runs/A2/execution.json",
+          "tests/fixtures/phase2_stochastic_native/runs/A2/nora_phase2_stochastic_v1.csv",
+          "tests/fixtures/phase2_stochastic_native/runs/B1/execution.json",
+          "tests/fixtures/phase2_stochastic_native/runs/B1/nora_phase2_stochastic_v1.csv",
+          "tests/fixtures/phase2_stochastic_native/runs/B2/execution.json",
+          "tests/fixtures/phase2_stochastic_native/runs/B2/nora_phase2_stochastic_v1.csv"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "4e8ac3322f0ba95790d76da77c8e36490f00065623f0bb202a03fe48000ef2a9",
+      "evidence_paths": [
+        "tests/fixtures/phase2_stochastic_native/native_evidence_manifest.json"
+      ],
       "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
+        "a592d425c85c91f876c6ed7c572cac67099243d8"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "grammar admission and search authorization"
     },
     {
       "id": "layer1.atr",
@@ -2100,9 +2117,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 32,
+    "accepted": 33,
     "partially_proven": 8,
-    "implemented_but_unproved": 10,
+    "implemented_but_unproved": 9,
     "absent": 0,
     "deferred": 1,
     "out_of_scope": 0

@@ -33,7 +33,7 @@ def test_stochastic_package_builder_is_deterministic_and_native_open():
         a = generate(Path(left), evidence)
         b = generate(Path(right), evidence)
     assert a == b
-    assert a["package_identity"] == "c9e760af6c7f87fce12f0bc4cc96a744df15c3d7b0afd771af94858d0d13ece7"
+    assert a["package_identity"] == "cbe733484749e64d84333409acc1e110d38b97b5a1c1e0d9b5ef969e4fe9f8bb"
     assert a["target_identifier"] == "layer1_stochastic"
     assert a["native_execution_attempted"] is False
     assert a["native_parity_accepted"] is False
