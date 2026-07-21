@@ -1,0 +1,76 @@
+{
+  "schema_version": "nora.phase2_adx_scenarios_v1",
+  "contract": {
+    "period": "positive integer",
+    "algorithm": "Wilder-smoothed +DM/-DM/TR, DX, then Wilder-smoothed ADX",
+    "zero_denominator": "NULL",
+    "warmup": "NULL until the Rust kernel produces ADX",
+    "native_output": "adx"
+  },
+  "scenarios": [
+    {
+      "id": "directional_trend",
+      "node": "ADX",
+      "output": "adx",
+      "period": 3,
+      "timestamps": [
+        "2026-02-01T00:00:00Z",
+        "2026-02-01T00:01:00Z",
+        "2026-02-01T00:02:00Z",
+        "2026-02-01T00:03:00Z",
+        "2026-02-01T00:04:00Z",
+        "2026-02-01T00:05:00Z",
+        "2026-02-01T00:06:00Z",
+        "2026-02-01T00:07:00Z"
+      ],
+      "high": [10, 11, 12, 13, 14, 15, 16, 17],
+      "low": [9, 10, 11, 12, 13, 14, 15, 16],
+      "close": [9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5]
+    },
+    {
+      "id": "mixed_direction",
+      "node": "ADX",
+      "output": "adx",
+      "period": 3,
+      "timestamps": [
+        "2026-02-02T00:00:00Z",
+        "2026-02-02T00:01:00Z",
+        "2026-02-02T00:02:00Z",
+        "2026-02-02T00:03:00Z",
+        "2026-02-02T00:04:00Z",
+        "2026-02-02T00:05:00Z",
+        "2026-02-02T00:06:00Z",
+        "2026-02-02T00:07:00Z"
+      ],
+      "high": [10, 12, 11, 13, 12, 14, 15, 14],
+      "low": [8, 9, 8, 10, 9, 11, 12, 11],
+      "close": [9, 11, 9, 12, 10, 13, 14, 12]
+    },
+    {
+      "id": "zero_denominator",
+      "node": "ADX",
+      "output": "adx",
+      "period": 3,
+      "timestamps": [
+        "2026-02-03T00:00:00Z",
+        "2026-02-03T00:01:00Z",
+        "2026-02-03T00:02:00Z",
+        "2026-02-03T00:03:00Z",
+        "2026-02-03T00:04:00Z"
+      ],
+      "high": [5, 5, 5, 5, 5],
+      "low": [5, 5, 5, 5, 5],
+      "close": [5, 5, 5, 5, 5]
+    },
+    {
+      "id": "invalid_period",
+      "node": "ADX",
+      "output": "adx",
+      "period": 0,
+      "timestamps": ["2026-02-04T00:00:00Z"],
+      "high": [10],
+      "low": [9],
+      "close": [9.5]
+    }
+  ]
+}

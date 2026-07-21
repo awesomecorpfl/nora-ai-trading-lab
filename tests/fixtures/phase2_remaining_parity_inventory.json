@@ -103,34 +103,43 @@
       "id": "layer1.adx",
       "category": "layer1_indicator",
       "name": "ADX",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/task.rs"
         ],
-        "identity": null,
+        "identity": "c038ae3a3a309d46493496e219d644c55a4e6ac045aeeadb168133869aedc899",
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "tests/test_phase2_adx_local_evidence.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "deterministic",
+        "source_identity": "200bb9ec70eb6a58ae5f804b07ac66845c380a2422a7606ac706edc48ecf29df"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_adx_native/compile/adx-compile.log",
+          "tests/fixtures/phase2_adx_native/compile/NoraPhase2AdxTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_adx_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_adx_native/runs/"
+        ]
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "4fb70e05b617c401b9e088b3d0257c6d8d4e0a5ddefc0f7b8d18763bfbc0abfa",
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_indicator_task.json"
+        "tests/fixtures/phase2_adx_scenarios.json",
+        "tests/fixtures/phase2_adx_local_evidence/rust_evidence.json",
+        "tests/test_phase2_adx_native.py"
       ],
       "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
+        "42821b2"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": null
     },
     {
       "id": "layer1.er",
@@ -2117,9 +2126,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 33,
+    "accepted": 34,
     "partially_proven": 8,
-    "implemented_but_unproved": 9,
+    "implemented_but_unproved": 8,
     "absent": 0,
     "deferred": 1,
     "out_of_scope": 0

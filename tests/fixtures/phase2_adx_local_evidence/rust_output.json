@@ -1,0 +1,249 @@
+{
+  "ok": true,
+  "rows": [
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 0,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:00:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 1,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:01:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 2,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:02:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 3,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:03:00Z",
+      "value": null
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 4,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:04:00Z",
+      "value": 100.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 5,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:05:00Z",
+      "value": 100.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 6,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:06:00Z",
+      "value": 100.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 7,
+      "scenario_id": "directional_trend",
+      "timestamp": "2026-02-01T00:07:00Z",
+      "value": 100.0
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 0,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:00:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 1,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:01:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 2,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:02:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 3,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:03:00Z",
+      "value": null
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 4,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:04:00Z",
+      "value": 40.4040404040404
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 5,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:05:00Z",
+      "value": 45.82491582491582
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 6,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:06:00Z",
+      "value": 53.08369258525022
+    },
+    {
+      "classification": "steady_state",
+      "node": "ADX",
+      "null": false,
+      "output": "adx",
+      "reason_code": "ok",
+      "row": 7,
+      "scenario_id": "mixed_direction",
+      "timestamp": "2026-02-02T00:07:00Z",
+      "value": 42.58310202481841
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 0,
+      "scenario_id": "zero_denominator",
+      "timestamp": "2026-02-03T00:00:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 1,
+      "scenario_id": "zero_denominator",
+      "timestamp": "2026-02-03T00:01:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 2,
+      "scenario_id": "zero_denominator",
+      "timestamp": "2026-02-03T00:02:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 3,
+      "scenario_id": "zero_denominator",
+      "timestamp": "2026-02-03T00:03:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "warmup",
+      "row": 4,
+      "scenario_id": "zero_denominator",
+      "timestamp": "2026-02-03T00:04:00Z",
+      "value": null
+    },
+    {
+      "classification": "invalid_input",
+      "node": "ADX",
+      "null": true,
+      "output": "adx",
+      "reason_code": "invalid_period",
+      "row": null,
+      "scenario_id": "invalid_period",
+      "timestamp": null,
+      "value": null
+    }
+  ],
+  "schema_version": "nora.layer1_rust_output_v1",
+  "task_type": "layer1_parity_v1"
+}
