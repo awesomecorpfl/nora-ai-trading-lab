@@ -19,6 +19,18 @@ def test_selected_ast_nodes_cross_real_rust_canonicalization_boundary():
   root=Path(d);task=root/'task.json';task.write_text(json.dumps({'task_version':1,'task_type':'canonicalize_ast','output_path':str(root/'x'),'ast':document('ema',0)}))
   assert subprocess.run([ENGINE,task],capture_output=True).returncode!=0
 
+def test_rsi_translation_is_strict_deterministic_and_nonsearchable():
+    node = {
+        "type": "rsi",
+        "input": {"type": "series", "name": "close"},
+        "period": 3,
+    }
+    translated = translate_feature_node(node)
+    assert translated == translate_feature_node(node)
+    assert translated["output_name"] == "value"
+    assert translated["grammar_admitted"] is False
+    assert translated["searchable"] is False
+
 def test_translation_is_strict_deterministic_typed_and_nonsearchable():
  for kind in ('ema','highest','lowest'):
   node=document(kind)['root']['left'];a=translate_feature_node(node);assert a==translate_feature_node(node);assert a['output_name']=='value' and not a['grammar_admitted'] and not a['searchable']

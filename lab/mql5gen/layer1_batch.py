@@ -17,14 +17,14 @@ FAIL="NORA_PHASE2_LAYER1_BATCH_FAIL_V1"
 
 def translate_feature_node(node:dict)->dict:
     if not isinstance(node,dict) or set(node)!={"type","input","period"}:raise ValueError("strict layer1 feature schema")
-    if node["type"] not in ("ema","highest","lowest"):raise ValueError("unsupported layer1 feature")
+    if node["type"] not in ("ema","highest","lowest","rsi"):raise ValueError("unsupported layer1 feature")
     source=node["input"]
     if not isinstance(source,dict) or source.get("type")!="series" or not isinstance(source.get("name"),str) or not source["name"] or set(source)!={"type","name"}:raise ValueError("typed numeric input required")
     if not isinstance(node["period"],int) or isinstance(node["period"],bool) or node["period"]<1:raise ValueError("positive period required")
     canonical=json.dumps(node,sort_keys=True,separators=(",",":"))
     value={"schema_version":"nora.layer1_ast_mql5_binding_v1","canonical_node":canonical,"node_identity":sha(canonical),
            "input_type":"numeric","output_type":"numeric","output_name":"value","runtime_function":"NoraLayer1Compute",
-           "kind":{"ema":0,"highest":1,"lowest":2}[node["type"]],"period":node["period"],"reference_mode":"independent_generated","grammar_admitted":False,"searchable":False}
+           "kind":{"ema":0,"highest":1,"lowest":2,"rsi":3}[node["type"]],"period":node["period"],"reference_mode":"independent_generated","grammar_admitted":False,"searchable":False}
     value["translation_identity"]=sha(value);return value
 
 
