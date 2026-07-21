@@ -136,10 +136,10 @@
         "tests/test_phase2_adx_native.py"
       ],
       "commits": [
-        "42821b2"
+        "3de3891c94c20011d7196a654c1ace716bfbb1a9"
       ],
       "searchable": false,
-      "missing_gate": null
+      "missing_gate": "complete Phase-2 gate; preserve narrow ADX parity acceptance only"
     },
     {
       "id": "layer1.er",
