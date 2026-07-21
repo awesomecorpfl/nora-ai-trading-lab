@@ -1,0 +1,16 @@
+scenario_id	node	output	row	timestamp	value	null	classification	reason_code
+adaptive_trend	KAMA	value	0	2026-04-01T00:00:00Z	NULL	true	warmup_or_null	warmup
+adaptive_trend	KAMA	value	1	2026-04-01T00:01:00Z	NULL	true	warmup_or_null	warmup
+adaptive_trend	KAMA	value	2	2026-04-01T00:02:00Z	NULL	true	warmup_or_null	warmup
+adaptive_trend	KAMA	value	3	2026-04-01T00:03:00Z	12.0000000000000000	false	steady_state	ok
+adaptive_trend	KAMA	value	4	2026-04-01T00:04:00Z	13.3333333333333322	false	steady_state	ok
+adaptive_trend	KAMA	value	5	2026-04-01T00:05:00Z	13.3641654141133835	false	steady_state	ok
+adaptive_trend	KAMA	value	6	2026-04-01T00:06:00Z	16.2361638314426813	false	steady_state	ok
+adaptive_trend	KAMA	value	7	2026-04-01T00:07:00Z	16.3073951529956460	false	steady_state	ok
+flat_series	KAMA	value	0	2026-04-02T00:00:00Z	NULL	true	warmup_or_null	warmup
+flat_series	KAMA	value	1	2026-04-02T00:01:00Z	NULL	true	warmup_or_null	warmup
+flat_series	KAMA	value	2	2026-04-02T00:02:00Z	NULL	true	warmup_or_null	warmup
+flat_series	KAMA	value	3	2026-04-02T00:03:00Z	7.0000000000000000	false	steady_state	ok
+flat_series	KAMA	value	4	2026-04-02T00:04:00Z	7.0000000000000000	false	steady_state	ok
+flat_series	KAMA	value	5	2026-04-02T00:05:00Z	7.0000000000000000	false	steady_state	ok
+invalid_period	KAMA	value	NULL	NULL	NULL	true	invalid_input	invalid_period

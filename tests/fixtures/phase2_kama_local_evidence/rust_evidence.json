@@ -1,0 +1,177 @@
+{
+  "expected_vector_identity": "953d63c4a21650d1f00939b0df055afee025665ec1f1f6d7c2d5ad489b2ad3f3",
+  "rust_evidence_identity": "0f9e5dc1d7f6226cbed0c98817d4da2c20ae3367cbc1ef13c44ad97e93a9a69c",
+  "rust_output": {
+    "ok": true,
+    "rows": [
+      {
+        "classification": "warmup_or_null",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "warmup",
+        "row": 2,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:02:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:03:00Z",
+        "value": 12.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:04:00Z",
+        "value": 13.333333333333332
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:05:00Z",
+        "value": 13.364165414113383
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 6,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:06:00Z",
+        "value": 16.23616383144268
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 7,
+        "scenario_id": "adaptive_trend",
+        "timestamp": "2026-04-01T00:07:00Z",
+        "value": 16.307395152995646
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "flat_series",
+        "timestamp": "2026-04-02T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "flat_series",
+        "timestamp": "2026-04-02T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "warmup",
+        "row": 2,
+        "scenario_id": "flat_series",
+        "timestamp": "2026-04-02T00:02:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "flat_series",
+        "timestamp": "2026-04-02T00:03:00Z",
+        "value": 7.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "flat_series",
+        "timestamp": "2026-04-02T00:04:00Z",
+        "value": 7.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "KAMA",
+        "null": false,
+        "output": "value",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "flat_series",
+        "timestamp": "2026-04-02T00:05:00Z",
+        "value": 7.0
+      },
+      {
+        "classification": "invalid_input",
+        "node": "KAMA",
+        "null": true,
+        "output": "value",
+        "reason_code": "invalid_period",
+        "row": null,
+        "scenario_id": "invalid_period",
+        "timestamp": null,
+        "value": null
+      }
+    ],
+    "schema_version": "nora.layer1_rust_output_v1",
+    "task_type": "layer1_parity_v1"
+  },
+  "schema_version": "nora.phase2_kama_local_evidence_v1"
+}

@@ -1,0 +1,9 @@
+{
+  "schema_version":"nora.phase2_kama_scenarios_v1",
+  "contract":{"algorithm":"ER-driven KAMA with fast period 2 and slow period 30; seed at index period; squared adaptive smoothing","warmup":"NULL through period-1","zero_er":"slow smoothing constant squared","native_output":"value"},
+  "scenarios":[
+    {"id":"adaptive_trend","node":"KAMA","output":"value","period":3,"timestamps":["2026-04-01T00:00:00Z","2026-04-01T00:01:00Z","2026-04-01T00:02:00Z","2026-04-01T00:03:00Z","2026-04-01T00:04:00Z","2026-04-01T00:05:00Z","2026-04-01T00:06:00Z","2026-04-01T00:07:00Z"],"values":[10,11,13,12,15,14,18,17]},
+    {"id":"flat_series","node":"KAMA","output":"value","period":3,"timestamps":["2026-04-02T00:00:00Z","2026-04-02T00:01:00Z","2026-04-02T00:02:00Z","2026-04-02T00:03:00Z","2026-04-02T00:04:00Z","2026-04-02T00:05:00Z"],"values":[7,7,7,7,7,7]},
+    {"id":"invalid_period","node":"KAMA","output":"value","period":0,"timestamps":["2026-04-03T00:00:00Z"],"values":[10]}
+  ]
+}

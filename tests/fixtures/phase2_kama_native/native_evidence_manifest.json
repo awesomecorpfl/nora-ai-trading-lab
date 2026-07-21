@@ -1,0 +1,74 @@
+{
+  "acceptance": "PASS_EXACT",
+  "compiled": {
+    "compile_log_sha256": "04f6d08eb4572b042c2083c3647d719af18fe33f5655aa3ecb76df0b4d48199c",
+    "errors": 0,
+    "ex5_path": "compile/NoraPhase2KamaTesterV1.ex5",
+    "ex5_sha256": "03d8eb045eb48f1ed1ed07b87610c5df1bda9e453c3ac04ff9c6e48b1a845a06",
+    "status": "compiled",
+    "warnings": 0
+  },
+  "contexts": {
+    "A1": {
+      "completion_marker_present": true,
+      "csv_sha256": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
+      "exact_reconciliation": true,
+      "execution_sha256": "cd1139e4c6ec8b044546c898464fc99f4be7adc424f9dc458376351fd6abb640",
+      "expected_rows": 15,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 15,
+      "run_id": "20260721T151000Z-KAMA-A1",
+      "status": "completed",
+      "symbol": "GDAXI",
+      "tester_ini_normalized_sha256": "fc629f4521e44e20d281ee13656a574c5e750fa0d6fe7ba5285a519b578a76ec"
+    },
+    "A2": {
+      "completion_marker_present": true,
+      "csv_sha256": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
+      "exact_reconciliation": true,
+      "execution_sha256": "811a4d1552707f605587889b1e9ce4de6e3d9a045bea9d6c443b495f0823cb6d",
+      "expected_rows": 15,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 15,
+      "run_id": "20260721T151000Z-KAMA-A2",
+      "status": "completed",
+      "symbol": "GDAXI",
+      "tester_ini_normalized_sha256": "8c18d1929be9baf11d8133f6b5fd16003d6993f2d0f7144c5914a84f742eb378"
+    },
+    "B1": {
+      "completion_marker_present": true,
+      "csv_sha256": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
+      "exact_reconciliation": true,
+      "execution_sha256": "b1433da7c55c5dc6d8bea83b605e3d10a79b72811f43d9f0792a2dd8ea3628bc",
+      "expected_rows": 15,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 15,
+      "run_id": "20260721T151000Z-KAMA-B1",
+      "status": "completed",
+      "symbol": "AUDCAD",
+      "tester_ini_normalized_sha256": "1dfdd9571898af9ebd6d4a0e9dcb3f4830da03ea08f9deeb68df373b695104ed"
+    },
+    "B2": {
+      "completion_marker_present": true,
+      "csv_sha256": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
+      "exact_reconciliation": true,
+      "execution_sha256": "3ab42ee998a4436ce3f3fddba14f346fc359040c8f526d30be7ae159ba759002",
+      "expected_rows": 15,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 15,
+      "run_id": "20260721T151000Z-KAMA-B2",
+      "status": "completed",
+      "symbol": "AUDCAD",
+      "tester_ini_normalized_sha256": "480fa26cc4f6f4679ab5d1b9be5360a4c9c93235ff91b4311e077d69fe30dca5"
+    }
+  },
+  "cross_context_csv_sha256_equal": true,
+  "native_parity_accepted": true,
+  "package_identity": "fb71c6dc42804640aad5f5956520682d3dd6cde29ade2aa7b4f532e9efdde008",
+  "schema_version": "nora.phase2_kama_native_evidence_v1",
+  "target": "layer1_kama"
+}

@@ -170,34 +170,26 @@
       "id": "layer1.kama",
       "category": "layer1_indicator",
       "name": "KAMA",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/indicators.rs"
-        ]
+        "source_paths": ["engine/labengine/src/indicators.rs", "engine/labengine/src/task.rs"],
+        "identity": "0f9e5dc1d7f6226cbed0c98817d4da2c20ae3367cbc1ef13c44ad97e93a9a69c",
+        "tests": ["tests/test_phase2_kama_local_evidence.py"]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "deterministic",
+        "source_identity": "33d4fde7695446556e92c917a4434eaf17c57d288b5a5f01856a7ea66470182a"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": ["tests/fixtures/phase2_kama_native/compile/kama-compile.log", "tests/fixtures/phase2_kama_native/compile/NoraPhase2KamaTesterV1.ex5"],
+        "execution_evidence_paths": ["tests/fixtures/phase2_kama_native/native_evidence_manifest.json", "tests/fixtures/phase2_kama_native/runs/"]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_indicator_task.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
+      "parity_result_identity": "18fa02f4693b4de2f2ee99417ad2fd39fd377a9a5409db11be3c2d38bb3b2622",
+      "evidence_paths": ["tests/fixtures/phase2_kama_scenarios.json", "tests/fixtures/phase2_kama_local_evidence/rust_evidence.json", "tests/test_phase2_kama_native.py"],
+      "commits": ["36d3d51a0be0a17f05ef1a6603654dd2b819bf31"],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "complete Phase-2 gate; preserve narrow KAMA parity acceptance only"
     },
     {
       "id": "layer1.macd",
@@ -2118,9 +2110,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 35,
+    "accepted": 36,
     "partially_proven": 8,
-    "implemented_but_unproved": 7,
+    "implemented_but_unproved": 6,
     "absent": 0,
     "deferred": 1,
     "out_of_scope": 0
