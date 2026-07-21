@@ -28,13 +28,16 @@ def test_rust_layer1_task_emits_deterministic_stochastic_k_and_d_rows():
 def test_stochastic_package_builder_is_deterministic_and_native_open():
     from lab.mql5gen.stochastic_batch import generate
 
-    evidence = {"rust_evidence_identity": "rust-id", "expected_vector_identity": "vector-id"}
+    evidence = json.loads((ROOT / "tests/fixtures/phase2_stochastic_local_evidence/rust_evidence.json").read_text())
     with tempfile.TemporaryDirectory() as left, tempfile.TemporaryDirectory() as right:
         a = generate(Path(left), evidence)
         b = generate(Path(right), evidence)
     assert a == b
+    assert a["package_identity"] == "c9e760af6c7f87fce12f0bc4cc96a744df15c3d7b0afd771af94858d0d13ece7"
     assert a["target_identifier"] == "layer1_stochastic"
     assert a["native_execution_attempted"] is False
     assert a["native_parity_accepted"] is False
     assert a["grammar_admitted"] is False
     assert a["searchable"] is False
+    committed = json.loads((ROOT / "tests/fixtures/phase2_stochastic_native/phase2_stochastic_executable_package.json").read_text())
+    assert committed == a
