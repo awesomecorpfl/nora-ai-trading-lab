@@ -21,7 +21,15 @@ def test_rust_layer1_task_emits_deterministic_rsi_rows():
     assert any(row["reason_code"] == "invalid_period" for row in output["rows"])
 
 
-def test_frozen_rsi_evidence_identity_is_present_and_nonsearchable():
+def test_rsi_package_builder_is_deterministic_and_native_closed():
+    from lab.mql5gen.rsi_batch import generate
+    import tempfile
+    with tempfile.TemporaryDirectory() as left, tempfile.TemporaryDirectory() as right:
+        evidence=json.loads((ROOT/'tests/fixtures/phase2_rsi_local_evidence/rust_evidence.json').read_text())
+        a=generate(Path(left),evidence);b=generate(Path(right),evidence)
+        assert a==b
+        assert a['package_identity']=='4f8c8d9ad4d05654fceab878f6bd7691f919a741776141166e93116f6ba3bdc6'
+        assert not a['native_execution_attempted'] and not a['native_parity_accepted']
     evidence = json.loads((ROOT / "tests/fixtures/phase2_rsi_local_evidence/rust_evidence.json").read_text())
     assert evidence["rust_evidence_identity"] == "897290757d5898fd0a5edcc41fc6b2f24af2ec9d851bef9cbeb9e8d2d283dfe5"
     assert evidence["expected_vector_identity"] == "9fa287b90a2c8cba30f2c13a8be0a1a6194f70fc9d76cb4d4c899b5592c8aea6"
