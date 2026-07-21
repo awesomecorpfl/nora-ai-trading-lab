@@ -60,7 +60,7 @@
     "binding_requirements": {
         "determinism.canonical_hashes": "IMPLEMENTED_UNPROVED",
         "determinism.metrics": "IMPLEMENTED_UNPROVED",
-        "determinism.repeated_linux_experiment": "PARTIAL",
+        "determinism.repeated_linux_experiment": "ACCEPTED",
         "determinism.simulation_outcomes": "IMPLEMENTED_UNPROVED",
         "determinism.trades": "IMPLEMENTED_UNPROVED",
         "engine.combined_exit_precedence": "ACCEPTED",
@@ -75,7 +75,7 @@
         "indicators.executable_mql5_coverage": "PARTIAL",
         "indicators.layer1_rust_coverage": "PARTIAL",
         "indicators.remaining_layer1_targets": "BLOCKED",
-        "integrity.placebo_scrambled_edge_destruction": "ABSENT",
+        "integrity.placebo_scrambled_edge_destruction": "ACCEPTED",
         "strategy.completed_hand_designed_strategies": "ABSENT",
         "strategy.initial_v1_grammar_coverage": "BLOCKED",
         "strategy.provisional_parity_budget": "ABSENT",
@@ -165,7 +165,7 @@
         }
     },
     "next_critical_path": "remaining_layer1_native_parity",
-    "next_critical_path_reason": "Embedded ten-strategy smoke is accepted across four contexts; edge-survival scaffolding is committed. Phase 2 remains incomplete: remaining Layer-1 native parity, complete Linux replay, and placebo/scrambled edge-destruction evidence remain. Search and Phase 3 remain explicitly closed.",
+    "next_critical_path_reason": "Embedded ten-strategy smoke is accepted across four contexts; Linux replay and placebo/scrambled integrity contracts are also accepted narrowly. Phase 2 remains incomplete: remaining Layer-1 native parity, finalist trade-by-trade reconciliation, provisional parity budget, and broker-native edge-survival evidence remain. Search and Phase 3 remain explicitly closed.",
     "phase": "2",
     "phase3_authorized": false,
     "record_resolution": "Each identifier in records is joined to the source inventory item; fields absent there are explicitly resolved in the reconciliation documentation and remain false/null rather than inferred from implementation alone.",

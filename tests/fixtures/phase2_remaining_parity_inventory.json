@@ -2094,22 +2094,23 @@
     },
     {
       "id": "linux_semantic_determinism",
-      "status": "partial",
+      "status": "accepted",
       "accepted_evidence": [
-        "tests/test_phase2e_rng.py",
-        "tests/test_phase1.py"
+        "tests/fixtures/phase2_linux_replay_fixture.json"
       ],
-      "missing_evidence": "no complete experiment-level repeated replay bundle",
-      "blocks_phase2": true,
-      "smallest_next_task": "add one complete replay fixture binding trade, metric, simulator, and content identities"
+      "missing_evidence": "none for the committed six-stage Linux experiment replay contract; broader experiment families remain outside this narrow fixture",
+      "blocks_phase2": false,
+      "smallest_next_task": "preserve the narrow replay contract while advancing remaining strategy and Layer-1 gates"
     },
     {
       "id": "placebo_scrambled_edge",
-      "status": "blocked",
-      "accepted_evidence": [],
-      "missing_evidence": "no known-edge scramble/placebo fixture",
-      "blocks_phase2": true,
-      "smallest_next_task": "specify a deterministic known-edge fixture and required edge-destruction statistic"
+      "status": "accepted",
+      "accepted_evidence": [
+        "tests/fixtures/phase2_placebo_edge_fixture.json"
+      ],
+      "missing_evidence": "none for the committed known-edge scramble contract; this does not establish a finalist's broker-native edge survival",
+      "blocks_phase2": false,
+      "smallest_next_task": "preserve the narrow placebo contract while advancing finalist edge-survival gates"
     }
   ],
   "historical_label_discrepancies": [

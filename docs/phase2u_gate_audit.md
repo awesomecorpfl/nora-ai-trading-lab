@@ -20,10 +20,10 @@ Status: **bounded audit complete; overall Phase 2 remains blocked**
 
 | Gate | State | What is missing |
 |---|---|---|
-| Layer-1 indicator parity | partial | Remaining Rust/MQL5/native parity chains and typed AST admission for unadmitted primitives |
+| Layer-1 indicator parity | partial / blocking | Remaining Rust/MQL5/native parity chains and typed AST admission for unadmitted primitives |
 | Ten strategy finalist proof | partial / blocking | Trade-by-trade reconciliation, frozen provisional parity budget, and finalist edge-survival evidence |
-| Linux experiment determinism | partial / blocking | Complete repeated experiment bundle binding simulator, trades, metrics, and content identities |
-| Placebo/scrambled edge destruction | blocked | Deterministic known-edge fixture and required edge-destruction statistic |
+| Linux experiment determinism | accepted narrowly | Committed six-stage replay fixture; broader experiment families remain outside this contract |
+| Placebo/scrambled edge destruction | accepted narrowly | Known-edge scramble contract passes; this does not establish finalist broker-native edge survival |
 | Grammar/search admission | closed | Deliberately not authorized by this audit |
 
 ## Gate decision

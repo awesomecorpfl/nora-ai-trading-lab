@@ -124,7 +124,8 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
     def test_acceptance_requirement_schema_and_next_task(self):
         requirements = self.value["acceptance_requirements"]
         self.assertEqual(len(requirements), 6)
-        self.assertEqual({entry["status"] for entry in requirements}, {"accepted", "partial", "blocked"})
+        self.assertEqual({entry["status"] for entry in requirements}, {"accepted", "partial"})
+        self.assertTrue(any(entry["blocks_phase2"] for entry in requirements))
         for entry in requirements:
             self.assertEqual(entry["blocks_phase2"], entry["status"] != "accepted")
             self.assertTrue(entry["smallest_next_task"])
