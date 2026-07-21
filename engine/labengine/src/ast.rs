@@ -55,6 +55,7 @@ pub enum Node {
     },
     Ema { input: Reference, period: usize },
     Rsi { input: Reference, period: usize },
+    Roc { input: Reference, period: usize },
     Highest { input: Reference, period: usize },
     Lowest { input: Reference, period: usize },
     Slope { input: Reference, lookback: usize },
@@ -211,6 +212,20 @@ mod more_tests {
     }
 
     #[test]
+    fn roc_node_is_strict_typed_and_runtime_evaluable() {
+        let doc = json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"type":"roc","input":{"type":"series","name":"close"},"period":2},"right":{"kind":"number","value":0}}});
+        let parsed = parse(&doc).unwrap();
+        let runtime = Runtime { timestamps: vec!["0".into(),"1".into(),"2".into(),"3".into(),"4".into()], numeric: HashMap::from([("close".into(), vec![Some(100.0),Some(110.0),Some(90.0),Some(120.0),Some(120.0)])]), boolean: HashMap::new(), commitment: "fixture".into() };
+        assert_eq!(feature_plan(&parsed).len(), 1);
+        let Node::Compare { left, .. } = &parsed.root else { panic!("expected compare root") };
+        let values = numeric(left, &runtime).unwrap();
+        assert!(values[0].is_none() && values[1].is_none());
+        assert!((values[2].unwrap() + 10.0).abs() < 1e-12);
+        assert!(boolean(&parsed.root, &runtime).unwrap()[3].is_some());
+        assert!(parse(&json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"type":"roc","input":{"type":"series","name":"close"},"period":0},"right":{"kind":"number","value":0}}})).is_err());
+    }
+
+    #[test]
     fn rsi_node_is_strict_typed_and_runtime_evaluable() {
         let doc = json!({"schema_version":1,"root":{"kind":"compare","op":"gt","left":{"type":"rsi","input":{"type":"series","name":"close"},"period":3},"right":{"kind":"number","value":50}}});
         let parsed = parse(&doc).unwrap();
@@ -329,11 +344,11 @@ fn parse_node(value: &Value) -> Result<Node> {
                     atr: Box::new(atr),
                 })
             }
-            "ema" | "rsi" | "highest" | "lowest" => {
+            "ema" | "rsi" | "roc" | "highest" | "lowest" => {
                 only(o, &["type", "input", "period"], "layer1 node")?;
                 let period = required(o, "period", "layer1 node")?.as_u64().and_then(|v| usize::try_from(v).ok()).filter(|v| *v > 0).ok_or("layer1 period must be positive")?;
                 let input = feature_reference(required(o, "input", "layer1 node")?)?;
-                Ok(match feature_type { "ema" => Node::Ema { input, period }, "rsi" => Node::Rsi { input, period }, "highest" => Node::Highest { input, period }, _ => Node::Lowest { input, period } })
+                Ok(match feature_type { "ema" => Node::Ema { input, period }, "rsi" => Node::Rsi { input, period }, "roc" => Node::Roc { input, period }, "highest" => Node::Highest { input, period }, _ => Node::Lowest { input, period } })
             }
             "slope" => {
                 only(o, &["type", "input", "lookback"], "slope node")?;
@@ -450,6 +465,7 @@ impl Node {
             | Self::DistanceAtr { .. }
             | Self::Ema { .. }
             | Self::Rsi { .. }
+            | Self::Roc { .. }
             | Self::Highest { .. }
             | Self::Lowest { .. }
             | Self::Slope { .. } => Type::Numeric,
@@ -490,6 +506,7 @@ fn node_json(node: &Node) -> Value {
         }
         Node::Ema { input, period } => json!({"type":"ema","input":feature_reference_json(input),"period":period}),
         Node::Rsi { input, period } => json!({"type":"rsi","input":feature_reference_json(input),"period":period}),
+        Node::Roc { input, period } => json!({"type":"roc","input":feature_reference_json(input),"period":period}),
         Node::Highest { input, period } => json!({"type":"highest","input":feature_reference_json(input),"period":period}),
         Node::Lowest { input, period } => json!({"type":"lowest","input":feature_reference_json(input),"period":period}),
         Node::Slope { input, lookback } => json!({"type":"slope","input":feature_reference_json(input),"lookback":lookback}),
@@ -738,7 +755,7 @@ fn feature_identity(node: &Node) -> String {
 pub fn feature_plan(document: &Document) -> Vec<String> {
     fn visit(node: &Node, out: &mut BTreeMap<String, ()>) {
         match node {
-            Node::Atr { .. } | Node::DistanceAtr { .. } | Node::Ema { .. } | Node::Rsi { .. } | Node::Highest { .. } | Node::Lowest { .. } | Node::Slope { .. } => {
+            Node::Atr { .. } | Node::DistanceAtr { .. } | Node::Ema { .. } | Node::Rsi { .. } | Node::Roc { .. } | Node::Highest { .. } | Node::Lowest { .. } | Node::Slope { .. } => {
                 if let Node::DistanceAtr { atr, .. } = node {
                     visit(atr, out)
                 }
@@ -838,6 +855,10 @@ fn numeric_cached(
             let source = input.numeric.get(&reference.series).ok_or_else(|| format!("unknown or non-numeric runtime series {:?}", reference.series))?;
             let values = source.iter().map(|value| value.ok_or_else(|| "rsi input must be non-null".to_string())).collect::<Result<Vec<_>>>()?;
             crate::indicators::rsi(&values, *period)?
+        }
+        Node::Roc { input: reference, period } => {
+            let source = input.numeric.get(&reference.series).ok_or_else(|| format!("unknown or non-numeric runtime series {:?}", reference.series))?;
+            crate::indicators::roc(&source.iter().map(|v| v.ok_or_else(|| "roc input must be non-null".to_string())).collect::<Result<Vec<_>>>()?, *period)?
         }
         Node::Highest { input: reference, period } | Node::Lowest { input: reference, period } => {
             let source=input.numeric.get(&reference.series).ok_or_else(||format!("unknown or non-numeric runtime series {:?}",reference.series))?;

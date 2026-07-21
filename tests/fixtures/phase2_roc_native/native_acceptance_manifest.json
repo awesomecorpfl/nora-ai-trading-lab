@@ -1,0 +1,33 @@
+{
+  "schema_version": "nora.phase2_roc_native_evidence_v1",
+  "rust_evidence_identity": "b436ec060f1e8efe28805a3f63a28793f6afa63ea53659fac0b15ed4df2fa8f3",
+  "package_identity": "570727eb7203b5f15dfbb5b276fe9b8e3ec363810ee8cafadc9be591bf79b3bd",
+  "compile": "Result: 0 errors, 0 warnings",
+  "contexts": {
+    "ROC-A1": {
+      "rows": 10,
+      "max_abs_error": 0,
+      "completion_marker": "NORA_PHASE2_ROC_COMPLETE_V1"
+    },
+    "ROC-A2": {
+      "rows": 10,
+      "max_abs_error": 0,
+      "completion_marker": "NORA_PHASE2_ROC_COMPLETE_V1"
+    },
+    "ROC-B1": {
+      "rows": 10,
+      "max_abs_error": 0,
+      "completion_marker": "NORA_PHASE2_ROC_COMPLETE_V1"
+    },
+    "ROC-B2": {
+      "rows": 10,
+      "max_abs_error": 0,
+      "completion_marker": "NORA_PHASE2_ROC_COMPLETE_V1"
+    }
+  },
+  "native_parity_accepted": true,
+  "grammar_admitted": false,
+  "searchable": false,
+  "complete_phase2_gate": false,
+  "acceptance_identity": "8a2bc285d8994550d24f59c225b5649635474563b39cd90f7e4d3755568fbf36"
+}
