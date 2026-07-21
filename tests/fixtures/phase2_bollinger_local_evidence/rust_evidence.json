@@ -1,0 +1,383 @@
+{
+  "schema_version": "nora.phase2_bollinger_rust_evidence_v1",
+  "rust_evidence_identity": "7838f7805a0095cbc352acf970234aa76981a8d8cd237000ba77d51fb1c27c17",
+  "expected_vector_identity": "7838f7805a0095cbc352acf970234aa76981a8d8cd237000ba77d51fb1c27c17",
+  "task": {
+    "task_version": 1,
+    "task_type": "layer1_parity_v1",
+    "scenarios": [
+      {
+        "id": "bands_rising",
+        "node": "Bollinger",
+        "output": "middle",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z"
+        ],
+        "values": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      {
+        "id": "bands_rising",
+        "node": "Bollinger",
+        "output": "upper",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z"
+        ],
+        "values": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      {
+        "id": "bands_rising",
+        "node": "Bollinger",
+        "output": "lower",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z"
+        ],
+        "values": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      {
+        "id": "bands_rising",
+        "node": "Bollinger",
+        "output": "width",
+        "period": 3,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-01T00:00:00Z",
+          "2026-06-01T00:01:00Z",
+          "2026-06-01T00:02:00Z",
+          "2026-06-01T00:03:00Z",
+          "2026-06-01T00:04:00Z"
+        ],
+        "values": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      {
+        "id": "flat_zero",
+        "node": "Bollinger",
+        "output": "width",
+        "period": 2,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-02T00:00:00Z",
+          "2026-06-02T00:01:00Z"
+        ],
+        "values": [
+          0,
+          0
+        ]
+      },
+      {
+        "id": "invalid_period",
+        "node": "Bollinger",
+        "output": "middle",
+        "period": 0,
+        "k": 2.0,
+        "timestamps": [
+          "2026-06-03T00:00:00Z"
+        ],
+        "values": [
+          1
+        ]
+      }
+    ]
+  },
+  "output": {
+    "ok": true,
+    "rows": [
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "middle",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "middle",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 11.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 12.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "middle",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 13.0
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "upper",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "upper",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 12.632993161855453
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 13.632993161855453
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "upper",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 14.632993161855453
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "lower",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "lower",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 9.367006838144547
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 10.367006838144547
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "lower",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 11.367006838144547
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "width",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "width",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "width",
+        "reason_code": "ok",
+        "row": 2,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:02:00Z",
+        "value": 0.2969078476100822
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "width",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:03:00Z",
+        "value": 0.2721655269759087
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "width",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "bands_rising",
+        "timestamp": "2026-06-01T00:04:00Z",
+        "value": 0.2512297172085311
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "Bollinger",
+        "null": true,
+        "output": "width",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "flat_zero",
+        "timestamp": "2026-06-02T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "Bollinger",
+        "null": false,
+        "output": "width",
+        "reason_code": "ok",
+        "row": 1,
+        "scenario_id": "flat_zero",
+        "timestamp": "2026-06-02T00:01:00Z",
+        "value": 0.0
+      },
+      {
+        "classification": "invalid_input",
+        "node": "Bollinger",
+        "null": true,
+        "output": "middle",
+        "reason_code": "invalid_period",
+        "row": null,
+        "scenario_id": "invalid_period",
+        "timestamp": null,
+        "value": null
+      }
+    ],
+    "schema_version": "nora.layer1_rust_output_v1",
+    "task_type": "layer1_parity_v1"
+  }
+}

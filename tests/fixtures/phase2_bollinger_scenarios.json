@@ -1,0 +1,12 @@
+{
+  "schema_version":"nora.phase2_bollinger_scenarios_v1",
+  "contract":{"algorithm":"rolling population standard-deviation Bollinger bands","outputs":["middle","upper","lower","width"],"k":2.0,"warmup":"NULL through period-2","zero_mean_width":"0.0","invalid_period":"period 0"},
+  "scenarios":[
+    {"id":"bands_rising","node":"Bollinger","output":"middle","period":3,"k":2.0,"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-01T00:03:00Z","2026-06-01T00:04:00Z"],"values":[10,11,12,13,14]},
+    {"id":"bands_rising","node":"Bollinger","output":"upper","period":3,"k":2.0,"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-01T00:03:00Z","2026-06-01T00:04:00Z"],"values":[10,11,12,13,14]},
+    {"id":"bands_rising","node":"Bollinger","output":"lower","period":3,"k":2.0,"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-01T00:03:00Z","2026-06-01T00:04:00Z"],"values":[10,11,12,13,14]},
+    {"id":"bands_rising","node":"Bollinger","output":"width","period":3,"k":2.0,"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-01T00:03:00Z","2026-06-01T00:04:00Z"],"values":[10,11,12,13,14]},
+    {"id":"flat_zero","node":"Bollinger","output":"width","period":2,"k":2.0,"timestamps":["2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"],"values":[0,0]},
+    {"id":"invalid_period","node":"Bollinger","output":"middle","period":0,"k":2.0,"timestamps":["2026-06-03T00:00:00Z"],"values":[1]}
+  ]
+}

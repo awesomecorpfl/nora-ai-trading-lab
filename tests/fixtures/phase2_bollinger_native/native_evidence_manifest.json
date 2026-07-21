@@ -1,0 +1,68 @@
+{
+  "schema_version": "nora.phase2_bollinger_native_evidence_v1",
+  "compile": {
+    "status": "compiled",
+    "error_count": 0,
+    "warning_count": 0,
+    "ex5_size_bytes": 13786,
+    "ex5_sha256": "cd0c6ba4fae281e25b536d7a792ae5fe8059ae9dc0734c238d96346a2d62cd85"
+  },
+  "journal_completion_marker_count": 4,
+  "failure_marker_count": 0,
+  "contexts": [
+    {
+      "run_id": "BOLL-A1-587368613",
+      "symbol": "GDAXI",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 23,
+      "csv_sha256": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
+      "execution_sha256": "8330c271a26c350d43c151400978bc61d51f383a070f5758708745f19b958aab",
+      "tester_ini_sha256": "61742325b221125b7b60f11ed91932f75eb004d483ef427f35d5ac3886c72f30"
+    },
+    {
+      "run_id": "BOLL-A2-1339446223",
+      "symbol": "GDAXI",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 23,
+      "csv_sha256": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
+      "execution_sha256": "a359a8ed1e1a70377ce7ba15b1e593552ebfbce5b887b3125c61cf0695fabbfa",
+      "tester_ini_sha256": "d215a8a4c5cebf8c8d3a8c9b9dc4e53ebcb694d43bab80c9e83af0656cb2ece4"
+    },
+    {
+      "run_id": "BOLL-B1-1606153262",
+      "symbol": "AUDCAD",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 23,
+      "csv_sha256": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
+      "execution_sha256": "370edee69af9a4e1d86709399b93246b64c5d15a3c5b51239c0ea8e6806814e8",
+      "tester_ini_sha256": "ab29675502e99f2fbb13ae137480c96a7e6383498688fd07550685ac166f6347"
+    },
+    {
+      "run_id": "BOLL-B2-1738925356",
+      "symbol": "AUDCAD",
+      "status": "completed",
+      "native_process_exit_status": 0,
+      "completion_marker_present": true,
+      "failure_marker_present": false,
+      "row_count": 23,
+      "csv_sha256": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
+      "execution_sha256": "fc7d214c7a5487952543a867be2e45c24500bf56f9f8d2edf07af957cba0bf42",
+      "tester_ini_sha256": "9bb67a96a82f02d3b6f9821f2f3f2c2596531d89b3cc97a48c13e14b575519fc"
+    }
+  ],
+  "cross_context_csv_identity": true,
+  "rust_native_reconciliation": "exact",
+  "native_parity_accepted": true,
+  "searchable": false,
+  "grammar_admitted": false,
+  "manifest_identity": "42191cbb301eac4e52d40d6555cc716cd9230d0da6c0e14a293bfe952b4d52e3"
+}

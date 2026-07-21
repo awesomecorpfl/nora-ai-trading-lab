@@ -565,7 +565,7 @@
       "id": "layer1.bollinger",
       "category": "layer1_indicator",
       "name": "Bollinger Bands and Width",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
@@ -577,20 +577,33 @@
         ]
       },
       "mql5": {
-        "generation": "absent",
+        "generation": "deterministic_batch_generator",
         "source_identity": null
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json",
+          "tests/fixtures/phase2_bollinger_native/compile.log",
+          "tests/fixtures/phase2_bollinger_native/NoraPhase2BollingerTesterV1.ex5"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-A1-587368613",
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-A2-1339446223",
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-B1-1606153262",
+          "tests/fixtures/phase2_bollinger_native/runs/BOLL-B2-1738925356"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "1a6166a439807a26cdd99a2ee7f29cdf95310e49435d3c1d87a005021f1f89fa",
+      "evidence_paths": [
+        "tests/fixtures/phase2_bollinger_local_evidence/rust_evidence.json",
+        "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json"
+      ],
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": null,
+      "evidence": "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json"
     },
     {
       "id": "layer1.keltner",
@@ -2167,9 +2180,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-      "accepted": 38,
+      "accepted": 39,
       "partially_proven": 8,
-      "implemented_but_unproved": 4,
+      "implemented_but_unproved": 3,
       "absent": 0,
       "deferred": 1,
       "out_of_scope": 0
