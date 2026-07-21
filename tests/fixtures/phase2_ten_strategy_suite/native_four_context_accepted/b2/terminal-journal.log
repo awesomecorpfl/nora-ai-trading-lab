@@ -1,0 +1,26 @@
+﻿HD	0	22:38:20.288	Startup	successfully initialized from start config "C:\NoraEvidence\Phase2\runs\20260721T023804Z-AUDCAD-B2-FRESH.running\tester.ini"
+DP	0	22:38:20.320	Terminal	Darwinex MetaTrader 5 x64 build 5836 started for Tradeslide Trading Tech Limited
+RD	0	22:38:20.320	Terminal	Windows 10 build 19044 on KVM, 4 x 13th Gen Intel Core i5-13420H, AVX2, 7 / 9 Gb memory, 152 / 199 Gb disk, UAC, admin, GMT-8
+QM	0	22:38:20.320	Terminal	C:\Users\Gasper\AppData\Roaming\MetaQuotes\Terminal\6C3C6A11D1C3791DD4DBF45421BF8028
+CN	0	22:38:20.320	Terminal	launched with C:\NoraEvidence\Phase2\runs\20260721T023804Z-AUDCAD-B2-FRESH.running\tester.ini
+FM	2	22:38:20.731		please upgrade to Windows 10 Codename 22H2 (october 2022 update) or later
+PG	0	22:38:22.919	Network	'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)
+LK	0	22:38:23.246	Network	'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads
+OJ	0	22:38:23.246	Network	'4000094575': trading has been disabled - investor mode
+ME	0	22:38:23.603	Tester	automatical testing started
+JE	0	22:38:23.708	AutoTesting	AUDCAD: preliminary downloading of M1 history started
+DI	0	22:38:23.814	AutoTesting	AUDCAD: preliminary downloading of M1 history completed in 0:00:00.218
+OS	1	22:38:24.074	Network	'4000094575': connection to Darwinex-Live lost
+OK	0	22:38:24.662	Network	'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)
+CG	0	22:38:24.956	Network	'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads
+HN	0	22:38:24.956	Network	'4000094575': trading has been disabled - investor mode
+NF	0	22:38:25.032	AutoTesting	AUDUSD: preliminary downloading of M1 history started
+MN	0	22:38:25.142	AutoTesting	AUDUSD: preliminary downloading of M1 history completed in 0:00:01.328
+QP	0	22:38:25.242	AutoTesting	USDCAD: preliminary downloading of M1 history started
+MG	0	22:38:25.353	AutoTesting	USDCAD: preliminary downloading of M1 history completed in 0:00:00.204
+II	0	22:38:28.091	Tester	last test passed with result "some error after pass finished" in 0:00:00.000
+IM	0	22:38:29.231	Terminal	exit with code 0
+QK	0	22:38:29.274	Network	'4000094575': disconnected from Darwinex-Live
+LP	0	22:38:29.373	Terminal	stopped with 0
+IK	0	22:38:29.517	Terminal	shutdown with 0
+

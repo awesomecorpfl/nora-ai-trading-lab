@@ -1,0 +1,42 @@
+﻿QK	0	22:05:00.477	Tester	Local network farm switched off
+QQ	0	22:05:00.477	Tester	Cloud servers switched off
+RD	0	22:05:02.741	Tester	"NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5" X64
+MN	0	22:05:03.280	Tester	GDAXI: history data begins from 2015.08.14 00:00
+OM	0	22:05:03.283	Core 1	agent process started on 127.0.0.1:3000
+JK	0	22:05:03.283	Core 1	connecting to 127.0.0.1:3000
+EL	0	22:05:03.798	Core 1	connected
+QM	0	22:05:03.826	Core 1	authorized (agent build 5836)
+PE	0	22:05:03.829	Tester	GDAXI,M1 (Darwinex-Live): testing of Experts\NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+JS	0	22:05:03.833	Core 1	common synchronization completed
+MJ	0	22:05:04.413	Tester	quality of analyzed history is 97%
+IN	0	22:05:04.513	Core 1	MetaTester 5 started on 127.0.0.1:3000
+MD	0	22:05:04.513	Core 1	cloud network mode is off
+LF	0	22:05:04.513	Core 1	initialization finished
+FO	0	22:05:04.513	Core 1	login (build 5836)
+OI	0	22:05:04.513	Core 1	50040 bytes of account info loaded
+HM	0	22:05:04.513	Core 1	1478 bytes of tester parameters loaded
+GI	0	22:05:04.513	Core 1	196 bytes of input parameters loaded
+QO	0	22:05:04.513	Core 1	2868 bytes of symbols list loaded (841 symbols)
+QH	0	22:05:04.513	Core 1	expert file added: Experts\NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5. 23661 bytes loaded
+RF	0	22:05:04.513	Core 1	7989 Mb available, 99 blocks set for ticks generating
+KS	0	22:05:04.513	Core 1	initial deposit 5000.00 USD, leverage 1:20
+MH	0	22:05:04.513	Core 1	successfully initialized
+JR	0	22:05:04.513	Core 1	29 Kb of total initialization data received
+LG	0	22:05:04.513	Core 1	13th Gen Intel Core i5-13420H, 10239 MB
+OR	0	22:05:04.513	Core 1	GDAXI: symbol to be synchronized
+JF	0	22:05:04.513	Core 1	GDAXI: symbol synchronized, 3720 bytes of symbol info received
+MI	0	22:05:04.513	Core 1	GDAXI: load 25 bytes of history data to synchronize in 0:00:00.001
+RO	0	22:05:04.513	Core 1	GDAXI: history synchronized from 2019.01.02 to 2026.07.08
+DJ	0	22:05:04.513	Core 1	GDAXI,M1: history cache allocated for 2646736 bars and contains 393092 bars from 2019.01.02 09:00 to 2020.06.30 22:58
+ON	0	22:05:04.513	Core 1	GDAXI,M1: history begins from 2019.01.02 09:00
+EF	0	22:05:04.513	Core 1	GDAXI,M1 (Darwinex-Live): every tick generating
+IQ	0	22:05:04.513	Core 1	GDAXI,M1: testing of Experts\NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+RJ	0	22:05:04.513	Core 1	2020.07.01 00:00:00   NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1
+GP	3	22:05:04.513	Core 1	2020.07.01 00:00:00   ExpertRemove() function called
+GK	2	22:05:04.513	Core 1	removed itself within OnInit
+DQ	2	22:05:04.513	Core 1	tester stopped because OnInit failed
+II	0	22:05:04.786	Tester	automatical testing finished
+OQ	2	22:05:04.786	Core 1	disconnected
+LN	0	22:05:04.786	Core 1	connection closed
+HG	0	22:05:04.789	Tester	automatical testing finished
+

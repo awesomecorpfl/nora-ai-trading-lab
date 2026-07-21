@@ -1,0 +1,20 @@
+﻿EQ	0	22:24:43.763	Startup	successfully initialized from start config "C:\NoraEvidence\Phase2\runs\20260721T022411Z-GDAXI-A2-FRESH.running\tester.ini"
+EK	0	22:24:43.800	Terminal	Darwinex MetaTrader 5 x64 build 5836 started for Tradeslide Trading Tech Limited
+CK	0	22:24:43.800	Terminal	Windows 10 build 19044 on KVM, 4 x 13th Gen Intel Core i5-13420H, AVX2, 7 / 9 Gb memory, 152 / 199 Gb disk, UAC, admin, GMT-8
+LD	0	22:24:43.800	Terminal	C:\Users\Gasper\AppData\Roaming\MetaQuotes\Terminal\6C3C6A11D1C3791DD4DBF45421BF8028
+OK	0	22:24:43.800	Terminal	launched with C:\NoraEvidence\Phase2\runs\20260721T022411Z-GDAXI-A2-FRESH.running\tester.ini
+JE	2	22:24:44.200		please upgrade to Windows 10 Codename 22H2 (october 2022 update) or later
+EP	0	22:24:47.172	Network	'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)
+NL	0	22:24:47.485	Network	'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads
+QQ	0	22:24:47.485	Network	'4000094575': trading has been disabled - investor mode
+RL	0	22:24:47.784	Tester	automatical testing started
+LR	1	22:24:47.994	Network	'4000094575': connection to Darwinex-Live lost
+GM	0	22:24:48.645	Network	'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)
+NP	0	22:24:48.936	Network	'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads
+QL	0	22:24:48.936	Network	'4000094575': trading has been disabled - investor mode
+CF	0	22:24:51.700	Tester	last test passed with result "some error after pass finished" in 0:00:00.000
+IH	0	22:24:52.780	Terminal	exit with code 0
+NI	0	22:24:52.825	Network	'4000094575': disconnected from Darwinex-Live
+FG	0	22:24:53.029	Terminal	stopped with 0
+QF	0	22:24:53.166	Terminal	shutdown with 0
+

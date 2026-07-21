@@ -47,7 +47,14 @@
                 "GDAXI/M1",
                 "AUDCAD/M1"
             ],
-            "classification": "system_smoke_not_edge_claim"
+            "classification": "system_smoke_not_edge_claim",
+            "acceptance_manifest": "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json",
+            "accepted_run_identities": [
+                "20260721T020357Z-GDAXI-A1-FRESH",
+                "20260721T022411Z-GDAXI-A2-FRESH",
+                "20260721T023413Z-AUDCAD-B1-FRESH",
+                "20260721T023804Z-AUDCAD-B2-FRESH"
+            ]
         }
     },
     "binding_requirements": {

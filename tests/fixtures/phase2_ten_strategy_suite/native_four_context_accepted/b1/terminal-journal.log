@@ -1,0 +1,24 @@
+﻿IQ	0	22:34:38.094	Startup	successfully initialized from start config "C:\NoraEvidence\Phase2\runs\20260721T023413Z-AUDCAD-B1-FRESH.running\tester.ini"
+EO	0	22:34:38.214	Terminal	Darwinex MetaTrader 5 x64 build 5836 started for Tradeslide Trading Tech Limited
+OO	0	22:34:38.214	Terminal	Windows 10 build 19044 on KVM, 4 x 13th Gen Intel Core i5-13420H, AVX2, 7 / 9 Gb memory, 152 / 199 Gb disk, UAC, admin, GMT-8
+PP	0	22:34:38.214	Terminal	C:\Users\Gasper\AppData\Roaming\MetaQuotes\Terminal\6C3C6A11D1C3791DD4DBF45421BF8028
+MS	0	22:34:38.214	Terminal	launched with C:\NoraEvidence\Phase2\runs\20260721T023413Z-AUDCAD-B1-FRESH.running\tester.ini
+JP	2	22:34:38.510		please upgrade to Windows 10 Codename 22H2 (october 2022 update) or later
+GL	0	22:34:40.990	Network	'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)
+LP	0	22:34:41.282	Network	'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads
+OM	0	22:34:41.282	Network	'4000094575': trading has been disabled - investor mode
+LH	0	22:34:41.608	Tester	automatical testing started
+HN	0	22:34:41.720	AutoTesting	AUDCAD: preliminary downloading of M1 history started
+OK	1	22:34:41.808	Network	'4000094575': connection to Darwinex-Live lost
+IS	0	22:34:42.550	Network	'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)
+LO	0	22:34:42.821	Network	'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads
+OF	0	22:34:42.821	Network	'4000094575': trading has been disabled - investor mode
+KL	0	22:34:43.077	AutoTesting	AUDCAD: preliminary downloading of M1 history completed in 0:00:01.468
+KS	0	22:34:45.697	AutoTesting	AUDUSD: preliminary downloading of M1 history started
+CK	0	22:34:45.806	AutoTesting	AUDUSD: preliminary downloading of M1 history completed in 0:00:02.641
+OK	0	22:34:58.322	Tester	last test passed with result "some error after pass finished" in 0:00:00.000
+FO	0	22:34:59.473	Terminal	exit with code 0
+KD	0	22:34:59.475	Network	'4000094575': disconnected from Darwinex-Live
+ER	0	22:34:59.537	Terminal	stopped with 0
+FI	0	22:34:59.546	Terminal	shutdown with 0
+

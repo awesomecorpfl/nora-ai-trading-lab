@@ -1,0 +1,223 @@
+{
+  "schema_version": "nora.ten_strategy_environmental_evaluation_v2",
+  "run_identifier": "20260721T022411Z-GDAXI-A2-FRESH",
+  "evidence": {
+    "embedded_fixture_only": true,
+    "environmental_mode": "embedded_smoke",
+    "raw_journal": "EQ\t0\t22:24:43.763\tStartup\tsuccessfully initialized from start config \"C:\\NoraEvidence\\Phase2\\runs\\20260721T022411Z-GDAXI-A2-FRESH.running\\tester.ini\"\nEK\t0\t22:24:43.800\tTerminal\tDarwinex MetaTrader 5 x64 build 5836 started for Tradeslide Trading Tech Limited\nCK\t0\t22:24:43.800\tTerminal\tWindows 10 build 19044 on KVM, 4 x 13th Gen Intel Core i5-13420H, AVX2, 7 / 9 Gb memory, 152 / 199 Gb disk, UAC, admin, GMT-8\nLD\t0\t22:24:43.800\tTerminal\tC:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\nOK\t0\t22:24:43.800\tTerminal\tlaunched with C:\\NoraEvidence\\Phase2\\runs\\20260721T022411Z-GDAXI-A2-FRESH.running\\tester.ini\nJE\t2\t22:24:44.200\t\tplease upgrade to Windows 10 Codename 22H2 (october 2022 update) or later\nEP\t0\t22:24:47.172\tNetwork\t'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)\nNL\t0\t22:24:47.485\tNetwork\t'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads\nQQ\t0\t22:24:47.485\tNetwork\t'4000094575': trading has been disabled - investor mode\nRL\t0\t22:24:47.784\tTester\tautomatical testing started\nLR\t1\t22:24:47.994\tNetwork\t'4000094575': connection to Darwinex-Live lost\nGM\t0\t22:24:48.645\tNetwork\t'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)\nNP\t0\t22:24:48.936\tNetwork\t'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads\nQL\t0\t22:24:48.936\tNetwork\t'4000094575': trading has been disabled - investor mode\nCF\t0\t22:24:51.700\tTester\tlast test passed with result \"some error after pass finished\" in 0:00:00.000\nIH\t0\t22:24:52.780\tTerminal\texit with code 0\nNI\t0\t22:24:52.825\tNetwork\t'4000094575': disconnected from Darwinex-Live\nFG\t0\t22:24:53.029\tTerminal\tstopped with 0\nQF\t0\t22:24:53.166\tTerminal\tshutdown with 0\n\n\nEM\t0\t22:24:44.856\tTester\tLocal network farm switched off\nEG\t0\t22:24:44.856\tTester\tCloud servers switched off\nPN\t0\t22:24:47.534\tTester\t\"NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5\" X64\nND\t0\t22:24:47.888\tTester\tGDAXI: history data begins from 2015.08.14 00:00\nHS\t0\t22:24:47.892\tCore 1\tagent process started on 127.0.0.1:3000\nQE\t0\t22:24:47.892\tCore 1\tconnecting to 127.0.0.1:3000\nJR\t0\t22:24:50.413\tCore 1\tconnected\nLK\t0\t22:24:50.428\tCore 1\tauthorized (agent build 5836)\nKO\t0\t22:24:50.443\tTester\tGDAXI,M1 (Darwinex-Live): testing of Experts\\NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00\nEM\t0\t22:24:50.448\tCore 1\tcommon synchronization completed\nMD\t0\t22:24:50.532\tTester\tquality of analyzed history is 97%\nOP\t0\t22:24:50.539\tCore 1\tMetaTester 5 started on 127.0.0.1:3000\nCJ\t0\t22:24:50.539\tCore 1\tcloud network mode is off\nFL\t0\t22:24:50.539\tCore 1\tinitialization finished\nLI\t0\t22:24:50.539\tCore 1\tlogin (build 5836)\nIS\t0\t22:24:50.539\tCore 1\t50040 bytes of account info loaded\nRG\t0\t22:24:50.539\tCore 1\t1478 bytes of tester parameters loaded\nQS\t0\t22:24:50.539\tCore 1\t196 bytes of input parameters loaded\nGE\t0\t22:24:50.539\tCore 1\t2868 bytes of symbols list loaded (841 symbols)\nGR\t0\t22:24:50.539\tCore 1\texpert file added: Experts\\NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5. 23661 bytes loaded\nMP\t0\t22:24:50.539\tCore 1\t7986 Mb available, 99 blocks set for ticks generating\nEI\t0\t22:24:50.539\tCore 1\tinitial deposit 5000.00 USD, leverage 1:20\nCR\t0\t22:24:50.539\tCore 1\tsuccessfully initialized\nPD\t0\t22:24:50.539\tCore 1\t29 Kb of total initialization data received\nFM\t0\t22:24:50.539\tCore 1\t13th Gen Intel Core i5-13420H, 10239 MB\nIH\t0\t22:24:50.539\tCore 1\tGDAXI: symbol to be synchronized\nPL\t0\t22:24:50.539\tCore 1\tGDAXI: symbol synchronized, 3720 bytes of symbol info received\nDG\t0\t22:24:50.539\tCore 1\tGDAXI: load 25 bytes of history data to synchronize in 0:00:00.000\nHI\t0\t22:24:50.539\tCore 1\tGDAXI: history synchronized from 2019.01.02 to 2026.07.08\nNP\t0\t22:24:50.539\tCore 1\tGDAXI,M1: history cache allocated for 2646736 bars and contains 393092 bars from 2019.01.02 09:00 to 2020.06.30 22:58\nIP\t0\t22:24:50.539\tCore 1\tGDAXI,M1: history begins from 2019.01.02 09:00\nKL\t0\t22:24:50.539\tCore 1\tGDAXI,M1 (Darwinex-Live): every tick generating\nOK\t0\t22:24:50.539\tCore 1\tGDAXI,M1: testing of Experts\\NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started\nHD\t0\t22:24:50.539\tCore 1\t2020.07.01 00:00:00   NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1\nQJ\t3\t22:24:50.539\tCore 1\t2020.07.01 00:00:00   ExpertRemove() function called\nQM\t2\t22:24:50.539\tCore 1\tremoved itself within OnInit\nNK\t2\t22:24:50.539\tCore 1\ttester stopped because OnInit failed\nPS\t0\t22:24:50.563\tTester\tautomatical testing finished\nJK\t2\t22:24:50.563\tCore 1\tdisconnected\nED\t0\t22:24:50.563\tCore 1\tconnection closed\nHQ\t0\t22:24:50.567\tTester\tautomatical testing finished\n\n",
+    "before_inventory": {
+      "history/GDAXI/2015.hcc": {
+        "size": 39297,
+        "last_write_utc": "2026-07-11T17:56:58.3399969Z",
+        "sha256": "31acbcad833e1d790abbb598071b7e66463b09b12513f22d423ddfd01c78ce83"
+      },
+      "history/GDAXI/2016.hcc": {
+        "size": 131979,
+        "last_write_utc": "2026-07-11T17:56:58.4384329Z",
+        "sha256": "1d4b19d2345304da32786b67d652321dbbaab2b3c443cfc46da0e3f1e210701c"
+      },
+      "history/GDAXI/2017.hcc": {
+        "size": 275352,
+        "last_write_utc": "2026-07-11T17:56:58.5159478Z",
+        "sha256": "cf5b34f8cfe085b0d1eed1af17efe3e9c14bd7a2beea76fa54aa9bb3a9e76ff7"
+      },
+      "history/GDAXI/2018.hcc": {
+        "size": 11471772,
+        "last_write_utc": "2026-07-11T17:56:59.1251132Z",
+        "sha256": "018d7e8efa71829a32adfb1374d761485df3e0bfc8a44710edfece3ae077e9d5"
+      },
+      "history/GDAXI/2019.hcc": {
+        "size": 14833941,
+        "last_write_utc": "2026-07-11T17:56:59.6699984Z",
+        "sha256": "604c7e7b20ec03f931c1588905350abe766fc0c1db723e4390ba4cc2891d3237"
+      },
+      "history/GDAXI/2020.hcc": {
+        "size": 17906859,
+        "last_write_utc": "2026-07-11T17:57:02.1209828Z",
+        "sha256": "342ba900407b1a1d570e3ba4a933b86c261bd64525f9e30f47f3546e6e77404c"
+      },
+      "history/GDAXI/2021.hcc": {
+        "size": 17789628,
+        "last_write_utc": "2026-07-11T17:57:03.1152150Z",
+        "sha256": "cd842da83b42c51129a60d04c86fa3be1853f941aa819c467bab429a7adb3c2a"
+      },
+      "history/GDAXI/2022.hcc": {
+        "size": 17916717,
+        "last_write_utc": "2026-07-11T17:57:03.8953390Z",
+        "sha256": "026efe9283c48e9c59e77b214d520f15847c646ac0adffc4da93d5c50cd97a9e"
+      },
+      "history/GDAXI/2023.hcc": {
+        "size": 17752479,
+        "last_write_utc": "2026-07-11T17:57:06.0240562Z",
+        "sha256": "2f8f1044ea29871aac67a7762a2c6d9dd95e83544e2594fb65b61b3eec67ae3a"
+      },
+      "history/GDAXI/2024.hcc": {
+        "size": 17600310,
+        "last_write_utc": "2026-07-11T17:57:06.8495304Z",
+        "sha256": "c55d8c8dd283c3ade65d91172eb23ea131fe3e4f964dd6b64e5a8c54a035068c"
+      },
+      "history/GDAXI/2025.hcc": {
+        "size": 17534961,
+        "last_write_utc": "2026-07-11T17:57:08.2846826Z",
+        "sha256": "565ea6167806b4685c99a5131f0b56aec4c09be9dcb99c6bf000289fc6ba3abb"
+      },
+      "history/GDAXI/2026.hcc": {
+        "size": 9806580,
+        "last_write_utc": "2026-07-21T05:05:07.1078244Z",
+        "sha256": "151e36e63e16eb547fbf541e1ad00eb3eb734814919aeba9b0343d4187042fea"
+      },
+      "history/GDAXI/cache/Daily.hc": {
+        "size": 217226,
+        "last_write_utc": "2026-07-21T05:05:07.1078244Z",
+        "sha256": "84d645a735ab53ab693cbc4316de188be2a2a8c86e295f8bab305799a200dae2"
+      },
+      "history/GDAXI/cache/H4.hc": {
+        "size": 870380,
+        "last_write_utc": "2026-07-11T17:56:58.2941716Z",
+        "sha256": "6d21670de4284240ab2039fed6daeb1b2e2e49e54953d1bd51cfcc216e1a992b"
+      },
+      "ticks/GDAXI/ticks.dat": {
+        "size": 123312,
+        "last_write_utc": "2026-07-21T05:05:07.1078244Z",
+        "sha256": "31eb73b921808944e8e7edfc443cd69d054d4b9923a12b7fa30f235982e3d8ef"
+      }
+    },
+    "after_inventory": {
+      "history/GDAXI/2015.hcc": {
+        "size": 39297,
+        "last_write_utc": "2026-07-11T17:56:58.3399969Z",
+        "sha256": "31acbcad833e1d790abbb598071b7e66463b09b12513f22d423ddfd01c78ce83"
+      },
+      "history/GDAXI/2016.hcc": {
+        "size": 131979,
+        "last_write_utc": "2026-07-11T17:56:58.4384329Z",
+        "sha256": "1d4b19d2345304da32786b67d652321dbbaab2b3c443cfc46da0e3f1e210701c"
+      },
+      "history/GDAXI/2017.hcc": {
+        "size": 275352,
+        "last_write_utc": "2026-07-11T17:56:58.5159478Z",
+        "sha256": "cf5b34f8cfe085b0d1eed1af17efe3e9c14bd7a2beea76fa54aa9bb3a9e76ff7"
+      },
+      "history/GDAXI/2018.hcc": {
+        "size": 11471772,
+        "last_write_utc": "2026-07-11T17:56:59.1251132Z",
+        "sha256": "018d7e8efa71829a32adfb1374d761485df3e0bfc8a44710edfece3ae077e9d5"
+      },
+      "history/GDAXI/2019.hcc": {
+        "size": 14833941,
+        "last_write_utc": "2026-07-11T17:56:59.6699984Z",
+        "sha256": "604c7e7b20ec03f931c1588905350abe766fc0c1db723e4390ba4cc2891d3237"
+      },
+      "history/GDAXI/2020.hcc": {
+        "size": 17906859,
+        "last_write_utc": "2026-07-11T17:57:02.1209828Z",
+        "sha256": "342ba900407b1a1d570e3ba4a933b86c261bd64525f9e30f47f3546e6e77404c"
+      },
+      "history/GDAXI/2021.hcc": {
+        "size": 17789628,
+        "last_write_utc": "2026-07-11T17:57:03.1152150Z",
+        "sha256": "cd842da83b42c51129a60d04c86fa3be1853f941aa819c467bab429a7adb3c2a"
+      },
+      "history/GDAXI/2022.hcc": {
+        "size": 17916717,
+        "last_write_utc": "2026-07-11T17:57:03.8953390Z",
+        "sha256": "026efe9283c48e9c59e77b214d520f15847c646ac0adffc4da93d5c50cd97a9e"
+      },
+      "history/GDAXI/2023.hcc": {
+        "size": 17752479,
+        "last_write_utc": "2026-07-11T17:57:06.0240562Z",
+        "sha256": "2f8f1044ea29871aac67a7762a2c6d9dd95e83544e2594fb65b61b3eec67ae3a"
+      },
+      "history/GDAXI/2024.hcc": {
+        "size": 17600310,
+        "last_write_utc": "2026-07-11T17:57:06.8495304Z",
+        "sha256": "c55d8c8dd283c3ade65d91172eb23ea131fe3e4f964dd6b64e5a8c54a035068c"
+      },
+      "history/GDAXI/2025.hcc": {
+        "size": 17534961,
+        "last_write_utc": "2026-07-11T17:57:08.2846826Z",
+        "sha256": "565ea6167806b4685c99a5131f0b56aec4c09be9dcb99c6bf000289fc6ba3abb"
+      },
+      "history/GDAXI/2026.hcc": {
+        "size": 9807720,
+        "last_write_utc": "2026-07-21T05:24:52.8379384Z",
+        "sha256": "26f476c2c58b8f92397745481ea4093b30fb5a7e46875f93e22ae6a196453355"
+      },
+      "history/GDAXI/cache/Daily.hc": {
+        "size": 217226,
+        "last_write_utc": "2026-07-21T05:24:52.8379384Z",
+        "sha256": "76d831bc68bb50133507520c2d69b5f2add8b7c816df377f53537e0ddd39cf9f"
+      },
+      "history/GDAXI/cache/H4.hc": {
+        "size": 870380,
+        "last_write_utc": "2026-07-11T17:56:58.2941716Z",
+        "sha256": "6d21670de4284240ab2039fed6daeb1b2e2e49e54953d1bd51cfcc216e1a992b"
+      },
+      "ticks/GDAXI/ticks.dat": {
+        "size": 123312,
+        "last_write_utc": "2026-07-21T05:24:52.8379384Z",
+        "sha256": "ebed56a9fbda60931d3f90d869653304ae1ca73fffbdc86f0b5ababb370ee74b"
+      }
+    },
+    "bar_count_before": 393092,
+    "bar_count_after": 393092,
+    "history_range_before": [
+      "2019-01-02T09:00:00",
+      "2020-06-30T22:58:00"
+    ],
+    "history_range_after": [
+      "2019-01-02T09:00:00",
+      "2020-06-30T22:58:00"
+    ],
+    "downloaded_bars": 0,
+    "downloaded_ticks": 0,
+    "price_data_payload_detected": false,
+    "symbol_contract_metadata": [
+      {
+        "source": "tester journal",
+        "bytes": 3720
+      }
+    ],
+    "cache_mutations": [
+      {
+        "path": "history/GDAXI/2026.hcc",
+        "classification": "tester_history_setup",
+        "delta_bytes": 1140
+      },
+      {
+        "path": "history/GDAXI/cache/Daily.hc",
+        "classification": "tester_history_setup",
+        "delta_bytes": 0
+      },
+      {
+        "path": "ticks/GDAXI/ticks.dat",
+        "classification": "tester_history_setup",
+        "delta_bytes": 0
+      }
+    ],
+    "max_cache_delta_bytes": 100000,
+    "ambiguous_evidence_resolved": true
+  },
+  "verdict": {
+    "accepted": true,
+    "reasons": [],
+    "journal": {
+      "successful_download": [],
+      "external_mutation": [],
+      "attempted_sync": [
+        "symbol to be synchronized",
+        "history data to synchronize"
+      ],
+      "local_cache_access": [
+        "symbol synchronized",
+        "history synchronized",
+        "history cache allocated",
+        "history begins from",
+        "quality of analyzed history"
+      ],
+      "ambiguous": [
+        "common synchronization completed"
+      ]
+    }
+  }
+}

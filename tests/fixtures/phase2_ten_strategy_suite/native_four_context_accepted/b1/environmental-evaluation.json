@@ -1,0 +1,223 @@
+{
+  "schema_version": "nora.ten_strategy_environmental_evaluation_v2",
+  "run_identifier": "20260721T023413Z-AUDCAD-B1-FRESH",
+  "evidence": {
+    "embedded_fixture_only": true,
+    "environmental_mode": "embedded_smoke",
+    "raw_journal": "IQ\t0\t22:34:38.094\tStartup\tsuccessfully initialized from start config \"C:\\NoraEvidence\\Phase2\\runs\\20260721T023413Z-AUDCAD-B1-FRESH.running\\tester.ini\"\nEO\t0\t22:34:38.214\tTerminal\tDarwinex MetaTrader 5 x64 build 5836 started for Tradeslide Trading Tech Limited\nOO\t0\t22:34:38.214\tTerminal\tWindows 10 build 19044 on KVM, 4 x 13th Gen Intel Core i5-13420H, AVX2, 7 / 9 Gb memory, 152 / 199 Gb disk, UAC, admin, GMT-8\nPP\t0\t22:34:38.214\tTerminal\tC:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\nMS\t0\t22:34:38.214\tTerminal\tlaunched with C:\\NoraEvidence\\Phase2\\runs\\20260721T023413Z-AUDCAD-B1-FRESH.running\\tester.ini\nJP\t2\t22:34:38.510\t\tplease upgrade to Windows 10 Codename 22H2 (october 2022 update) or later\nGL\t0\t22:34:40.990\tNetwork\t'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)\nLP\t0\t22:34:41.282\tNetwork\t'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads\nOM\t0\t22:34:41.282\tNetwork\t'4000094575': trading has been disabled - investor mode\nLH\t0\t22:34:41.608\tTester\tautomatical testing started\nHN\t0\t22:34:41.720\tAutoTesting\tAUDCAD: preliminary downloading of M1 history started\nOK\t1\t22:34:41.808\tNetwork\t'4000094575': connection to Darwinex-Live lost\nIS\t0\t22:34:42.550\tNetwork\t'4000094575': authorized on Darwinex-Live through Access Server SA (ping: 178.32 ms, build 5572)\nLO\t0\t22:34:42.821\tNetwork\t'4000094575': terminal synchronized with Tradeslide Trading Tech Limited: 6 positions, 23 orders, 841 symbols, 0 spreads\nOF\t0\t22:34:42.821\tNetwork\t'4000094575': trading has been disabled - investor mode\nKL\t0\t22:34:43.077\tAutoTesting\tAUDCAD: preliminary downloading of M1 history completed in 0:00:01.468\nKS\t0\t22:34:45.697\tAutoTesting\tAUDUSD: preliminary downloading of M1 history started\nCK\t0\t22:34:45.806\tAutoTesting\tAUDUSD: preliminary downloading of M1 history completed in 0:00:02.641\nOK\t0\t22:34:58.322\tTester\tlast test passed with result \"some error after pass finished\" in 0:00:00.000\nFO\t0\t22:34:59.473\tTerminal\texit with code 0\nKD\t0\t22:34:59.475\tNetwork\t'4000094575': disconnected from Darwinex-Live\nER\t0\t22:34:59.537\tTerminal\tstopped with 0\nFI\t0\t22:34:59.546\tTerminal\tshutdown with 0\n\n\nEG\t0\t22:34:39.213\tTester\tLocal network farm switched off\nEM\t0\t22:34:39.213\tTester\tCloud servers switched off\nOP\t0\t22:34:41.343\tTester\t\"NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5\" X64\nHL\t0\t22:34:41.720\tTester\tAUDCAD: preliminary downloading of M1 history started\nOH\t0\t22:34:43.077\tTester\tAUDCAD: preliminary downloading of M1 history completed in 0:00:01.468\nPD\t0\t22:34:43.387\tTester\tAUDUSD: history check started\nMO\t0\t22:34:45.697\tTester\tAUDUSD: preliminary downloading of M1 history started\nKG\t0\t22:34:45.806\tTester\tAUDUSD: preliminary downloading of M1 history completed in 0:00:02.641\nIR\t0\t22:34:46.103\tTester\tUSDCAD: history check started\nJH\t0\t22:34:56.822\tTester\tUSDCAD: history check timeout\nLQ\t0\t22:34:56.826\tCore 1\tagent process started on 127.0.0.1:3000\nEG\t0\t22:34:56.826\tCore 1\tconnecting to 127.0.0.1:3000\nIO\t0\t22:34:57.852\tCore 1\tconnected\nDI\t0\t22:34:57.934\tCore 1\tauthorized (agent build 5836)\nKE\t0\t22:34:57.934\tTester\tAUDCAD,M1 (Darwinex-Live): testing of Experts\\NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00\nRO\t0\t22:34:57.939\tCore 1\tcommon synchronization completed\nIF\t0\t22:34:58.249\tTester\tquality of analyzed history is 99%\nCR\t0\t22:34:58.280\tCore 1\tMetaTester 5 started on 127.0.0.1:3000\nOH\t0\t22:34:58.280\tCore 1\tcloud network mode is off\nRR\t0\t22:34:58.280\tCore 1\tinitialization finished\nHK\t0\t22:34:58.280\tCore 1\tlogin (build 5836)\nME\t0\t22:34:58.280\tCore 1\t50040 bytes of account info loaded\nFQ\t0\t22:34:58.280\tCore 1\t1478 bytes of tester parameters loaded\nEE\t0\t22:34:58.280\tCore 1\t196 bytes of input parameters loaded\nKS\t0\t22:34:58.280\tCore 1\t2868 bytes of symbols list loaded (841 symbols)\nKD\t0\t22:34:58.280\tCore 1\texpert file added: Experts\\NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5. 23661 bytes loaded\nKR\t0\t22:34:58.280\tCore 1\t7966 Mb available, 99 blocks set for ticks generating\nQG\t0\t22:34:58.280\tCore 1\tinitial deposit 5000.00 USD, leverage 1:20\nOL\t0\t22:34:58.280\tCore 1\tsuccessfully initialized\nDF\t0\t22:34:58.280\tCore 1\t29 Kb of total initialization data received\nRS\t0\t22:34:58.280\tCore 1\t13th Gen Intel Core i5-13420H, 10239 MB\nRJ\t0\t22:34:58.280\tCore 1\tAUDCAD: symbol to be synchronized\nIN\t0\t22:34:58.280\tCore 1\tAUDCAD: symbol synchronized, 3720 bytes of symbol info received\nRI\t0\t22:34:58.280\tCore 1\tAUDCAD: load 27 bytes of history data to synchronize in 0:00:00.001\nEF\t0\t22:34:58.280\tCore 1\tAUDCAD: history synchronized from 2019.01.02 to 2026.07.08\nMR\t0\t22:34:58.280\tCore 1\tAUDCAD,M1: history cache allocated for 2808837 bars and contains 555237 bars from 2019.01.02 00:02 to 2020.06.30 23:59\nQN\t0\t22:34:58.280\tCore 1\tAUDCAD,M1: history begins from 2019.01.02 00:02\nHG\t0\t22:34:58.280\tCore 1\tAUDCAD,M1 (Darwinex-Live): every tick generating\nJF\t0\t22:34:58.280\tCore 1\tAUDCAD,M1: testing of Experts\\NoraPhase2TenStrategy\\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started\nLG\t0\t22:34:58.280\tCore 1\t2020.07.01 00:00:00   NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1\nEK\t3\t22:34:58.280\tCore 1\t2020.07.01 00:00:00   ExpertRemove() function called\nEL\t2\t22:34:58.280\tCore 1\tremoved itself within OnInit\nJJ\t2\t22:34:58.280\tCore 1\ttester stopped because OnInit failed\nJR\t0\t22:34:58.322\tTester\tautomatical testing finished\nIL\t2\t22:34:58.329\tCore 1\tdisconnected\nFE\t0\t22:34:58.329\tCore 1\tconnection closed\n\n",
+    "before_inventory": {
+      "history/AUDCAD/2015.hcc": {
+        "size": 2581914,
+        "last_write_utc": "2026-07-10T02:02:00.0044778Z",
+        "sha256": "3d35d20d35b9d0fcf6a25070544b7d1797c887f16922a2da0c1fb876cc237d34"
+      },
+      "history/AUDCAD/2016.hcc": {
+        "size": 22447044,
+        "last_write_utc": "2026-07-10T02:02:00.0515259Z",
+        "sha256": "a926fb6d1c4f7c0c70b8ab8ef44984883e6bc9d6d8322e205aa461b2d1126de7"
+      },
+      "history/AUDCAD/2017.hcc": {
+        "size": 22378035,
+        "last_write_utc": "2026-07-10T02:02:00.0824097Z",
+        "sha256": "97d07341d384d6e939492659a8d0b7365b0eb4242c4373bea5a256bda48f4918"
+      },
+      "history/AUDCAD/2018.hcc": {
+        "size": 22360695,
+        "last_write_utc": "2026-07-10T02:02:00.1137673Z",
+        "sha256": "0ace83cfec15fed8fe9da3d63e81dbb0fde5071b3f68c85d5d5ddf779e9140b0"
+      },
+      "history/AUDCAD/2019.hcc": {
+        "size": 22319895,
+        "last_write_utc": "2026-07-10T02:02:00.1450794Z",
+        "sha256": "b09d52c13bdf59e1b002cc948e58ae707058264b4994b76534578113543a27ba"
+      },
+      "history/AUDCAD/2020.hcc": {
+        "size": 22361844,
+        "last_write_utc": "2026-07-10T02:02:00.1764680Z",
+        "sha256": "0584343ff3bfebb50318c4e3478acf393ceca1c08a439e5631c2c5b8d786ad57"
+      },
+      "history/AUDCAD/2021.hcc": {
+        "size": 22302324,
+        "last_write_utc": "2026-07-10T02:02:00.2073932Z",
+        "sha256": "81f3786a9992c64344959d80f7b108b57e816a037e885ecc347f4e37d83cf29a"
+      },
+      "history/AUDCAD/2022.hcc": {
+        "size": 22238784,
+        "last_write_utc": "2026-07-10T02:02:00.2387120Z",
+        "sha256": "e144cc2cf13907fda4043bd30246caad3e7b162543ac1c8a54dac8b9adf2a3da"
+      },
+      "history/AUDCAD/2023.hcc": {
+        "size": 22250655,
+        "last_write_utc": "2026-07-10T02:02:00.2543598Z",
+        "sha256": "d5b66eaa7e687a2be49ab8ef55ada600ec92a59cab419dc5dbefd2c608a8d1e1"
+      },
+      "history/AUDCAD/2024.hcc": {
+        "size": 22371444,
+        "last_write_utc": "2026-07-10T02:02:00.2856758Z",
+        "sha256": "6a60002f215c8a49cac38868300ff89e0d66736af2a50b33b2b1bd2e533d3c6b"
+      },
+      "history/AUDCAD/2025.hcc": {
+        "size": 22326915,
+        "last_write_utc": "2026-07-10T02:02:00.3326639Z",
+        "sha256": "ed12ebea164a02ad145834c88306941de47c9a4e53e734cdb472b7c36812665e"
+      },
+      "history/AUDCAD/2026.hcc": {
+        "size": 12011991,
+        "last_write_utc": "2026-07-19T05:04:34.5501231Z",
+        "sha256": "8881a17ff415616f78b31ac3f438626160f5de0e06d5e738004587e40c49fddd"
+      },
+      "history/AUDCAD/cache/Daily.hc": {
+        "size": 216074,
+        "last_write_utc": "2026-07-19T05:04:34.5501231Z",
+        "sha256": "c06c464fe0678319b92921f18aa71178b51c92b9dc1c8256074b2abe4fb296b6"
+      },
+      "history/AUDCAD/cache/H4.hc": {
+        "size": 215924,
+        "last_write_utc": "2026-07-09T23:08:36.3372555Z",
+        "sha256": "757c47d5fb43cc9c95f1ad27743d25592c5162db56a3bc4e3d36017c1102c202"
+      },
+      "ticks/AUDCAD/ticks.dat": {
+        "size": 123312,
+        "last_write_utc": "2026-07-21T05:24:52.8379384Z",
+        "sha256": "d82b3a9be140563bc3a6712d729aebe0b8f37e81d1f91fcf2e256adb52aac5a0"
+      }
+    },
+    "after_inventory": {
+      "history/AUDCAD/2015.hcc": {
+        "size": 2581914,
+        "last_write_utc": "2026-07-10T02:02:00.0044778Z",
+        "sha256": "3d35d20d35b9d0fcf6a25070544b7d1797c887f16922a2da0c1fb876cc237d34"
+      },
+      "history/AUDCAD/2016.hcc": {
+        "size": 22447044,
+        "last_write_utc": "2026-07-10T02:02:00.0515259Z",
+        "sha256": "a926fb6d1c4f7c0c70b8ab8ef44984883e6bc9d6d8322e205aa461b2d1126de7"
+      },
+      "history/AUDCAD/2017.hcc": {
+        "size": 22378035,
+        "last_write_utc": "2026-07-10T02:02:00.0824097Z",
+        "sha256": "97d07341d384d6e939492659a8d0b7365b0eb4242c4373bea5a256bda48f4918"
+      },
+      "history/AUDCAD/2018.hcc": {
+        "size": 22360695,
+        "last_write_utc": "2026-07-10T02:02:00.1137673Z",
+        "sha256": "0ace83cfec15fed8fe9da3d63e81dbb0fde5071b3f68c85d5d5ddf779e9140b0"
+      },
+      "history/AUDCAD/2019.hcc": {
+        "size": 22319895,
+        "last_write_utc": "2026-07-10T02:02:00.1450794Z",
+        "sha256": "b09d52c13bdf59e1b002cc948e58ae707058264b4994b76534578113543a27ba"
+      },
+      "history/AUDCAD/2020.hcc": {
+        "size": 22361844,
+        "last_write_utc": "2026-07-10T02:02:00.1764680Z",
+        "sha256": "0584343ff3bfebb50318c4e3478acf393ceca1c08a439e5631c2c5b8d786ad57"
+      },
+      "history/AUDCAD/2021.hcc": {
+        "size": 22302324,
+        "last_write_utc": "2026-07-10T02:02:00.2073932Z",
+        "sha256": "81f3786a9992c64344959d80f7b108b57e816a037e885ecc347f4e37d83cf29a"
+      },
+      "history/AUDCAD/2022.hcc": {
+        "size": 22238784,
+        "last_write_utc": "2026-07-10T02:02:00.2387120Z",
+        "sha256": "e144cc2cf13907fda4043bd30246caad3e7b162543ac1c8a54dac8b9adf2a3da"
+      },
+      "history/AUDCAD/2023.hcc": {
+        "size": 22250655,
+        "last_write_utc": "2026-07-10T02:02:00.2543598Z",
+        "sha256": "d5b66eaa7e687a2be49ab8ef55ada600ec92a59cab419dc5dbefd2c608a8d1e1"
+      },
+      "history/AUDCAD/2024.hcc": {
+        "size": 22371444,
+        "last_write_utc": "2026-07-10T02:02:00.2856758Z",
+        "sha256": "6a60002f215c8a49cac38868300ff89e0d66736af2a50b33b2b1bd2e533d3c6b"
+      },
+      "history/AUDCAD/2025.hcc": {
+        "size": 22326915,
+        "last_write_utc": "2026-07-10T02:02:00.3326639Z",
+        "sha256": "ed12ebea164a02ad145834c88306941de47c9a4e53e734cdb472b7c36812665e"
+      },
+      "history/AUDCAD/2026.hcc": {
+        "size": 12032040,
+        "last_write_utc": "2026-07-21T05:34:59.4889628Z",
+        "sha256": "b21aacda7ad94a6f9df5c196671aaf2500cf03b4208761ba1b77ff17a6a2a573"
+      },
+      "history/AUDCAD/cache/Daily.hc": {
+        "size": 216134,
+        "last_write_utc": "2026-07-21T05:34:59.4889628Z",
+        "sha256": "a84ab562cf8a1de7489d0747b142cb419b5649e0104d54abd27510d533799975"
+      },
+      "history/AUDCAD/cache/H4.hc": {
+        "size": 215924,
+        "last_write_utc": "2026-07-09T23:08:36.3372555Z",
+        "sha256": "757c47d5fb43cc9c95f1ad27743d25592c5162db56a3bc4e3d36017c1102c202"
+      },
+      "ticks/AUDCAD/ticks.dat": {
+        "size": 123312,
+        "last_write_utc": "2026-07-21T05:34:59.4889628Z",
+        "sha256": "4fb3f1b14c51f6be98d975710395d618f341ec9fcf841e4c22e44bda5fd82c08"
+      }
+    },
+    "bar_count_before": 393092,
+    "bar_count_after": 393092,
+    "history_range_before": [
+      "2020.07.01",
+      "2026.07.01"
+    ],
+    "history_range_after": [
+      "2020.07.01",
+      "2026.07.01"
+    ],
+    "downloaded_bars": 0,
+    "downloaded_ticks": 0,
+    "price_data_payload_detected": false,
+    "symbol_contract_metadata": [
+      {
+        "source": "tester journal",
+        "bytes": 3720
+      }
+    ],
+    "cache_mutations": [
+      {
+        "path": "history/AUDCAD/2026.hcc",
+        "classification": "tester_history_setup",
+        "delta_bytes": 20049
+      },
+      {
+        "path": "history/AUDCAD/cache/Daily.hc",
+        "classification": "tester_history_setup",
+        "delta_bytes": 60
+      },
+      {
+        "path": "ticks/AUDCAD/ticks.dat",
+        "classification": "tester_history_setup",
+        "delta_bytes": 0
+      }
+    ],
+    "max_cache_delta_bytes": 100000,
+    "ambiguous_evidence_resolved": true
+  },
+  "verdict": {
+    "accepted": true,
+    "reasons": [],
+    "journal": {
+      "successful_download": [],
+      "external_mutation": [],
+      "attempted_sync": [
+        "symbol to be synchronized",
+        "history data to synchronize"
+      ],
+      "local_cache_access": [
+        "symbol synchronized",
+        "history synchronized",
+        "history cache allocated",
+        "history begins from",
+        "quality of analyzed history"
+      ],
+      "ambiguous": [
+        "common synchronization completed"
+      ]
+    }
+  }
+}

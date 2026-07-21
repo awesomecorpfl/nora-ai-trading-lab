@@ -8,7 +8,6 @@ from lab.phase2_ten_strategy import strategy_suite
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "tests/fixtures/phase2_remaining_parity_inventory.json"
-CORRECTED_FINAL = ROOT / "tests/fixtures/phase2_ten_strategy_suite/native_corrected_final"
 ITEM_ID = "strategy.hand_designed_suite_10"
 
 
@@ -28,7 +27,7 @@ def test_hand_designed_suite_has_frozen_ten_case_contract_before_native_gate():
 
 def test_hand_designed_suite_requires_formal_durable_native_acceptance():
     item = _item()
-    final_batch = json.loads((CORRECTED_FINAL / "final_batch.json").read_text())
+    acceptance = json.loads((ROOT / "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json").read_text())
 
     assert item["status"] == "accepted"
     assert item["rust"]["implementation"] == "implemented"
@@ -36,5 +35,8 @@ def test_hand_designed_suite_requires_formal_durable_native_acceptance():
     assert "tests/test_phase2t_hand_designed_acceptance.py" in item["rust"]["tests"]
     assert item["parity_result_identity"] is not None
     assert item["native"]["execution_evidence_paths"]
-    assert final_batch["complete_phase2_gate"] is True
+    assert acceptance["all_lifecycle_completed"] is True
+    assert acceptance["all_environmental_verdicts_accepted"] is True
+    assert acceptance["all_reconciliations"] == "PASS_EXACT"
+    assert acceptance["complete_phase2_gate"] is False
     assert item["searchable"] is False

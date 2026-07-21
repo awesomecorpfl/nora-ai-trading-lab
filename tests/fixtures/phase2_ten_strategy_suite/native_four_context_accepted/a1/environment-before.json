@@ -1,0 +1,570 @@
+﻿{
+    "schema_version":  "nora.ten_strategy_environment_inventory_v3",
+    "phase":  "before",
+    "server_scope":  {
+                         "schema_version":  "nora.phase2_mt5_server_scoped_cache_v2",
+                         "terminal_data_directory":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028",
+                         "terminal_instance_id":  "6C3C6A11D1C3791DD4DBF45421BF8028",
+                         "terminal_origin_path":  "C:\\Program Files\\Darwinex MetaTrader 5",
+                         "terminal_path":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe",
+                         "terminal_sha256":  "e87e8b77fa415fc91e9acbe692826e76b7907fb53db4244aed36618f9af30b9e",
+                         "terminal_version":  "5.0.0.5836",
+                         "configuration_path":  "C:\\NoraEvidence\\Phase2\\runs\\20260721T020357Z-GDAXI-A1-FRESH.running\\tester.ini",
+                         "configuration_sha256":  "6613386db8b7f57a01b380763e623d258b36ce89bace375d7e5cd6459ee7b05f",
+                         "broker_server_identity":  "Darwinex-Live",
+                         "server_namespace_observed":  "Darwinex-Live",
+                         "server_namespace_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live",
+                         "bases_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases",
+                         "symbol_roots":  [
+                                              {
+                                                  "symbol":  "GDAXI",
+                                                  "kind":  "history",
+                                                  "exists":  true,
+                                                  "canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI"
+                                              },
+                                              {
+                                                  "symbol":  "GDAXI",
+                                                  "kind":  "ticks",
+                                                  "exists":  true,
+                                                  "canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\GDAXI"
+                                              }
+                                          ],
+                         "server_binding_identity":  "cf6d0da1b6b318f520cb670d7d0a0e9acedcda73a0e68afafcc1c2977c235ce0",
+                         "server_scope_identity":  "6697a21a141c746f8ebe2ac22140024ec42e9cabb9ea7b45255af2a0f6c79508"
+                     },
+    "observed_bar_count":  393092,
+    "earliest_history_timestamp":  "2019-01-02T09:00:00",
+    "latest_history_timestamp":  "2020-06-30T22:58:00",
+    "objects":  [
+                    {
+                        "path":  "history/GDAXI",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI",
+                        "object_type":  "directory",
+                        "size":  null,
+                        "creation_utc":  "2026-07-09T07:13:39.7188504Z",
+                        "last_write_utc":  "2026-07-20T06:21:53.0076782Z",
+                        "sha256":  null,
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2015.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2015.hcc",
+                        "object_type":  "file",
+                        "size":  39297,
+                        "creation_utc":  "2026-07-09T08:12:40.1770377Z",
+                        "last_write_utc":  "2026-07-11T17:56:58.3399969Z",
+                        "sha256":  "31acbcad833e1d790abbb598071b7e66463b09b12513f22d423ddfd01c78ce83",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2016.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2016.hcc",
+                        "object_type":  "file",
+                        "size":  131979,
+                        "creation_utc":  "2026-07-09T08:12:40.1770377Z",
+                        "last_write_utc":  "2026-07-11T17:56:58.4384329Z",
+                        "sha256":  "1d4b19d2345304da32786b67d652321dbbaab2b3c443cfc46da0e3f1e210701c",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2017.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2017.hcc",
+                        "object_type":  "file",
+                        "size":  275352,
+                        "creation_utc":  "2026-07-09T08:12:40.0049571Z",
+                        "last_write_utc":  "2026-07-11T17:56:58.5159478Z",
+                        "sha256":  "cf5b34f8cfe085b0d1eed1af17efe3e9c14bd7a2beea76fa54aa9bb3a9e76ff7",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2018.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2018.hcc",
+                        "object_type":  "file",
+                        "size":  11471772,
+                        "creation_utc":  "2026-07-09T08:12:38.5830742Z",
+                        "last_write_utc":  "2026-07-11T17:56:59.1251132Z",
+                        "sha256":  "018d7e8efa71829a32adfb1374d761485df3e0bfc8a44710edfece3ae077e9d5",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2019.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2019.hcc",
+                        "object_type":  "file",
+                        "size":  14833941,
+                        "creation_utc":  "2026-07-09T08:12:37.8488169Z",
+                        "last_write_utc":  "2026-07-11T17:56:59.6699984Z",
+                        "sha256":  "604c7e7b20ec03f931c1588905350abe766fc0c1db723e4390ba4cc2891d3237",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2020.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2020.hcc",
+                        "object_type":  "file",
+                        "size":  17906859,
+                        "creation_utc":  "2026-07-09T08:12:37.0518832Z",
+                        "last_write_utc":  "2026-07-11T17:57:02.1209828Z",
+                        "sha256":  "342ba900407b1a1d570e3ba4a933b86c261bd64525f9e30f47f3546e6e77404c",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2021.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2021.hcc",
+                        "object_type":  "file",
+                        "size":  17789628,
+                        "creation_utc":  "2026-07-09T08:12:36.4271167Z",
+                        "last_write_utc":  "2026-07-11T17:57:03.1152150Z",
+                        "sha256":  "cd842da83b42c51129a60d04c86fa3be1853f941aa819c467bab429a7adb3c2a",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2022.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2022.hcc",
+                        "object_type":  "file",
+                        "size":  17916717,
+                        "creation_utc":  "2026-07-09T08:12:35.8115074Z",
+                        "last_write_utc":  "2026-07-11T17:57:03.8953390Z",
+                        "sha256":  "026efe9283c48e9c59e77b214d520f15847c646ac0adffc4da93d5c50cd97a9e",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2023.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2023.hcc",
+                        "object_type":  "file",
+                        "size":  17752479,
+                        "creation_utc":  "2026-07-09T08:12:35.2199702Z",
+                        "last_write_utc":  "2026-07-11T17:57:06.0240562Z",
+                        "sha256":  "2f8f1044ea29871aac67a7762a2c6d9dd95e83544e2594fb65b61b3eec67ae3a",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2024.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2024.hcc",
+                        "object_type":  "file",
+                        "size":  17600310,
+                        "creation_utc":  "2026-07-09T07:25:53.1157631Z",
+                        "last_write_utc":  "2026-07-11T17:57:06.8495304Z",
+                        "sha256":  "c55d8c8dd283c3ade65d91172eb23ea131fe3e4f964dd6b64e5a8c54a035068c",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2025.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2025.hcc",
+                        "object_type":  "file",
+                        "size":  17534961,
+                        "creation_utc":  "2026-07-09T07:25:51.9294869Z",
+                        "last_write_utc":  "2026-07-11T17:57:08.2846826Z",
+                        "sha256":  "565ea6167806b4685c99a5131f0b56aec4c09be9dcb99c6bf000289fc6ba3abb",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/2026.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2026.hcc",
+                        "object_type":  "file",
+                        "size":  9730422,
+                        "creation_utc":  "2026-07-09T07:13:39.7188504Z",
+                        "last_write_utc":  "2026-07-21T04:19:47.8111378Z",
+                        "sha256":  "b4b64edb73ddaa20a90b7c47a28f97a4718ce34e60dbb6175809b9920b106055",
+                        "acl":  {
+                                    "owner":  "BUILTIN\\Administrators",
+                                    "sddl":  "O:BAG:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/cache",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\cache",
+                        "object_type":  "directory",
+                        "size":  null,
+                        "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                        "last_write_utc":  "2026-07-10T02:17:07.3169599Z",
+                        "sha256":  null,
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/cache/Daily.hc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\cache\\Daily.hc",
+                        "object_type":  "file",
+                        "size":  217148,
+                        "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                        "last_write_utc":  "2026-07-21T02:03:07.0146517Z",
+                        "sha256":  "6a17956f45ae22848bf8e3ce1c502525a3f3a4e8e77be52664f5d55d56dcbbf2",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/GDAXI/cache/H4.hc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\cache\\H4.hc",
+                        "object_type":  "file",
+                        "size":  870380,
+                        "creation_utc":  "2026-07-10T02:17:07.3169599Z",
+                        "last_write_utc":  "2026-07-11T17:56:58.2941716Z",
+                        "sha256":  "6d21670de4284240ab2039fed6daeb1b2e2e49e54953d1bd51cfcc216e1a992b",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "ticks/GDAXI",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\GDAXI",
+                        "object_type":  "directory",
+                        "size":  null,
+                        "creation_utc":  "2026-07-09T07:24:28.8915257Z",
+                        "last_write_utc":  "2026-07-09T07:24:28.8915257Z",
+                        "sha256":  null,
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "ticks"
+                    },
+                    {
+                        "path":  "ticks/GDAXI/ticks.dat",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\GDAXI\\ticks.dat",
+                        "object_type":  "file",
+                        "size":  123312,
+                        "creation_utc":  "2026-07-09T07:24:28.8915257Z",
+                        "last_write_utc":  "2026-07-15T19:58:16.1198715Z",
+                        "sha256":  "ca1f9d22e168ab154092271249416511607fba297d9bf1e6be62d354ea7118d0",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "GDAXI",
+                        "cache_kind":  "ticks"
+                    }
+                ],
+    "files":  [
+                  {
+                      "path":  "history/GDAXI/2015.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2015.hcc",
+                      "object_type":  "file",
+                      "size":  39297,
+                      "creation_utc":  "2026-07-09T08:12:40.1770377Z",
+                      "last_write_utc":  "2026-07-11T17:56:58.3399969Z",
+                      "sha256":  "31acbcad833e1d790abbb598071b7e66463b09b12513f22d423ddfd01c78ce83",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2016.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2016.hcc",
+                      "object_type":  "file",
+                      "size":  131979,
+                      "creation_utc":  "2026-07-09T08:12:40.1770377Z",
+                      "last_write_utc":  "2026-07-11T17:56:58.4384329Z",
+                      "sha256":  "1d4b19d2345304da32786b67d652321dbbaab2b3c443cfc46da0e3f1e210701c",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2017.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2017.hcc",
+                      "object_type":  "file",
+                      "size":  275352,
+                      "creation_utc":  "2026-07-09T08:12:40.0049571Z",
+                      "last_write_utc":  "2026-07-11T17:56:58.5159478Z",
+                      "sha256":  "cf5b34f8cfe085b0d1eed1af17efe3e9c14bd7a2beea76fa54aa9bb3a9e76ff7",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2018.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2018.hcc",
+                      "object_type":  "file",
+                      "size":  11471772,
+                      "creation_utc":  "2026-07-09T08:12:38.5830742Z",
+                      "last_write_utc":  "2026-07-11T17:56:59.1251132Z",
+                      "sha256":  "018d7e8efa71829a32adfb1374d761485df3e0bfc8a44710edfece3ae077e9d5",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2019.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2019.hcc",
+                      "object_type":  "file",
+                      "size":  14833941,
+                      "creation_utc":  "2026-07-09T08:12:37.8488169Z",
+                      "last_write_utc":  "2026-07-11T17:56:59.6699984Z",
+                      "sha256":  "604c7e7b20ec03f931c1588905350abe766fc0c1db723e4390ba4cc2891d3237",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2020.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2020.hcc",
+                      "object_type":  "file",
+                      "size":  17906859,
+                      "creation_utc":  "2026-07-09T08:12:37.0518832Z",
+                      "last_write_utc":  "2026-07-11T17:57:02.1209828Z",
+                      "sha256":  "342ba900407b1a1d570e3ba4a933b86c261bd64525f9e30f47f3546e6e77404c",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2021.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2021.hcc",
+                      "object_type":  "file",
+                      "size":  17789628,
+                      "creation_utc":  "2026-07-09T08:12:36.4271167Z",
+                      "last_write_utc":  "2026-07-11T17:57:03.1152150Z",
+                      "sha256":  "cd842da83b42c51129a60d04c86fa3be1853f941aa819c467bab429a7adb3c2a",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2022.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2022.hcc",
+                      "object_type":  "file",
+                      "size":  17916717,
+                      "creation_utc":  "2026-07-09T08:12:35.8115074Z",
+                      "last_write_utc":  "2026-07-11T17:57:03.8953390Z",
+                      "sha256":  "026efe9283c48e9c59e77b214d520f15847c646ac0adffc4da93d5c50cd97a9e",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2023.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2023.hcc",
+                      "object_type":  "file",
+                      "size":  17752479,
+                      "creation_utc":  "2026-07-09T08:12:35.2199702Z",
+                      "last_write_utc":  "2026-07-11T17:57:06.0240562Z",
+                      "sha256":  "2f8f1044ea29871aac67a7762a2c6d9dd95e83544e2594fb65b61b3eec67ae3a",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2024.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2024.hcc",
+                      "object_type":  "file",
+                      "size":  17600310,
+                      "creation_utc":  "2026-07-09T07:25:53.1157631Z",
+                      "last_write_utc":  "2026-07-11T17:57:06.8495304Z",
+                      "sha256":  "c55d8c8dd283c3ade65d91172eb23ea131fe3e4f964dd6b64e5a8c54a035068c",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2025.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2025.hcc",
+                      "object_type":  "file",
+                      "size":  17534961,
+                      "creation_utc":  "2026-07-09T07:25:51.9294869Z",
+                      "last_write_utc":  "2026-07-11T17:57:08.2846826Z",
+                      "sha256":  "565ea6167806b4685c99a5131f0b56aec4c09be9dcb99c6bf000289fc6ba3abb",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/2026.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\2026.hcc",
+                      "object_type":  "file",
+                      "size":  9730422,
+                      "creation_utc":  "2026-07-09T07:13:39.7188504Z",
+                      "last_write_utc":  "2026-07-21T04:19:47.8111378Z",
+                      "sha256":  "b4b64edb73ddaa20a90b7c47a28f97a4718ce34e60dbb6175809b9920b106055",
+                      "acl":  {
+                                  "owner":  "BUILTIN\\Administrators",
+                                  "sddl":  "O:BAG:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/cache/Daily.hc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\cache\\Daily.hc",
+                      "object_type":  "file",
+                      "size":  217148,
+                      "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                      "last_write_utc":  "2026-07-21T02:03:07.0146517Z",
+                      "sha256":  "6a17956f45ae22848bf8e3ce1c502525a3f3a4e8e77be52664f5d55d56dcbbf2",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/GDAXI/cache/H4.hc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\GDAXI\\cache\\H4.hc",
+                      "object_type":  "file",
+                      "size":  870380,
+                      "creation_utc":  "2026-07-10T02:17:07.3169599Z",
+                      "last_write_utc":  "2026-07-11T17:56:58.2941716Z",
+                      "sha256":  "6d21670de4284240ab2039fed6daeb1b2e2e49e54953d1bd51cfcc216e1a992b",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "ticks/GDAXI/ticks.dat",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\GDAXI\\ticks.dat",
+                      "object_type":  "file",
+                      "size":  123312,
+                      "creation_utc":  "2026-07-09T07:24:28.8915257Z",
+                      "last_write_utc":  "2026-07-15T19:58:16.1198715Z",
+                      "sha256":  "ca1f9d22e168ab154092271249416511607fba297d9bf1e6be62d354ea7118d0",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "GDAXI",
+                      "cache_kind":  "ticks"
+                  }
+              ]
+}

@@ -1,0 +1,570 @@
+﻿{
+    "schema_version":  "nora.ten_strategy_environment_inventory_v3",
+    "phase":  "after",
+    "server_scope":  {
+                         "schema_version":  "nora.phase2_mt5_server_scoped_cache_v2",
+                         "terminal_data_directory":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028",
+                         "terminal_instance_id":  "6C3C6A11D1C3791DD4DBF45421BF8028",
+                         "terminal_origin_path":  "C:\\Program Files\\Darwinex MetaTrader 5",
+                         "terminal_path":  "C:\\Program Files\\Darwinex MetaTrader 5\\terminal64.exe",
+                         "terminal_sha256":  "e87e8b77fa415fc91e9acbe692826e76b7907fb53db4244aed36618f9af30b9e",
+                         "terminal_version":  "5.0.0.5836",
+                         "configuration_path":  "C:\\NoraEvidence\\Phase2\\runs\\20260721T023413Z-AUDCAD-B1-FRESH.running\\tester.ini",
+                         "configuration_sha256":  "031fbb07362133842e489710bf45b644d313e753b13d1fc25233c7cc4ab11fb5",
+                         "broker_server_identity":  "Darwinex-Live",
+                         "server_namespace_observed":  "Darwinex-Live",
+                         "server_namespace_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live",
+                         "bases_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases",
+                         "symbol_roots":  [
+                                              {
+                                                  "symbol":  "AUDCAD",
+                                                  "kind":  "history",
+                                                  "exists":  true,
+                                                  "canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD"
+                                              },
+                                              {
+                                                  "symbol":  "AUDCAD",
+                                                  "kind":  "ticks",
+                                                  "exists":  true,
+                                                  "canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\AUDCAD"
+                                              }
+                                          ],
+                         "server_binding_identity":  "6f7d7320dfeeb9acf9efae55ae117569375b8b18b157d6e4794c0ffa05b5d75f",
+                         "server_scope_identity":  "df82fd48972958138c82a41798229bc5fc8e4857a62b84d1dc591b7b6613295d"
+                     },
+    "observed_bar_count":  393092,
+    "earliest_history_timestamp":  "2020.07.01",
+    "latest_history_timestamp":  "2026.07.01",
+    "objects":  [
+                    {
+                        "path":  "history/AUDCAD",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD",
+                        "object_type":  "directory",
+                        "size":  null,
+                        "creation_utc":  "2026-07-09T07:25:24.5510123Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.3482949Z",
+                        "sha256":  null,
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2015.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2015.hcc",
+                        "object_type":  "file",
+                        "size":  2581914,
+                        "creation_utc":  "2026-07-10T01:31:59.5694180Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.0044778Z",
+                        "sha256":  "3d35d20d35b9d0fcf6a25070544b7d1797c887f16922a2da0c1fb876cc237d34",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2016.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2016.hcc",
+                        "object_type":  "file",
+                        "size":  22447044,
+                        "creation_utc":  "2026-07-10T01:31:54.9625830Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.0515259Z",
+                        "sha256":  "a926fb6d1c4f7c0c70b8ab8ef44984883e6bc9d6d8322e205aa461b2d1126de7",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2017.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2017.hcc",
+                        "object_type":  "file",
+                        "size":  22378035,
+                        "creation_utc":  "2026-07-10T01:31:52.4838825Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.0824097Z",
+                        "sha256":  "97d07341d384d6e939492659a8d0b7365b0eb4242c4373bea5a256bda48f4918",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2018.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2018.hcc",
+                        "object_type":  "file",
+                        "size":  22360695,
+                        "creation_utc":  "2026-07-10T01:31:49.9600551Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.1137673Z",
+                        "sha256":  "0ace83cfec15fed8fe9da3d63e81dbb0fde5071b3f68c85d5d5ddf779e9140b0",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2019.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2019.hcc",
+                        "object_type":  "file",
+                        "size":  22319895,
+                        "creation_utc":  "2026-07-10T01:31:48.2198800Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.1450794Z",
+                        "sha256":  "b09d52c13bdf59e1b002cc948e58ae707058264b4994b76534578113543a27ba",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2020.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2020.hcc",
+                        "object_type":  "file",
+                        "size":  22361844,
+                        "creation_utc":  "2026-07-10T01:31:46.4688653Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.1764680Z",
+                        "sha256":  "0584343ff3bfebb50318c4e3478acf393ceca1c08a439e5631c2c5b8d786ad57",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2021.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2021.hcc",
+                        "object_type":  "file",
+                        "size":  22302324,
+                        "creation_utc":  "2026-07-10T01:31:44.8985908Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.2073932Z",
+                        "sha256":  "81f3786a9992c64344959d80f7b108b57e816a037e885ecc347f4e37d83cf29a",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2022.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2022.hcc",
+                        "object_type":  "file",
+                        "size":  22238784,
+                        "creation_utc":  "2026-07-10T01:31:41.7969572Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.2387120Z",
+                        "sha256":  "e144cc2cf13907fda4043bd30246caad3e7b162543ac1c8a54dac8b9adf2a3da",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2023.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2023.hcc",
+                        "object_type":  "file",
+                        "size":  22250655,
+                        "creation_utc":  "2026-07-10T01:31:39.1850630Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.2543598Z",
+                        "sha256":  "d5b66eaa7e687a2be49ab8ef55ada600ec92a59cab419dc5dbefd2c608a8d1e1",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2024.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2024.hcc",
+                        "object_type":  "file",
+                        "size":  22371444,
+                        "creation_utc":  "2026-07-09T07:25:26.4414819Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.2856758Z",
+                        "sha256":  "6a60002f215c8a49cac38868300ff89e0d66736af2a50b33b2b1bd2e533d3c6b",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2025.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2025.hcc",
+                        "object_type":  "file",
+                        "size":  22326915,
+                        "creation_utc":  "2026-07-09T07:25:25.0507009Z",
+                        "last_write_utc":  "2026-07-10T02:02:00.3326639Z",
+                        "sha256":  "ed12ebea164a02ad145834c88306941de47c9a4e53e734cdb472b7c36812665e",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/2026.hcc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2026.hcc",
+                        "object_type":  "file",
+                        "size":  12032040,
+                        "creation_utc":  "2026-07-09T07:25:24.5510123Z",
+                        "last_write_utc":  "2026-07-21T05:34:59.4889628Z",
+                        "sha256":  "b21aacda7ad94a6f9df5c196671aaf2500cf03b4208761ba1b77ff17a6a2a573",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/cache",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\cache",
+                        "object_type":  "directory",
+                        "size":  null,
+                        "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                        "last_write_utc":  "2026-07-09T07:31:00.0287767Z",
+                        "sha256":  null,
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/cache/Daily.hc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\cache\\Daily.hc",
+                        "object_type":  "file",
+                        "size":  216134,
+                        "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                        "last_write_utc":  "2026-07-21T05:34:59.4889628Z",
+                        "sha256":  "a84ab562cf8a1de7489d0747b142cb419b5649e0104d54abd27510d533799975",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "history/AUDCAD/cache/H4.hc",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\cache\\H4.hc",
+                        "object_type":  "file",
+                        "size":  215924,
+                        "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                        "last_write_utc":  "2026-07-09T23:08:36.3372555Z",
+                        "sha256":  "757c47d5fb43cc9c95f1ad27743d25592c5162db56a3bc4e3d36017c1102c202",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "history"
+                    },
+                    {
+                        "path":  "ticks/AUDCAD",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\AUDCAD",
+                        "object_type":  "directory",
+                        "size":  null,
+                        "creation_utc":  "2026-07-09T07:24:28.8443395Z",
+                        "last_write_utc":  "2026-07-09T07:24:28.8443395Z",
+                        "sha256":  null,
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "ticks"
+                    },
+                    {
+                        "path":  "ticks/AUDCAD/ticks.dat",
+                        "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\AUDCAD\\ticks.dat",
+                        "object_type":  "file",
+                        "size":  123312,
+                        "creation_utc":  "2026-07-09T07:24:28.8443395Z",
+                        "last_write_utc":  "2026-07-21T05:34:59.4889628Z",
+                        "sha256":  "4fb3f1b14c51f6be98d975710395d618f341ec9fcf841e4c22e44bda5fd82c08",
+                        "acl":  {
+                                    "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                    "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                                },
+                        "reparse_point":  false,
+                        "symbol":  "AUDCAD",
+                        "cache_kind":  "ticks"
+                    }
+                ],
+    "files":  [
+                  {
+                      "path":  "history/AUDCAD/2015.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2015.hcc",
+                      "object_type":  "file",
+                      "size":  2581914,
+                      "creation_utc":  "2026-07-10T01:31:59.5694180Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.0044778Z",
+                      "sha256":  "3d35d20d35b9d0fcf6a25070544b7d1797c887f16922a2da0c1fb876cc237d34",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2016.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2016.hcc",
+                      "object_type":  "file",
+                      "size":  22447044,
+                      "creation_utc":  "2026-07-10T01:31:54.9625830Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.0515259Z",
+                      "sha256":  "a926fb6d1c4f7c0c70b8ab8ef44984883e6bc9d6d8322e205aa461b2d1126de7",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2017.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2017.hcc",
+                      "object_type":  "file",
+                      "size":  22378035,
+                      "creation_utc":  "2026-07-10T01:31:52.4838825Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.0824097Z",
+                      "sha256":  "97d07341d384d6e939492659a8d0b7365b0eb4242c4373bea5a256bda48f4918",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2018.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2018.hcc",
+                      "object_type":  "file",
+                      "size":  22360695,
+                      "creation_utc":  "2026-07-10T01:31:49.9600551Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.1137673Z",
+                      "sha256":  "0ace83cfec15fed8fe9da3d63e81dbb0fde5071b3f68c85d5d5ddf779e9140b0",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2019.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2019.hcc",
+                      "object_type":  "file",
+                      "size":  22319895,
+                      "creation_utc":  "2026-07-10T01:31:48.2198800Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.1450794Z",
+                      "sha256":  "b09d52c13bdf59e1b002cc948e58ae707058264b4994b76534578113543a27ba",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2020.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2020.hcc",
+                      "object_type":  "file",
+                      "size":  22361844,
+                      "creation_utc":  "2026-07-10T01:31:46.4688653Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.1764680Z",
+                      "sha256":  "0584343ff3bfebb50318c4e3478acf393ceca1c08a439e5631c2c5b8d786ad57",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2021.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2021.hcc",
+                      "object_type":  "file",
+                      "size":  22302324,
+                      "creation_utc":  "2026-07-10T01:31:44.8985908Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.2073932Z",
+                      "sha256":  "81f3786a9992c64344959d80f7b108b57e816a037e885ecc347f4e37d83cf29a",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2022.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2022.hcc",
+                      "object_type":  "file",
+                      "size":  22238784,
+                      "creation_utc":  "2026-07-10T01:31:41.7969572Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.2387120Z",
+                      "sha256":  "e144cc2cf13907fda4043bd30246caad3e7b162543ac1c8a54dac8b9adf2a3da",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2023.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2023.hcc",
+                      "object_type":  "file",
+                      "size":  22250655,
+                      "creation_utc":  "2026-07-10T01:31:39.1850630Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.2543598Z",
+                      "sha256":  "d5b66eaa7e687a2be49ab8ef55ada600ec92a59cab419dc5dbefd2c608a8d1e1",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2024.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2024.hcc",
+                      "object_type":  "file",
+                      "size":  22371444,
+                      "creation_utc":  "2026-07-09T07:25:26.4414819Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.2856758Z",
+                      "sha256":  "6a60002f215c8a49cac38868300ff89e0d66736af2a50b33b2b1bd2e533d3c6b",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2025.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2025.hcc",
+                      "object_type":  "file",
+                      "size":  22326915,
+                      "creation_utc":  "2026-07-09T07:25:25.0507009Z",
+                      "last_write_utc":  "2026-07-10T02:02:00.3326639Z",
+                      "sha256":  "ed12ebea164a02ad145834c88306941de47c9a4e53e734cdb472b7c36812665e",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/2026.hcc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\2026.hcc",
+                      "object_type":  "file",
+                      "size":  12032040,
+                      "creation_utc":  "2026-07-09T07:25:24.5510123Z",
+                      "last_write_utc":  "2026-07-21T05:34:59.4889628Z",
+                      "sha256":  "b21aacda7ad94a6f9df5c196671aaf2500cf03b4208761ba1b77ff17a6a2a573",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/cache/Daily.hc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\cache\\Daily.hc",
+                      "object_type":  "file",
+                      "size":  216134,
+                      "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                      "last_write_utc":  "2026-07-21T05:34:59.4889628Z",
+                      "sha256":  "a84ab562cf8a1de7489d0747b142cb419b5649e0104d54abd27510d533799975",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "history/AUDCAD/cache/H4.hc",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\history\\AUDCAD\\cache\\H4.hc",
+                      "object_type":  "file",
+                      "size":  215924,
+                      "creation_utc":  "2026-07-09T07:31:00.0287767Z",
+                      "last_write_utc":  "2026-07-09T23:08:36.3372555Z",
+                      "sha256":  "757c47d5fb43cc9c95f1ad27743d25592c5162db56a3bc4e3d36017c1102c202",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "history"
+                  },
+                  {
+                      "path":  "ticks/AUDCAD/ticks.dat",
+                      "absolute_canonical_path":  "C:\\Users\\Gasper\\AppData\\Roaming\\MetaQuotes\\Terminal\\6C3C6A11D1C3791DD4DBF45421BF8028\\Bases\\Darwinex-Live\\ticks\\AUDCAD\\ticks.dat",
+                      "object_type":  "file",
+                      "size":  123312,
+                      "creation_utc":  "2026-07-09T07:24:28.8443395Z",
+                      "last_write_utc":  "2026-07-21T05:34:59.4889628Z",
+                      "sha256":  "4fb3f1b14c51f6be98d975710395d618f341ec9fcf841e4c22e44bda5fd82c08",
+                      "acl":  {
+                                  "owner":  "DESKTOP-21I1FJP\\Gasper",
+                                  "sddl":  "O:S-1-5-21-252094607-1693253197-3110782073-1001G:S-1-5-21-252094607-1693253197-3110782073-513D:(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;FA;;;S-1-5-21-252094607-1693253197-3110782073-1001)"
+                              },
+                      "reparse_point":  false,
+                      "symbol":  "AUDCAD",
+                      "cache_kind":  "ticks"
+                  }
+              ]
+}

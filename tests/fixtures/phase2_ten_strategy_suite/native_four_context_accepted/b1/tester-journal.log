@@ -1,0 +1,47 @@
+﻿EG	0	22:34:39.213	Tester	Local network farm switched off
+EM	0	22:34:39.213	Tester	Cloud servers switched off
+OP	0	22:34:41.343	Tester	"NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5" X64
+HL	0	22:34:41.720	Tester	AUDCAD: preliminary downloading of M1 history started
+OH	0	22:34:43.077	Tester	AUDCAD: preliminary downloading of M1 history completed in 0:00:01.468
+PD	0	22:34:43.387	Tester	AUDUSD: history check started
+MO	0	22:34:45.697	Tester	AUDUSD: preliminary downloading of M1 history started
+KG	0	22:34:45.806	Tester	AUDUSD: preliminary downloading of M1 history completed in 0:00:02.641
+IR	0	22:34:46.103	Tester	USDCAD: history check started
+JH	0	22:34:56.822	Tester	USDCAD: history check timeout
+LQ	0	22:34:56.826	Core 1	agent process started on 127.0.0.1:3000
+EG	0	22:34:56.826	Core 1	connecting to 127.0.0.1:3000
+IO	0	22:34:57.852	Core 1	connected
+DI	0	22:34:57.934	Core 1	authorized (agent build 5836)
+KE	0	22:34:57.934	Tester	AUDCAD,M1 (Darwinex-Live): testing of Experts\NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00
+RO	0	22:34:57.939	Core 1	common synchronization completed
+IF	0	22:34:58.249	Tester	quality of analyzed history is 99%
+CR	0	22:34:58.280	Core 1	MetaTester 5 started on 127.0.0.1:3000
+OH	0	22:34:58.280	Core 1	cloud network mode is off
+RR	0	22:34:58.280	Core 1	initialization finished
+HK	0	22:34:58.280	Core 1	login (build 5836)
+ME	0	22:34:58.280	Core 1	50040 bytes of account info loaded
+FQ	0	22:34:58.280	Core 1	1478 bytes of tester parameters loaded
+EE	0	22:34:58.280	Core 1	196 bytes of input parameters loaded
+KS	0	22:34:58.280	Core 1	2868 bytes of symbols list loaded (841 symbols)
+KD	0	22:34:58.280	Core 1	expert file added: Experts\NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5. 23661 bytes loaded
+KR	0	22:34:58.280	Core 1	7966 Mb available, 99 blocks set for ticks generating
+QG	0	22:34:58.280	Core 1	initial deposit 5000.00 USD, leverage 1:20
+OL	0	22:34:58.280	Core 1	successfully initialized
+DF	0	22:34:58.280	Core 1	29 Kb of total initialization data received
+RS	0	22:34:58.280	Core 1	13th Gen Intel Core i5-13420H, 10239 MB
+RJ	0	22:34:58.280	Core 1	AUDCAD: symbol to be synchronized
+IN	0	22:34:58.280	Core 1	AUDCAD: symbol synchronized, 3720 bytes of symbol info received
+RI	0	22:34:58.280	Core 1	AUDCAD: load 27 bytes of history data to synchronize in 0:00:00.001
+EF	0	22:34:58.280	Core 1	AUDCAD: history synchronized from 2019.01.02 to 2026.07.08
+MR	0	22:34:58.280	Core 1	AUDCAD,M1: history cache allocated for 2808837 bars and contains 555237 bars from 2019.01.02 00:02 to 2020.06.30 23:59
+QN	0	22:34:58.280	Core 1	AUDCAD,M1: history begins from 2019.01.02 00:02
+HG	0	22:34:58.280	Core 1	AUDCAD,M1 (Darwinex-Live): every tick generating
+JF	0	22:34:58.280	Core 1	AUDCAD,M1: testing of Experts\NoraPhase2TenStrategy\NoraPhase2TenStrategyTesterCanaryV1.ex5 from 2020.07.01 00:00 to 2026.07.01 00:00 started
+LG	0	22:34:58.280	Core 1	2020.07.01 00:00:00   NORA_PHASE2_TEN_STRATEGY_COMPLETE_V1
+EK	3	22:34:58.280	Core 1	2020.07.01 00:00:00   ExpertRemove() function called
+EL	2	22:34:58.280	Core 1	removed itself within OnInit
+JJ	2	22:34:58.280	Core 1	tester stopped because OnInit failed
+JR	0	22:34:58.322	Tester	automatical testing finished
+IL	2	22:34:58.329	Core 1	disconnected
+FE	0	22:34:58.329	Core 1	connection closed
+

@@ -1950,28 +1950,44 @@
       "id": "strategy.hand_designed_suite_10",
       "category": "hand_designed_strategy_parity_case",
       "name": "ten initial-v1 grammar strategy reconciliations",
-      "status": "absent",
+      "status": "accepted",
       "rust": {
-        "implementation": "planned",
-        "source_paths": [],
-        "identity": null,
-        "tests": []
+        "implementation": "implemented",
+        "source_paths": [
+          "lab/phase2_ten_strategy.py"
+        ],
+        "identity": "1a13fc46bbc8fd305bd7e3adff8d334de742578307ade2799ddc4379f6751368",
+        "tests": [
+          "tests/test_phase2t_hand_designed_acceptance.py"
+        ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "c95985619fb0fea544e5a8f424ee1921d49e9def1af951f6a00eed241953cd8a"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_ten_strategy_suite/native_v2_runner_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/a1",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/a2",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/b1",
+          "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/b2"
+        ],
+        "handoff_ready": true,
+        "execution_attempted": true,
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "7b06b6054e89c6ab0404bf85eee81ddcce40f46d9fbef5573d7cca15a7b02145",
       "evidence_paths": [
-        "architecture-lock/BUILD_ROADMAP.md"
+        "tests/fixtures/phase2_ten_strategy_suite/native_four_context_accepted/native_acceptance_manifest.json"
       ],
       "commits": [],
       "searchable": false,
-      "missing_gate": "freeze ten cases after execution/time contracts are parity-proven"
+      "missing_gate": "complete Phase-2 gate; system smoke is not an edge-survival or performance claim"
     },
     {
       "id": "grammar.search_admission",
@@ -2009,12 +2025,12 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-      "accepted": 26,
-      "partially_proven": 8,
-      "implemented_but_unproved": 15,
-      "absent": 1,
-      "deferred": 1,
-      "out_of_scope": 0
+    "accepted": 27,
+    "partially_proven": 8,
+    "implemented_but_unproved": 15,
+    "absent": 0,
+    "deferred": 1,
+    "out_of_scope": 0
     },
     "accepted_native_canary_count": 6,
     "grammar_admitted_node_count": 2,

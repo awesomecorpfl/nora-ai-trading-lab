@@ -1,0 +1,47 @@
+﻿[
+    {
+        "path":  "execution.json",
+        "size":  1469,
+        "sha256":  "5cca41ac25716ae787d47371293542c81403f5d4499031d20462fa62e4aa2ee8"
+    },
+    {
+        "path":  "nora_phase2_ten_strategy_v1.csv",
+        "size":  8078,
+        "sha256":  "c13090ab0a23efc51739336fbf6d804783d3e8966177123f751926e8326eea1b"
+    },
+    {
+        "path":  "terminal-journal.log",
+        "size":  2456,
+        "sha256":  "4808aa18757c40fc012b6115e62fce1aea56d88f6e8ec07ce871d5d44bee3db5"
+    },
+    {
+        "path":  "tester-journal.log",
+        "size":  3518,
+        "sha256":  "25c3b953eb71fe2b63f928216de4653193d0ad36153b2bcf4feb355ae73f3bf4"
+    },
+    {
+        "path":  "completion-marker.json",
+        "size":  87,
+        "sha256":  "88f690d581094ae324b4c820cab1d6f40a07c4f60a530eb8d2f6f69dcad8c94e"
+    },
+    {
+        "path":  "failure-marker.json",
+        "size":  84,
+        "sha256":  "cbc48e844ae624164659284308f761095e5b2d8c440ff7c64c4faeb7c0457320"
+    },
+    {
+        "path":  "environment-before.json",
+        "size":  41136,
+        "sha256":  "129d96a868b705c44578c5c20471cf8fec47b5bc00e2148255f5f1197e7b32dd"
+    },
+    {
+        "path":  "environment-after.json",
+        "size":  41135,
+        "sha256":  "2759f6e29e3a0da0f6bc1920407af27864f884e53e7af1a092916727a087d656"
+    },
+    {
+        "path":  "environmental-evaluation.json",
+        "size":  14475,
+        "sha256":  "8135f2f29e2324963d79b1beb76cffc19a56b47c30d7b8d6796c28a5b1f2e0f2"
+    }
+]

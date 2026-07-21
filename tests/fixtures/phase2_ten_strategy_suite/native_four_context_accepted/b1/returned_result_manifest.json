@@ -1,0 +1,12 @@
+﻿{
+    "schema_version":  "nora.ten_strategy_atomic_returned_package_v2",
+    "target_identifier":  "phase2_ten_strategy_suite",
+    "run_identifier":  "20260721T023413Z-AUDCAD-B1-FRESH",
+    "execution_packet_identity":  "c5b587d007e93b4531d79e0753a8b79047be3707e806db342cb2b932594bdbb4",
+    "final_batch_identity":  "f1e0124cf1e4de64d6a74db5ed4a1171f8d71146757ca3c26937c9b06507ab13",
+    "host_symbol":  "AUDCAD",
+    "timeframe":  "M1",
+    "tester_report_present":  false,
+    "tester_report_absent_reason":  "early_completion_before_tester_report",
+    "returned_inventory_sha256":  "97d7afc39a2110fe488868b0aa7b0a21e903f65340242f323b165781f71d21a3"
+}
