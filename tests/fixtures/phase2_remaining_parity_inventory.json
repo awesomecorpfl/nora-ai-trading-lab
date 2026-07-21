@@ -145,34 +145,26 @@
       "id": "layer1.er",
       "category": "layer1_indicator",
       "name": "Efficiency Ratio",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
-        "source_paths": [
-          "engine/labengine/src/indicators.rs"
-        ],
-        "identity": null,
-        "tests": [
-          "engine/labengine/src/indicators.rs"
-        ]
+        "source_paths": ["engine/labengine/src/indicators.rs", "engine/labengine/src/task.rs"],
+        "identity": "5ca60a497a58dc17d933a793b54b1bcc5ce7e754aaf22ed909c81f8d7d1568f5",
+        "tests": ["tests/test_phase2_er_local_evidence.py"]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "deterministic",
+        "source_identity": "b41e78c103febb8cdd4306982f1e95bddc7837827689ec3684adeee2c1f5e2a3"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": ["tests/fixtures/phase2_er_native/compile/er-compile.log", "tests/fixtures/phase2_er_native/compile/NoraPhase2ErTesterV1.ex5"],
+        "execution_evidence_paths": ["tests/fixtures/phase2_er_native/native_evidence_manifest.json", "tests/fixtures/phase2_er_native/runs/"]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_indicator_task.json"
-      ],
-      "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
-      ],
+      "parity_result_identity": "4cf1c7ccb7e7087ff6af007ddce1faf369a305a337eac133366290dbd2de8618",
+      "evidence_paths": ["tests/fixtures/phase2_er_scenarios.json", "tests/fixtures/phase2_er_local_evidence/rust_evidence.json", "tests/test_phase2_er_native.py"],
+      "commits": ["829f1293c34bf55b72fbe5908b71f94bfd80f852"],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "complete Phase-2 gate; preserve narrow ER parity acceptance only"
     },
     {
       "id": "layer1.kama",
@@ -2126,9 +2118,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 34,
+    "accepted": 35,
     "partially_proven": 8,
-    "implemented_but_unproved": 8,
+    "implemented_but_unproved": 7,
     "absent": 0,
     "deferred": 1,
     "out_of_scope": 0

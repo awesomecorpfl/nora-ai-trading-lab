@@ -1,0 +1,210 @@
+{
+  "expected_vector_identity": "1e23ddfc507aba10a6f2aed6f719425a3a3a5ce79f612e65257271dbae5a3a72",
+  "rust_evidence_identity": "5ca60a497a58dc17d933a793b54b1bcc5ce7e754aaf22ed909c81f8d7d1568f5",
+  "rust_output": {
+    "ok": true,
+    "rows": [
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "steady_trend",
+        "timestamp": "2026-03-01T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "steady_trend",
+        "timestamp": "2026-03-01T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 2,
+        "scenario_id": "steady_trend",
+        "timestamp": "2026-03-01T00:02:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "steady_trend",
+        "timestamp": "2026-03-01T00:03:00Z",
+        "value": 1.5
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "steady_trend",
+        "timestamp": "2026-03-01T00:04:00Z",
+        "value": 1.5
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "steady_trend",
+        "timestamp": "2026-03-01T00:05:00Z",
+        "value": 1.5
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 2,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:02:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:03:00Z",
+        "value": 1.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 4,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:04:00Z",
+        "value": 0.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 5,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:05:00Z",
+        "value": 1.0
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 6,
+        "scenario_id": "choppy_path",
+        "timestamp": "2026-03-02T00:06:00Z",
+        "value": 0.0
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 0,
+        "scenario_id": "zero_volatility",
+        "timestamp": "2026-03-03T00:00:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 1,
+        "scenario_id": "zero_volatility",
+        "timestamp": "2026-03-03T00:01:00Z",
+        "value": null
+      },
+      {
+        "classification": "warmup_or_null",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "warmup",
+        "row": 2,
+        "scenario_id": "zero_volatility",
+        "timestamp": "2026-03-03T00:02:00Z",
+        "value": null
+      },
+      {
+        "classification": "steady_state",
+        "node": "ER",
+        "null": false,
+        "output": "er",
+        "reason_code": "ok",
+        "row": 3,
+        "scenario_id": "zero_volatility",
+        "timestamp": "2026-03-03T00:03:00Z",
+        "value": 0.0
+      },
+      {
+        "classification": "invalid_input",
+        "node": "ER",
+        "null": true,
+        "output": "er",
+        "reason_code": "invalid_period",
+        "row": null,
+        "scenario_id": "invalid_period",
+        "timestamp": null,
+        "value": null
+      }
+    ],
+    "schema_version": "nora.layer1_rust_output_v1",
+    "task_type": "layer1_parity_v1"
+  },
+  "schema_version": "nora.phase2_er_local_evidence_v1"
+}
