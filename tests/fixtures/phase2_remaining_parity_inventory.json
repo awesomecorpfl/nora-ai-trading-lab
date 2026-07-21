@@ -56,34 +56,48 @@
       "id": "layer1.ema",
       "category": "layer1_indicator",
       "name": "EMA",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
         ],
-        "identity": null,
+        "identity": "8d9c826fbf38563a96fcce863882f11209839cde55849e78410656f3323ccaab",
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "tests/test_phase2_layer1_ast_mql5.py",
+          "tests/test_phase2_layer1_native.py",
+          "tests/test_phase2_layer1_inventory.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
+        ]
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
       "evidence_paths": [
-        "engine/labengine/tests/fixtures/phase2_indicator_task.json"
+        "docs/phase2_layer1_batch_one_native_acceptance.md",
+        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
       ],
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "complete Phase-2 gate; preserve narrow EMA/value acceptance only"
     },
     {
       "id": "layer1.adx",
@@ -517,63 +531,95 @@
       "id": "layer1.highest",
       "category": "layer1_indicator",
       "name": "Highest",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
         ],
-        "identity": null,
+        "identity": "3f3c32a76f0a5fe6fc9e6bc9993397d9c71ba290f52ae616895d5d265843ee2b",
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "tests/test_phase2_layer1_ast_mql5.py",
+          "tests/test_phase2_layer1_native.py",
+          "tests/test_phase2_layer1_inventory.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
+      "evidence_paths": [
+        "docs/phase2_layer1_batch_one_native_acceptance.md",
+        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
+      ],
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "complete Phase-2 gate; preserve narrow Highest/value acceptance only"
     },
     {
       "id": "layer1.lowest",
       "category": "layer1_indicator",
       "name": "Lowest",
-      "status": "implemented_but_unproved",
+      "status": "accepted",
       "rust": {
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/indicators.rs"
+          "engine/labengine/src/indicators.rs",
+          "engine/labengine/src/ast.rs",
+          "engine/labengine/src/task.rs"
         ],
-        "identity": null,
+        "identity": "81badad2583b1701408a63ed41d89382d70723eac585cdbe1275fb078835f5c3",
         "tests": [
-          "engine/labengine/src/indicators.rs"
+          "tests/test_phase2_layer1_ast_mql5.py",
+          "tests/test_phase2_layer1_native.py",
+          "tests/test_phase2_layer1_inventory.py"
         ]
       },
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "3645d4e252080d266ded55845102f024237843c31fad5f28391aafc10a9b4533"
       },
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compile_evidence_manifest.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_final/compile/compiler_record.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-a2.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b1.json",
+          "tests/fixtures/phase2_layer1_first_batch/native_accepted/reconciliation-b2.json"
+        ]
       },
-      "parity_result_identity": null,
-      "evidence_paths": [],
+      "parity_result_identity": "c2fcc551377a5569df4fa5cd632d5236df1d60ce08ebf7a76cc5d7e8b501cbbb",
+      "evidence_paths": [
+        "docs/phase2_layer1_batch_one_native_acceptance.md",
+        "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+        "tests/fixtures/phase2_layer1_first_batch/native_accepted/native_acceptance.json"
+      ],
       "commits": [
         "25b4982df42e05f639c682c583d315b721225674"
       ],
       "searchable": false,
-      "missing_gate": "deterministic MQL5 generation then native parity"
+      "missing_gate": "complete Phase-2 gate; preserve narrow Lowest/value acceptance only"
     },
     {
       "id": "layer1.session_ohlc",
@@ -2025,9 +2071,9 @@
   "inventory_summary": {
     "item_count": 51,
     "status_counts": {
-    "accepted": 27,
+    "accepted": 30,
     "partially_proven": 8,
-    "implemented_but_unproved": 15,
+    "implemented_but_unproved": 12,
     "absent": 0,
     "deferred": 1,
     "out_of_scope": 0
