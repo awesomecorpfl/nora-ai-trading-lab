@@ -1,0 +1,74 @@
+{
+  "acceptance": "PASS_EXACT",
+  "compiled": {
+    "compile_log_sha256": "225330c2a0d80111574fcb1e7e6879708892740fc6ee8c0e0b50590bb2fa1b4f",
+    "errors": 0,
+    "ex5_path": "compile/NoraPhase2LinearRegressionTesterV1.ex5",
+    "ex5_sha256": "6438780b4d9be663f33f826d2a104ea1e89dd91696a2c574e3ca408008a33e80",
+    "status": "compiled",
+    "warnings": 0
+  },
+  "contexts": {
+    "A1": {
+      "completion_marker_present": true,
+      "csv_sha256": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
+      "exact_reconciliation": true,
+      "execution_sha256": "9e630c87f554f92b060bb2b0dd5132103761bf3f1f31b540385cbe74e41afbba",
+      "expected_rows": 19,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 19,
+      "run_id": "20260721T160000Z-LR-A1",
+      "status": "completed",
+      "symbol": "GDAXI",
+      "tester_ini_normalized_sha256": "8162ecc111f5b375f513628174ed10c09108db7b475f53401b065e6bc88600b3"
+    },
+    "A2": {
+      "completion_marker_present": true,
+      "csv_sha256": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
+      "exact_reconciliation": true,
+      "execution_sha256": "2cb619787a582dce085dbfafc04ed6f939208f4880734058dbfaf7100ddc3852",
+      "expected_rows": 19,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 19,
+      "run_id": "20260721T160000Z-LR-A2",
+      "status": "completed",
+      "symbol": "GDAXI",
+      "tester_ini_normalized_sha256": "4d67f25f01682cb5050d5295ab0db5d2be0196b3b01635f575ebb55dadf543d5"
+    },
+    "B1": {
+      "completion_marker_present": true,
+      "csv_sha256": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
+      "exact_reconciliation": true,
+      "execution_sha256": "fb7edc34d576979976a780cb417f2f90a2e8c807ebc5f7fe4619c38edd51fde7",
+      "expected_rows": 19,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 19,
+      "run_id": "20260721T160500Z-LR-B1",
+      "status": "completed",
+      "symbol": "AUDCAD",
+      "tester_ini_normalized_sha256": "7642c92a20b511dc1c282f7be3c6d2a4cdcf35a56dc096c056cb3b04f9e1f66c"
+    },
+    "B2": {
+      "completion_marker_present": true,
+      "csv_sha256": "0ec7a6f1df80d3bc87baadbd8cc1b6c84c2124591f7276b56f199b9cf6aa7bd9",
+      "exact_reconciliation": true,
+      "execution_sha256": "f18f71058e60795c18150989a21971fe2f90337af53922af8f7d44990afa53cf",
+      "expected_rows": 19,
+      "failure_marker_present": false,
+      "native_exit": 0,
+      "rows": 19,
+      "run_id": "20260721T160000Z-LR-B2",
+      "status": "completed",
+      "symbol": "AUDCAD",
+      "tester_ini_normalized_sha256": "ff283c29d43c4497126a9d59c09b6e715133da8555518cf5d0e26998e91b7020"
+    }
+  },
+  "cross_context_csv_sha256_equal": true,
+  "native_parity_accepted": true,
+  "package_identity": "54f4218f2e6bbdccb42a8c6a6d6faa6ff7b46a53724b59f9ee8b9e797248f1c9",
+  "schema_version": "nora.phase2_linear_regression_native_evidence_v1",
+  "target": "layer1.linear_regression"
+}

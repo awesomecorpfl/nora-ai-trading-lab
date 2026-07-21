@@ -1,0 +1,216 @@
+{
+  "ok": true,
+  "rows": [
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "value",
+      "reason_code": "warmup",
+      "row": 0,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:00:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "value",
+      "reason_code": "warmup",
+      "row": 1,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:01:00Z",
+      "value": null
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 2,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:02:00Z",
+      "value": 6.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 3,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:03:00Z",
+      "value": 8.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 4,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:04:00Z",
+      "value": 10.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 5,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:05:00Z",
+      "value": 12.0
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "slope",
+      "reason_code": "warmup",
+      "row": 0,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:00:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "slope",
+      "reason_code": "warmup",
+      "row": 1,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:01:00Z",
+      "value": null
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "slope",
+      "reason_code": "ok",
+      "row": 2,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:02:00Z",
+      "value": 2.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "slope",
+      "reason_code": "ok",
+      "row": 3,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:03:00Z",
+      "value": 2.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "slope",
+      "reason_code": "ok",
+      "row": 4,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:04:00Z",
+      "value": 2.0
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "slope",
+      "reason_code": "ok",
+      "row": 5,
+      "scenario_id": "rising_line",
+      "timestamp": "2026-05-01T00:05:00Z",
+      "value": 2.0
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "value",
+      "reason_code": "warmup",
+      "row": 0,
+      "scenario_id": "curved_series",
+      "timestamp": "2026-05-02T00:00:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "value",
+      "reason_code": "warmup",
+      "row": 1,
+      "scenario_id": "curved_series",
+      "timestamp": "2026-05-02T00:01:00Z",
+      "value": null
+    },
+    {
+      "classification": "warmup_or_null",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "value",
+      "reason_code": "warmup",
+      "row": 2,
+      "scenario_id": "curved_series",
+      "timestamp": "2026-05-02T00:02:00Z",
+      "value": null
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 3,
+      "scenario_id": "curved_series",
+      "timestamp": "2026-05-02T00:03:00Z",
+      "value": 6.5
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 4,
+      "scenario_id": "curved_series",
+      "timestamp": "2026-05-02T00:04:00Z",
+      "value": 10.5
+    },
+    {
+      "classification": "steady_state",
+      "node": "LinearRegression",
+      "null": false,
+      "output": "value",
+      "reason_code": "ok",
+      "row": 5,
+      "scenario_id": "curved_series",
+      "timestamp": "2026-05-02T00:05:00Z",
+      "value": 15.5
+    },
+    {
+      "classification": "invalid_input",
+      "node": "LinearRegression",
+      "null": true,
+      "output": "value",
+      "reason_code": "invalid_period",
+      "row": null,
+      "scenario_id": "invalid_period",
+      "timestamp": null,
+      "value": null
+    }
+  ],
+  "schema_version": "nora.layer1_rust_output_v1",
+  "task_type": "layer1_parity_v1"
+}
