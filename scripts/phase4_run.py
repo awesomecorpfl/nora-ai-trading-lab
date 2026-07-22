@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse, hashlib, json, math, random, shutil, subprocess
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,21 +54,26 @@ def run_engine(specs, out_dir, label, compact=False):
     grouped = defaultdict(list)
     for s in specs:
         grouped[(s["mode"], s["family"], s["symbol"])].append(s)
-    outputs = []
+    jobs = []
     for (mode, family, symbol), rows in sorted(grouped.items()):
         for batch_no in range(0, len(rows), 100):
             batch = rows[batch_no:batch_no + 100]
             key = f"{label}_{mode}_{family.replace('-', '_')}_{symbol.lower()}_{batch_no // 100:04d}"
             inp = out_dir / f"{key}.input.json"; out = out_dir / f"{key}.json"
-            if not out.exists():
-                batch = [dict(s, compact=compact) for s in batch]
-                inp.write_text(json.dumps(batch, sort_keys=True))
-                cmd = [str(ENGINE), "--phase4-input", str(inp), "--is-input", str(DATA / f"{symbol.lower()}_m1_is.parquet"),
-                       "--oos-input", str(DATA / f"{symbol.lower()}_m1_oos.parquet"), "--output", str(out), "--archive-version", "v2_3"]
-                p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
-                if p.returncode:
-                    raise RuntimeError(f"Phase-4 engine failed for {key}: {p.stderr}")
-            outputs.extend(json.loads(out.read_text())["rows"])
+            jobs.append((key, batch, inp, out, symbol))
+    def execute(job):
+        key, batch, inp, out, symbol = job
+        if not out.exists():
+            inp.write_text(json.dumps([dict(s, compact=compact) for s in batch], sort_keys=True))
+            cmd = [str(ENGINE), "--phase4-input", str(inp), "--is-input", str(DATA / f"{symbol.lower()}_m1_is.parquet"),
+                   "--oos-input", str(DATA / f"{symbol.lower()}_m1_oos.parquet"), "--output", str(out), "--archive-version", "v2_3"]
+            p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+            if p.returncode:
+                raise RuntimeError(f"Phase-4 engine failed for {key}: {p.stderr}")
+        return json.loads(out.read_text())["rows"]
+    outputs = []
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        for rows in pool.map(execute, jobs): outputs.extend(rows)
     return outputs
 
 
