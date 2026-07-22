@@ -1,7 +1,7 @@
 # Phase 2U Gate Audit
 
 Date: 2026-07-22
-Status: **Phase 2 accepted under the frozen six-criterion scope; later-phase finalist validation deferred**
+Status: **bounded audit complete; overall Phase 2 remains blocked**
 
 ## Accepted in this audit
 
@@ -16,25 +16,25 @@ Status: **Phase 2 accepted under the frozen six-criterion scope; later-phase fin
 - Classification: `system_smoke_not_edge_claim`.
 - Grammar admission, searchability, deployment, and performance claims remain false/closed.
 
-## Reconciled scope
+## Remaining blockers
 
 | Gate | State | What is missing |
 |---|---|---|
-| Layer-1 indicator parity | accepted narrow | Initial v1 dependency closure has accepted Rust/MQL5/native proof; 12 non-initial families remain deferred and do not block Phase 2 |
-| Ten hand-designed strategies | accepted narrow | Embedded smoke, exact trade-ledger reconciliation, and frozen exact-zero provisional budget are accepted; broker-native finalist edge survival is Phase 7 |
+| Layer-1 indicator parity | partial / blocking | Accepted native evidence covers the recorded narrow slices, but seven AST/condition nodes remain partially proven and initial grammar admission is not complete; remaining proof is listed in the authoritative inventory |
+| Ten strategy finalist proof | partial / blocking | Trade-by-trade reconciliation and the frozen provisional budget are accepted narrowly; finalist edge-survival remains blocked by the non-strategic scaffold and unresolved broker/profile boundary |
 | Linux experiment determinism | accepted narrowly | Committed six-stage replay fixture; broader experiment families remain outside this contract |
 | Placebo/scrambled edge destruction | accepted narrowly | Known-edge scramble contract passes; this does not establish a finalist broker-native edge survival |
 | Grammar/search admission | closed | Deliberately not authorized; Phase 2 completion does not imply grammar admission or searchability |
 
 ## Gate decision
 
-`complete_phase2_gate = true` under the six frozen Phase-2 acceptance criteria.
+`complete_phase2_gate = false`.
 
 The four-context native smoke proves the runner, compiler, tester lifecycle, fixture consumption, cache-evidence policy, CSV reconciliation, and ingestion path. It does **not** prove strategy edge, trade-level semantics across a finalist, or search readiness.
 
-Broker-native finalist edge survival is explicitly deferred to Phase 7, where Linux-pipeline finalists, broker-profile binding, native Darwinex validation, and frozen finalist budgets exist. Phase 3/search, deployment, and live trading remain closed.
+Phase 3/search, deployment, and live trading remain closed.
 
 ## Verification
 
 - Accepted evidence remains bound to the current gate matrix and inventory manifests; the four-context admission is preserved under `system_smoke_not_edge_claim`.
-- Phase 2 closure is a gate-reconciliation decision only; no new native campaign or market-data acquisition is required.
+- Phase 2 closure remains blocked pending the frozen evidence and decision requirements.

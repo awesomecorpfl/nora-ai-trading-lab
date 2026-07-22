@@ -49,7 +49,7 @@ class Phase2ContractCases(unittest.TestCase):
         self.reject(lambda d:d["governance"].update(search=True),True); self.reject(lambda d:d["governance"].update(searchable_components=1),True)
     def test_phase3_true(self): self.reject(lambda d:d["governance"].update(phase3_authorized=True),True)
     def test_no_general_phase2_or_native_parity_inference(self):
-        self.reject(lambda d:d["governance"].update(phase2_complete=False),True); self.reject(lambda d:d["governance"].update(native_parity_generalized=True),True)
+        self.reject(lambda d:d["governance"].update(phase2_complete=True),True); self.reject(lambda d:d["governance"].update(native_parity_generalized=True),True)
     def test_latest_rejected_foreign_ancestry_rejected(self):
         self.reject(lambda d:d["publication"].update(id="latest")); self.reject(lambda d:d["repository"].update(head="0"*40))
     def test_overwrite_conflict_is_rejected(self):

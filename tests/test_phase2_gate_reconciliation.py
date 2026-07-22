@@ -56,29 +56,20 @@ class Phase2GateReconciliationTests(unittest.TestCase):
             "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json",
         )
 
-    def test_phase2_completion_closes_only_the_six_frozen_criteria(self):
+    def test_trade_reconciliation_is_narrow_and_does_not_complete_strategy_gate(self):
         trade = self.matrix["accepted_native_nodes"]["strategy.trade_by_trade_reconciliation"]
         self.assertIn("embedded ten-strategy suite only", trade["semantic_restriction"])
         self.assertIn("not finalist edge proof", trade["semantic_restriction"])
         self.assertEqual(self.matrix["binding_requirements"]["strategy.trade_by_trade_reconciliation"], "ACCEPTED")
         self.assertEqual(self.matrix["binding_requirements"]["strategy.provisional_parity_budget"], "ACCEPTED")
-        self.assertEqual(self.matrix["binding_requirements"]["strategy.finalist_edge_survival"], "DEFERRED")
-        self.assertEqual(self.matrix["next_critical_path"], "phase7.finalist_validation")
-        self.assertTrue(self.matrix["complete_phase2_gate"])
-        self.assertEqual(set(self.matrix["phase2_completion_basis"]), {
-            "synthetic_execution_fixtures",
-            "layer1_parity",
-            "time_rule_parity",
-            "hand_designed_strategy_trade_reconciliation",
-            "repeated_linux_execution",
-            "placebo_scrambled_edge_destruction",
-        })
-        self.assertEqual(self.matrix["deferred_later_phase_gates"]["strategy.finalist_edge_survival"]["phase"], "7")
+        self.assertEqual(self.matrix["binding_requirements"]["strategy.finalist_edge_survival"], "BLOCKED")
+        self.assertEqual(self.matrix["next_critical_path"], "strategy.finalist_edge_survival")
+        self.assertFalse(self.matrix["complete_phase2_gate"])
 
-    def test_complete_gate_is_true_with_later_phase_requirements_deferred(self):
-        self.assertTrue(self.matrix["complete_phase2_gate"])
-        self.assertEqual(self.inventory["inventory_summary"]["phase2_acceptance_gate"], "accepted")
-        self.assertEqual(self.matrix["binding_requirements"]["indicators.remaining_layer1_targets"], "DEFERRED")
+    def test_complete_gate_is_false_while_binding_requirement_is_not_accepted(self):
+        self.assertFalse(self.matrix["complete_phase2_gate"])
+        self.assertTrue(any(status != "ACCEPTED" for status in self.matrix["binding_requirements"].values()))
+        self.assertEqual(self.inventory["inventory_summary"]["phase2_acceptance_gate"], "blocked")
 
     def test_superseded_identities_are_never_current(self):
         history = self.matrix["identity_history"]
@@ -101,7 +92,7 @@ class Phase2GateReconciliationTests(unittest.TestCase):
         self.assertEqual(self.matrix["closed_boundaries"], ["search", "phase_3", "new_grammar_admission", "searchability_enablement", "deployment"])
 
     def test_binding_status_vocabulary_is_exact(self):
-        self.assertEqual(set(self.matrix["binding_requirements"].values()), {"ACCEPTED", "DEFERRED"})
+        self.assertEqual(set(self.matrix["binding_requirements"].values()), {"ACCEPTED", "PARTIAL", "IMPLEMENTED_UNPROVED", "ABSENT", "BLOCKED"})
         self.assertEqual(set(self.matrix["status_values"]), {"ACCEPTED", "PARTIAL", "IMPLEMENTED_UNPROVED", "ABSENT", "DEFERRED", "BLOCKED"})
 
 

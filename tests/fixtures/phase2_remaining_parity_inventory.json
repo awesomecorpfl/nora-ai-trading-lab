@@ -17,11 +17,11 @@
         "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json",
         "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json"
       ],
-      "blocks_phase2": false,
+      "blocks_phase2": true,
       "id": "layer1_indicator_parity",
-      "missing_evidence": "Initial v1 dependency closure is accepted narrowly; the remaining 12 Layer-1 families are outside that closure and deferred until later grammar expansion",
-      "smallest_next_task": "defer remaining Layer-1 admission chains; preserve the accepted initial-v1 dependency contract",
-      "status": "accepted"
+      "missing_evidence": "ATR and Distance/ATR native parity is accepted, but typed AST registration, canonicalization/hashing, and MQL5 translation are not admitted; remaining primitives lack matched MQL5/native parity",
+      "smallest_next_task": "local-only typed AST admission for ATR and Distance/ATR",
+      "status": "partial"
     },
     {
       "accepted_evidence": [
@@ -39,11 +39,11 @@
         "tests/fixtures/phase2_ten_strategy_suite/trade_reconciliation_manifest.json",
         "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json"
       ],
-      "blocks_phase2": false,
+      "blocks_phase2": true,
       "id": "ten_hand_designed_strategies",
-      "missing_evidence": "Embedded smoke, exact trade-ledger reconciliation, and the suite-scoped exact-zero provisional budget are accepted; broker-native finalist edge survival is a Phase-7 requirement and is explicitly deferred",
-      "smallest_next_task": "defer broker-native finalist validation to Phase 7 after Linux-pipeline finalists and broker-profile binding exist",
-      "status": "accepted"
+      "missing_evidence": "Embedded smoke, exact trade-ledger reconciliation, and the suite-scoped exact-zero provisional budget are accepted; genuine broker-native finalist edge-survival evidence remains blocked by the non-strategic scaffold, unresolved broker cost/provenance inputs, and closed research/finalist-selection boundaries",
+      "smallest_next_task": "human decision packet for authorized finalist production, broker profile/cost contract, and native edge-survival metric budget",
+      "status": "partial"
     },
     {
       "accepted_evidence": [
@@ -94,7 +94,7 @@
     "accepted_native_canary_count": 6,
     "grammar_admitted_node_count": 2,
     "item_count": 51,
-    "phase2_acceptance_gate": "accepted",
+    "phase2_acceptance_gate": "blocked",
     "status_counts": {
       "absent": 0,
       "accepted": 43,
@@ -2318,11 +2318,11 @@
   "layer1_authority": "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
   "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
   "next_task": {
-    "task_id": "phase7.finalist_validation",
-    "phase_label": "Phase 7",
-    "execution_boundary": "deferred; no Phase-2 broker-native execution",
-    "scope": "Linux-pipeline finalist validation with broker-profile binding, native MT5 confirmation, and frozen finalist budgets; search and Phase 3 remain closed",
-    "why_next": "Phase 2 is complete under the six frozen acceptance criteria. Broker-native finalist edge survival belongs to Phase 7 and requires Linux-pipeline finalists, broker-profile binding, and frozen finalist budgets",
+    "task_id": "strategy.finalist_edge_survival",
+    "phase_label": "Phase 2",
+    "execution_boundary": "blocked audit only; no broker-native execution",
+    "scope": "decision packet required for genuine finalist, broker profile/cost contract, substantial market data, and seven-metric edge budget; search and Phase 3 remain closed",
+    "why_next": "The exact-zero suite-scoped strategy budget is accepted. Edge survival cannot execute because the ten fixtures are not broker-data finalists and the scaffold is non-strategic; BP-T1, broker cost/provenance inputs, and human finalist/metric decisions are unresolved",
     "search_authorized": false,
     "phase3_authorized": false
   },

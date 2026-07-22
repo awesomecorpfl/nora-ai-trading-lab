@@ -5,9 +5,9 @@ Phase 3 may not begin until this gate is closed and a separate authorization is 
 ## Gate formula
 
 ```text
-PHASE2_GATE := E1 AND E2 AND E3 AND E4 AND E5
+PHASE2_GATE := E1 AND E2 AND E3 AND E4 AND E5 AND signed(D1..D7)
 PHASE3_MAY_BE_CONSIDERED := PHASE2_GATE
-PHASE3_AUTHORIZED := PHASE2_GATE AND signed(D1..D8)
+PHASE3_AUTHORIZED := PHASE2_GATE AND signed(D8)
 SEARCHABLE(component) := parity_verified(component)
                          AND active_grammar_dependency(component)
                          AND explicit_human_promotion(component)
@@ -80,7 +80,7 @@ Update the Phase-2 gate matrix so every binding row is:
 
 No silent shrinkage of scope is allowed.
 
-## Mandatory human decisions before Phase 3
+## Mandatory human decisions
 
 | ID | Decision | Recommended resolution |
 |---|---|---|
@@ -121,18 +121,14 @@ Other Layer-1 components remain implemented but non-searchable until their own a
 
 ## Current verdict
 
-At the current canonical evidence snapshot:
+At the evidence snapshot:
 
-- E1 — corrected ten-strategy native execution: accepted narrowly;
-- E2 — exact trade-ledger reconciliation: accepted narrowly;
-- E3 — whole-experiment deterministic replay: accepted narrowly;
-- E4 — placebo/scrambled-edge destruction: accepted narrowly;
-- E5 — machine-readable gate closure: reconciled and accepted;
-- the six frozen Phase-2 criteria are complete;
-- broker-native finalist edge survival is deferred to Phase 7;
-- D8 remains a separate Phase-3 authorization decision;
-- gate: complete under the frozen Phase-2 scope;
+- E1 pending;
+- E2 pending;
+- E3 absent;
+- E4 absent;
+- E5 open;
+- D1–D8 unsigned;
+- gate false;
 - Phase 3 unauthorized;
-- all components remain non-searchable.
-
-The Phase-7 finalist contract must not be imported into Phase 2: it requires Linux-pipeline finalists, broker-profile binding, native Darwinex confirmation, and frozen finalist budgets. D1–D8 remain required before Phase 3 authorization; they are not additional evidence criteria for closing Phase 2.
+- all components non-searchable.
