@@ -1,0 +1,30 @@
+{
+  "schema_version": "nora.phase3.acceptance_result_v1",
+  "status": "FAIL",
+  "protocol_identity": "24fce771278af949bcc4ccb4e196fc16fc26809585c9669832f8caab066040fe",
+  "d8_identity": "283b5f0605b4989330f95796ca0abf899ddc57741f76ed3121780582e78592c0",
+  "guided_search": {
+    "trials": 10000,
+    "unique_evaluated": 8750,
+    "duplicate_rejected": 1250,
+    "duplicate_evaluated": 0,
+    "distribution": {"trend-pullback/EURUSD": 2500, "trend-pullback/GBPJPY": 2500, "close-confirmed-breakout/EURUSD": 2500, "close-confirmed-breakout/GBPJPY": 2500},
+    "accepted_threshold": 8614,
+    "archive_cells": 4,
+    "archive_minimum_cells": 20,
+    "coverage_pass": false,
+    "component_result_sha256": {
+      "close-confirmed-breakout/EURUSD": "93e472d9449f5544827d17d5cf23569eb4840b1ddd1963fcf28561c2d8a23fbf",
+      "close-confirmed-breakout/GBPJPY": "897fa0c2d70ecaa2e898700d8e8cf4b83a1d0070f932f2a2dec09552a3135866",
+      "trend-pullback/EURUSD": "8c3ca2be771adbc58ee8d0d7ba7788a7061e575a571c20d83bedcc81deeef953",
+      "trend-pullback/GBPJPY": "d3dcd3cbb0632ba68a1ccca6934eee9d8e6d8aa4676d7107c82c98586405a312"
+    }
+  },
+  "matched_random_baseline": {"trials": 10000, "unique_evaluated": 10000, "duplicate_rejected": 0, "accepted_threshold": 9832, "archive_cells": 4, "best_average_trade": 0.06357970398208607},
+  "guided_best_average_trade": 0.062056467483156255,
+  "resume": {"batch_size": 250, "interruption_exit": 75, "completed_after_resume": 20, "equivalent": true},
+  "reproducibility": {"repeat_component_hashes_identical": true, "repeat_summary_identical": true},
+  "lockbox": {"identity": "8202bbf355275cad15e5366e4cac48bcf94feec3a67599db4718b3795f1aa0f2", "touched": false, "access_log_events": 0},
+  "failure_reason": "The frozen archive coverage assessment requires at least 20 occupied descriptor cells; corrected deterministic descriptors occupied 4. Descriptor boundaries cannot be changed after observing results without a new signed protocol and fresh search.",
+  "phase4_started": false
+}
