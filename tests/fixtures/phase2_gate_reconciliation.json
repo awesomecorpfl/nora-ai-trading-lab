@@ -173,8 +173,8 @@
             "raw_native_evidence_commit": "23ddd31d47c2d24e27da73249d20a94760fed91e"
         }
     },
-    "next_critical_path": "remaining_layer1_native_parity",
-    "next_critical_path_reason": "Embedded ten-strategy smoke is accepted across four contexts; Linux replay and placebo/scrambled integrity contracts are also accepted narrowly. Phase 2 remains incomplete: remaining Layer-1 native parity, finalist trade-by-trade reconciliation, provisional parity budget, and broker-native edge-survival evidence remain. Search and Phase 3 remain explicitly closed.",
+    "next_critical_path": "strategy.trade_by_trade_reconciliation",
+    "next_critical_path_reason": "Layer-1 bounded parity and exhaustive nullable-runtime native parity are accepted narrowly. Phase 2 remains incomplete: finalist trade-by-trade reconciliation, provisional parity budget, and broker-native edge-survival evidence remain. Selecting a finalist and any performance/edge claim require their own explicit gates. Search and Phase 3 remain explicitly closed.",
     "phase": "2",
     "phase3_authorized": false,
     "record_resolution": "Each identifier in records is joined to the source inventory item; fields absent there are explicitly resolved in the reconciliation documentation and remain false/null rather than inferred from implementation alone.",
