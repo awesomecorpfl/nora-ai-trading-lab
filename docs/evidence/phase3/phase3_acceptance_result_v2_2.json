@@ -1,0 +1,11 @@
+{
+  "schema_version": "nora.phase3.acceptance_result_v2_2",
+  "status": "FAIL",
+  "protocol_identity": "6b878888e3097cb17c06e8db5635d665554179b8af1cebcc0ab9f8683b3c503b",
+  "guided": {"trials": 10000, "unique_evaluated": 8750, "duplicate_rejected": 1250, "archive_cells": 4, "minimum": 24, "coverage_pass": false},
+  "matched_random_baseline": {"trials": 10000, "unique_evaluated": 10000, "duplicate_rejected": 0, "archive_cells": 4},
+  "resume": {"equivalent": true, "structural_probe": true},
+  "lockbox_access_events": 0,
+  "failure_classification": "implementation_dispatch_bug: v2_2 label was not recognized by the engine and selected the preserved v1 descriptor path",
+  "candidate_outcomes_used_for_repair": false
+}
