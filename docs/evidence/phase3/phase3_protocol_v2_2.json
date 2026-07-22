@@ -1,0 +1,22 @@
+{
+  "schema_version": "nora.phase3.protocol_v2_2",
+  "protocol_identity": "2b4d1c5be4157670d3a6b8c9f4851f72a8d92f7ac2fabf0119ad8059c6783f22",
+  "status": "D8_SIGNED_PRE_SEARCH",
+  "operator": "Gasper",
+  "signed_at": "2026-07-22T23:50:00Z",
+  "repository": {"bound_head": "9ad7d1c", "branch": "main", "phase2_decision_artifact": "f509badbec8fa49ba2e86f511ad9c232e7a17cf82b5146f982ef38cfb4e9e6ef"},
+  "supersession": {"v2_1_preserved_failed": true, "v2_1_protocol_identity": "677eb6eefd49514e92990314c9060024450c4d657b966ba1be75a0d4910b1c0d", "v2_1_failure": "sampler_stratification_defect", "v1_preserved_failed": true, "v1_protocol_identity": "24fce771278af949bcc4ccb4e196fc16fc26809585c9669832f8caab066040fe", "candidate_outcomes_reused_as_seeds": false},
+  "universe": {"symbols": ["EURUSD", "GBPJPY"], "timeframe": "M1", "provider": "Dukascopy", "acquisition_tool": "Quant Data Manager 125.2692", "new_download": false},
+  "partitions": {"is": ["2024-01-01", "2024-12-31"], "oos": ["2025-01-01", "2025-06-30"], "lockbox": ["2025-07-01", "2025-12-31"], "lockbox_identity": "8202bbf355275cad15e5366e4cac48bcf94feec3a67599db4718b3795f1aa0f2", "lockbox_untouched": true},
+  "dataset_identities": ["8f05962b7bda4777505eb3e9269563b688f669be8164983fc73db44800cee1aa", "8c8b21603f0e11bdccf6deee1ff11d31767f43dfb84f6f21fa40110d9ec71f65"],
+  "split_identities": ["5f17894184eef61f08a66c64165e794ad70051f9004037729c9a7f8644f313d0", "79c617a685c0729481f0d8b27ffbc8c117ae33f7f3588b15b025c13ba47bc293", "4ab25c3d5028401cdfe5901aa1db67ac1c513efb385cb70be3d3446d965cf550", "07761a51e69167b910e55e2f7efbc7f67290bf04731a2c3b2890467310611320"],
+  "d5": {"trend-pullback": {"minimum_closed_trades_per_symbol_is": 30, "maximum_drawdown_fraction_of_initial_price": 0.1}, "close-confirmed-breakout": {"minimum_closed_trades_per_symbol_is": 30, "maximum_drawdown_fraction_of_initial_price": 0.1}, "frozen_before_candidate_1": true, "candidate_derived": false},
+  "grammars": {"execution_policy": "market_v1_open_exit", "new_ast_admission": false, "trend_pullback_identity": "d56881cafe8cfcedc48da21b144934d7eedcaed8cdd1bfbc07af8b0bb5194f18", "close_confirmed_breakout_identity": "5037dfe601053613451bfcd9e928b10c3e6b51fa71bcbce75e70a08e44b972ed"},
+  "ranking": {"identity": "563538c9456775a7bf4e8c7902aff1ec64a78c90ecf514b489529e9311719d7b", "criterion_4": "average_trade", "screening_unit": "gross_per_unit", "invented_costs": false, "later_versioned_cost_stress_required": true},
+  "archive": {"identity": "29ec70949c57d7fef93f20f10bbbb7b4a2b838e7774ffee6ccf9e1a45fbe11ea", "contract": "docs/evidence/phase3/phase3_archive_v2.json", "probe": "docs/evidence/phase3/phase3_v2_reachability_probe_v1.json", "reachable_cells": 36, "minimum_coverage": 24},
+  "sampler": {"contract": "docs/evidence/phase3/phase3_sampler_v2.json", "repair": "candidate_v2 deterministic schedule", "schedule": "side=n%2; holding=(n/2)%3; stop=(n/6)%3; target=(n/18)%3", "identity_basis": "frozen grammar-domain stratification, independent of candidate results"},
+  "trial_ledger": {"guided_trials": 10000, "matched_random_baseline_trials": 10000, "allocation_per_family_symbol": 2500, "sampled_per_stratum": 2000, "refinement_per_stratum": 500, "duplicate_consumes_trial": true, "duplicate_is_not_evaluated": true, "checkpoint_batch": 250, "mutation": false, "crossover": false},
+  "compute": {"bounded_workers": 4, "batch_size": 250, "wall_time_budget_seconds": 1800, "memory_budget_mb": 2048},
+  "pre_search_validation": {"structural_probe_36_of_36": true, "data_hashes": true, "split_contracts": true, "lockbox_safety_guard": true, "deterministic_sampler": true, "canonical_dedup": true, "lineage": true, "batch_resume": true, "trial_counting": true, "matched_baseline": true, "candidate_results_used_for_design": false},
+  "d8": {"decision": "AUTHORIZE_PHASE3_FOR_THIS_EXACT_V2_2_PROTOCOL", "signed": true, "operator": "Gasper", "protocol_identity": "2b4d1c5be4157670d3a6b8c9f4851f72a8d92f7ac2fabf0119ad8059c6783f22", "phase3_authorized": true, "search_authorized": true, "identity": "f40d0d71507e3a42aa30f866bc2136df0c14d8fc8c02da2cbf09d7d8fa87d32b"}
+}

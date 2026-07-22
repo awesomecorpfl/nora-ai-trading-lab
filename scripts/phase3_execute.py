@@ -32,7 +32,7 @@ def digest(path):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--output", default="docs/evidence/phase3/search"); ap.add_argument("--protocol-version", default="v1", choices=("v1", "v2", "v2_1")); args = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--output", default="docs/evidence/phase3/search"); ap.add_argument("--protocol-version", default="v1", choices=("v1", "v2", "v2_1", "v2_2")); args = ap.parse_args()
     out = ROOT / args.output; out.mkdir(parents=True, exist_ok=True)
     specs = []
     for mode in ("stratified", "random"):
