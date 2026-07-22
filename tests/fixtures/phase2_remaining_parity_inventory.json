@@ -1617,7 +1617,7 @@
     {
       "category": "layer1_indicator",
       "commits": [
-        "4bb7eb4"
+        "4099239e8109840c9d19e4b1a2a8b75e6b61bd9b"
       ],
       "evidence_paths": [
         "tests/fixtures/phase2_vwap_scenarios.json",
@@ -2260,7 +2260,7 @@
     {
       "category": "layer1_indicator",
       "commits": [
-        "PENDING_CLOSEOUT_COMMIT"
+        "4099239e8109840c9d19e4b1a2a8b75e6b61bd9b"
       ],
       "evidence_paths": [
         "tests/fixtures/phase2_session_ohlc_scenarios.json",
@@ -2272,7 +2272,7 @@
       "missing_gate": "none for the narrow accepted Session OHLC parity slice; broader production session calendars remain outside this contract",
       "mql5": {
         "generation": "generated",
-        "source_identity": "PENDING_CLOSEOUT_COMMIT"
+        "source_identity": "4099239e8109840c9d19e4b1a2a8b75e6b61bd9b"
       },
       "native": {
         "compile_evidence_paths": [
