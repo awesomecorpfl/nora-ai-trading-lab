@@ -1,6 +1,6 @@
 {
   "schema_version": "nora.phase3.readiness_v1",
-  "artifact_identity": "d850046a61f1a0cdec7298748f5768daf5c3046b3448799b0383b13d79d09ce0",
+  "artifact_identity": "0bf58fef05bae899b45af7eae3011cc1704c5602accc56d2ebc93aea59659811",
   "status": "BLOCKED_PRE_SEARCH",
   "created_at": "2026-07-22T00:00:00Z",
   "repository": {
@@ -24,12 +24,12 @@
   "pre_search": {
     "d5": {
       "status": "NOT_FROZEN",
-      "reason": "No approved Phase-3 research dataset with sufficient duration exists in the repository; thresholds cannot be defensibly derived from two-to-fifteen-bar fixtures.",
+      "reason": "D5 is not yet frozen because the Phase-3 split and threshold protocol has not been approved. Existing Phase-0C research inputs provide sufficient duration for a conservative first protocol, but do not constitute a signed D7 contract by themselves.",
       "thresholds": null
     },
     "d7": {
       "status": "NOT_FROZEN",
-      "reason": "No Gasper-prepared dataset contracts, versioned splits, or sealed permanent final lockbox exist.",
+      "reason": "No Phase-3 dataset contracts, versioned splits, or sealed permanent final lockbox exist yet; the existing Phase-0C source inputs can be reused without a new download.",
       "dataset_identities": [],
       "split_identities": [],
       "lockbox_identity": null,
@@ -90,18 +90,48 @@
       "role": "Phase-2 replay fixture; insufficient for Phase-3 IS/OOS research"
     }
   ],
+  "existing_phase0c_research_inputs": [
+    {
+      "path": "phase-0c/staged/qdm/long_EURUSD-M1-No Session.csv",
+      "provenance_path": "phase-0c/provenance/EURUSD_M1_2024-2025.json",
+      "provider": "Dukascopy",
+      "acquisition_tool": "Quant Data Manager 125.2692",
+      "source_symbol": "EURUSD",
+      "timeframe": "M1",
+      "date_range": ["2024-01-01", "2025-12-31"],
+      "rows": 744789,
+      "bytes": 43488756,
+      "file_sha256": "c43f44d91e32c6d62254ac97afbdc43ebcbb2640f67020bb5d8a88cd4c902ef1",
+      "usable_for_phase3": true,
+      "qualification": "Phase-0C canonical research-source input; requires Phase-3 lab-owned contract and derived split identities"
+    },
+    {
+      "path": "phase-0c/staged/qdm/long_GBPJPY-M1-No Session.csv",
+      "provenance_path": "phase-0c/provenance/GBPJPY_M1_2024-2025.json",
+      "provider": "Dukascopy",
+      "acquisition_tool": "Quant Data Manager 125.2692",
+      "source_symbol": "GBPJPY",
+      "timeframe": "M1",
+      "date_range": ["2024-01-01", "2025-12-31"],
+      "rows": 744902,
+      "bytes": 43621682,
+      "file_sha256": "790ba828bac8c7fba81cf95ef4da61cd08e9782526c4ec9262e2b63888ecf746",
+      "usable_for_phase3": true,
+      "qualification": "Phase-0C canonical research-source input; requires Phase-3 lab-owned contract and derived split identities"
+    }
+  ],
   "operator_preparation_required": {
     "reason": "D5 and D7 cannot be frozen and D8 cannot be signed without approved research data.",
     "minimum_dataset_request": {
-      "symbols": ["GDAXI", "AUDCAD"],
+      "symbols": ["EURUSD", "GBPJPY"],
       "timeframe": "M1",
-      "source_range": ["2020-07-01", "2026-07-01"],
-      "source_timestamp_contract": "declared broker-time contract; no silent conversion",
-      "preferred_clock": "New York time plus seven hours, seasonally UTC+02/UTC+03 following New York DST",
+      "source_range": ["2024-01-01", "2025-12-31"],
+      "source_timestamp_contract": "Dukascopy UTC start-of-bar source; preserve source timestamps and bind the explicit strategy-clock contract without silent conversion",
+      "preferred_clock": "New York time plus seven hours, seasonally UTC+02/UTC+03 following New York DST, for session/evaluation rules",
       "required_partitions_before_search": {
-        "development_is": ["2020-07-01", "2024-12-31"],
-        "oos_validation": ["2025-01-01", "2025-12-31"],
-        "permanent_final_lockbox": ["2026-01-01", "2026-07-01"]
+        "development_is": ["2024-01-01", "2024-12-31"],
+        "oos_validation": ["2025-01-01", "2025-06-30"],
+        "permanent_final_lockbox": ["2025-07-01", "2025-12-31"]
       },
       "required_contract_fields": [
         "provider and source-symbol identity",
@@ -115,7 +145,7 @@
         "conversion history and double-conversion guard",
         "schema/protocol version"
       ],
-      "approval": "Gasper must approve and seal the dataset/split contracts before D8"
+      "approval": "Gasper must approve the EURUSD/GBPJPY universe and seal the derived dataset/split contracts before D8; no new download is required"
     },
     "lockbox_policy": "Create and seal the permanent final lockbox before candidate #1; human-gated, logged, and never read during Phase 3."
   },
