@@ -47,13 +47,23 @@ class Phase2GateReconciliationTests(unittest.TestCase):
             trade["acceptance_evidence"],
             "tests/fixtures/phase2_ten_strategy_suite/trade_reconciliation_manifest.json",
         )
+        budget = self.matrix["accepted_native_nodes"]["strategy.provisional_parity_budget"]
+        self.assertTrue(budget["native_parity_accepted"])
+        self.assertFalse(budget["grammar_admitted"])
+        self.assertFalse(budget["searchable"])
+        self.assertEqual(
+            budget["acceptance_evidence"],
+            "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json",
+        )
 
     def test_trade_reconciliation_is_narrow_and_does_not_complete_strategy_gate(self):
         trade = self.matrix["accepted_native_nodes"]["strategy.trade_by_trade_reconciliation"]
         self.assertIn("embedded ten-strategy suite only", trade["semantic_restriction"])
         self.assertIn("not finalist edge proof", trade["semantic_restriction"])
         self.assertEqual(self.matrix["binding_requirements"]["strategy.trade_by_trade_reconciliation"], "ACCEPTED")
-        self.assertEqual(self.matrix["binding_requirements"]["strategy.provisional_parity_budget"], "ABSENT")
+        self.assertEqual(self.matrix["binding_requirements"]["strategy.provisional_parity_budget"], "ACCEPTED")
+        self.assertEqual(self.matrix["binding_requirements"]["strategy.finalist_edge_survival"], "BLOCKED")
+        self.assertEqual(self.matrix["next_critical_path"], "strategy.finalist_edge_survival")
         self.assertFalse(self.matrix["complete_phase2_gate"])
 
     def test_complete_gate_is_false_while_binding_requirement_is_not_accepted(self):

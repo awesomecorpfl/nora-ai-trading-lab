@@ -63,6 +63,23 @@
             "native_parity_accepted": true,
             "searchable": false,
             "semantic_restriction": "exact 44-case frozen Phase-2F nullable runtime fixture: 3 NOT, 9 AND, 9 OR, 20 comparisons, and 3 final trigger conversions; four fresh broker-allowed contexts A1/A2 GDAXI/M1 and B1/B2 AUDCAD/M1; not a grammar or search claim"
+        },
+        "strategy.trade_by_trade_reconciliation": {
+            "acceptance_evidence": "tests/fixtures/phase2_ten_strategy_suite/trade_reconciliation_manifest.json",
+            "budget_evidence": "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json",
+            "budget_identity": "6e5dfab2126d4d477418b109824c7c9e2025921d4ec01553ae10d3b5aee24119",
+            "grammar_admitted": false,
+            "native_parity_accepted": true,
+            "searchable": false,
+            "semantic_restriction": "embedded ten-strategy suite only; exact 15-trade Rust ledger reconciliation in A1/A2 GDAXI/M1 and B1/B2 AUDCAD/M1; structural exactness plus frozen exact-zero numeric budget; not finalist edge proof"
+        },
+        "strategy.provisional_parity_budget": {
+            "acceptance_evidence": "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json",
+            "budget_identity": "6e5dfab2126d4d477418b109824c7c9e2025921d4ec01553ae10d3b5aee24119",
+            "grammar_admitted": false,
+            "native_parity_accepted": true,
+            "searchable": false,
+            "semantic_restriction": "suite-scoped exact structural and exact-zero strategy trade-ledger budget from accepted Phase-2 hand-designed evidence; representative trend_pullback_1 compatibility binding; no MACD/Signal/Histogram tolerances; not performance or edge acceptance"
         }
     },
     "binding_requirements": {
@@ -87,9 +104,10 @@
         "mql5.nullable_runtime": "ACCEPTED",
         "strategy.completed_hand_designed_strategies": "ABSENT",
         "strategy.initial_v1_grammar_coverage": "BLOCKED",
-        "strategy.provisional_parity_budget": "ABSENT",
+        "strategy.provisional_parity_budget": "ACCEPTED",
+        "strategy.finalist_edge_survival": "BLOCKED",
         "strategy.required_hand_designed_strategies": "BLOCKED",
-        "strategy.trade_by_trade_reconciliation": "ABSENT",
+        "strategy.trade_by_trade_reconciliation": "ACCEPTED",
         "time.broker_time_fixtures": "ACCEPTED",
         "time.declared_strategy_session_clock": "ACCEPTED",
         "time.derived_timeframe_anchoring": "ACCEPTED",
@@ -173,8 +191,8 @@
             "raw_native_evidence_commit": "23ddd31d47c2d24e27da73249d20a94760fed91e"
         }
     },
-    "next_critical_path": "strategy.trade_by_trade_reconciliation",
-    "next_critical_path_reason": "Layer-1 bounded parity and exhaustive nullable-runtime native parity are accepted narrowly. Phase 2 remains incomplete: finalist trade-by-trade reconciliation, provisional parity budget, and broker-native edge-survival evidence remain. Selecting a finalist and any performance/edge claim require their own explicit gates. Search and Phase 3 remain explicitly closed.",
+    "next_critical_path": "strategy.finalist_edge_survival",
+    "next_critical_path_reason": "The suite-scoped exact-zero Phase-2 strategy budget is accepted. Finalist edge survival is audited but blocked: the current ten fixtures are not broker-data finalists, the EA scaffold is non-strategic, broker cost/provenance inputs are unresolved, and authorized research/finalist selection remains closed by search, Phase 3, and BP-T1 boundaries.",
     "phase": "2",
     "phase3_authorized": false,
     "record_resolution": "Each identifier in records is joined to the source inventory item; fields absent there are explicitly resolved in the reconciliation documentation and remain false/null rather than inferred from implementation alone.",
