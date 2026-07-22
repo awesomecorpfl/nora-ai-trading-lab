@@ -1,0 +1,304 @@
+{
+  "lockbox_access_events": 0,
+  "market_data_loaded": false,
+  "oos_loaded": false,
+  "probe_candidate_count": 216,
+  "probe_unique_candidate_identities": 216,
+  "profitability_or_ranking_used": false,
+  "reachable_cell_identities": [
+    "a4ad57317c4903bd11caf4a95c9dd52d99b209c57ad26e7d70d46137a2e6def8",
+    "aa4611876c24cd98b625d77121b2ba3c8ffa918599637eeb16886275af67e740",
+    "2e2dd39986e69392a926ac19a231a2814188cc10adc8fe8c2e5860107ffe5cc1",
+    "39fa2c28d91475a2819865044d580dd23ca1091c46195f00ed4b973969890321",
+    "1d3c85a3e20e145578b35312a6e2bd38f3215f117870ca1c5fde02d33b3ec6e3",
+    "7aea506187d4b6a92ff66d950da752732a9cecdf85aa3f41c52e67654a71e119",
+    "c0a4904112d1e68005793d01b6de9f392f12d38b1f0420d4c184c4c37e042e08",
+    "c946cb22448663b5038c51848ae9849ad5252f27ad8b28a5f4e91e41a3bbf967",
+    "fd09d622c2c63e60e11df50ba698b6a3cac2cd9627259e5a0adab981a39cbaac",
+    "a99d8c315659eb19a10e7f99f1a18e5afa27a7e1fb68460c7234d930264d86e7",
+    "5c954e3af6df55c056488bb2eeaa3c7a452e78865eaba13f8d1193c956648258",
+    "02361c871f92d3f831de05279ced0404b9fbb041791bee3107c3294cf24cfb1a",
+    "33dfed9edb3b56cff5dfc6a79d4167f0597eab4196fb6f871bdb61d8c296fb50",
+    "f93d9951a310a371f7369cad232ee47f79a6b5b240b97524a5c0dbb9a8aecea1",
+    "274110fff1c6646a00034c1b52bd958dbe8211fcfd8f1926d102b7db5d6da64d",
+    "133e8c179ce30ed73c30ffe3c0f43781fa90cd7f6ed39763aff3f7949c70c26f",
+    "90fef215b774bfce3254c026a782a74b92ca970598514a98bc0ac05cabe3a4a4",
+    "6a52c879581351fb61c8d5408d9accbeb48a64e0efe36832c9e8b62a1be5f693",
+    "fc1e6f59f4c9fc077aa7ff9d11282fff95a3b93224e625e032839e350cf2347b",
+    "adae762901113d4fa7366b220b823cba3251e0e068415fd5901d1b9230ccf04d",
+    "33b29200716bd675bba00f09a2e3377476617cc2ea9ea4f56a116d7b926b672a",
+    "557f99af1da498ce8d7eaef4243cd13f17ec6052a6d8b3bd101887cb31c6e001",
+    "ed1a677f0e2171e4e2539d2346f77dbceb3fa58e7e485ed1a3dd0e87ada95df3",
+    "0a1ccf56210ba7be971c5a5c78f386f1f7ac44df4e3673c2ea60df61c98b7709",
+    "b369c1f378bf0e850bb5153f9414102cf1fcee7588407f74089a22b03890097b",
+    "f3d44fbfec057a3ee297eaf90fbb458c3f870191e03fc1614d1a3af41850eb88",
+    "eb38348f7ee692ec49d5af10b9041f3ace895acb836f3298a0786dbe2e41c8ff",
+    "692c98733b3b8f2c82a0a2cedb0910eef801f51f45142f2de0252067cdefe09b",
+    "d634633558ac49ed60f168283b70ca4092a059da3e2548a9253561b4685ff10a",
+    "b47e1462be4731ed3375c3914fa665f9a51fd01ea6306dcc35720fcf572fe772",
+    "219be2df17501264c22d61423b14583a361ec58c4973a9fef00ae40365ad5d69",
+    "ee1665335e94d19bff8fea52eb3f898192a490c24aa5043c3dcfb7d765afaadf",
+    "8c991566a3cf871fc49b3051cf160f8f64fd5ec5f605f799e214a1f90e20fbe8",
+    "cfa38ff653c2ba064f4b8be11b13496aff692ee90351514b8353f5d5338b985b",
+    "5d92f5752d3cdb29613949b61022626094521a838d29a7b2f862dab357530534",
+    "31a93afdaea0c3e0c7c83e59a956f962c49502261023f1878e76491d5f122643"
+  ],
+  "reachable_cells": [
+    {
+      "holding_policy": "long",
+      "risk_shape": "balanced",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "balanced",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "balanced",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "balanced",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "sub_one_to_one",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "sub_one_to_one",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "sub_one_to_one",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "sub_one_to_one",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "target_dominant",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "target_dominant",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "target_dominant",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "long",
+      "risk_shape": "target_dominant",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "balanced",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "balanced",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "balanced",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "balanced",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "sub_one_to_one",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "sub_one_to_one",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "sub_one_to_one",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "sub_one_to_one",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "target_dominant",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "target_dominant",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "target_dominant",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "medium",
+      "risk_shape": "target_dominant",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "balanced",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "balanced",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "balanced",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "balanced",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "sub_one_to_one",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "sub_one_to_one",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "sub_one_to_one",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "sub_one_to_one",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "target_dominant",
+      "side": "long",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "target_dominant",
+      "side": "long",
+      "trigger_shape": "trend-pullback"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "target_dominant",
+      "side": "short",
+      "trigger_shape": "close-confirmed-breakout"
+    },
+    {
+      "holding_policy": "short",
+      "risk_shape": "target_dominant",
+      "side": "short",
+      "trigger_shape": "trend-pullback"
+    }
+  ],
+  "schema_version": "nora.phase3.v2.reachability_probe_v1",
+  "status": "PASS",
+  "v1_failure_mechanics": {
+    "canonical_dedup_is_preserved": true,
+    "fixed_side_makes_long_short_mid_unreachable": true,
+    "result_derived_trade_and_session_bins_are_not_pre_search_reachable_contracts": true,
+    "session_concentration_is_not_a_grammar_control": true
+  },
+  "v2_archive": {
+    "coverage_rule": "at least 24 of 36 occupied; every trigger_shape and side represented",
+    "dimensions": [
+      "trigger_shape",
+      "side",
+      "holding_policy",
+      "risk_shape"
+    ],
+    "domains": {
+      "holding_policy": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "risk_shape": [
+        "sub_one_to_one",
+        "balanced",
+        "target_dominant"
+      ],
+      "side": [
+        "long",
+        "short"
+      ],
+      "trigger_shape": [
+        "trend-pullback",
+        "close-confirmed-breakout"
+      ]
+    },
+    "minimum_frozen_coverage": 24,
+    "reachable_cells": 36,
+    "theoretical_cells": 36
+  }
+}

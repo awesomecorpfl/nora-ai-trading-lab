@@ -1,0 +1,17 @@
+{
+  "schema_version": "nora.phase3.sampler.v2",
+  "identity": "4f669b37bedacbf76267f4e54cf875d5f2ea762c8faeb16577ac84a0950f5b40",
+  "status": "PRE_SEARCH_STRUCTURAL_CONTRACT",
+  "families": ["trend-pullback", "close-confirmed-breakout"],
+  "symbols": ["EURUSD", "GBPJPY"],
+  "stratified_allocation": "2500 trials per family/symbol; 2000 grammar samples plus 500 deterministic local refinements",
+  "random_baseline": "2500 trials per family/symbol, same total 10000-trial budget",
+  "deduplication": "canonical strategy identity; duplicate trials consume ledger trials and are rejected before evaluation",
+  "lineage": "template, parent, sampler mode, and stage recorded for every trial",
+  "checkpoint": "every 250 trials; restart must produce byte-equivalent component output",
+  "mutation": false,
+  "crossover": false,
+  "pre_search_probe": "scripts/phase3_v2_reachability.py",
+  "probe_rule": "36 of 36 structural cells must be reachable; frozen evaluation minimum is 24",
+  "performance_independence": "probe does not load market data, rank, evaluate OOS, or inspect lockbox"
+}

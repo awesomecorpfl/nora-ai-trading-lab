@@ -1,0 +1,27 @@
+{
+  "schema_version": "nora.phase3.archive.v2",
+  "identity": "29ec70949c57d7fef93f20f10bbbb7b4a2b838e7774ffee6ccf9e1a45fbe11ea",
+  "status": "PRE_SEARCH_STRUCTURAL_CONTRACT",
+  "basis": "grammar-controlled behavioral policy dimensions, frozen before v2 candidate evaluation",
+  "dimensions": ["trigger_shape", "side", "holding_policy", "risk_shape"],
+  "domains": {
+    "trigger_shape": ["trend-pullback", "close-confirmed-breakout"],
+    "side": ["long", "short"],
+    "holding_policy": ["short", "medium", "long"],
+    "risk_shape": ["sub_one_to_one", "balanced", "target_dominant"]
+  },
+  "mapping": {
+    "holding_policy": {"short": "max_bars=8", "medium": "max_bars=16", "long": "max_bars=32"},
+    "risk_shape": {"sub_one_to_one": "target_atr/stop_atr < 1.5", "balanced": "1.5 <= target_atr/stop_atr < 2.5", "target_dominant": "target_atr/stop_atr >= 2.5"}
+  },
+  "theoretical_cells": 36,
+  "minimum_reachable_cells": 24,
+  "coverage_rule": "at least 24 of 36 occupied cells and both trigger shapes and both sides represented",
+  "capacity_per_cell": 2,
+  "v1_repair": {
+    "removed_result_bins": ["trades_per_month", "session_concentration"],
+    "reason": "not controlled by admitted grammar and cannot be established by a pre-search structural probe",
+    "fixed_side_middle_balance": "mathematically unreachable because each candidate has one fixed side"
+  },
+  "lockbox": "not accessed by this contract"
+}
