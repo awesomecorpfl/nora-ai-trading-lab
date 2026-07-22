@@ -1,0 +1,9 @@
+{
+  "schema_version": "nora.phase2_vwap_local_evidence_v1",
+  "rust_evidence_identity": "3d7ff009aa97b5842c54517f073c81301e3da617bd43c8ea0058f940b3edd607",
+  "expected_vector_identity": "3d7ff009aa97b5842c54517f073c81301e3da617bd43c8ea0058f940b3edd607",
+  "row_count": 5,
+  "outputs": [
+    "value"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "completion_marker": "NORA_PHASE2_SESSION_OHLC_COMPLETE_V1",
+  "expected_vector_identity": "3fa0b043e9897d1a4f7fb944018444630ee37ff9ab6f77f07bb0525a8b091374",
+  "failure_marker": "NORA_PHASE2_SESSION_OHLC_FAIL_V1",
+  "grammar_admitted": false,
+  "native_execution_attempted": false,
+  "native_parity_accepted": false,
+  "output_schema": [
+    "scenario_id",
+    "node",
+    "output",
+    "row",
+    "timestamp",
+    "value",
+    "null",
+    "classification",
+    "reason_code"
+  ],
+  "output_schema_identity": "79a65e010133d998bcdd0f47fec35b55cfd5fbf143f071a91e4e5ad9033a97bf",
+  "package_identity": "3dfe55cba8ed9c584df5aaed9b09a714a326a89efb63ffc14973abf25b131cf4",
+  "result_filename": "nora_phase2_session_ohlc_v1.csv",
+  "runtime_identity": "e0aa1f1a95c407162d42aa124400160d1bfe18f77fe31dba3328a38eebaf2437",
+  "runtime_sha256": "56960df14cc4a5ce20f5c781b42167a1fecfaec8c19cbc877f4ef76faf22b4f1",
+  "rust_evidence_identity": "3fa0b043e9897d1a4f7fb944018444630ee37ff9ab6f77f07bb0525a8b091374",
+  "schema_version": "nora.phase2_session_ohlc_executable_package_v1",
+  "searchable": false,
+  "target_identifier": "layer1_session_ohlc",
+  "tester_identity": "a6b59b66cb5f3637dc87611473cdb25fa0c18a19be0ded7ec5072967be1f707f",
+  "tester_sha256": "3cf866970ca1d2d355886877f3d435e1d230db43be3624910cc128e9036a8268"
+}

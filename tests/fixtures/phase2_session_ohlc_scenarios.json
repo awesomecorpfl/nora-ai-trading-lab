@@ -1,0 +1,10 @@
+{
+ "schema_version":"nora.phase2_session_ohlc_scenarios_v1",
+ "contract":{"algorithm":"session-reset cumulative OHLC","outputs":["open","high","low","close"],"session_boundary":"explicit session_id changes reset state"},
+ "scenarios":[
+  {"id":"two_sessions","node":"SessionOHLC","output":"open","session_id":["A","A","A","B","B"],"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"],"open":[10,11,9,20,21],"high":[12,14,13,22,25],"low":[8,10,7,18,19],"close":[11,13,10,21,24]},
+  {"id":"two_sessions","node":"SessionOHLC","output":"high","session_id":["A","A","A","B","B"],"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"],"open":[10,11,9,20,21],"high":[12,14,13,22,25],"low":[8,10,7,18,19],"close":[11,13,10,21,24]},
+  {"id":"two_sessions","node":"SessionOHLC","output":"low","session_id":["A","A","A","B","B"],"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"],"open":[10,11,9,20,21],"high":[12,14,13,22,25],"low":[8,10,7,18,19],"close":[11,13,10,21,24]},
+  {"id":"two_sessions","node":"SessionOHLC","output":"close","session_id":["A","A","A","B","B"],"timestamps":["2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"],"open":[10,11,9,20,21],"high":[12,14,13,22,25],"low":[8,10,7,18,19],"close":[11,13,10,21,24]}
+ ]
+}

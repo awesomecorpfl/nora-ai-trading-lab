@@ -1,0 +1,12 @@
+{
+  "schema_version": "nora.phase2_session_ohlc_local_evidence_v1",
+  "rust_evidence_identity": "3fa0b043e9897d1a4f7fb944018444630ee37ff9ab6f77f07bb0525a8b091374",
+  "expected_vector_identity": "3fa0b043e9897d1a4f7fb944018444630ee37ff9ab6f77f07bb0525a8b091374",
+  "row_count": 20,
+  "outputs": [
+    "open",
+    "high",
+    "low",
+    "close"
+  ]
+}

@@ -95,7 +95,7 @@
     "phase2_acceptance_gate": "blocked",
     "status_counts": {
       "absent": 0,
-      "accepted": 41,
+      "accepted": 42,
       "deferred": 1,
       "implemented_but_unproved": 0,
       "out_of_scope": 0,
@@ -1617,22 +1617,33 @@
     {
       "category": "layer1_indicator",
       "commits": [
-        "25b4982df42e05f639c682c583d315b721225674"
+        "4bb7eb4"
       ],
-      "evidence_paths": [],
+      "evidence_paths": [
+        "tests/fixtures/phase2_vwap_scenarios.json",
+        "tests/fixtures/phase2_vwap_local_evidence.json",
+        "tests/fixtures/phase2_vwap_native/native_evidence.json",
+        "tests/fixtures/phase2_vwap_native/phase2_vwap_executable_package.json"
+      ],
       "id": "layer1.vwap",
-      "missing_gate": "session-clock fixture, MQL5 generation, and native parity",
+      "missing_gate": "none for the narrow accepted VWAP parity slice; grammar admission and search remain closed",
       "mql5": {
-        "generation": "absent",
-        "source_identity": null
+        "generation": "generated",
+        "source_identity": "6feebe9e0a60c45f2fd1f97199aa985fe742cd70b71b1efa8b6cb62d1bbbc5f7"
       },
       "name": "VWAP",
       "native": {
-        "compile_evidence_paths": [],
-        "execution_evidence_paths": []
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_vwap_native/compile.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_vwap_native/native_evidence.json"
+        ],
+        "parity_accepted": true,
+        "reconciliation_passed": true
       },
       "not_needed_before_first_ten": true,
-      "parity_result_identity": null,
+      "parity_result_identity": "d3601a23a31ae01943fd05e5255e007df793e469274775197dcc115ffef47521",
       "rust": {
         "identity": null,
         "implementation": "implemented",
@@ -2241,6 +2252,49 @@
         "tests": [
           "engine/labengine/src/indicators.rs",
           "tests/test_phase2n_mql5_slope_native.py"
+        ]
+      },
+      "searchable": false,
+      "status": "accepted"
+    },
+    {
+      "category": "layer1_indicator",
+      "commits": [
+        "PENDING_CLOSEOUT_COMMIT"
+      ],
+      "evidence_paths": [
+        "tests/fixtures/phase2_session_ohlc_scenarios.json",
+        "tests/fixtures/phase2_session_ohlc_local_evidence.json",
+        "tests/fixtures/phase2_session_ohlc_native/native_evidence.json",
+        "tests/fixtures/phase2_session_ohlc_native/phase2_session_ohlc_executable_package.json"
+      ],
+      "id": "layer1.session_ohlc",
+      "missing_gate": "none for the narrow accepted Session OHLC parity slice; broader production session calendars remain outside this contract",
+      "mql5": {
+        "generation": "generated",
+        "source_identity": "PENDING_CLOSEOUT_COMMIT"
+      },
+      "native": {
+        "compile_evidence_paths": [
+          "tests/fixtures/phase2_session_ohlc_native/compile.json"
+        ],
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2_session_ohlc_native/native_evidence.json"
+        ],
+        "parity_accepted": true,
+        "reconciliation_passed": true
+      },
+      "not_needed_before_first_ten": true,
+      "parity_result_identity": "32c365f29c8b9280087f712185c4c7c28ab63977af0cdc9860d0e01ed46e2229",
+      "rust": {
+        "identity": "implemented",
+        "implementation": "implemented",
+        "source_paths": [
+          "engine/labengine/src/task.rs"
+        ],
+        "tests": [
+          "tests/test_phase2_session_ohlc_local_evidence.py",
+          "tests/test_phase2_session_ohlc_native.py"
         ]
       },
       "searchable": false,

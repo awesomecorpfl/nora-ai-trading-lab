@@ -1,0 +1,28 @@
+{
+  "schema_version": "nora.phase2_session_ohlc_native_evidence_v1",
+  "compile": {
+    "status": "compiled",
+    "error_count": 0,
+    "warning_count": 0,
+    "ex5_size_bytes": 13402
+  },
+  "run_ids": [
+    "SESSION-A1-1",
+    "SESSION-A2-2",
+    "SESSION-B1-3",
+    "SESSION-B2-4"
+  ],
+  "run_rows": {
+    "SESSION-A1-1": 20,
+    "SESSION-A2-2": 20,
+    "SESSION-B1-3": 20,
+    "SESSION-B2-4": 20
+  },
+  "csv_sha256": "3a1657d901c1f4e60e90f5cbb816cf9eec46591126f86bbbf09ad6eea9e010c0",
+  "completion_count": 4,
+  "failure_count": 0,
+  "rust_evidence_identity": "3fa0b043e9897d1a4f7fb944018444630ee37ff9ab6f77f07bb0525a8b091374",
+  "expected_vector_identity": "3fa0b043e9897d1a4f7fb944018444630ee37ff9ab6f77f07bb0525a8b091374",
+  "parity": "exact",
+  "native_evidence_identity": "32c365f29c8b9280087f712185c4c7c28ab63977af0cdc9860d0e01ed46e2229"
+}

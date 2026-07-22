@@ -1,0 +1,4 @@
+#property strict
+#include "NoraPhase2VWAPRuntimeV1.mqh"
+int OnInit(){int f=FileOpen("nora_phase2_vwap_v1.csv",FILE_WRITE|FILE_CSV|FILE_ANSI|FILE_COMMON,'\t');if(f==INVALID_HANDLE){Print("NORA_PHASE2_VWAP_FAIL_V1");return INIT_FAILED;}FileWrite(f,"scenario_id","node","output","row","timestamp","value","null","classification","reason_code");string sid0[5]={"A","A","A","B","B"};string t0[5]={"2026-06-01T00:00:00Z","2026-06-01T00:01:00Z","2026-06-01T00:02:00Z","2026-06-02T00:00:00Z","2026-06-02T00:01:00Z"};double h0[5]={12,14,13,22,25};double l0[5]={8,10,7,18,19};double c0[5]={11,13,10,21,24};double v0[5]={2,1,3,4,2};double o0[];if(!NoraVWAPCompute(sid0,h0,l0,c0,v0,5,o0)){FileClose(f);Print("NORA_PHASE2_VWAP_FAIL_V1");return INIT_FAILED;}for(int j=0;j<5;j++)FileWrite(f,"two_sessions","VWAP","value",j,t0[j],DoubleToString(o0[j],17),"false","steady_state","ok");FileClose(f);Print("NORA_PHASE2_VWAP_COMPLETE_V1");return INIT_SUCCEEDED;}
+void OnDeinit(const int reason){}
