@@ -95,11 +95,11 @@
     "phase2_acceptance_gate": "blocked",
     "status_counts": {
       "absent": 0,
-      "accepted": 42,
+      "accepted": 43,
       "deferred": 1,
       "implemented_but_unproved": 0,
       "out_of_scope": 0,
-      "partially_proven": 8
+      "partially_proven": 7
     }
   },
   "items": [
@@ -995,7 +995,7 @@
         "tests/fixtures/phase2_bollinger_native/native_evidence_manifest.json"
       ],
       "id": "layer1.bollinger",
-      "missing_gate": null,
+      "missing_gate": "complete Phase-2 gate; frozen Bollinger parity does not admit grammar or search",
       "mql5": {
         "generation": "deterministic_batch_generator",
         "source_identity": null
@@ -1038,7 +1038,7 @@
         "tests/fixtures/phase2_cci_native/native_evidence_manifest.json"
       ],
       "id": "layer1.cci",
-      "missing_gate": null,
+      "missing_gate": "complete Phase-2 gate; frozen CCI parity does not admit grammar or search",
       "mql5": {
         "generation": "deterministic_batch_generator",
         "source_identity": "1b2824cf6df13d72a0d79481b31fc1af665f6509fab3b56a9bcf2fbae9d38fee"
@@ -1259,7 +1259,7 @@
         "tests/fixtures/phase2_keltner_native/native_evidence_manifest.json"
       ],
       "id": "layer1.keltner",
-      "missing_gate": null,
+      "missing_gate": "complete Phase-2 gate; frozen Keltner parity does not admit grammar or search",
       "mql5": {
         "generation": "deterministic_batch_generator",
         "source_identity": null
@@ -1731,13 +1731,15 @@
     {
       "category": "mql5_runtime",
       "commits": [
-        "8628cbf6f27381541ae5ec6033f3d3ff078cee06"
+        "8628cbf6f27381541ae5ec6033f3d3ff078cee06",
+        "0f8e7a2be8d2662f68a2aac95835bcaa22b74f00"
       ],
       "evidence_paths": [
-        "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.manifest.json"
+        "tests/fixtures/phase2f_mql5_runtime/NoraPhase2RuntimeV1.manifest.json",
+        "tests/fixtures/phase2v_nullable_runtime_native/native_evidence_manifest.json"
       ],
       "id": "mql5.nullable_runtime",
-      "missing_gate": "durable native semantic fixture across all nullable operations",
+      "missing_gate": "complete Phase-2 gate and strategy-level parity",
       "mql5": {
         "generation": "generated",
         "source_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d"
@@ -1745,23 +1747,31 @@
       "name": "nullable numeric and tri-boolean runtime",
       "native": {
         "compile_evidence_paths": [
-          "tests/fixtures/phase2i_repaired_compile_evidence.json"
+          "tests/fixtures/phase2v_nullable_runtime_native/compile/compile.json"
         ],
-        "execution_evidence_paths": []
+        "execution_evidence_paths": [
+          "tests/fixtures/phase2v_nullable_runtime_native/a1/execution.json",
+          "tests/fixtures/phase2v_nullable_runtime_native/a2/execution.json",
+          "tests/fixtures/phase2v_nullable_runtime_native/b1/execution.json",
+          "tests/fixtures/phase2v_nullable_runtime_native/b2/execution.json"
+        ],
+        "parity_accepted": true
       },
-      "parity_result_identity": null,
+      "parity_result_identity": "bddc405fd3532d0d0d22c5e5cd80280b75609f3b3e800e424214d352ca0028fc",
       "rust": {
         "identity": null,
         "implementation": "implemented",
         "source_paths": [
-          "engine/labengine/src/ast.rs"
+          "engine/labengine/src/ast.rs",
+          "tests/fixtures/phase2f_mql5_nullable_semantics.json"
         ],
         "tests": [
-          "tests/test_phase2f_mql5.py"
+          "tests/test_phase2f_mql5.py",
+          "tests/test_phase2v_nullable_runtime_generator.py"
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "mql5_runtime",
@@ -2303,7 +2313,15 @@
   ],
   "layer1_authority": "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
   "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
-  "next_task": "next unproved Layer-1 family after CCI",
+  "next_task": {
+    "task_id": "strategy.trade_by_trade_reconciliation",
+    "phase_label": "Phase 2",
+    "execution_boundary": "local deterministic strategy reconciliation and parity-budget preparation",
+    "scope": "mechanical Phase-2 evidence only; search and Phase 3 remain closed",
+    "why_next": "Layer-1 parity and nullable runtime parity are now accepted narrowly; the remaining defined strategy gate is trade-by-trade reconciliation before any search authorization and preserves the closed Layer-1 boundary",
+    "search_authorized": false,
+    "phase3_authorized": false
+  },
   "phase": "2",
   "recommended_sequence": [
     "2R accepted Phase-2Q evidence and ATR/Distance-ATR grammar-admission inventory",
@@ -2323,7 +2341,7 @@
     "out_of_scope"
   ],
   "summary": {
-    "accepted": 41,
+    "accepted": 43,
     "implemented_but_unproved": 0
   }
 }

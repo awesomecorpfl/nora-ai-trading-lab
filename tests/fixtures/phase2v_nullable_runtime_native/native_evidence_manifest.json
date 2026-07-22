@@ -1,0 +1,86 @@
+{
+  "case_count": 44,
+  "compile": {
+    "compiler_version": "5.0.0.5836",
+    "error_count": 0,
+    "evidence_path": "tests/fixtures/phase2v_nullable_runtime_native/compile/compile.json",
+    "ex5_sha256": "d0b28c650091fde3deb09c085dc5a8c81784a6f6f3cf531edd4059314c1754e8",
+    "warning_count": 0
+  },
+  "complete_phase2_gate": false,
+  "contexts": [
+    "A1",
+    "A2",
+    "B1",
+    "B2"
+  ],
+  "evidence_commit": "0f8e7a2be8d2662f68a2aac95835bcaa22b74f00",
+  "grammar_admitted": false,
+  "native_parity": "PASS_EXACT",
+  "operations": [
+    "not",
+    "and",
+    "or",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "trigger"
+  ],
+  "phase3_authorized": false,
+  "runs": {
+    "A1": {
+      "completion_marker": true,
+      "csv_sha256": "5c01009b4ceb52953611936b2ecf5da07f84ce78cc3e65516522f6516a3553cb",
+      "evidence_path": "tests/fixtures/phase2v_nullable_runtime_native/a1/execution.json",
+      "exit_code": 0,
+      "failure_marker": false,
+      "reconciliation": "PASS_EXACT",
+      "row_count": 44,
+      "run_id": "nullable-runtime-a1-8e681bb0f7484137afae4fa68bd62234",
+      "symbol": "GDAXI/M1"
+    },
+    "A2": {
+      "completion_marker": true,
+      "csv_sha256": "5c01009b4ceb52953611936b2ecf5da07f84ce78cc3e65516522f6516a3553cb",
+      "evidence_path": "tests/fixtures/phase2v_nullable_runtime_native/a2/execution.json",
+      "exit_code": 0,
+      "failure_marker": false,
+      "reconciliation": "PASS_EXACT",
+      "row_count": 44,
+      "run_id": "nullable-runtime-a2-08966eccfeee4d6fba1f327a7a2de75e",
+      "symbol": "GDAXI/M1"
+    },
+    "B1": {
+      "completion_marker": true,
+      "csv_sha256": "5c01009b4ceb52953611936b2ecf5da07f84ce78cc3e65516522f6516a3553cb",
+      "evidence_path": "tests/fixtures/phase2v_nullable_runtime_native/b1/execution.json",
+      "exit_code": 0,
+      "failure_marker": false,
+      "reconciliation": "PASS_EXACT",
+      "row_count": 44,
+      "run_id": "nullable-runtime-b1-5b86a69bde4b4173a6555c2be9188137",
+      "symbol": "AUDCAD/M1"
+    },
+    "B2": {
+      "completion_marker": true,
+      "csv_sha256": "5c01009b4ceb52953611936b2ecf5da07f84ce78cc3e65516522f6516a3553cb",
+      "evidence_path": "tests/fixtures/phase2v_nullable_runtime_native/b2/execution.json",
+      "exit_code": 0,
+      "failure_marker": false,
+      "reconciliation": "PASS_EXACT",
+      "row_count": 44,
+      "run_id": "nullable-runtime-b2-8d61abe6fde04085bf442b3b5ef14178",
+      "symbol": "AUDCAD/M1"
+    }
+  },
+  "runtime_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d",
+  "runtime_semantic_native_coverage": true,
+  "runtime_source_sha256": "97de0194d7715b32ce104a9889d1a4af46cff6d0759d637f21e41025a98ee043",
+  "schema_version": "nora.phase2v.nullable_runtime_native_acceptance_v1",
+  "scope": "frozen nullable runtime semantic fixture only",
+  "searchable": false,
+  "semantic_fixture_sha256": "87f39d8cc2d36cf5eb5f81b86d071d6cad3bc82fb1d1a000ba3d363612c9ed09",
+  "tester_identity": "bddc405fd3532d0d0d22c5e5cd80280b75609f3b3e800e424214d352ca0028fc",
+  "tester_source_sha256": "d97f12d860f6dc8006f9fdecb83b11bd4e0faf1d0df428b2d728cb47a77ea575"
+}

@@ -1,0 +1,70 @@
+﻿{
+    "status":  "compiled",
+    "run_id":  "nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624",
+    "compiler_path":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe",
+    "argument_array":  [
+                           "/compile:\"C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source\\NoraPhase2ConditionTesterCanaryV1.mq5\" /log:\"C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\compile.log\""
+                       ],
+    "rendered_command":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe /compile:\"C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source\\NoraPhase2ConditionTesterCanaryV1.mq5\" /log:\"C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\compile.log\"",
+    "working_directory":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source",
+    "compile_start_utc":  "2026-07-22T18:22:16.8376336Z",
+    "compile_completion_utc":  "2026-07-22T18:22:17.6812696Z",
+    "native_process_exit_status":  1,
+    "compiler_exit_code":  1,
+    "compiler_version":  "5.0.0.5836",
+    "source_paths":  {
+                         "runtime":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source\\NoraPhase2RuntimeV1.mqh",
+                         "condition":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source\\NoraPhase2ConditionV1.mqh",
+                         "tester":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source\\NoraPhase2ConditionTesterCanaryV1.mq5"
+                     },
+    "compile_log_path":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\compile.log",
+    "ex5_path":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\NoraPhase2ConditionTesterCanaryV1.ex5",
+    "source_ex5_existed_before":  false,
+    "output_ex5_existed_before":  false,
+    "source_ex5_existed_immediately_before":  false,
+    "output_ex5_existed_immediately_before":  false,
+    "error_count":  0,
+    "warning_count":  0,
+    "diagnostic_lines":  [
+                             "Result: 0 errors, 0 warnings, 384 ms elapsed, cpu=\u0027X64 Regular\u0027"
+                         ],
+    "ex5_exists":  true,
+    "ex5_last_write_time_utc":  "2026-07-22T18:22:17.6499254Z",
+    "ex5_size_bytes":  12208,
+    "ex5_sha256":  "d0b28c650091fde3deb09c085dc5a8c81784a6f6f3cf531edd4059314c1754e8",
+    "filesystem_resolution_allowance_seconds":  2,
+    "ex5_after_compile_start":  true,
+    "ex5_within_completion_allowance":  true,
+    "ex5_filename":  "NoraPhase2ConditionTesterCanaryV1.ex5",
+    "runtime_source_sha256":  "97de0194d7715b32ce104a9889d1a4af46cff6d0759d637f21e41025a98ee043",
+    "condition_source_sha256":  "1c630ede14e103a62490573c746f7652cb3083096c9259711ee3c979229108a4",
+    "tester_source_sha256":  "d97f12d860f6dc8006f9fdecb83b11bd4e0faf1d0df428b2d728cb47a77ea575",
+    "native_evidence":  {
+                            "rendered_command":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe /compile:\"C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\source\\NoraPhase2ConditionTesterCanaryV1.mq5\" /log:\"C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\compile.log\"",
+                            "compile_log_path":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\compile.log",
+                            "compile_start_utc":  "2026-07-22T18:22:16.8376336Z",
+                            "compile_completion_utc":  "2026-07-22T18:22:17.6812696Z",
+                            "compiler_path":  "C:\\Program Files\\Darwinex MetaTrader 5\\MetaEditor64.exe",
+                            "compiler_version":  "5.0.0.5836",
+                            "compiler_exit_code":  1,
+                            "native_process_exit_status":  1,
+                            "error_count":  0,
+                            "warning_count":  0,
+                            "ex5_exists":  true,
+                            "ex5_filename":  "NoraPhase2ConditionTesterCanaryV1.ex5",
+                            "ex5_path":  "C:\\Users\\Gasper\\NoraPhase2R\\nullable-runtime-compile-9e75a734926c44cbbbe3eed432e5d624\\NoraPhase2ConditionTesterCanaryV1.ex5",
+                            "ex5_sha256":  "d0b28c650091fde3deb09c085dc5a8c81784a6f6f3cf531edd4059314c1754e8",
+                            "ex5_size_bytes":  12208,
+                            "ex5_last_write_time_utc":  "2026-07-22T18:22:17.6499254Z",
+                            "ex5_after_compile_start":  true,
+                            "ex5_within_completion_allowance":  true,
+                            "source_ex5_existed_before":  false,
+                            "output_ex5_existed_before":  false,
+                            "source_ex5_existed_immediately_before":  false,
+                            "output_ex5_existed_immediately_before":  false,
+                            "filesystem_resolution_allowance_seconds":  2,
+                            "diagnostic_lines":  [
+                                                     "Result: 0 errors, 0 warnings, 384 ms elapsed, cpu=\u0027X64 Regular\u0027"
+                                                 ]
+                        }
+}

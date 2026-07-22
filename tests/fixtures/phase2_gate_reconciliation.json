@@ -55,6 +55,14 @@
                 "20260721T023413Z-AUDCAD-B1-FRESH",
                 "20260721T023804Z-AUDCAD-B2-FRESH"
             ]
+        },
+        "mql5.nullable_runtime": {
+            "acceptance_evidence": "tests/fixtures/phase2v_nullable_runtime_native/native_evidence_manifest.json",
+            "evidence_commit": "0f8e7a2be8d2662f68a2aac95835bcaa22b74f00",
+            "grammar_admitted": false,
+            "native_parity_accepted": true,
+            "searchable": false,
+            "semantic_restriction": "exact 44-case frozen Phase-2F nullable runtime fixture: 3 NOT, 9 AND, 9 OR, 20 comparisons, and 3 final trigger conversions; four fresh broker-allowed contexts A1/A2 GDAXI/M1 and B1/B2 AUDCAD/M1; not a grammar or search claim"
         }
     },
     "binding_requirements": {
@@ -76,6 +84,7 @@
         "indicators.layer1_rust_coverage": "PARTIAL",
         "indicators.remaining_layer1_targets": "BLOCKED",
         "integrity.placebo_scrambled_edge_destruction": "ACCEPTED",
+        "mql5.nullable_runtime": "ACCEPTED",
         "strategy.completed_hand_designed_strategies": "ABSENT",
         "strategy.initial_v1_grammar_coverage": "BLOCKED",
         "strategy.provisional_parity_budget": "ABSENT",
