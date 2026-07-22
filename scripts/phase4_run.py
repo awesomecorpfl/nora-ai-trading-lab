@@ -72,7 +72,7 @@ def run_engine(specs, out_dir, label, compact=False):
                 raise RuntimeError(f"Phase-4 engine failed for {key}: {p.stderr}")
         return json.loads(out.read_text())["rows"]
     outputs = []
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=8) as pool:
         for rows in pool.map(execute, jobs): outputs.extend(rows)
     return outputs
 
