@@ -1,0 +1,15 @@
+{
+  "schema_version": "nora.phase3.acceptance_result_v2_attempt1",
+  "status": "FAIL",
+  "protocol_identity": "bd589b1220a83e256f9a0b9cb32b7d512ca3ea217c5bc94ac67fe94e0a85910e",
+  "guided_trials": 10000,
+  "guided_unique": 8750,
+  "guided_duplicate_rejected": 1250,
+  "guided_archive_cells": 24,
+  "coverage_pass": true,
+  "matched_random_trials": 10000,
+  "matched_random_unique": 10000,
+  "resume": {"equivalent": false, "cause": "last-bit floating-point drawdown serialization differed after restart", "identity_and_descriptor_rows_affected": false},
+  "lockbox_access_events": 0,
+  "candidate_outcomes_reused": false
+}

@@ -32,13 +32,13 @@ def digest(path):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--output", default="docs/evidence/phase3/search"); ap.add_argument("--protocol-version", default="v1", choices=("v1", "v2")); args = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--output", default="docs/evidence/phase3/search"); ap.add_argument("--protocol-version", default="v1", choices=("v1", "v2", "v2_1")); args = ap.parse_args()
     out = ROOT / args.output; out.mkdir(parents=True, exist_ok=True)
     specs = []
     for mode in ("stratified", "random"):
         for family, symbol in CASES:
             stem = f"{mode}_{family.replace('-', '_')}_{symbol.lower()}"
-        specs.append((family, symbol, mode, out / f"{stem}.json", out / f"{stem}.checkpoint.json", args.protocol_version))
+            specs.append((family, symbol, mode, out / f"{stem}.json", out / f"{stem}.checkpoint.json", args.protocol_version))
     with ThreadPoolExecutor(max_workers=4) as pool:
         results = list(pool.map(run_one, specs))
     grouped = {}
