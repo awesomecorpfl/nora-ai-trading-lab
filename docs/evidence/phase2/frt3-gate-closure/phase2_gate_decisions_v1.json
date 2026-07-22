@@ -1,0 +1,88 @@
+{
+  "schema_version": "nora.phase2.gate_decisions_v1",
+  "artifact_identity": "f509badbec8fa49ba2e86f511ad9c232e7a17cf82b5146f982ef38cfb4e9e6ef",
+  "operator": "Gasper",
+  "signed_at": "2026-07-22T18:34:27Z",
+  "repository": {
+    "bound_head": "86d1fde",
+    "branch": "main",
+    "decision_basis": "architecture-lock/PHASE2_COMPLETION_GATE.md",
+    "phase2_gate_formula": "E1 AND E2 AND E3 AND E4 AND E5 AND signed(D1..D7)"
+  },
+  "decisions": [
+    {
+      "id": "D1",
+      "signed_choice": "For Phase-2 grammar admission, require full native/parity proof for the initial v1 grammar dependencies only; non-initial Layer-1 families remain non-searchable. This does not waive proof for the seven partially-proven AST/condition nodes where they participate in the initial AST/condition grammar.",
+      "initial_dependency_scope": ["EMA", "Wilder ATR", "DistanceAtr", "Slope", "Cross", "Highest", "Lowest", "numeric/boolean AST primitives", "comparisons", "AND/OR/NOT condition semantics", "intents", "exits", "execution policy"],
+      "signed": true
+    },
+    {
+      "id": "D2",
+      "signed_choice": "Use fixture-specific, field-specific, versioned parity budgets only. No global tolerance, no retroactive widening, structural fields exact, and use the accepted exact-zero strategy ledger budget where applicable.",
+      "signed": true
+    },
+    {
+      "id": "D3",
+      "signed_choice": "Use bar-open signal/time exits for initial searchable grammars. Preserve the ten-suite close-exit convention as a separate explicit execution-policy identity; do not merge the semantics.",
+      "signed": true
+    },
+    {
+      "id": "D4",
+      "signed_choice": "Use average_trade as ranking criterion 4 for both trend-pullback and close-confirmed breakout. This is a Phase-3 protocol decision only and does not authorize search.",
+      "families": ["trend-pullback", "close-confirmed breakout"],
+      "metric": "average_trade",
+      "signed": true
+    },
+    {
+      "id": "D5",
+      "signed_choice": "No Phase-3 ranking/search authorization until family/timeframe-specific minimum trade floors and drawdown ceilings are separately pre-registered and frozen before first search. No numerical thresholds are invented to close Phase 2.",
+      "signed": true
+    },
+    {
+      "id": "D6",
+      "signed_choice": "Use gross per-unit screening for initial research, followed by mandatory explicit cost stress under a later versioned cost protocol. Do not invent broker commissions, spreads, swaps, or slippage; account-currency money claims remain prohibited until broker/cost/sizing contracts exist.",
+      "signed": true
+    },
+    {
+      "id": "D7",
+      "signed_choice": "Before first Phase-3 search, freeze Gasper-prepared dataset contracts, version IS/OOS/validation splits, seal one permanent final lockbox, log and human-gate lockbox access, record trial counts from the first candidate, and track a matched best-of-N random-search baseline. This signature alone authorizes no dataset or search.",
+      "signed": true
+    }
+  ],
+  "d8": {
+    "signed": false,
+    "phase3_authorized": false,
+    "note": "D8 is intentionally not signed; it is required only for later Phase-3 authorization, not Phase-2 completion."
+  },
+  "evidence_bindings": {
+    "ast_identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+    "condition_translation_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af",
+    "nullable_runtime_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d",
+    "condition_semantic_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+    "nullable_runtime_fixture_identity": "87f39d8cc2d36cf5eb5f81b86d071d6cad3bc82fb1d1a000ba3d363612c9ed09",
+    "strategy_reconciliation_identity": "bd91218b97c3cbccf750e5a211cdee4cb1d096fdd420d5eb9726d9ac442483ce",
+    "strategy_budget_identity": "6e5dfab2126d4d477418b109824c7c9e2025921d4ec01553ae10d3b5aee24119",
+    "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
+    "evidence_paths": [
+      "tests/fixtures/phase2v_nullable_condition_native/native_evidence_manifest.json",
+      "tests/fixtures/phase2v_nullable_runtime_native/native_evidence_manifest.json",
+      "tests/fixtures/phase2_ten_strategy_suite/trade_reconciliation_manifest.json",
+      "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json",
+      "tests/fixtures/phase2_linux_replay_fixture.json",
+      "tests/fixtures/phase2_placebo_edge_fixture.json"
+    ]
+  },
+  "decision_identities": {
+    "D1": "5df75b48153fdfd82ecf8721d9ee2870074370aa603915ddf6db5f57a7d5f5b6",
+    "D2": "1c92f679a00118d8903981d09b3fca43666c0909ac5f1c7dfbd8a6cd633ff952",
+    "D3": "04124421b957a6d88b0891d19c3be38388c9610bfde2c782d84843844f5f5ea5",
+    "D4": "d9e5f437887a1a656753355ed126fc24b604b46da47c5fd2ecd6a7df687228f0",
+    "D5": "1fb40d538ea0dd5ab9fc8d6d6d1a9889fff64aa2b2a8ddb7546c9e188eba5464",
+    "D6": "a07e7b802937edcc479b9d4a675578bc72c16b3dc8b760f7920728b85e32cc4f",
+    "D7": "d80004b2adbd7c5d2ac6eaff74dd8c51559c240165c5332aff434fbb0aa395a7"
+  },
+  "signed_decision_count": 7,
+  "search_authorized": false,
+  "grammar_admitted": false,
+  "phase3_authorized": false
+}

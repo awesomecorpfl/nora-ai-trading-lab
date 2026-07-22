@@ -121,14 +121,17 @@ Other Layer-1 components remain implemented but non-searchable until their own a
 
 ## Current verdict
 
-At the evidence snapshot:
+At the current canonical evidence snapshot:
 
-- E1 pending;
-- E2 pending;
-- E3 absent;
-- E4 absent;
-- E5 open;
-- D1–D8 unsigned;
-- gate false;
+- E1 — corrected ten-strategy native execution: accepted narrowly;
+- E2 — exact trade-ledger reconciliation: accepted narrowly;
+- E3 — whole-experiment deterministic replay: accepted narrowly;
+- E4 — placebo/scrambled-edge destruction: accepted narrowly;
+- E5 — machine-readable gate closure: accepted with signed D1–D7 and evidence-bound node reconciliation;
+- D1–D7 — signed by Gasper in the bound decision artifact;
+- D8 — unsigned by design;
+- gate: complete under the frozen Phase-2 scope;
 - Phase 3 unauthorized;
-- all components non-searchable.
+- all components remain non-searchable.
+
+Broker-native finalist edge survival remains a later Phase-7 contract under the pre-closeout roadmap and is not imported into Phase 2.

@@ -1,7 +1,7 @@
 # Phase 2U Gate Audit
 
 Date: 2026-07-22
-Status: **bounded audit complete; overall Phase 2 remains blocked**
+Status: **Phase 2 accepted under the frozen gate with signed D1-D7; later-phase finalist validation deferred**
 
 ## Accepted in this audit
 
@@ -16,19 +16,19 @@ Status: **bounded audit complete; overall Phase 2 remains blocked**
 - Classification: `system_smoke_not_edge_claim`.
 - Grammar admission, searchability, deployment, and performance claims remain false/closed.
 
-## Remaining blockers
+## Accepted scope
 
 | Gate | State | What is missing |
 |---|---|---|
-| Layer-1 indicator parity | partial / blocking | Accepted native evidence covers the recorded narrow slices, but seven AST/condition nodes remain partially proven and initial grammar admission is not complete; remaining proof is listed in the authoritative inventory |
-| Ten strategy finalist proof | partial / blocking | Trade-by-trade reconciliation and the frozen provisional budget are accepted narrowly; finalist edge-survival remains blocked by the non-strategic scaffold and unresolved broker/profile boundary |
+| Layer-1 indicator parity | accepted narrow | Initial v1 dependencies, including the seven AST/condition nodes, are bound to accepted Phase-2V native evidence; non-initial families remain non-searchable |
+| Ten hand-designed strategies | accepted narrow | Embedded smoke, exact trade-ledger reconciliation, and frozen exact-zero provisional budget are accepted; finalist edge survival is later-phase |
 | Linux experiment determinism | accepted narrowly | Committed six-stage replay fixture; broader experiment families remain outside this contract |
 | Placebo/scrambled edge destruction | accepted narrowly | Known-edge scramble contract passes; this does not establish a finalist broker-native edge survival |
 | Grammar/search admission | closed | Deliberately not authorized; Phase 2 completion does not imply grammar admission or searchability |
 
 ## Gate decision
 
-`complete_phase2_gate = false`.
+`complete_phase2_gate = true`.
 
 The four-context native smoke proves the runner, compiler, tester lifecycle, fixture consumption, cache-evidence policy, CSV reconciliation, and ingestion path. It does **not** prove strategy edge, trade-level semantics across a finalist, or search readiness.
 
@@ -37,4 +37,5 @@ Phase 3/search, deployment, and live trading remain closed.
 ## Verification
 
 - Accepted evidence remains bound to the current gate matrix and inventory manifests; the four-context admission is preserved under `system_smoke_not_edge_claim`.
-- Phase 2 closure remains blocked pending the frozen evidence and decision requirements.
+- Signed decisions: `docs/evidence/phase2/frt3-gate-closure/phase2_gate_decisions_v1.json`.
+- Initial-v1 node evidence binding: `docs/evidence/phase2/frt3-gate-closure/phase2_initial_v1_ast_condition_acceptance_v1.json`.

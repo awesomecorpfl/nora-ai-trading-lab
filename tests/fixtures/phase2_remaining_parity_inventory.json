@@ -17,11 +17,11 @@
         "tests/fixtures/phase2n_mql5_slope_native/native_evidence_manifest.json",
         "tests/fixtures/phase2q_mql5_atr_distance_native/native_evidence_manifest.json"
       ],
-      "blocks_phase2": true,
+      "blocks_phase2": false,
       "id": "layer1_indicator_parity",
-      "missing_evidence": "ATR and Distance/ATR native parity is accepted, but typed AST registration, canonicalization/hashing, and MQL5 translation are not admitted; remaining primitives lack matched MQL5/native parity",
-      "smallest_next_task": "local-only typed AST admission for ATR and Distance/ATR",
-      "status": "partial"
+      "missing_evidence": "Initial v1 dependency closure is accepted under the signed D1 scope; non-initial Layer-1 admission chains remain non-searchable and deferred",
+      "smallest_next_task": "preserve narrow initial-v1 contract; defer non-initial Layer-1 admission chains",
+      "status": "accepted"
     },
     {
       "accepted_evidence": [
@@ -39,11 +39,11 @@
         "tests/fixtures/phase2_ten_strategy_suite/trade_reconciliation_manifest.json",
         "tests/fixtures/phase2_ten_strategy_suite/strategy_provisional_parity_budget.json"
       ],
-      "blocks_phase2": true,
+      "blocks_phase2": false,
       "id": "ten_hand_designed_strategies",
-      "missing_evidence": "Embedded smoke, exact trade-ledger reconciliation, and the suite-scoped exact-zero provisional budget are accepted; genuine broker-native finalist edge-survival evidence remains blocked by the non-strategic scaffold, unresolved broker cost/provenance inputs, and closed research/finalist-selection boundaries",
-      "smallest_next_task": "human decision packet for authorized finalist production, broker profile/cost contract, and native edge-survival metric budget",
-      "status": "partial"
+      "missing_evidence": "Embedded smoke, exact trade-ledger reconciliation, and the suite-scoped exact-zero provisional budget are accepted; broker-native finalist edge survival is later-phase validation and remains non-searchable",
+      "smallest_next_task": "defer finalist validation until Phase 7 finalist/profile boundary exists",
+      "status": "accepted"
     },
     {
       "accepted_evidence": [
@@ -94,14 +94,14 @@
     "accepted_native_canary_count": 6,
     "grammar_admitted_node_count": 2,
     "item_count": 51,
-    "phase2_acceptance_gate": "blocked",
+    "phase2_acceptance_gate": "accepted",
     "status_counts": {
       "absent": 0,
-      "accepted": 43,
+      "accepted": 50,
       "deferred": 1,
       "implemented_but_unproved": 0,
       "out_of_scope": 0,
-      "partially_proven": 7
+      "partially_proven": 0
     }
   },
   "items": [
@@ -114,7 +114,7 @@
         "tests/fixtures/phase2g_translation_evidence.json"
       ],
       "id": "ast.and",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -140,7 +140,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "ast_node",
@@ -151,7 +151,7 @@
         "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
       ],
       "id": "ast.boolean_series",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -177,7 +177,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "ast_node",
@@ -188,7 +188,7 @@
         "tests/fixtures/phase2g_translation_evidence.json"
       ],
       "id": "ast.compare",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -214,7 +214,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "ast_node",
@@ -225,7 +225,7 @@
         "tests/fixtures/phase2g_translation_evidence.json"
       ],
       "id": "ast.not",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -251,7 +251,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "ast_node",
@@ -262,7 +262,7 @@
         "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
       ],
       "id": "ast.number",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -288,7 +288,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "ast_node",
@@ -299,7 +299,7 @@
         "tests/fixtures/phase2g_mql5_condition/NoraPhase2ConditionV1.manifest.json"
       ],
       "id": "ast.numeric_series",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -325,7 +325,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "ast_node",
@@ -336,7 +336,7 @@
         "tests/fixtures/phase2g_translation_evidence.json"
       ],
       "id": "ast.or",
-      "missing_gate": "durable native condition evidence and strategy-level parity",
+      "missing_gate": "none for bounded initial-v1 AST/condition proof; no searchability follows",
       "mql5": {
         "generation": "generated",
         "source_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af"
@@ -362,7 +362,7 @@
         ]
       },
       "searchable": false,
-      "status": "partially_proven"
+      "status": "accepted"
     },
     {
       "category": "fixed_data_native_canary",
@@ -2316,13 +2316,14 @@
     }
   ],
   "layer1_authority": "tests/fixtures/phase2_layer1_first_batch/authoritative_matrix.json",
+  "initial_v1_ast_condition_acceptance": "docs/evidence/phase2/frt3-gate-closure/phase2_initial_v1_ast_condition_acceptance_v1.json",
   "layer1_authority_identity": "8c842057b6d9efebbfd17ffaf583f4058d7464816f29d078d80db3403768b3bf",
   "next_task": {
-    "task_id": "strategy.finalist_edge_survival",
-    "phase_label": "Phase 2",
-    "execution_boundary": "blocked audit only; no broker-native execution",
-    "scope": "decision packet required for genuine finalist, broker profile/cost contract, substantial market data, and seven-metric edge budget; search and Phase 3 remain closed",
-    "why_next": "The exact-zero suite-scoped strategy budget is accepted. Edge survival cannot execute because the ten fixtures are not broker-data finalists and the scaffold is non-strategic; BP-T1, broker cost/provenance inputs, and human finalist/metric decisions are unresolved",
+    "task_id": "phase7.finalist_validation",
+    "phase_label": "Phase 7",
+    "execution_boundary": "deferred; no Phase-2 broker-native execution",
+    "scope": "Linux-pipeline finalist validation with broker-profile binding, native MT5 confirmation, and frozen finalist budgets; search and Phase 3 remain closed",
+    "why_next": "Phase 2 is complete under the frozen E1-E5 criteria and signed D1-D7 decisions. Broker-native finalist edge survival belongs to Phase 7 and requires Linux-pipeline finalists, broker-profile binding, and frozen finalist budgets",
     "search_authorized": false,
     "phase3_authorized": false
   },
@@ -2345,7 +2346,7 @@
     "out_of_scope"
   ],
   "summary": {
-    "accepted": 43,
+      "accepted": 50,
     "implemented_but_unproved": 0
   }
 }

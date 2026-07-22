@@ -1,0 +1,44 @@
+{
+  "schema_version": "nora.phase2.initial_v1_ast_condition_acceptance_v1",
+  "classification": "PASS_EXACT_EXISTING_EVIDENCE_BINDING",
+  "scope": "initial v1 AST/condition dependencies only; no grammar or search admission",
+  "bound_decision_artifact": "docs/evidence/phase2/frt3-gate-closure/phase2_gate_decisions_v1.json",
+  "bound_repository_head": "86d1fde",
+  "rust_implementation_identity": "667db0ab50a7f3b9aba9d1296395f45e46f721945dec9d64340a3250421df664",
+  "mql5_translation_identity": "1fa3d6613348a2fa532c4393e2a95795546c9cc5e2c86d010ee30fa9fe9632af",
+  "condition_semantic_result_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4",
+  "nullable_runtime_identity": "1155c0caa95789bb452bb7ec322021cad91dbd4b0e9b5a64c80117e337449d4d",
+  "nullable_runtime_fixture_identity": "87f39d8cc2d36cf5eb5f81b86d071d6cad3bc82fb1d1a000ba3d363612c9ed09",
+  "native_contexts": ["A1 GDAXI/M1", "A2 GDAXI/M1", "B1 AUDCAD/M1", "B2 AUDCAD/M1"],
+  "native_acceptance": {
+    "condition_fixture": "PASS_EXACT_CONDITION_FIXTURE",
+    "runtime_fixture": "PASS_EXACT",
+    "compile_errors": 0,
+    "compile_warnings": 0,
+    "condition_rows_per_context": 12,
+    "runtime_rows_per_context": 44,
+    "condition_semantic_identity_stable": true,
+    "runtime_csv_identity_stable": true
+  },
+  "strategy_level_binding": {
+    "strategy_suite_identity": "1a13fc46bbc8fd305bd7e3adff8d334de742578307ade2799ddc4379f6751368",
+    "strategy_reconciliation_identity": "bd91218b97c3cbccf750e5a211cdee4cb1d096fdd420d5eb9726d9ac442483ce",
+    "contexts": ["A1", "A2", "B1", "B2"],
+    "initial_grammar_nodes_used_by_strategy_fixture": ["ast.boolean_series", "ast.numeric_series", "ast.number", "ast.compare", "ast.and"],
+    "condition_semantic_nodes_exercised_by_exhaustive_fixture": ["ast.not", "ast.and", "ast.or", "ast.compare", "ast.number", "ast.boolean_series"],
+    "strategy_level_use_required_for_or_not": false,
+    "reason_or_not_are_not_used_by_the_frozen_ten_strategy_initial_entry_trees": true
+  },
+  "node_bindings": {
+    "ast.and": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true},
+    "ast.boolean_series": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true},
+    "ast.compare": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true},
+    "ast.not": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true},
+    "ast.number": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true},
+    "ast.numeric_series": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true},
+    "ast.or": {"rust": true, "mql5": true, "parity_fixture": true, "native_evidence": true, "strategy_level_use_or_semantic_fixture": true, "complete_bounded_proof": true}
+  },
+  "grammar_admitted": false,
+  "searchable": false,
+  "phase3_authorized": false
+}

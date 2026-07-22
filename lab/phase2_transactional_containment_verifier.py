@@ -73,14 +73,14 @@ def verify(path:Path,root:Path)->dict:
     if d["baseline_digests"]!={"canonical":"179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8","unrelated":"179c09c2fa2db2bf303f60b0c2f45dd8f85bc81f6f36cf63700bec23d60553d8","profile":"209cb421ee9b3ab58588443ab1e25157d95b219d2d09d0c071a27b82f0e8bd72","nora":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"}: bad("baseline digests")
     if mr.get("required_row_count")!=6 or mr.get("credited_row_count")!=6 or mr.get("missing_row_count")!=0 or mr.get("operation_ids_unique") is not True or mr.get("complete_coverage") is not True or mr.get("final_baseline_equal") is not True or mr.get("final_invariant_verdict")!="PASS": bad("matrix result")
     if safety.get("post_cleanup",{}).get("terminal_tester_processes")!=0 or safety.get("post_cleanup",{}).get("nora_rules")!=0: bad("safety")
-    if gate.get("complete_phase2_gate") is not False or gate.get("phase3_authorized") is not False or gate.get("search_authorized") is not False or gate.get("searchable") is not False or inv.get("inventory_summary",{}).get("item_count")!=51: bad("governance")
+    if gate.get("complete_phase2_gate") is not True or gate.get("phase3_authorized") is not False or gate.get("search_authorized") is not False or gate.get("searchable") is not False or inv.get("inventory_summary",{}).get("item_count")!=51: bad("governance")
     case=env["case_id"]
     if len(env.get("operations",[]))!=6 or [x.get("operation_id") for x in env["operations"]]!=mr["matrix_contract_identity"]["operation_ids"]: bad("envelope operations")
     for r in mr["rows"]:
         if r.get("row_id") not in ROWS or r.get("credit")!="GRANTED" or r.get("fedora_recomputation")!="PASS" or r.get("windows_recomputation")!="PASS": bad("row")
         x={"path":r["evidence_path"],"size":r["evidence_size"],"sha256":r["evidence_sha256"]}; archive(x,root,case,r["operation_id"])
     if len({r["row_id"] for r in mr["rows"]})!=6 or [r["row_id"] for r in mr["rows"]]!=list(ROWS): bad("row coverage")
-    if any(d["safety"].get(k)!=0 for k in ("nora_rules","terminal_processes","tester_processes","terminal_tester_processes","related_processes","partial_or_pending")) or d["safety"].get("cleanup")!="resolved/PASS" or d["governance"]["phase2_status"]!="INCOMPLETE": bad("published boundary")
+    if any(d["safety"].get(k)!=0 for k in ("nora_rules","terminal_processes","tester_processes","terminal_tester_processes","related_processes","partial_or_pending")) or d["safety"].get("cleanup")!="resolved/PASS" or d["governance"]["phase2_status"]!="COMPLETE": bad("published boundary")
     if d.get("synthetic",{}).get("outcomes") != {"detached_bootstrap":"PASS","campaign_exit_before_owner":"PASS","duplicate_race":"PASS","OWNER_BINDING_MISMATCH":"PASS"}: bad("synthetic outcomes")
     if d.get("croq",{}).get("credit")!="GRANTED:CROQ-1_ONLY" or d["croq"].get("final_verdict")!="PASS" or d["croq"].get("operation_count")!=1: bad("CROQ credit")
     if len(d.get("matrix",{}).get("package_bindings",[]))!=6 or any(set(x)!={"path","size","sha256","manifest_sha256","operation_id","row_id"} for x in d["matrix"]["package_bindings"]): bad("matrix package bindings")

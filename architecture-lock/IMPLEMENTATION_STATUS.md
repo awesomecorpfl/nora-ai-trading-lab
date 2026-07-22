@@ -24,7 +24,7 @@ This document states what is implemented. It does not authorize future phases.
 | Phase 1 foundation | CONDITIONAL | SQLite WAL state, task identities, guarded transitions, artifacts, checkpoints, idempotent registration, dummy resume workflow | no worker pool; service lifecycle and backup procedures deferred |
 | Phase 2 local engine | VERIFIED_NARROW | ingestion, time, aggregation, indicators, AST, intents, simulator, metrics, RNG, accepted replay/placebo fixtures | frozen gate decisions and remaining admission/strategy boundaries |
 | Phase 2 MQL5/compiler | VERIFIED_NARROW | deterministic generation, corrected v2 compiler evidence, four-context ten-strategy smoke, exact reconciliation, and provisional budget | frozen gate decisions and finalist boundary |
-| Phase 2 complete | FALSE | repository gate remains false | E1–E5 and D1–D7 in `PHASE2_COMPLETION_GATE.md` |
+| Phase 2 complete | TRUE_NARROW | E1–E5 accepted under signed D1–D7 and evidence-bound initial-v1 node reconciliation | separate Phase-3 authorization and Phase-7 finalist validation remain closed |
 | Phase 3 | UNAUTHORIZED | no search module or active grammar; all searchable flags false | separate signed authorization after Phase-2 closure |
 
 ## Implemented foundation
@@ -170,9 +170,9 @@ Accepted narrowly:
 - suite-scoped exact-zero provisional strategy budget;
 - cross-context repeatability and formal acceptance records.
 
-Still blocked:
+Still closed:
 
-- completion of the frozen Phase-2 gate and D1–D7 decisions;
+- Phase-3 authorization;
 - broker-native finalist confirmation and edge-survival metrics, which are not established by the embedded system-test fixtures.
 
 ## Control-plane scaling

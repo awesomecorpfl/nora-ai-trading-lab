@@ -115,7 +115,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertEqual(item["mql5"]["generation"], "generated")
             self.assertTrue(item["native"]["execution_evidence_paths"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["task_id"], "strategy.finalist_edge_survival")
+        self.assertEqual(next_task["task_id"], "phase7.finalist_validation")
         self.assertNotIn(next_task["task_id"], items)
         self.assertNotIn(next_task["phase_label"].lower(), {item["status"] for item in items.values()})
         self.assertFalse(next_task["search_authorized"])
@@ -124,17 +124,17 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
     def test_acceptance_requirement_schema_and_next_task(self):
         requirements = self.value["acceptance_requirements"]
         self.assertEqual(len(requirements), 6)
-        self.assertEqual({entry["status"] for entry in requirements}, {"accepted", "partial"})
-        self.assertTrue(any(entry["blocks_phase2"] for entry in requirements))
+        self.assertEqual({entry["status"] for entry in requirements}, {"accepted"})
+        self.assertFalse(any(entry["blocks_phase2"] for entry in requirements))
         for entry in requirements:
             self.assertEqual(entry["blocks_phase2"], entry["status"] != "accepted")
             self.assertTrue(entry["smallest_next_task"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["task_id"], "strategy.finalist_edge_survival")
-        self.assertEqual(next_task["phase_label"], "Phase 2")
-        self.assertEqual(next_task["execution_boundary"], "blocked audit only; no broker-native execution")
-        self.assertIn("search", next_task["scope"].lower())
-        self.assertIn("exact-zero", next_task["why_next"])
+        self.assertEqual(next_task["task_id"], "phase7.finalist_validation")
+        self.assertEqual(next_task["phase_label"], "Phase 7")
+        self.assertEqual(next_task["execution_boundary"], "deferred; no Phase-2 broker-native execution")
+        self.assertIn("broker-profile", next_task["scope"].lower())
+        self.assertIn("Phase 2 is complete", next_task["why_next"])
 
     def test_inventory_summary_matches_items(self):
         from collections import Counter
@@ -145,7 +145,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
         self.assertEqual(summary["status_counts"], dict(counts))
         self.assertEqual(summary["accepted_native_canary_count"], 6)
         self.assertEqual(summary["grammar_admitted_node_count"], 2)
-        self.assertEqual(summary["phase2_acceptance_gate"], "blocked")
+        self.assertEqual(summary["phase2_acceptance_gate"], "accepted")
 
     def test_accepted_macd_and_percentile_remain_narrow_and_non_searchable(self):
         items = {item["id"]: item for item in self.value["items"]}
