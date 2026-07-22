@@ -39,6 +39,22 @@ class Phase2GateReconciliationTests(unittest.TestCase):
             self.assertFalse(item.get("grammar_admitted", False))
             self.assertFalse(item["searchable"])
             self.assertTrue(self.matrix["accepted_native_nodes"][identifier]["native_parity_accepted"])
+        trade = self.matrix["accepted_native_nodes"]["strategy.trade_by_trade_reconciliation"]
+        self.assertTrue(trade["native_parity_accepted"])
+        self.assertFalse(trade["grammar_admitted"])
+        self.assertFalse(trade["searchable"])
+        self.assertEqual(
+            trade["acceptance_evidence"],
+            "tests/fixtures/phase2_ten_strategy_suite/trade_reconciliation_manifest.json",
+        )
+
+    def test_trade_reconciliation_is_narrow_and_does_not_complete_strategy_gate(self):
+        trade = self.matrix["accepted_native_nodes"]["strategy.trade_by_trade_reconciliation"]
+        self.assertIn("embedded ten-strategy suite only", trade["semantic_restriction"])
+        self.assertIn("not finalist edge proof", trade["semantic_restriction"])
+        self.assertEqual(self.matrix["binding_requirements"]["strategy.trade_by_trade_reconciliation"], "ACCEPTED")
+        self.assertEqual(self.matrix["binding_requirements"]["strategy.provisional_parity_budget"], "ABSENT")
+        self.assertFalse(self.matrix["complete_phase2_gate"])
 
     def test_complete_gate_is_false_while_binding_requirement_is_not_accepted(self):
         self.assertFalse(self.matrix["complete_phase2_gate"])

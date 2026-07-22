@@ -115,7 +115,7 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertEqual(item["mql5"]["generation"], "generated")
             self.assertTrue(item["native"]["execution_evidence_paths"])
         next_task = self.value["next_task"]
-        self.assertEqual(next_task["task_id"], "strategy.trade_by_trade_reconciliation")
+        self.assertEqual(next_task["task_id"], "strategy.provisional_parity_budget")
         self.assertNotIn(next_task["task_id"], items)
         self.assertNotIn(next_task["phase_label"].lower(), {item["status"] for item in items.values()})
         self.assertFalse(next_task["search_authorized"])
@@ -131,9 +131,9 @@ class Phase2RemainingParityInventoryTests(unittest.TestCase):
             self.assertTrue(entry["smallest_next_task"])
         next_task = self.value["next_task"]
         self.assertEqual(next_task["phase_label"], "Phase 2")
-        self.assertEqual(next_task["execution_boundary"], "local deterministic strategy reconciliation and parity-budget preparation")
+        self.assertEqual(next_task["execution_boundary"], "finalist selection and pre-result deterministic parity-budget preparation")
         self.assertIn("search", next_task["scope"].lower())
-        self.assertIn("Layer-1", next_task["why_next"])
+        self.assertIn("Trade-by-trade reconciliation", next_task["why_next"])
 
     def test_inventory_summary_matches_items(self):
         from collections import Counter
