@@ -1,0 +1,137 @@
+{
+  "schema_version": "nora.phase3.readiness_v1",
+  "artifact_identity": "d850046a61f1a0cdec7298748f5768daf5c3046b3448799b0383b13d79d09ce0",
+  "status": "BLOCKED_PRE_SEARCH",
+  "created_at": "2026-07-22T00:00:00Z",
+  "repository": {
+    "branch": "main",
+    "bound_head": "a3d7bb7",
+    "phase2_reference": "a3d7bb7"
+  },
+  "phase2_revalidation": {
+    "complete_phase2_gate": true,
+    "grammar_admitted": false,
+    "search_authorized": false,
+    "phase3_authorized": false,
+    "decision_artifact": {
+      "path": "docs/evidence/phase2/frt3-gate-closure/phase2_gate_decisions_v1.json",
+      "sha256": "d601272ea2595be6e6ef1494a720c839708e9ea4a12b1ea90738f3c00d9332c1",
+      "artifact_identity": "f509badbec8fa49ba2e86f511ad9c232e7a17cf82b5146f982ef38cfb4e9e6ef"
+    },
+    "signed_decisions": ["D1", "D2", "D3", "D4", "D5", "D6", "D7"],
+    "d8_signed": false
+  },
+  "pre_search": {
+    "d5": {
+      "status": "NOT_FROZEN",
+      "reason": "No approved Phase-3 research dataset with sufficient duration exists in the repository; thresholds cannot be defensibly derived from two-to-fifteen-bar fixtures.",
+      "thresholds": null
+    },
+    "d7": {
+      "status": "NOT_FROZEN",
+      "reason": "No Gasper-prepared dataset contracts, versioned splits, or sealed permanent final lockbox exist.",
+      "dataset_identities": [],
+      "split_identities": [],
+      "lockbox_identity": null,
+      "lockbox_evaluated": false
+    },
+    "grammars": {
+      "status": "SPECIFIED_BUT_NOT_ACTIVE",
+      "execution_policy": "market_v1_open_exit",
+      "families": ["trend-pullback-v1.0", "close-confirmed-breakout-v1.0"],
+      "new_ast_admission": false
+    },
+    "ranking": {
+      "criterion_4": "average_trade",
+      "screening_unit": "gross_per_unit",
+      "invented_broker_costs": false,
+      "later_cost_stress_required": true
+    },
+    "determinism_and_accounting": {
+      "status": "NOT_IMPLEMENTED",
+      "verified_before_search": false,
+      "required": [
+        "stratified generation",
+        "canonical-hash deduplication",
+        "trial counting",
+        "batch checkpoint/resume",
+        "lineage",
+        "descriptor schema/archive",
+        "compute accounting"
+      ]
+    }
+  },
+  "tracked_market_data_inventory": [
+    {
+      "path": "engine/labengine/tests/fixtures/phase1_utc_m1.parquet",
+      "sha256": "17cee953ca9e9b26ae719629047357dceca59c1ddafd081baba5abf48e7db95f",
+      "rows": 2,
+      "symbol": "EURUSD",
+      "timeframe": "M1",
+      "range": ["2025-06-03 08:00", "2025-06-03 08:01"],
+      "role": "Phase-1 fixture; insufficient for Phase-3 IS/OOS research"
+    },
+    {
+      "path": "engine/labengine/tests/fixtures/phase2_indicator_utc.parquet",
+      "sha256": "9d09c4c931471cd4e55401da9677a04cc97f7421e2d2bb6f1d12b71c854f00f2",
+      "rows": 12,
+      "symbol": "EURUSD",
+      "timeframe": "M1",
+      "range": ["2025-06-03 00:00", "2025-06-03 00:11"],
+      "role": "Phase-2 indicator fixture; insufficient for Phase-3 IS/OOS research"
+    },
+    {
+      "path": "tests/fixtures/phase2_linux_replay_m1.parquet",
+      "sha256": "26c46a3d8a8c470435cd7d5bdd3b8b7057d6052c486993ebd8c74a7aa3affcb1",
+      "rows": 15,
+      "symbol": "EURUSD",
+      "timeframe": "M1",
+      "range": ["2025-06-03 00:00", "2025-06-03 00:14"],
+      "role": "Phase-2 replay fixture; insufficient for Phase-3 IS/OOS research"
+    }
+  ],
+  "operator_preparation_required": {
+    "reason": "D5 and D7 cannot be frozen and D8 cannot be signed without approved research data.",
+    "minimum_dataset_request": {
+      "symbols": ["GDAXI", "AUDCAD"],
+      "timeframe": "M1",
+      "source_range": ["2020-07-01", "2026-07-01"],
+      "source_timestamp_contract": "declared broker-time contract; no silent conversion",
+      "preferred_clock": "New York time plus seven hours, seasonally UTC+02/UTC+03 following New York DST",
+      "required_partitions_before_search": {
+        "development_is": ["2020-07-01", "2024-12-31"],
+        "oos_validation": ["2025-01-01", "2025-12-31"],
+        "permanent_final_lockbox": ["2026-01-01", "2026-07-01"]
+      },
+      "required_contract_fields": [
+        "provider and source-symbol identity",
+        "file/content hash",
+        "date range and timeframe",
+        "source and bar timestamp semantics",
+        "dataset timezone and DST regime",
+        "session clock and trading-day boundary",
+        "strategy evaluation clock",
+        "higher-timeframe anchoring rules",
+        "conversion history and double-conversion guard",
+        "schema/protocol version"
+      ],
+      "approval": "Gasper must approve and seal the dataset/split contracts before D8"
+    },
+    "lockbox_policy": "Create and seal the permanent final lockbox before candidate #1; human-gated, logged, and never read during Phase 3."
+  },
+  "authorization": {
+    "d8": {
+      "signed": false,
+      "operator": "Gasper",
+      "reason": "Pre-search gate is incomplete; no Phase-3 search was run."
+    },
+    "phase3_authorized": false,
+    "search_authorized": false
+  },
+  "search": {
+    "candidate_trials": 0,
+    "unique_canonical_candidates": 0,
+    "lockbox_touched": false,
+    "status": "NOT_STARTED"
+  }
+}
