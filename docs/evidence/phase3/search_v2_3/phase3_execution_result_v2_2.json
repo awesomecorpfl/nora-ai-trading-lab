@@ -46,7 +46,7 @@
     "trials": 10000,
     "unique_evaluated": 8456
   },
-  "protocol": "docs/evidence/phase3/phase3_protocol_v2_2.json",
-  "schema_version": "nora.phase3.execution_result_v2_2",
+  "protocol": "docs/evidence/phase3/phase3_protocol_v2_3.json",
+  "schema_version": "nora.phase3.execution_result_v2_3",
   "workers": 4
 }
