@@ -1,0 +1,26 @@
+{
+  "schema_version": "nora.phase3.acceptance_result_v2_3",
+  "status": "PASS",
+  "protocol_identity": "2cf1db1387e2c6e016eb4b1023e4bbae644ae877aa5c3ba5e7cf8771cc2755fc",
+  "d8_identity": "b5c3e084abe79fc8e7e4b319b0e398da0795d7e88cb580841e337bdceef93db1",
+  "guided_search": {
+    "trials": 10000,
+    "unique_evaluated": 6788,
+    "duplicate_rejected": 3212,
+    "duplicate_evaluated": 0,
+    "accepted_threshold": 6624,
+    "archive_cells": 36,
+    "archive_theoretical_cells": 36,
+    "archive_minimum_cells": 24,
+    "coverage_pass": true,
+    "distribution": {"trend-pullback/EURUSD": 2500, "trend-pullback/GBPJPY": 2500, "close-confirmed-breakout/EURUSD": 2500, "close-confirmed-breakout/GBPJPY": 2500},
+    "best_average_trade": 0.063720045684686,
+    "component_result_sha256": {"close-confirmed-breakout/EURUSD": "fcb186a30ae8667572dda43630908ebfcc2e4abcbd24be5af74a09eb6a7da7e8", "close-confirmed-breakout/GBPJPY": "72d38b182309d296e90b82d4504a9dedd44513db5735b39bc8074abf6a870e65", "trend-pullback/EURUSD": "4460632a2f6f73b7bdda663f9132439a95b9840da15dc2918f171859711c4dd5", "trend-pullback/GBPJPY": "27e3629bd752b1c08208d33069183652584ed8347dfb3ade8b8233dc6cc655d2"}
+  },
+  "matched_random_baseline": {"trials": 10000, "unique_evaluated": 8456, "duplicate_rejected": 1544, "duplicate_evaluated": 0, "accepted_threshold": 8288, "archive_cells": 36, "best_average_trade": 0.063720045684686, "same_budget": true, "component_result_sha256": {"close-confirmed-breakout/EURUSD": "90d77c5001a16c6291682835b28bffa2f76632a9df3c83428309198bba206b8d", "close-confirmed-breakout/GBPJPY": "70c33402ed5be16e7a1114427dc9bf04c03c9d623bed3b271c6c9951da7eb528", "trend-pullback/EURUSD": "3651f829ffb7efd1fd1b80840cdacee665987f0be34a74bb7f6f869b4f697742", "trend-pullback/GBPJPY": "f2dab26014e8c68768af51affbd2b277b083fb70b0474345f54eb717ffe97a92"}},
+  "resume": {"interruption_exit": 75, "checkpoint_batch": 250, "component": "trend-pullback/EURUSD", "resumed_sha256": "4460632a2f6f73b7bdda663f9132439a95b9840da15dc2918f171859711c4dd5", "uninterrupted_sha256": "4460632a2f6f73b7bdda663f9132439a95b9840da15dc2918f171859711c4dd5", "equivalent": true},
+  "reproducibility": {"structural_probe_reachable_cells": 36, "structural_probe_minimum": 24, "protocol_changed_after_candidate_1": false, "candidate_outcomes_reused": false},
+  "lockbox": {"identity": "8202bbf355275cad15e5366e4cac48bcf94feec3a67599db4718b3795f1aa0f2", "touched": false, "access_log_events": 0},
+  "phase4_started": false,
+  "interpretation": "Phase 3 search and coverage infrastructure passed; this is not a robustness, production-edge, or broker-native finalist claim."
+}

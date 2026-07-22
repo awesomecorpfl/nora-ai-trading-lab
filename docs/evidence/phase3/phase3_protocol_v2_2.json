@@ -1,10 +1,10 @@
 {
   "schema_version": "nora.phase3.protocol_v2_2",
-  "protocol_identity": "2b4d1c5be4157670d3a6b8c9f4851f72a8d92f7ac2fabf0119ad8059c6783f22",
+  "protocol_identity": "6b878888e3097cb17c06e8db5635d665554179b8af1cebcc0ab9f8683b3c503b",
   "status": "D8_SIGNED_PRE_SEARCH",
   "operator": "Gasper",
   "signed_at": "2026-07-22T23:50:00Z",
-  "repository": {"bound_head": "9ad7d1c", "branch": "main", "phase2_decision_artifact": "f509badbec8fa49ba2e86f511ad9c232e7a17cf82b5146f982ef38cfb4e9e6ef"},
+  "repository": {"bound_head": "e39c788", "branch": "main", "phase2_decision_artifact": "f509badbec8fa49ba2e86f511ad9c232e7a17cf82b5146f982ef38cfb4e9e6ef"},
   "supersession": {"v2_1_preserved_failed": true, "v2_1_protocol_identity": "677eb6eefd49514e92990314c9060024450c4d657b966ba1be75a0d4910b1c0d", "v2_1_failure": "sampler_stratification_defect", "v1_preserved_failed": true, "v1_protocol_identity": "24fce771278af949bcc4ccb4e196fc16fc26809585c9669832f8caab066040fe", "candidate_outcomes_reused_as_seeds": false},
   "universe": {"symbols": ["EURUSD", "GBPJPY"], "timeframe": "M1", "provider": "Dukascopy", "acquisition_tool": "Quant Data Manager 125.2692", "new_download": false},
   "partitions": {"is": ["2024-01-01", "2024-12-31"], "oos": ["2025-01-01", "2025-06-30"], "lockbox": ["2025-07-01", "2025-12-31"], "lockbox_identity": "8202bbf355275cad15e5366e4cac48bcf94feec3a67599db4718b3795f1aa0f2", "lockbox_untouched": true},
@@ -18,5 +18,5 @@
   "trial_ledger": {"guided_trials": 10000, "matched_random_baseline_trials": 10000, "allocation_per_family_symbol": 2500, "sampled_per_stratum": 2000, "refinement_per_stratum": 500, "duplicate_consumes_trial": true, "duplicate_is_not_evaluated": true, "checkpoint_batch": 250, "mutation": false, "crossover": false},
   "compute": {"bounded_workers": 4, "batch_size": 250, "wall_time_budget_seconds": 1800, "memory_budget_mb": 2048},
   "pre_search_validation": {"structural_probe_36_of_36": true, "data_hashes": true, "split_contracts": true, "lockbox_safety_guard": true, "deterministic_sampler": true, "canonical_dedup": true, "lineage": true, "batch_resume": true, "trial_counting": true, "matched_baseline": true, "candidate_results_used_for_design": false},
-  "d8": {"decision": "AUTHORIZE_PHASE3_FOR_THIS_EXACT_V2_2_PROTOCOL", "signed": true, "operator": "Gasper", "protocol_identity": "2b4d1c5be4157670d3a6b8c9f4851f72a8d92f7ac2fabf0119ad8059c6783f22", "phase3_authorized": true, "search_authorized": true, "identity": "f40d0d71507e3a42aa30f866bc2136df0c14d8fc8c02da2cbf09d7d8fa87d32b"}
+  "d8": {"decision": "AUTHORIZE_PHASE3_FOR_THIS_EXACT_V2_2_PROTOCOL", "signed": true, "operator": "Gasper", "protocol_identity": "6b878888e3097cb17c06e8db5635d665554179b8af1cebcc0ab9f8683b3c503b", "phase3_authorized": true, "search_authorized": true, "identity": "8399b2f205d76acfff697b3ca4b65f54a1a732502f850b836177a68c113410bc"}
 }

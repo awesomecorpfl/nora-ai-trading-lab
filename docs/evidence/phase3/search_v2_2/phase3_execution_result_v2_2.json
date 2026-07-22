@@ -1,0 +1,52 @@
+{
+  "batch_size": 250,
+  "coverage_assessment": {
+    "declared_minimum_cells": 24,
+    "observed_cells": 4,
+    "passes": false
+  },
+  "guided": {
+    "accepted": 8614,
+    "archive_cells": 4,
+    "best_average_trade": 0.062056467483156,
+    "component_result_sha256": {
+      "close-confirmed-breakout/EURUSD": "fea77669501b3918f9071a5ae40062aff1517076456f3276eef8008dfff3b6a0",
+      "close-confirmed-breakout/GBPJPY": "66adaf35bbd6e07cfd3be6fb5f3698a4529e1bfdfe05f60583c343a8cf3b5587",
+      "trend-pullback/EURUSD": "49fd4dacc53b2e8f4abe0160a9f3a03ba73ad2b9b77b2cf4515340bf065e9e52",
+      "trend-pullback/GBPJPY": "d5da5d8d67e13a540676f1f95e337a9305512a128417089fd84d30d0e4f2dd19"
+    },
+    "distribution": {
+      "close-confirmed-breakout/EURUSD": 2500,
+      "close-confirmed-breakout/GBPJPY": 2500,
+      "trend-pullback/EURUSD": 2500,
+      "trend-pullback/GBPJPY": 2500
+    },
+    "duplicate_rejected": 1250,
+    "trials": 10000,
+    "unique_evaluated": 8750
+  },
+  "lockbox_touched": false,
+  "matched_random_baseline": {
+    "accepted": 9832,
+    "archive_cells": 4,
+    "best_average_trade": 0.063579703982086,
+    "component_result_sha256": {
+      "close-confirmed-breakout/EURUSD": "8296bdf5bf76ad857464b255a58f9ed8b75ed302db65705344261532631f9b63",
+      "close-confirmed-breakout/GBPJPY": "206780f2aa2298f373d11e10d6d1b80b72c8cd970dce7c372bbeff7b7fa08f25",
+      "trend-pullback/EURUSD": "80620198f5c5178a5f9f188dc5611bc7a246a61fd3b3ad8648837838ff678232",
+      "trend-pullback/GBPJPY": "12fc83b43bad8bef34d3ff871959441ca07257df9bcc759c55ee769d79a197a7"
+    },
+    "distribution": {
+      "close-confirmed-breakout/EURUSD": 2500,
+      "close-confirmed-breakout/GBPJPY": 2500,
+      "trend-pullback/EURUSD": 2500,
+      "trend-pullback/GBPJPY": 2500
+    },
+    "duplicate_rejected": 0,
+    "trials": 10000,
+    "unique_evaluated": 10000
+  },
+  "protocol": "docs/evidence/phase3/phase3_protocol_v2_2.json",
+  "schema_version": "nora.phase3.execution_result_v2_2",
+  "workers": 4
+}

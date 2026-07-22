@@ -1,0 +1,52 @@
+{
+  "batch_size": 250,
+  "coverage_assessment": {
+    "declared_minimum_cells": 24,
+    "observed_cells": 36,
+    "passes": true
+  },
+  "guided": {
+    "accepted": 6624,
+    "archive_cells": 36,
+    "best_average_trade": 0.063720045684686,
+    "component_result_sha256": {
+      "close-confirmed-breakout/EURUSD": "fcb186a30ae8667572dda43630908ebfcc2e4abcbd24be5af74a09eb6a7da7e8",
+      "close-confirmed-breakout/GBPJPY": "72d38b182309d296e90b82d4504a9dedd44513db5735b39bc8074abf6a870e65",
+      "trend-pullback/EURUSD": "4460632a2f6f73b7bdda663f9132439a95b9840da15dc2918f171859711c4dd5",
+      "trend-pullback/GBPJPY": "27e3629bd752b1c08208d33069183652584ed8347dfb3ade8b8233dc6cc655d2"
+    },
+    "distribution": {
+      "close-confirmed-breakout/EURUSD": 2500,
+      "close-confirmed-breakout/GBPJPY": 2500,
+      "trend-pullback/EURUSD": 2500,
+      "trend-pullback/GBPJPY": 2500
+    },
+    "duplicate_rejected": 3212,
+    "trials": 10000,
+    "unique_evaluated": 6788
+  },
+  "lockbox_touched": false,
+  "matched_random_baseline": {
+    "accepted": 8288,
+    "archive_cells": 36,
+    "best_average_trade": 0.063720045684686,
+    "component_result_sha256": {
+      "close-confirmed-breakout/EURUSD": "90d77c5001a16c6291682835b28bffa2f76632a9df3c83428309198bba206b8d",
+      "close-confirmed-breakout/GBPJPY": "70c33402ed5be16e7a1114427dc9bf04c03c9d623bed3b271c6c9951da7eb528",
+      "trend-pullback/EURUSD": "3651f829ffb7efd1fd1b80840cdacee665987f0be34a74bb7f6f869b4f697742",
+      "trend-pullback/GBPJPY": "f2dab26014e8c68768af51affbd2b277b083fb70b0474345f54eb717ffe97a92"
+    },
+    "distribution": {
+      "close-confirmed-breakout/EURUSD": 2500,
+      "close-confirmed-breakout/GBPJPY": 2500,
+      "trend-pullback/EURUSD": 2500,
+      "trend-pullback/GBPJPY": 2500
+    },
+    "duplicate_rejected": 1544,
+    "trials": 10000,
+    "unique_evaluated": 8456
+  },
+  "protocol": "docs/evidence/phase3/phase3_protocol_v2_2.json",
+  "schema_version": "nora.phase3.execution_result_v2_2",
+  "workers": 4
+}
