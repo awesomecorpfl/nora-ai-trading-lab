@@ -1,0 +1,151 @@
+{
+  "parsed": {
+    "nullable_vector": [
+      "null",
+      "null",
+      "false",
+      "true",
+      "true",
+      "true",
+      "true",
+      "true",
+      "true",
+      "true",
+      "true",
+      "true"
+    ],
+    "row_pass_vector": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "rows": [
+      {
+        "actual_nullable": "null",
+        "actual_trigger": false,
+        "expected_nullable": "null",
+        "expected_trigger": false,
+        "row_index": 0,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "null",
+        "actual_trigger": false,
+        "expected_nullable": "null",
+        "expected_trigger": false,
+        "row_index": 1,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "false",
+        "actual_trigger": false,
+        "expected_nullable": "false",
+        "expected_trigger": false,
+        "row_index": 2,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 3,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 4,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 5,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 6,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 7,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 8,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 9,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 10,
+        "row_pass": true
+      },
+      {
+        "actual_nullable": "true",
+        "actual_trigger": true,
+        "expected_nullable": "true",
+        "expected_trigger": true,
+        "row_index": 11,
+        "row_pass": true
+      }
+    ],
+    "summary": {
+      "failed_rows": 0,
+      "overall_pass": true,
+      "passed_rows": 12,
+      "row_count": 12
+    },
+    "trigger_vector": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "semantic_identity": "b66f60ad5ae4cc036d29197063e2dbe355cafac96085c359e92783ac74da74e4"
+}

@@ -33,7 +33,7 @@ def test_nullable_condition_native_package_is_bound_and_narrow():
         pytest.skip("Phase-2V native package not yet returned from the review-gated campaign")
     manifest = json.loads(INDEX.read_text(encoding="utf-8"))
 
-    assert manifest["scope"] == "frozen nullable runtime and condition translator only"
+    assert manifest["scope"] == "frozen nullable condition translator fixture with runtime dependency only"
     assert manifest["grammar_admitted"] is False
     assert manifest["searchable"] is False
     assert manifest["phase3_authorized"] is False
@@ -41,7 +41,8 @@ def test_nullable_condition_native_package_is_bound_and_narrow():
     assert manifest["contexts"] == list(REQUIRED_CONTEXTS)
     assert manifest["nullable_vector"] == EXPECTED_NULLABLE
     assert manifest["trigger_vector"] == EXPECTED_TRIGGERS
-    assert manifest["native_parity"] == "PASS_EXACT"
+    assert manifest["native_parity"] == "PASS_EXACT_CONDITION_FIXTURE"
+    assert manifest["runtime_semantic_native_coverage"] is False
     assert manifest["compile"]["error_count"] == 0
     assert manifest["compile"]["warning_count"] == 0
 
