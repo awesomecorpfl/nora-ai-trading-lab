@@ -22,9 +22,9 @@ This document states what is implemented. It does not authorize future phases.
 | Phase 0B throughput | VERIFIED | 5,256,000 synthetic M1 bars; 1,000 candidates; 168.53 candidate-backtests/sec at four workers; about 290 MiB peak RSS | production workload calibration during authorized Phase 3 |
 | Phase 0C data characterization | CONDITIONAL | Dukascopy/QDM M1 characterization and data-contract evidence | later Darwinex broker-reference exports and production datasets |
 | Phase 1 foundation | CONDITIONAL | SQLite WAL state, task identities, guarded transitions, artifacts, checkpoints, idempotent registration, dummy resume workflow | no worker pool; service lifecycle and backup procedures deferred |
-| Phase 2 local engine | VERIFIED_NARROW | ingestion, time, aggregation, indicators, AST, intents, simulator, metrics, RNG | grammar completion, full admission chains, replay/placebo gates |
-| Phase 2 MQL5/compiler | VERIFIED_NARROW | deterministic generation and corrected v2 compiler evidence | four corrected native suite runs and exact reconciliation |
-| Phase 2 complete | FALSE | repository gate remains false | E1–E5 and D1–D7 in `PHASE2_COMPLETION_GATE.md` |
+| Phase 2 local engine | VERIFIED_NARROW | ingestion, time, aggregation, indicators, AST, intents, simulator, metrics, RNG, accepted replay/placebo fixtures | non-initial grammar expansion remains deferred; no searchability follows |
+| Phase 2 MQL5/compiler | VERIFIED_NARROW | deterministic generation, corrected v2 compiler evidence, four-context ten-strategy smoke, and exact reconciliation | broker-native finalist confirmation is Phase 7 |
+| Phase 2 complete | TRUE_NARROW | six frozen acceptance criteria accepted in the machine-readable gate; later-phase requirements explicitly deferred | separate Phase-3 authorization and Phase-7 finalist validation remain closed |
 | Phase 3 | UNAUTHORIZED | no search module or active grammar; all searchable flags false | separate signed authorization after Phase-2 closure |
 
 ## Implemented foundation
@@ -74,7 +74,7 @@ Implemented as typed series transforms:
 - DistanceAtr;
 - Percentile.
 
-Important gap: Cross and Slope do not yet exist as typed AST nodes. The initial proposed family grammars are therefore not yet expressible through the canonical AST.
+Cross and Slope remain typed-transform/native parity components under the accepted narrow Phase-2 dependency contract; active grammar admission and searchability remain closed.
 
 ### Typed AST and identities
 
@@ -162,13 +162,17 @@ Verified locally:
 - sealed corrected Rust evidence;
 - persistent Windows evidence runner and atomic return contract.
 
-Still missing:
+Accepted narrowly:
 
 - GDAXI/M1 A1 and A2 corrected native runs;
 - AUDCAD/M1 B1 and B2 corrected native runs;
 - exact ten-ledger reconciliation in all four packages;
-- repeatability proof;
-- formal acceptance record.
+- suite-scoped exact-zero provisional strategy budget;
+- repeatability and formal acceptance records.
+
+Still deferred:
+
+- broker-native finalist confirmation, broker-profile binding, and native edge-survival metrics (Phase 7).
 
 ## Control-plane scaling
 

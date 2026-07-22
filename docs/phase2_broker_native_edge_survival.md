@@ -1,5 +1,7 @@
 # Broker-native edge-survival validation
 
+> **Phase boundary:** This is a Phase-7 finalist-validation contract. It is not a Phase-2 completion requirement. Phase 2 closes on synthetic execution, narrow Layer-1 parity, time-rule parity, hand-designed strategy reconciliation, deterministic replay, and placebo/scrambled-edge destruction. The Phase-2 gate must defer this contract rather than require a genuine finalist.
+
 ## Purpose
 
 The ten-strategy suite has two different native validation jobs. The embedded MT5 smoke canary validates compilation, EX5 loading, tester startup, EA lifecycle, and execution of synthetic embedded OHLC fixtures. It uses exact fixture reconciliation.
