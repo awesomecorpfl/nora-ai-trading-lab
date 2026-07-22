@@ -1,0 +1,11 @@
+{
+  "schema_version": "nora.phase3.acceptance_result_v2_1",
+  "status": "FAIL",
+  "protocol_identity": "677eb6eefd49514e92990314c9060024450c4d657b966ba1be75a0d4910b1c0d",
+  "guided": {"trials": 10000, "unique_evaluated": 8750, "duplicate_rejected": 1250, "archive_cells": 4, "minimum": 24, "coverage_pass": false},
+  "matched_random_baseline": {"trials": 10000, "unique_evaluated": 10000, "duplicate_rejected": 0, "archive_cells": 4},
+  "resume": {"equivalent": true, "component_sha256": "f4671521cbebd24d031c6ad53aefb728d26b924761cc2f47fb7e1f1d05dcc722"},
+  "lockbox_access_events": 0,
+  "failure_classification": "sampler_stratification_defect: v2 structural cells were reachable but guided sampling did not cover holding/risk policy dimensions",
+  "candidate_outcomes_used_for_repair": false
+}
