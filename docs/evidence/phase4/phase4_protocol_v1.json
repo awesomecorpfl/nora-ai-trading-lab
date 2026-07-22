@@ -1,0 +1,21 @@
+{
+  "schema_version": "nora.phase4.protocol_v1",
+  "protocol_identity": "PENDING",
+  "status": "FROZEN_PRE_RESULT",
+  "operator": "Gasper",
+  "bound_phase3": {"head": "caf37d0", "protocol_identity": "2cf1db1387e2c6e016eb4b1023e4bbae644ae877aa5c3ba5e7cf8771cc2755fc", "acceptance": "docs/evidence/phase3/phase3_acceptance_result_v2_3.json"},
+  "data": {"provider": "Dukascopy", "tool": "Quant Data Manager 125.2692", "symbols": ["EURUSD", "GBPJPY"], "timeframe": "M1", "is": ["2024-01-01", "2024-12-31"], "oos": ["2025-01-01", "2025-06-30"], "lockbox": ["2025-07-01", "2025-12-31"], "lockbox_access_allowed": false},
+  "tier_order": ["T0", "T1", "T1.5", "T2", "T3", "T3.5"],
+  "universal_hard_gates": {"phase3_state": "accepted", "canonical_identity_present": true, "duplicate_identity_rejected": true, "finite_metrics": true, "is_trade_floor_per_symbol": 30, "is_dd_fraction_max": 0.1, "oos_trade_floor_per_symbol": 15, "oos_dd_fraction_max": 0.1, "account_currency_dollar_dd": {"status": "UNSUPPORTED_FAIL_CLOSED", "reason_code": "MONEY_DD_UNSUPPORTED_NO_BROKER_PROFILE", "used_as_gate": false}},
+  "tier_0": {"mechanical_integrity": ["identity", "lineage", "descriptor", "finite_fields", "replay_hash"], "malformed_reason_code": "T0_MALFORMED_OR_NONDETERMINISTIC"},
+  "tier_1": {"temporal_segments": {"is": ["2024Q1", "2024Q2", "2024Q3", "2024Q4"], "oos": ["2025H1"]}, "segment_min_trades": 5, "is_positive_segments_min": 3, "oos_average_trade_min": 0.0, "research_policy_cost_stress": {"basis": "median_absolute_IS_trade_pnl", "scenarios": [{"id": "gross", "per_trade_cost_multiple": 0.0}, {"id": "policy_025", "per_trade_cost_multiple": 0.25}, {"id": "policy_050", "per_trade_cost_multiple": 0.5}], "required_scenarios_positive_oos_average": ["policy_025", "policy_050"], "broker_cost_claim": false}, "drawdown_gate_basis": "gross_per_unit_and_research_policy_per_unit_only"},
+  "tier_1_5": {"structural_dedup": "canonical_identity", "parameter_neighborhood": {"radius": 1, "dimensions": ["max_bars", "stop_atr", "target_atr", "distance_limit_or_lookback"], "neighbors_per_candidate_max": 8, "required": "no catastrophic threshold failure in majority of valid immediate neighbors"}},
+  "tier_2": {"trade_monte_carlo": {"method": "bootstrap_with_replacement_trade_pnl", "seeds": [4101, 4102, 4103], "samples_per_seed": 1000, "confidence_quantiles": [0.05, 0.5, 0.95], "required_p05_average_trade_positive": true, "required_p95_drawdown_fraction_max": 0.1}, "stability_metrics": ["positive_bootstrap_fraction", "average_trade_quantiles", "drawdown_quantiles"]},
+  "tier_3": {"cross_symbol": {"required": true, "transfer_candidate_parameters": true, "oos_trade_floor": 15, "oos_dd_fraction_max": 0.1, "positive_average_trade": true}, "derived_timeframes": {"timeframes": ["M5", "H1"], "aggregation": "canonical_M1_start_of_bar", "oos_trade_floor": 5, "dd_fraction_max": 0.1, "positive_average_trade": true}, "session_regime": {"sessions": ["00-07", "08-15", "16-23"], "regimes": ["low_range", "mid_range", "high_range"], "minimum_trades_per_cell": 5, "positive_cells_min": 2}},
+  "tier_3_5": {"features": ["oos_average_trade", "oos_drawdown_fraction", "oos_trade_count", "is_oos_ratio", "descriptor_cell", "mc_positive_fraction"], "distance": "standardized_euclidean", "cluster_threshold": 1.5, "representative_rule": "highest_OOS_average_trade_then_lowest_OOS_drawdown_then_canonical_identity", "target_representatives": [10, 100], "no_selection_from_lockbox": true},
+  "baseline": {"source": "docs/evidence/phase3/search_v2_3", "matched_budget": true, "material_outperformance": {"metric": "OOS_average_trade", "rule": "survivor must exceed baseline accepted median by 10 percent and baseline accepted 75th percentile is reported", "frozen_before_results": true}},
+  "checkpoint": {"granularity": "one immutable batch per tier", "batch_size": 250, "resume": "completed candidate identities never re-evaluated", "interruption_exit": 75, "decision_outputs_reproducible": true},
+  "costs": {"darwinex_commission": null, "spread": null, "slippage": null, "swap": null, "tick_value": null, "account_currency": null, "invented": false},
+  "survivor_target": {"approximate": true, "range": [10, 100], "empty_set_is_honest": true},
+  "phase_boundary": "stop_after_T3_5_before_phase5_parameter_manipulation_mc_wfv_wfo_portfolio_or_mt5"
+}
