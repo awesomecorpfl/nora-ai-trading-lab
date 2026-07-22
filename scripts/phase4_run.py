@@ -48,7 +48,7 @@ def accepted_specs(source):
     return out
 
 
-def run_engine(specs, out_dir, label):
+def run_engine(specs, out_dir, label, compact=False):
     out_dir.mkdir(parents=True, exist_ok=True)
     grouped = defaultdict(list)
     for s in specs:
@@ -58,6 +58,7 @@ def run_engine(specs, out_dir, label):
         key = f"{label}_{mode}_{family.replace('-', '_')}_{symbol.lower()}"
         inp = out_dir / f"{key}.input.json"; out = out_dir / f"{key}.json"
         if not out.exists():
+            rows = [dict(s, compact=compact) for s in rows]
             inp.write_text(json.dumps(rows, sort_keys=True))
             cmd = [str(ENGINE), "--phase4-input", str(inp), "--is-input", str(DATA / f"{symbol.lower()}_m1_is.parquet"),
                    "--oos-input", str(DATA / f"{symbol.lower()}_m1_oos.parquet"), "--output", str(out), "--archive-version", "v2_3"]
@@ -109,6 +110,8 @@ def regime_maps():
 
 def tier1(row, baseline_median):
     reasons = []
+    if not row["is_pnls"] or not row["oos_pnls"]:
+        return ["T1_PRE_GROSS_GATE"]
     if row["is_trades"] < 30: reasons.append("T1_IS_TRADE_FLOOR")
     if row["oos_trades"] < 15: reasons.append("T1_OOS_TRADE_FLOOR")
     if row["is_drawdown_fraction"] > .1 or row["oos_drawdown_fraction"] > .1: reasons.append("T1_DRAWDOWN_GATE")
@@ -166,9 +169,14 @@ def main():
     out = ROOT / args.output; out.mkdir(parents=True, exist_ok=True); proto = json.loads(PROTO.read_text())
     guided = accepted_specs("stratified"); baseline = accepted_specs("random")
     eval_dir = out / "evaluations"
-    g_eval = run_engine(guided, eval_dir, "guided")
-    b_eval = run_engine(baseline, eval_dir, "baseline")
+    g_compact = run_engine(guided, eval_dir, "guided_compact", compact=True)
+    b_eval = run_engine(baseline, eval_dir, "baseline_compact", compact=True)
     baseline_median = sorted(x["oos_average_trade"] for x in b_eval if x["oos_average_trade"] is not None)[len(b_eval) // 2]
+    guided_by_id = {x["candidate_identity"]: x for x in guided}
+    preliminary = [guided_by_id[x["candidate_identity"]] for x in g_compact if x["is_trades"] >= 30 and x["oos_trades"] >= 15 and x["is_drawdown_fraction"] <= .1 and x["oos_drawdown_fraction"] <= .1 and x["oos_average_trade"] and x["oos_average_trade"] > 0]
+    g_detail = run_engine(preliminary, eval_dir, "guided_detail", compact=False) if preliminary else []
+    detailed_by_id = {x["candidate_identity"]: x for x in g_detail}
+    g_eval = [detailed_by_id.get(x["candidate_identity"], x) for x in g_compact]
     states = {x["candidate_identity"]: {"candidate_identity": x["candidate_identity"], "source": x["source"], "family": x["family"], "symbol": x["symbol"], "tier": "T0", "reasons": [], "evaluation": x} for x in g_eval}
     checkpoint = out / "phase4_checkpoint.json"
     checkpoint.write_text(json.dumps({"tier": "T0", "guided_input": len(guided), "baseline_input": len(baseline), "lockbox_access_events": 0}, sort_keys=True, indent=2))
